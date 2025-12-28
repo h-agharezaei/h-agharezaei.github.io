@@ -1,0 +1,45 @@
+/* RTL Support for Persian/Farsi */
+html[lang="fa"],
+html[lang="fa"] body {
+  direction: rtl;
+  text-align: right;
+}
+
+html[lang="fa"] .post-content,
+html[lang="fa"] .post-single,
+html[lang="fa"] .first-entry {
+  direction: rtl;
+  text-align: right;
+}
+
+/* Fix menu alignment for RTL */
+html[lang="fa"] .main-menu {
+  direction: rtl;
+}
+
+html[lang="fa"] .menu {
+  flex-direction: row-reverse;
+}
+
+/* Fix navigation arrows for RTL */
+html[lang="fa"] .post-nav-item {
+  flex-direction: row-reverse;
+}
+
+/* Language Switcher Styling */
+.lang-switcher {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.lang-switcher a {
+  padding: 5px 10px;
+  text-decoration: none;
+  border-radius: 5px;
+}
+
+.lang-switcher a:hover {
+  background: var(--theme);
+  color: var(--primary);
+}

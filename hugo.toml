@@ -5,7 +5,7 @@ theme = 'PaperMod'
 enableRobotsTXT = true
 
 [params]
-  author = "Hossein Agharezaei"
+  author = "Roham"
   env = "production"
   ShowReadingTime = true
   ShowShareButtons = false
@@ -25,13 +25,13 @@ enableRobotsTXT = true
   languageName = "English"
   languageCode = "en"
   weight = 1
-  title = "Hossein Agharezaei"
+  title = "Roham"
 
   [languages.en.params]
-    description = "Personal website and blog of Hossein Agharezaei, software developer."
+    description = "Personal website and blog of Roham, software developer."
 
     [languages.en.params.homeInfoParams]
-      Title = "Hi, I'm Hossein 👋"
+      Title = "Hi, I'm Roham 👋"
       Content = "Software developer writing about programming, software design and web development. Welcome to my corner of the internet."
 
     [[languages.en.params.socialIcons]]
@@ -63,13 +63,13 @@ enableRobotsTXT = true
   languageCode = "fa"
   languageDirection = "rtl"
   weight = 2
-  title = "حسین آقارضایی"
+  title = "روهام"
 
   [languages.fa.params]
-    description = "وبسایت شخصی و وبلاگ حسین آقارضایی، توسعه‌دهنده نرم‌افزار."
+    description = "وبسایت شخصی و وبلاگ روهام، توسعه‌دهنده نرم‌افزار."
 
     [languages.fa.params.homeInfoParams]
-      Title = "سلام، من حسین هستم 👋"
+      Title = "سلام، من روهام هستم 👋"
       Content = "توسعه‌دهنده نرم‌افزار؛ درباره برنامه‌نویسی، طراحی نرم‌افزار و توسعه وب می‌نویسم. به وب‌سایتم خوش آمدید."
 
     [[languages.fa.params.socialIcons]]

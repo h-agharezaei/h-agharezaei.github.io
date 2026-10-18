@@ -1,5 +1,6 @@
 ---
 title: "About Me"
+description: "About Roham, a senior software engineer in Tehran working with Go, Node.js and event-driven systems (Kafka, NATS JetStream)."
 date: 2025-12-29
 ---
 

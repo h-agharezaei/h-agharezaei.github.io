@@ -1,1 +1,10 @@
 <link rel="icon" type="image/svg+xml" href="{{ "favicon.svg" | absURL }}">
+{{- /* hreflang x-default points to the default-language version */}}
+{{- range .AllTranslations }}{{ if eq .Lang (index site.Languages 0).Lang }}
+<link rel="alternate" hreflang="x-default" href="{{ .Permalink }}">
+{{- end }}{{ end }}
+{{- /* Social preview fallback when a page has no cover image */}}
+{{- if not .Params.cover.image }}
+<meta property="og:image" content="{{ "android-chrome-512x512.png" | absURL }}">
+<meta name="twitter:image" content="{{ "android-chrome-512x512.png" | absURL }}">
+{{- end }}

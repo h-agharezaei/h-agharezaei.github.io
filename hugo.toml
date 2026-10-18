@@ -16,6 +16,15 @@ enableRobotsTXT = true
   ShowToc = true
   defaultTheme = "auto"
 
+  [params.schema]
+    publisherType = "Person"
+    sameAs = ["https://github.com/h-agharezaei", "https://www.linkedin.com/in/hossein-agharezaei/"]
+
+# Keep thin taxonomy pages out of the sitemap
+[sitemap]
+  changefreq = "weekly"
+  priority = 0.5
+
 # Needed for PaperMod's search page
 [outputs]
   home = ["HTML", "RSS", "JSON"]
@@ -29,6 +38,8 @@ enableRobotsTXT = true
 
   [languages.en.params]
     description = "Personal website and blog of Roham, senior software engineer (Go & Node.js)."
+    homeTitle = "Roham | Senior Software Engineer (Go & Node.js)"
+    keywords = ["Roham", "software engineer", "Go", "Golang", "Node.js", "NATS JetStream", "backend", "microservices"]
 
     [languages.en.params.homeInfoParams]
       Title = "Hi, I'm Roham 👋"
@@ -75,6 +86,8 @@ enableRobotsTXT = true
 
   [languages.fa.params]
     description = "وبسایت شخصی و وبلاگ روهام، مهندس نرم‌افزار ارشد (Go و Node.js)."
+    homeTitle = "روهام | مهندس نرم‌افزار ارشد (Go و Node.js)"
+    keywords = ["روهام", "مهندس نرم‌افزار", "Go", "گولنگ", "Node.js", "NATS JetStream", "بک‌اند", "میکروسرویس"]
 
     [languages.fa.params.homeInfoParams]
       Title = "سلام، من روهام هستم 👋"

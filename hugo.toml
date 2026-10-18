@@ -2,11 +2,13 @@ baseURL = 'https://h-agharezaei.github.io/'
 defaultContentLanguage = 'en'
 defaultContentLanguageInSubdir = false
 theme = 'PaperMod'
+enableRobotsTXT = true
 
 [params]
   author = "Hossein Agharezaei"
+  env = "production"
   ShowReadingTime = true
-  ShowShareButtons = true
+  ShowShareButtons = false
   ShowPostNavLinks = true
   ShowBreadCrumbs = true
   ShowCodeCopyButtons = true
@@ -14,63 +16,81 @@ theme = 'PaperMod'
   ShowToc = true
   defaultTheme = "auto"
 
-# English Language Settings
+# Needed for PaperMod's search page
+[outputs]
+  home = ["HTML", "RSS", "JSON"]
+
+# English
 [languages.en]
   languageName = "English"
   languageCode = "en"
   weight = 1
-  title = "Personal Website"
-  
+  title = "Hossein Agharezaei"
+
   [languages.en.params]
-    description = "My personal website and blog"
-    
-  [[languages.en.menu.main]]
-    identifier = "home"
-    name = "Home"
-    url = "/"
-    weight = 10
+    description = "Personal website and blog of Hossein Agharezaei, software developer."
+
+    [languages.en.params.homeInfoParams]
+      Title = "Hi, I'm Hossein 👋"
+      Content = "Software developer writing about programming, software design and web development. Welcome to my corner of the internet."
+
+    [[languages.en.params.socialIcons]]
+      name = "github"
+      url = "https://github.com/h-agharezaei"
+    [[languages.en.params.socialIcons]]
+      name = "rss"
+      url = "/index.xml"
 
   [[languages.en.menu.main]]
     identifier = "posts"
     name = "Posts"
-    url = "/posts/"
-    weight = 20
-
+    pageRef = "/posts"
+    weight = 10
   [[languages.en.menu.main]]
     identifier = "about"
     name = "About"
-    url = "/about/"
+    pageRef = "/about"
+    weight = 20
+  [[languages.en.menu.main]]
+    identifier = "search"
+    name = "Search"
+    pageRef = "/search"
     weight = 30
 
-# Persian/Farsi Language Settings
+# Persian
 [languages.fa]
   languageName = "فارسی"
   languageCode = "fa"
   languageDirection = "rtl"
   weight = 2
-  title = "وبسایت شخصی"
-  
+  title = "حسین آقارضایی"
+
   [languages.fa.params]
-    description = "وبسایت شخصی و وبلاگ من"
-    
-  [[languages.fa.menu.main]]
-    identifier = "home"
-    name = "خانه"
-    url = "/fa/"
-    weight = 10
+    description = "وبسایت شخصی و وبلاگ حسین آقارضایی، توسعه‌دهنده نرم‌افزار."
+
+    [languages.fa.params.homeInfoParams]
+      Title = "سلام، من حسین هستم 👋"
+      Content = "توسعه‌دهنده نرم‌افزار؛ درباره برنامه‌نویسی، طراحی نرم‌افزار و توسعه وب می‌نویسم. به وب‌سایتم خوش آمدید."
+
+    [[languages.fa.params.socialIcons]]
+      name = "github"
+      url = "https://github.com/h-agharezaei"
+    [[languages.fa.params.socialIcons]]
+      name = "rss"
+      url = "/fa/index.xml"
 
   [[languages.fa.menu.main]]
     identifier = "posts"
     name = "مقالات"
-    url = "/fa/posts/"
-    weight = 20
-
+    pageRef = "/posts"
+    weight = 10
   [[languages.fa.menu.main]]
     identifier = "about"
     name = "درباره من"
-    url = "/fa/about/"
+    pageRef = "/about"
+    weight = 20
+  [[languages.fa.menu.main]]
+    identifier = "search"
+    name = "جستجو"
+    pageRef = "/search"
     weight = 30
-
-# تنظیمات برای GitHub Pages
-[outputs]
-  home = ["HTML", "RSS", "JSON"]

@@ -2,11 +2,12 @@
 date = '2025-12-29T00:02:08+03:30'
 draft = false
 title = 'My First Post'
-description = 'This is my first post on my personal website'
+description = 'Welcome to my personal blog: why I created this site, to share experiences and knowledge, keep learning and connect with people who share my interests.'
 tags = ["start", "introduction"]
+cover = { image = "/images/covers/first-post.png", alt = "My First Post", hiddenInSingle = true, hiddenInList = true }
 +++
 
-# Welcome to My Blog!
+## Welcome to My Blog!
 
 This is the first post I'm publishing on my personal website.
 

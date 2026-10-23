@@ -2,8 +2,11 @@
 date = '2026-10-18T12:00:00+03:30'
 draft = false
 title = 'یک Publisher و Worker ساده با NATS JetStream در Go'
-description = 'چطور با Go، Docker Compose و NATS JetStream یک جفت سرویس بسازیم که پیام‌ها را با durable consumer پردازش کند.'
+description = 'ساخت Publisher و Worker با NATS JetStream در Go و Docker Compose: ساخت stream، انتشار پیام و پردازش آن با pull consumer از نوع durable.'
+categories = ["Go"]
+series = ["NATS JetStream"]
 tags = ["go", "nats", "jetstream", "messaging"]
+cover = { image = "/images/covers/nats-jetstream-go.fa.png", alt = "یک Publisher و Worker ساده با NATS JetStream در Go", hiddenInSingle = true, hiddenInList = true }
 +++
 
 وقتی می‌خواهم یک مفهوم را واقعاً بفهمم، کوچک‌ترین نمونه‌ی قابل‌اجرا از آن را می‌سازم. این‌بار نوبت **NATS JetStream** بود. نتیجه، پروژه‌ی [go-nats-demo](https://github.com/h-agharezaei/go-nats-demo) است: یک Publisher، یک Worker و خود NATS، همه با Docker Compose.

@@ -3,7 +3,10 @@ date = '2026-10-18T14:00:00+03:30'
 draft = false
 title = 'Retry و Dead-Letter Queue در NATS JetStream با Go'
 description = 'ادامه‌ی مقاله‌ی قبل: چطور پیام‌های ناموفق را با MaxDeliver و BackOff دوباره امتحان کنیم و در نهایت به یک صف dead-letter بفرستیم.'
+categories = ["Go"]
+series = ["NATS JetStream"]
 tags = ["go", "nats", "jetstream", "messaging", "retry"]
+cover = { image = "/images/covers/nats-jetstream-retry-dlq.fa.png", alt = "Retry و Dead-Letter Queue در NATS JetStream با Go", hiddenInSingle = true, hiddenInList = true }
 +++
 
 در [مقاله‌ی قبل](/fa/posts/nats-jetstream-go/) یک Publisher و Worker ساده روی JetStream ساختیم. اما Workerِ آن مقاله فرض می‌کرد پردازش همیشه موفق است. در عمل پیام‌هایی هستند که هر بار fail می‌شوند. اگر کاری نکنیم، یا بی‌نهایت تکرار می‌شوند یا گم می‌شوند.

@@ -4,6 +4,11 @@ defaultContentLanguageInSubdir = false
 theme = 'PaperMod'
 enableRobotsTXT = true
 
+[taxonomies]
+  category = "categories"
+  tag = "tags"
+  series = "series"
+
 [params]
   author = "Roham"
   env = "production"
@@ -24,6 +29,18 @@ enableRobotsTXT = true
 [sitemap]
   changefreq = "weekly"
   priority = 0.5
+
+# Proper og:locale values for Open Graph (PaperMod reads params.locale)
+[[cascade]]
+  [cascade.params]
+    locale = "en_US"
+  [cascade.target.sites.matrix]
+    languages = ["en"]
+[[cascade]]
+  [cascade.params]
+    locale = "fa_IR"
+  [cascade.target.sites.matrix]
+    languages = ["fa"]
 
 # Needed for PaperMod's search page
 [outputs]

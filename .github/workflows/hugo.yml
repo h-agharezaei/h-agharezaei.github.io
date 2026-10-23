@@ -7,6 +7,11 @@ on:
     branches:
       - main
 
+  # Daily build so posts with a future date go live on their publish day
+  # 06:30 UTC = 10:00 Asia/Tehran
+  schedule:
+    - cron: '30 6 * * *'
+
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 

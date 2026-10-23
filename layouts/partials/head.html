@@ -9,7 +9,7 @@
 {{- end }}
 
 {{- /* Title */}}
-<title>{{ if .IsHome }}{{ with site.Params.homeTitle }}{{ . }}{{ else }}{{ site.Title }}{{ end }}{{ else }}{{ if .Title }}{{ .Title }} | {{ end }}{{ site.Title }}{{ end }}</title>
+<title>{{ if .IsHome }}{{ with site.Params.homeTitle }}{{ . }}{{ else }}{{ site.Title }}{{ end }}{{ else }}{{ if .Title }}{{ .Params.seoTitle | default .Title }} | {{ end }}{{ site.Title }}{{ end }}</title>
 
 {{- /* Meta */}}
 {{- if .IsHome }}

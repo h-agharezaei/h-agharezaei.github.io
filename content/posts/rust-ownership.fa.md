@@ -9,7 +9,7 @@ tags = ["rust", "beginner", "ownership", "memory"]
 cover = { image = "/images/covers/rust-ownership.fa.png", alt = "Ownership در Rust", hiddenInSingle = true }
 +++
 
-در [مقاله‌ی قبل](/fa/posts/rust-types-control-flow/) با نوع‌ها، متغیرها و ساختارهای کنترلی Rust آشنا شدیم؛ چیزهایی که برای کسی که از Go یا Node.js می‌آید آشناست. **Ownership** این‌طور نیست. این همان ایده‌ای است که Rust با آن حافظه را بدون garbage collector مدیریت می‌کند، و در هفته‌های اول بیشترین خطای کامپایلر مربوط به همین است.
+در [مقاله‌ی قبل](/fa/posts/rust-types-control-flow/) با نوع‌ها، متغیرها و ساختارهای کنترلی Rust آشنا شدیم؛ چیزهایی که برای کسی که از Go یا Node.js می‌آید آشناست. **{{< term "ownership" "Ownership" >}}** این‌طور نیست. این همان ایده‌ای است که Rust با آن حافظه را بدون garbage collector مدیریت می‌کند، و در هفته‌های اول بیشترین خطای کامپایلر مربوط به همین است.
 
 > همه‌ی کدهای زیر با Rust نسخه‌ی 1.90 کامپایل و اجرا شده‌اند و خروجی‌ها از همان اجراها کپی شده‌اند.
 

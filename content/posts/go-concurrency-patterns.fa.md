@@ -15,7 +15,7 @@ cover = { image = "/images/covers/go-concurrency-patterns.fa.png", alt = "الگ
 
 ## worker pool محدود
 
-**worker pool** تعداد ثابتی goroutine بالا می‌آورد که از یک channel به نام jobs می‌خوانند و در channel نتایج می‌نویسند. نکته این است که چه کسی چه چیزی را می‌بندد: تولیدکننده `jobs` را می‌بندد و یک goroutine جدا منتظر `WaitGroup` می‌ماند و `results` را می‌بندد.
+**{{< term "worker-pool" "worker pool" >}}** تعداد ثابتی goroutine بالا می‌آورد که از یک channel به نام jobs می‌خوانند و در channel نتایج می‌نویسند. نکته این است که چه کسی چه چیزی را می‌بندد: تولیدکننده `jobs` را می‌بندد و یک goroutine جدا منتظر `WaitGroup` می‌ماند و `results` را می‌بندد.
 
 ```go
 for w := 1; w <= workers; w++ {
@@ -43,7 +43,7 @@ workers used: 3 total: 9
 
 ## errgroup: اولین خطا بقیه را لغو می‌کند
 
-**errgroup** حالت رایج را بسته‌بندی کرده: چند تابع اجرا کن، منتظر همه بمان، اولین خطا را برگردان. `errgroup.WithContext` یک context هم می‌دهد که با اولین خطا یا با برگشتن `Wait` لغو می‌شود. پنج جاب در ۴۰، ۸۰، ۱۲۰ و ... میلی‌ثانیه تمام می‌شوند و جاب ۳ خطا می‌دهد:
+**{{< term "errgroup" "errgroup" >}}** حالت رایج را بسته‌بندی کرده: چند تابع اجرا کن، منتظر همه بمان، اولین خطا را برگردان. `errgroup.WithContext` یک context هم می‌دهد که با اولین خطا یا با برگشتن `Wait` لغو می‌شود. پنج جاب در ۴۰، ۸۰، ۱۲۰ و ... میلی‌ثانیه تمام می‌شوند و جاب ۳ خطا می‌دهد:
 
 ```go
 g, ctx := errgroup.WithContext(context.Background())

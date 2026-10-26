@@ -139,7 +139,7 @@ The machine load was above 3, so I ran no benchmark and give no numbers. Qualita
 
 ## FFI, gRPC or wasm?
 
-- **FFI**: one process and no serialization, but `unsafe`, manual ownership, a C toolchain, and a Rust abort kills your Go service.
+- **{{< term "ffi" "FFI" >}}**: one process and no serialization, but `unsafe`, manual ownership, a C toolchain, and a Rust abort kills your Go service.
 - **gRPC**: separate processes, a typed contract, independent deploys. You pay for a network hop and encoding.
 - **wasm**: the guest is sandboxed and has its own linear memory, so data is copied in and out, and you need a runtime.
 

@@ -76,7 +76,7 @@ func (c *SafeCounter) Get(key string) int {
 
 ## atomic و Once
 
-برای یک عدد ساده، `sync/atomic` سبک‌تر از mutex است. **sync.Once** یک تابع را دقیقاً یک بار اجرا می‌کند، هر چند goroutine صدایش بزنند؛ برای مقداردهی اولیه‌ی تنبل مناسب است:
+برای یک عدد ساده، `sync/atomic` سبک‌تر از {{< term "mutex" "mutex" >}} است. **sync.Once** یک تابع را دقیقاً یک بار اجرا می‌کند، هر چند goroutine صدایش بزنند؛ برای مقداردهی اولیه‌ی تنبل مناسب است:
 
 ```go
 var hits atomic.Int64
@@ -133,7 +133,7 @@ timeout
 
 ## context: لغو و deadline
 
-یک **context.Context** سیگنال لغو را بین goroutineها حمل می‌کند. `ctx.Done()` channelی است که با پایان context بسته می‌شود و `ctx.Err()` دلیلش را می‌گوید. workerی که با لغو متوقف می‌شود، و بررسی اینکه واقعاً متوقف شده:
+یک **{{< term "context" "context" >}}.Context** سیگنال لغو را بین goroutineها حمل می‌کند. `ctx.Done()` channelی است که با پایان context بسته می‌شود و `ctx.Err()` دلیلش را می‌گوید. workerی که با لغو متوقف می‌شود، و بررسی اینکه واقعاً متوقف شده:
 
 ```go
 func worker(ctx context.Context, stopped *atomic.Bool) {

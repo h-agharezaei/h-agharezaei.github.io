@@ -1,0 +1,11 @@
+{{- /* {{< term "goroutine" >}} or {{< term "goroutine" "custom text" >}}
+       Links to the glossary entry and shows its one-line summary as a tooltip. */ -}}
+{{- $slug := .Get 0 -}}
+{{- $page := site.GetPage (printf "/glossary/%s" $slug) -}}
+{{- if $page -}}
+{{- $text := cond (ne (.Get 1) nil) (.Get 1) $page.Title -}}
+<a class="term" href="{{ $page.RelPermalink }}">{{ $text }}<span class="term-tip" role="tooltip">{{ $page.Params.summary }}</span></a>
+{{- else -}}
+{{- warnf "glossary term %q not found (%s)" $slug .Page.File.Path -}}
+{{- default $slug (.Get 1) -}}
+{{- end -}}

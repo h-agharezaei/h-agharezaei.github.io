@@ -10,7 +10,7 @@ tags = ["go", "nats", "jetstream", "messaging", "idempotency", "exactly-once"]
 cover = { image = "/images/covers/nats-jetstream-idempotency.png", alt = "Idempotency and the meaning of exactly-once in JetStream", hiddenInSingle = true }
 +++
 
-The [previous post](/posts/nats-jetstream-scaling-lag/) ended with an uncomfortable fact: when a worker dies without acking, the message is redelivered, so a job can run twice. People often answer this with "just use exactly-once". In this post I try to find out what that phrase can honestly mean, by testing the pieces JetStream gives us: deduplication at publish time, acks, and an idempotent handler.
+The [previous post](/posts/nats-jetstream-scaling-lag/) ended with an uncomfortable fact: when a worker dies without acking, the message is redelivered, so a job can run twice. People often answer this with "just use exactly-once". In this post I try to find out what that phrase can honestly mean, by testing the pieces JetStream gives us: deduplication at publish time, acks, and an {{< term "idempotency" "idempotent" >}} handler.
 
 > Everything below ran against an embedded `nats-server` v2.15.1 and `nats.go` v1.54.0 on Go 1.26. The outputs are from those runs.
 

@@ -9,7 +9,7 @@ tags = ["go", "beginner", "concurrency", "goroutines", "channels"]
 cover = { image = "/images/covers/go-goroutines-channels.png", alt = "Goroutines and channels in Go", hiddenInSingle = true }
 +++
 
-In the [previous post](/posts/go-packages-modules/) we organised code into packages and modules. Now we get to the feature Go is most known for: concurrency. This post covers goroutines, `sync.WaitGroup`, channels, the deadlock error everyone meets once, a small producer/worker pipeline, and the race detector. Next time we add `sync`, `select` and `context`.
+In the [previous post](/posts/go-packages-modules/) we organised code into packages and modules. Now we get to the feature Go is most known for: concurrency. This post covers {{< term "goroutine" "goroutine" >}}s, `sync.WaitGroup`, {{< term "channel" "channel" >}}s, the deadlock error everyone meets once, a small producer/worker pipeline, and the race detector. Next time we add `sync`, `select` and `context`.
 
 > Everything below was run with Go 1.26 on macOS (arm64). Outputs that depend on scheduling are marked as such.
 

@@ -139,7 +139,7 @@ load ماشین بالای 3 بود، پس benchmark نگرفتم و عددی ن
 
 ## FFI، gRPC یا wasm؟
 
-- **FFI**: یک پردازه و بدون serialize، ولی `unsafe`، ownership دستی، toolchain C و abort در Rust سرویس Go شما را می‌کشد.
+- **{{< term "ffi" "FFI" >}}**: یک پردازه و بدون serialize، ولی `unsafe`، ownership دستی، toolchain C و abort در Rust سرویس Go شما را می‌کشد.
 - **gRPC**: پردازه‌های جدا، قرارداد typed، deploy مستقل. هزینه‌اش یک hop شبکه و encoding است.
 - **wasm**: guest در sandbox است و حافظه‌ی خطی خودش را دارد، پس داده کپی می‌شود و یک runtime لازم است.
 

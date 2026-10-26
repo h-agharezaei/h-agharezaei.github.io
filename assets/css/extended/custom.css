@@ -24,3 +24,28 @@ html[lang="fa"] code,
 html[lang="fa"] pre {
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 }
+
+/* Glossary */
+.term { position: relative; text-decoration: underline dotted; text-underline-offset: 3px; cursor: help; }
+.term-tip {
+  display: none; position: absolute; z-index: 10; inset-inline-start: 0; top: 100%;
+  width: max-content; max-width: min(320px, 80vw); margin-top: 6px; padding: 8px 10px;
+  background: var(--primary); color: var(--theme); border-radius: var(--radius);
+  font-size: 0.85rem; font-weight: 400; line-height: 1.5; text-decoration: none; box-shadow: 0 4px 14px rgba(0,0,0,.2);
+}
+.term:hover .term-tip, .term:focus .term-tip, .term:focus-within .term-tip { display: block; }
+
+.gl-controls { margin: 20px 0 12px; display: flex; flex-direction: column; gap: 12px; }
+#gl-q { width: 100%; padding: 10px 12px; font: inherit; color: var(--primary); background: var(--code-bg); border: 1px solid var(--border); border-radius: var(--radius); }
+.gl-cats { display: flex; flex-wrap: wrap; gap: 8px; }
+.gl-cat { font: inherit; font-size: 0.85rem; padding: 4px 12px; color: var(--primary); background: var(--code-bg); border: 1px solid var(--border); border-radius: 999px; cursor: pointer; }
+.gl-cat.active { background: var(--primary); color: var(--theme); }
+.gl-az { display: flex; flex-wrap: wrap; gap: 6px 12px; margin: 8px 0 20px; font-weight: 600; }
+.gl-letter { margin: 24px 0 8px; padding-bottom: 4px; border-bottom: 1px solid var(--border); }
+.gl-item { margin: 0 0 14px; }
+.gl-item h3 { margin: 0 0 2px; font-size: 1.05rem; }
+.gl-item p { margin: 0; color: var(--secondary); }
+.gl-fa { font-weight: 400; color: var(--secondary); font-size: 0.95rem; }
+.gl-badge { display: inline-block; margin-inline-start: 6px; padding: 0 8px; font-size: 0.72rem; font-weight: 500; color: var(--secondary); border: 1px solid var(--border); border-radius: 999px; vertical-align: middle; }
+.gl-related { padding-inline-start: 20px; }
+[hidden] { display: none !important; }

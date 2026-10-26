@@ -11,6 +11,7 @@ enableRobotsTXT = true
 
 [params]
   author = "Roham"
+  mainSections = ["posts"]
   env = "production"
   ShowReadingTime = true
   ShowShareButtons = false

@@ -106,7 +106,7 @@ As with HTTP, unknown errors become a fixed message and the detail goes only to 
 
 ## Interceptors
 
-An **interceptor** is gRPC's middleware. A unary one wraps a handler; we need a stream twin for streaming RPCs.
+An **interceptor** is {{< term "grpc" "gRPC" >}}'s middleware. A unary one wraps a handler; we need a stream twin for streaming RPCs.
 
 ```go
 func Recovery(ctx context.Context, req any, info *grpc.UnaryServerInfo, h grpc.UnaryHandler) (resp any, err error) {

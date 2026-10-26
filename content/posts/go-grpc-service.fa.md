@@ -106,7 +106,7 @@ func toStatus(err error) error {
 
 ## Interceptor
 
-**Interceptor** همان middleware در gRPC است. نوع unary دور یک handler را می‌گیرد؛ برای RPCهای استریم هم جفتی جدا لازم است.
+**Interceptor** همان middleware در {{< term "grpc" "gRPC" >}} است. نوع unary دور یک handler را می‌گیرد؛ برای RPCهای استریم هم جفتی جدا لازم است.
 
 ```go
 func Recovery(ctx context.Context, req any, info *grpc.UnaryServerInfo, h grpc.UnaryHandler) (resp any, err error) {

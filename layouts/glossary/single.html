@@ -1,0 +1,49 @@
+{{- define "main" }}
+{{- $fa := eq .Lang "fa" }}
+<article class="post-single">
+  <header class="post-header">
+    {{ partial "breadcrumbs.html" . }}
+    <h1 class="post-title entry-hint-parent">{{ .Title }}</h1>
+    <div class="post-meta">
+      {{- with .Params.fa_title }}<span lang="fa">{{ . }}</span> · {{ end -}}
+      {{- with .Params.category }}<span class="gl-badge">{{ . }}</span>{{ end -}}
+    </div>
+    {{- with .Params.summary }}<div class="post-description">{{ . }}</div>{{ end }}
+  </header>
+
+  <div class="post-content">{{ .Content }}</div>
+
+  {{- /* Related terms */}}
+  {{- with .Params.related }}
+  <h2>{{ if $fa }}اصطلاحات مرتبط{{ else }}Related terms{{ end }}</h2>
+  <ul class="gl-related">
+    {{- range . }}{{ with site.GetPage (printf "/glossary/%s" .) }}
+    <li><a href="{{ .RelPermalink }}">{{ .Title }}</a> — {{ .Params.summary }}</li>
+    {{- end }}{{ end }}
+  </ul>
+  {{- end }}
+
+  {{- /* Posts: listed explicitly in front matter, or using the term shortcode */}}
+  {{- $slug := .File.TranslationBaseName }}
+  {{- $explicit := .Params.posts | default slice }}
+  {{- $needle := printf `term "%s"` $slug }}
+  {{- $found := slice }}
+  {{- range where site.RegularPages "Section" "posts" }}
+    {{- if or (in $explicit .File.TranslationBaseName) (strings.Contains .RawContent $needle) }}
+      {{- $found = $found | append . }}
+    {{- end }}
+  {{- end }}
+  {{- with $found }}
+  <h2>{{ if $fa }}مقاله‌های مرتبط{{ else }}Posts about this{{ end }}</h2>
+  <ul class="gl-related">
+    {{- range . }}<li><a href="{{ .RelPermalink }}">{{ .Title }}</a></li>{{ end }}
+  </ul>
+  {{- end }}
+
+  <p><a href="{{ (site.GetPage "/glossary").RelPermalink }}">{{ if $fa }}← همه‌ی اصطلاحات{{ else }}← All terms{{ end }}</a></p>
+
+  <script type="application/ld+json">
+  {{- dict "@context" "https://schema.org" "@type" "DefinedTerm" "name" .Title "description" .Params.summary "url" .Permalink "inDefinedTermSet" (dict "@type" "DefinedTermSet" "name" (site.GetPage "/glossary").Title "url" (site.GetPage "/glossary").Permalink) | jsonify | safeJS }}
+  </script>
+</article>
+{{- end }}

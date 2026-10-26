@@ -9,7 +9,7 @@ tags = ["rust", "lifetimes", "intermediate", "borrowing"]
 cover = { image = "/images/covers/rust-lifetimes.png", alt = "Lifetimes in Rust", hiddenInSingle = true }
 +++
 
-In the [previous post](/posts/rust-generics-traits/) we wrote code that works over many types. Now we come back to references, the topic of [Borrowing and References in Rust](/posts/rust-borrowing-references/), which you should read first. There we saw that a reference must never outlive its value, and that the compiler sometimes asks for a "lifetime specifier". This post explains what that means and when you have to write one.
+In the [previous post](/posts/rust-generics-traits/) we wrote code that works over many types. Now we come back to references, the topic of [Borrowing and References in Rust](/posts/rust-borrowing-references/), which you should read first. There we saw that a reference must never outlive its value, and that the compiler sometimes asks for a "{{< term "lifetime" "lifetime" >}} specifier". This post explains what that means and when you have to write one.
 
 > All code below was compiled and run with Rust 1.90, and the outputs and errors are copied from those runs.
 

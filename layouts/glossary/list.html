@@ -1,0 +1,77 @@
+{{- define "main" }}
+{{- $fa := eq .Lang "fa" }}
+<header class="page-header">
+  {{ partial "breadcrumbs.html" . }}
+  <h1>{{ .Title }}</h1>
+  {{- with .Description }}<div class="post-description">{{ . }}</div>{{ end }}
+</header>
+{{- with .Content }}<div class="post-content">{{ . }}</div>{{ end }}
+
+{{- $terms := .RegularPages.ByTitle }}
+{{- $cats := slice }}
+{{- range $terms }}{{ with .Params.category }}{{ $cats = $cats | append . }}{{ end }}{{ end }}
+{{- $cats = $cats | uniq | sort }}
+
+<div class="gl-controls">
+  <input id="gl-q" type="search" autocomplete="off"
+    placeholder="{{ if $fa }}جستجوی اصطلاح…{{ else }}Search terms…{{ end }}"
+    aria-label="{{ if $fa }}جستجوی اصطلاح{{ else }}Search terms{{ end }}">
+  <div class="gl-cats" role="group">
+    <button type="button" class="gl-cat active" data-cat="">{{ if $fa }}همه{{ else }}All{{ end }}</button>
+    {{- range $cats }}<button type="button" class="gl-cat" data-cat="{{ . }}">{{ . }}</button>{{ end }}
+  </div>
+</div>
+
+{{- $letters := slice }}
+{{- range $terms }}{{ $letters = $letters | append (upper (substr .Title 0 1)) }}{{ end }}
+{{- $letters = $letters | uniq | sort }}
+<nav class="gl-az" aria-label="A–Z">
+  {{- range $letters }}<a href="#gl-{{ . }}">{{ . }}</a>{{ end }}
+</nav>
+
+<div id="gl-list">
+{{- range $letters }}
+  {{- $l := . }}
+  <section class="gl-group" id="gl-{{ $l }}">
+    <h2 class="gl-letter">{{ $l }}</h2>
+    {{- range $terms }}{{ if eq (upper (substr .Title 0 1)) $l }}{{ template "gl-item" . }}{{ end }}{{ end }}
+  </section>
+{{- end }}
+</div>
+<p id="gl-empty" hidden>{{ if $fa }}اصطلاحی پیدا نشد.{{ else }}No terms found.{{ end }}</p>
+
+<script>
+(function () {
+  var q = document.getElementById('gl-q'), empty = document.getElementById('gl-empty');
+  var items = [].slice.call(document.querySelectorAll('.gl-item'));
+  var groups = [].slice.call(document.querySelectorAll('.gl-group'));
+  var cats = [].slice.call(document.querySelectorAll('.gl-cat'));
+  var cat = '';
+  function apply() {
+    var s = q.value.trim().toLowerCase(), shown = 0;
+    items.forEach(function (el) {
+      var ok = (!cat || el.dataset.cat === cat) && (!s || el.dataset.q.indexOf(s) !== -1);
+      el.hidden = !ok; if (ok) shown++;
+    });
+    groups.forEach(function (g) { g.hidden = !g.querySelector('.gl-item:not([hidden])'); });
+    empty.hidden = shown !== 0;
+  }
+  q.addEventListener('input', apply);
+  cats.forEach(function (b) {
+    b.addEventListener('click', function () {
+      cat = b.dataset.cat;
+      cats.forEach(function (x) { x.classList.toggle('active', x === b); });
+      apply();
+    });
+  });
+})();
+</script>
+{{- end }}
+
+{{- define "gl-item" }}
+<article class="gl-item" data-cat="{{ .Params.category }}" data-q="{{ lower (printf "%s %s %s" .Title .Params.fa_title .Params.summary) }}">
+  <h3><a href="{{ .RelPermalink }}">{{ .Title }}</a>{{ with .Params.fa_title }} <span class="gl-fa" lang="fa">{{ . }}</span>{{ end }}
+    {{ with .Params.category }}<span class="gl-badge">{{ . }}</span>{{ end }}</h3>
+  <p>{{ .Params.summary }}</p>
+</article>
+{{- end }}

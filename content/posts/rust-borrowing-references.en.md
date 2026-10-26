@@ -9,7 +9,7 @@ tags = ["rust", "beginner", "borrowing", "references"]
 cover = { image = "/images/covers/rust-borrowing-references.png", alt = "Borrowing and references in Rust", hiddenInSingle = true }
 +++
 
-In the [previous post](/posts/rust-ownership/) we ended with a clumsy pattern: pass a `String` into a function and return it back just to keep using it. Borrowing is the fix. You hand a function a reference, it uses the value, and ownership never moves. This post covers the two kinds of references, the one rule that governs them, and the compiler errors you will meet while learning it.
+In the [previous post](/posts/rust-ownership/) we ended with a clumsy pattern: pass a `String` into a function and return it back just to keep using it. {{< term "borrowing" "Borrowing" >}} is the fix. You hand a function a reference, it uses the value, and ownership never moves. This post covers the two kinds of references, the one rule that governs them, and the compiler errors you will meet while learning it.
 
 > Everything below was compiled and run with Rust 1.90, and the outputs and errors are copied from those runs.
 

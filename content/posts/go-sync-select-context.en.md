@@ -76,7 +76,7 @@ func (c *SafeCounter) Get(key string) int {
 
 ## atomic and Once
 
-For a single number, `sync/atomic` is lighter than a mutex. **sync.Once** runs a function exactly once, no matter how many goroutines call it, which suits lazy initialization:
+For a single number, `sync/atomic` is lighter than a {{< term "mutex" "mutex" >}}. **sync.Once** runs a function exactly once, no matter how many goroutines call it, which suits lazy initialization:
 
 ```go
 var hits atomic.Int64
@@ -133,7 +133,7 @@ If several cases are ready at once, Go picks one at random.
 
 ## context: cancellation and deadlines
 
-A **context.Context** carries a cancellation signal across goroutines. `ctx.Done()` is a channel that closes when the context ends, and `ctx.Err()` tells you why. A worker that stops when cancelled, and a check that it really stopped:
+A **{{< term "context" "context" >}}.Context** carries a cancellation signal across goroutines. `ctx.Done()` is a channel that closes when the context ends, and `ctx.Err()` tells you why. A worker that stops when cancelled, and a check that it really stopped:
 
 ```go
 func worker(ctx context.Context, stopped *atomic.Bool) {

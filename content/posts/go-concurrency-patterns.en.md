@@ -15,7 +15,7 @@ The [previous post](/posts/go-transactions-patterns/) was about transactions and
 
 ## A bounded worker pool
 
-A **worker pool** starts a fixed number of goroutines that read from a jobs channel and write to a results channel. The trick is who closes what: the producer closes `jobs`, and a separate goroutine waits on the `WaitGroup` and closes `results`.
+A **{{< term "worker-pool" "worker pool" >}}** starts a fixed number of goroutines that read from a jobs channel and write to a results channel. The trick is who closes what: the producer closes `jobs`, and a separate goroutine waits on the `WaitGroup` and closes `results`.
 
 ```go
 for w := 1; w <= workers; w++ {
@@ -43,7 +43,7 @@ Results arrive in completion order, so I sorted them; ordering is fixed below.
 
 ## errgroup: first error cancels the rest
 
-The pool above is a lot of plumbing. **errgroup** packages the common case: run functions, wait for all, return the first error. `errgroup.WithContext` also gives a context that is cancelled when any function returns an error or when `Wait` returns. Five jobs finish at 40, 80, 120... ms and job 3 fails:
+The pool above is a lot of plumbing. **{{< term "errgroup" "errgroup" >}}** packages the common case: run functions, wait for all, return the first error. `errgroup.WithContext` also gives a context that is cancelled when any function returns an error or when `Wait` returns. Five jobs finish at 40, 80, 120... ms and job 3 fails:
 
 ```go
 g, ctx := errgroup.WithContext(context.Background())

@@ -19,7 +19,19 @@ CHROME=os.environ.get("CHROME","/Applications/Google Chrome.app/Contents/MacOS/G
 FONT="file://"+R+"/static/fonts/Vazirmatn-Variable.woff2"
 FA_DIG=str.maketrans("0123456789","۰۱۲۳۴۵۶۷۸۹")
 SER={"Go Fundamentals":("GO FUNDAMENTALS","مبانی Go","#00ADD8"),"Go Backend":("GO BACKEND","بک‌اند با Go","#00ADD8"),
-"NATS JetStream":("NATS JETSTREAM","NATS JetStream","#2FBF71"),"Rust":("RUST","Rust","#F2663B"),"Go + Rust":("GO + RUST","Go + Rust","#A78BFA")}
+"NATS JetStream":("NATS JETSTREAM","NATS JetStream","#2FBF71"),"Rust":("RUST","Rust","#F2663B"),"Go + Rust":("GO + RUST","Go + Rust","#A78BFA"),
+"Git":("GIT","گیت","#F05033"),
+"Node.js":("NODE.JS","Node.js","#6CC24A"),
+"Databases":("DATABASES","دیتابیس","#7C9CFF"),
+"Algorithms":("ALGORITHMS","الگوریتم","#F59E0B"),
+"Networking":("NETWORKING","شبکه","#22D3EE"),
+"Python":("PYTHON","Python","#5B9BD5"),
+"Software Security":("SECURITY","امنیت نرم‌افزار","#EF4444"),
+"Software Engineering":("ENGINEERING","مهندسی نرم‌افزار","#14B8A6"),
+"Linux":("LINUX","لینوکس","#FACC15"),
+"Distributed Systems":("DISTRIBUTED","سیستم‌های توزیع‌شده","#D946EF")}
+# planned size of each new series (so "3 / 16" is right while only part of it is written)
+PLANNED={"Git":10, "Node.js":16, "Databases":16, "Algorithms":18, "Networking":14, "Python":16, "Software Security":16, "Software Engineering":16, "Linux":14, "Distributed Systems":20}
 def parse(path):
     t=open(path).read(); g=lambda k:(lambda m:(m.group(1) if m.group(1) is not None else m.group(2)) if m else None)(re.search(r"^%s = (?:'([^']*)'|\"([^\"]*)\")"%k,t,re.M))
     se=re.search(r'^series = \["([^"]+)"\]',t,re.M); ca=re.search(r'^categories = \[(.*?)\]',t,re.M); tg=re.search(r'^tags = \[(.*?)\]',t,re.M)
@@ -35,7 +47,7 @@ for s,p in posts.items():
 idx={}
 for se,l in bys.items():
     l.sort()
-    for i,(d,s) in enumerate(l): idx[s]=(i+1,len(l))
+    for i,(d,s) in enumerate(l): idx[s]=(i+1,PLANNED.get(se,len(l)))
 TAGHIDE={"beginner","intermediate","advanced","go","rust"}
 def card(slug,lang,p):
     fa=lang=="fa"; se=p["series"]; cat=p["cat"]

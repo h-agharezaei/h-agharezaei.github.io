@@ -52,6 +52,9 @@ tags = ["lowercase", "english", "tags"]
 - Parallel agents share the machine: never run a command that can wait for stdin without `</dev/null`; disk is scarce (a few GB free): `df -h /System/Volumes/Data` before big builds, use `CARGO_PROFILE_DEV_DEBUG=0`, and when you are DONE delete your own build artifacts (`target/`, private GOCACHE, `node_modules`, `.venv`, temp binaries, temp hugo output). Any `rm -rf` must use guarded variables: `rm -rf "${DIR:?}/sub"`.
 - Verify the build: `cd <repo> && hugo --buildFuture --destination <your own dir under the scratchpad>` must finish with no errors and no `glossary term ... not found` warnings; confirm your page exists at `/posts/<slug>/` and `/fa/posts/<slug>/`; delete the output dir afterwards. If another agent's half-written file breaks the build, do not edit it: wait a minute and retry or build a trimmed copy.
 
+## Privacy (networking, Linux and system posts)
+Never publish personal identifiers from this machine or network: public IP, LAN addresses of real devices, MAC addresses, Wi-Fi names, the gateway address, hostnames, usernames, home paths, ISP hops. Run network demos on loopback (`127.0.0.1`, `::1`) or documented example ranges (`192.0.2.0/24`, `198.51.100.0/24`, `203.0.113.0/24`, `10.0.0.0/8` examples you invent). `ifconfig`/`netstat -rn`/`route get` output must be reduced to loopback lines or replaced by an invented example, and the post must say it was replaced. `traceroute` to a public host reveals ISP hops: do not paste it; use `dig` against public names such as `example.com` only if the answer contains nothing personal. Replace temp paths with `<tmp>`.
+
 ## Glossary (required for every post)
 Glossary entries live in `content/glossary/<term-slug>.fa.md` and `.en.md`.
 1. List the technical terms your post introduces or leans on. For each, check `ls content/glossary/<term-slug>.en.md`. Reuse existing ones.

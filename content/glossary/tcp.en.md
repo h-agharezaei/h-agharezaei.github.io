@@ -1,0 +1,9 @@
++++
+title = "TCP"
+summary = "A reliable, ordered byte-stream protocol on top of IP."
+category = "Networking"
+related = ["socket", "mss"]
+posts = ["net-tcp-ip-model"]
++++
+
+TCP numbers bytes, acknowledges them and retransmits lost ones, so the application sees a stream, not messages. Message boundaries are the application's job.

@@ -4,7 +4,7 @@ summary = "promise ردشده‌ای که هیچ‌کس با catch یا try/catc
 category = "Node.js"
 fa_title = "unhandled rejection"
 related = ["promise"]
-posts = ["node-promises-async-await"]
+posts = ["node-promises-async-await", "node-http-server"]
 +++
 
 از Node 15 به بعد رفتار پیش‌فرض این است که process با exit code برابر 1 از کار می‌افتد (اینجا روی Node 20 بررسی شد). همیشه [promise](/fa/glossary/promise/) را handle یا return کنید.

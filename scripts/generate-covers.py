@@ -60,7 +60,7 @@ background-image:linear-gradient(#ffffff0b 1px,transparent 1px),linear-gradient(
 .chips{{display:flex;gap:12px}} .chip{{border:2px solid #ffffff33;color:#c9d1dc;font-size:26px;padding:6px 20px;border-radius:12px;direction:ltr}}
 .site{{color:#8b95a5;font-size:28px;font-weight:600}} .site b{{color:{color}}}
 </style><div class="bar"></div><div class="wrap"><div class="badge">{badge}</div><div id="t"><span id="tt">{html.escape(p["title"])}</span></div>
-<div class="row"><div class="chips">{chips}</div><div class="site"><b>{site}</b> · hosseinagharezaei.ir</div></div></div>
+<div class="row"><div class="chips">{chips}</div><div class="site"><b>{site}</b> · justroham.ir</div></div></div>
 <script>(function(){{var t=document.getElementById('t'),s=document.getElementById('tt'),max=t.clientHeight,z=92;
 function f(){{s.style.fontSize=z+'px'}}f();while(z>38&&(s.offsetHeight>max||s.scrollWidth>t.clientWidth+2)){{z-=2;f()}}}})();</script></html>'''
 def default_card(lang):
@@ -77,7 +77,7 @@ background-image:linear-gradient(#ffffff0b 1px,transparent 1px),linear-gradient(
 .wrap{{position:absolute;top:0;bottom:0;{'right' if fa else 'left'}:80px;{'left' if fa else 'right'}:80px;display:flex;flex-direction:column;justify-content:center}}
 h1{{font-size:150px;font-weight:800;line-height:1.1}} p{{font-size:46px;color:#c9d1dc;margin-top:18px;font-weight:600}} p.s{{font-size:34px;color:#8b95a5;font-weight:500}}
 .site{{position:absolute;bottom:52px;{'right' if fa else 'left'}:80px;color:{color};font-size:30px;font-weight:700}}
-</style><div class="bar"></div><div class="wrap"><h1>{name}</h1><p>{sub}</p><p class="s">{line2}</p></div><div class="site">hosseinagharezaei.ir</div></html>'''
+</style><div class="bar"></div><div class="wrap"><h1>{name}</h1><p>{sub}</p><p class="s">{line2}</p></div><div class="site">justroham.ir</div></html>'''
 def render(htmlsrc,outpng):
     hp=outpng+".html"; open(hp,"w").write(htmlsrc)
     for attempt in range(4):

@@ -7,7 +7,7 @@ description = 'Test JetStream consumers in plain go test: an embedded nats-serve
 categories = ["Go"]
 series = ["NATS JetStream"]
 tags = ["go", "nats", "jetstream", "testing", "messaging"]
-cover = { image = "/images/covers/nats-jetstream-testing.png", alt = "Testing JetStream services with an embedded nats-server", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/nats-jetstream-testing.png", alt = "Testing JetStream services with an embedded nats-server", hiddenInSingle = true }
 +++
 
 In the [previous post](/posts/nats-jetstream-observability/) we looked at how to see what a JetStream service is doing in production. This post is about seeing it before production. Over the last posts we described behaviors: [retry and dead-letter queues](/posts/nats-jetstream-retry-dlq/) and [idempotency](/posts/nats-jetstream-idempotency/). Each of them was verified by a throwaway program that I read by eye. Here we turn those checks into real tests with [`go test`](/posts/go-testing-basics/), no Docker and no external server, that fail loudly when someone breaks the behavior.

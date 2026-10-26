@@ -6,7 +6,7 @@ description = "Variables, zero values, basic types, constants with iota, explici
 categories = ["Go"]
 series = ["Go Fundamentals"]
 tags = ["go", "beginner", "types", "control-flow"]
-cover = { image = "/images/covers/go-types-control-flow.png", alt = "Types, variables and control flow in Go", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/go-types-control-flow.png", alt = "Types, variables and control flow in Go", hiddenInSingle = true }
 +++
 
 In the [previous post](/posts/go-getting-started/) we installed Go, created a module and ran our first program. Now we need the building blocks every program uses: variables, types and control flow. Go has far fewer of them than most languages, and that is on purpose.

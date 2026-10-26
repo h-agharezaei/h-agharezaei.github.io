@@ -6,7 +6,7 @@ description = 'Go file I/O and JSON: read and write files with os and bufio, see
 categories = ["Go"]
 series = ["Go Fundamentals"]
 tags = ["go", "beginner", "json", "io"]
-cover = { image = "/images/covers/go-file-io-json.png", alt = "Files, io.Reader/Writer and JSON in Go", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/go-file-io-json.png", alt = "Files, io.Reader/Writer and JSON in Go", hiddenInSingle = true }
 +++
 
 In the [previous post](/posts/go-testing-basics/) we wrote tests and benchmarks. Real programs also read files and talk JSON, so this post covers both. The key idea is two tiny interfaces, `io.Reader` and `io.Writer`: once you see them, files, buffers, network connections and standard output all look the same.

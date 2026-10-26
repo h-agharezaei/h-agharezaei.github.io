@@ -5,7 +5,7 @@ title = 'مرور سری Go در سال ۱۴۰۵'
 description = 'نقشه‌ی ۳۹ مقاله‌ی مرتبط با Go در سال ۱۴۰۵: مبانی، Go Backend، NATS JetStream و Go + Rust، به‌همراه درس‌هایی که بارها تکرار شدند.'
 categories = ["Meta"]
 tags = ["go", "recap", "1405", "nats", "backend"]
-cover = { image = "/images/covers/year-1405-go-recap.fa.png", alt = "مرور سری Go در سال ۱۴۰۵", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/year-1405-go-recap.fa.png", alt = "مرور سری Go در سال ۱۴۰۵", hiddenInSingle = true }
 +++
 
 نقشه‌ای برای کسانی که تازه به مقاله‌های Go رسیده‌اند و مرجعی برای خودم. ۳۹ مقاله‌ی مرتبط با Go داریم: ۱۴ مقاله در Go Fundamentals، ۱۲ در Go Backend، ۹ در NATS JetStream و ۴ در Go + Rust. بیشترشان از آبان ۱۴۰۵ منتشر شده‌اند؛ دو مقاله‌ی اول NATS پیش از آن تقویم‌اند.

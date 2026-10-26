@@ -6,7 +6,7 @@ description = 'Rust closures and iterators: capture modes, move, Fn, FnMut and F
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "closures", "iterators", "intermediate"]
-cover = { image = "/images/covers/rust-closures-iterators.png", alt = "Closures and iterators in Rust", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/rust-closures-iterators.png", alt = "Closures and iterators in Rust", hiddenInSingle = true }
 +++
 
 In the [previous post](/posts/rust-lifetimes/) we learned how the compiler tracks how long references live. Closures and iterators are where that knowledge pays off: a closure is a small function that captures variables from its surroundings, so it has to follow the same borrowing rules. Iterators are the other half, and together they replace most of the index-based loops you would write in other languages.

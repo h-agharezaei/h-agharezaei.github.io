@@ -6,7 +6,7 @@ description = 'کانفیگ تایپ‌دار از متغیرهای محیطی،
 categories = ["Go"]
 series = ["Go Backend"]
 tags = ["go", "backend", "slog", "config", "errors"]
-cover = { image = "/images/covers/go-config-logging-errors.fa.png", alt = "کانفیگ، لاگ ساختاریافته و خطا در Go", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/go-config-logging-errors.fa.png", alt = "کانفیگ، لاگ ساختاریافته و خطا در Go", hiddenInSingle = true }
 +++
 
 در [مقاله‌ی قبل](/fa/posts/go-project-layout-clean-architecture/) سرویس کوچک `orders` را ساختیم، با `:8080` ثابت و یک `log.Println` ساده. اینجا هر دو را درست می‌کنیم و سومین چیزی را هم اضافه می‌کنیم که هر سرویس واقعی لازم دارد: سیاست روشن برای خطا در مرز سیستم. کد همان ماژول است، فقط با کتاب‌خانه‌ی استاندارد، و همان‌جا تکامل پیدا کرده.

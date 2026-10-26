@@ -6,7 +6,7 @@ description = 'معنای واقعی exactly-once در NATS JetStream: حذف ت
 categories = ["Go"]
 series = ["NATS JetStream"]
 tags = ["go", "nats", "jetstream", "messaging", "idempotency", "exactly-once"]
-cover = { image = "/images/covers/nats-jetstream-idempotency.fa.png", alt = "Idempotency و معنای exactly-once در JetStream", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/nats-jetstream-idempotency.fa.png", alt = "Idempotency و معنای exactly-once در JetStream", hiddenInSingle = true }
 +++
 
 [مقاله‌ی قبل](/fa/posts/nats-jetstream-scaling-lag/) با یک واقعیت ناخوشایند تمام شد: وقتی Worker بدون ack می‌میرد پیام دوباره تحویل داده می‌شود و ممکن است یک کار دوبار اجرا شود. جواب رایج این است که «از exactly-once استفاده کن». در این مقاله با آزمایش اجزایی که JetStream در اختیارمان می‌گذارد (حذف تکراری‌ها هنگام انتشار، ack و یک handler ایمن در برابر تکرار) می‌خواهم ببینم این عبارت واقعاً چه معنایی می‌تواند داشته باشد.

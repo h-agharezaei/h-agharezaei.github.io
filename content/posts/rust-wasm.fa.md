@@ -6,7 +6,7 @@ description = 'Rust و WebAssembly: کامپایل به wasm32-unknown-unknown �
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "wasm", "webassembly", "wasi", "wasm-bindgen", "intermediate"]
-cover = { image = "/images/covers/rust-wasm.fa.png", alt = "Rust و WebAssembly", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/rust-wasm.fa.png", alt = "Rust و WebAssembly", hiddenInSingle = true }
 +++
 
 موضوع [مقاله‌ی قبل](/fa/posts/rust-docker-ci-release/) release engineering بود. این مقاله درباره‌ی نوع دیگری از خروجی است: فایل `.wasm`. در [مقاله‌ی unsafe و FFI](/fa/posts/rust-unsafe-ffi/) با **C ABI** از یک مرز رد شدیم و Go هم در [فراخوانی Rust از Go با FFI](/fa/posts/go-calls-rust-ffi/) همین کار را کرد. WebAssembly راه دیگری برای رد شدن از مرز است، با یک sandbox در وسط.

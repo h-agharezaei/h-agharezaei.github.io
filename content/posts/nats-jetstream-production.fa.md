@@ -6,7 +6,7 @@ description = 'اجرای JetStream با سه replica، تحمل از دست ر�
 categories = ["Go"]
 series = ["NATS JetStream"]
 tags = ["go", "nats", "jetstream", "cluster", "security", "production", "retention"]
-cover = { image = "/images/covers/nats-jetstream-production.fa.png", alt = "JetStream در پروداکشن: cluster، retention و امنیت", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/nats-jetstream-production.fa.png", alt = "JetStream در پروداکشن: cluster، retention و امنیت", hiddenInSingle = true }
 +++
 
 در [مقاله‌ی قبل](/fa/posts/nats-kv-object-store/) از JetStream به‌عنوان KV و ذخیره‌گاه blob استفاده کردیم. این مقاله‌ی آخرِ سری درباره‌ی چیزهایی است که وقتی JetStream از لپ‌تاپ بیرون می‌رود تغییر می‌کنند: یک سرور می‌شود سه سرور، streamها به برنامه‌ی نگهداری نیاز دارند و همه نباید اجازه‌ی publish روی همه‌جا را داشته باشند. مانیتورینگ و تست قبل از پروداکشن لازم‌اند؛ [observability](/fa/posts/nats-jetstream-observability/) و [تست](/fa/posts/nats-jetstream-testing/) را ببینید، و برای خاموش کردن تمیز workerها [graceful shutdown](/fa/posts/go-graceful-shutdown-workers/) را.

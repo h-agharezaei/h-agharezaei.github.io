@@ -7,7 +7,7 @@ description = 'Building a pair of Go services with Docker Compose and NATS JetSt
 categories = ["Go"]
 series = ["NATS JetStream"]
 tags = ["go", "nats", "jetstream", "messaging"]
-cover = { image = "/images/covers/nats-jetstream-go.png", alt = "A Simple Publisher and Worker with NATS JetStream in Go", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/nats-jetstream-go.png", alt = "A Simple Publisher and Worker with NATS JetStream in Go", hiddenInSingle = true }
 +++
 
 When I want to really understand a concept, I build the smallest runnable example of it. This time it was **NATS JetStream**. The result is [go-nats-demo](https://github.com/h-agharezaei/go-nats-demo): a publisher, a worker and NATS itself, all wired together with Docker Compose.

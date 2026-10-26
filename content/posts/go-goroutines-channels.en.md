@@ -6,7 +6,7 @@ description = 'Go goroutines and channels: WaitGroup, buffered and unbuffered ch
 categories = ["Go"]
 series = ["Go Fundamentals"]
 tags = ["go", "beginner", "concurrency", "goroutines", "channels"]
-cover = { image = "/images/covers/go-goroutines-channels.png", alt = "Goroutines and channels in Go", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/go-goroutines-channels.png", alt = "Goroutines and channels in Go", hiddenInSingle = true }
 +++
 
 In the [previous post](/posts/go-packages-modules/) we organised code into packages and modules. Now we get to the feature Go is most known for: concurrency. This post covers goroutines, `sync.WaitGroup`, channels, the deadlock error everyone meets once, a small producer/worker pipeline, and the race detector. Next time we add `sync`, `select` and `context`.

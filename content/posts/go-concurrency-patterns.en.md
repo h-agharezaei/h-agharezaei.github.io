@@ -6,7 +6,7 @@ description = 'Go concurrency patterns: bounded worker pools, errgroup with firs
 categories = ["Go"]
 series = ["Go Backend"]
 tags = ["go", "backend", "concurrency", "errgroup", "worker-pool", "semaphore"]
-cover = { image = "/images/covers/go-concurrency-patterns.png", alt = "Concurrency patterns: worker pool and errgroup", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/go-concurrency-patterns.png", alt = "Concurrency patterns: worker pool and errgroup", hiddenInSingle = true }
 +++
 
 The [previous post](/posts/go-transactions-patterns/) was about transactions and the repository pattern. The examples here are plain Go and need no database. Backend code often has many independent pieces of work (HTTP calls, queries, files) that should run concurrently, but not unboundedly, and should stop when one fails. This post builds on [goroutines and channels](/posts/go-goroutines-channels/) and [sync, select and context](/posts/go-sync-select-context/) and shows the patterns I reach for most.

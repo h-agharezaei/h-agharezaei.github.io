@@ -6,7 +6,7 @@ description = 'یک کتاب‌خانه‌ی static با Rust می‌سازیم�
 categories = ["Go", "Rust"]
 series = ["Go + Rust"]
 tags = ["go", "rust", "ffi", "cgo", "interop", "intermediate"]
-cover = { image = "/images/covers/go-calls-rust-ffi.fa.png", alt = "صدا زدن Rust از Go با FFI", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/go-calls-rust-ffi.fa.png", alt = "صدا زدن Rust از Go با FFI", hiddenInSingle = true }
 +++
 
 [مقاله‌ی قبلی این سری](/fa/posts/go-rust-grpc-interop/) Go و Rust را از راه شبکه و با gRPC به هم وصل کرد. این مقاله راه درون‌پردازه‌ای است: یک باینری، Rust که به‌شکل کتاب‌خانه کامپایل شده، و Go که آن را از طریق **C ABI** و با **cgo** صدا می‌زند. کتاب‌خانه همان crate به نام `ffi-lib` از [مقاله‌ی Unsafe و FFI در Rust](/fa/posts/rust-unsafe-ffi/) است که `add`، `greet`، `free_string`، `checksum`، `point_length` و `point_scale` را پشت هدر دست‌نویس `ffi_lib.h` export می‌کند. آن را بدون تغییر برداشتم. درباره‌ی pointerها: [مقاله‌ی pointerها](/fa/posts/go-pointers-memory/).

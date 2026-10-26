@@ -6,7 +6,7 @@ description = 'Go testing basics: go test flags, table-driven tests with subtest
 categories = ["Go"]
 series = ["Go Fundamentals"]
 tags = ["go", "beginner", "testing", "benchmark"]
-cover = { image = "/images/covers/go-testing-basics.png", alt = "Testing in Go: table-driven tests and benchmarks", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/go-testing-basics.png", alt = "Testing in Go: table-driven tests and benchmarks", hiddenInSingle = true }
 +++
 
 In the [previous post](/posts/go-generics/) we looked at generics. This time we cover something you will use every day: testing. Go ships a test runner and a benchmark tool in the standard library, so there is nothing to install and no framework to pick. By the end you will know how to write table-driven tests, run a single subtest, measure coverage, and compare two implementations with a benchmark.

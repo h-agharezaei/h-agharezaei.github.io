@@ -6,7 +6,7 @@ description = 'Go را نصب کنید، با go mod init اولین ماژول 
 categories = ["Go"]
 series = ["Go Fundamentals"]
 tags = ["go", "beginner", "tooling", "modules"]
-cover = { image = "/images/covers/go-getting-started.fa.png", alt = "شروع کار با Go: نصب، ماژول و ابزارها", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/go-getting-started.fa.png", alt = "شروع کار با Go: نصب، ماژول و ابزارها", hiddenInSingle = true }
 +++
 
 این اولین پست از یک سری مقدماتی به اسم **Go Fundamentals** است. برنامه این است که اول مبانی زبان را مرور کنیم و بعد برویم سراغ یک سری دوم با تمرکز بر بک‌اند: سرویس‌های HTTP، دیتابیس و هم‌روندی در سیستم‌های واقعی. قبلاً در پستی درباره‌ی [NATS JetStream](/fa/posts/nats-jetstream-go/) از Go استفاده کرده بودم، ولی آن پست فرض می‌کرد که کد Go می‌خوانید. این سری از صفر شروع می‌شود.

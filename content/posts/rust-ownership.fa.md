@@ -6,7 +6,7 @@ description = 'مفهوم ownership در Rust با کد قابل اجرا: سه 
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "beginner", "ownership", "memory"]
-cover = { image = "/images/covers/rust-ownership.fa.png", alt = "Ownership در Rust", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/rust-ownership.fa.png", alt = "Ownership در Rust", hiddenInSingle = true }
 +++
 
 در [مقاله‌ی قبل](/fa/posts/rust-types-control-flow/) با نوع‌ها، متغیرها و ساختارهای کنترلی Rust آشنا شدیم؛ چیزهایی که برای کسی که از Go یا Node.js می‌آید آشناست. **Ownership** این‌طور نیست. این همان ایده‌ای است که Rust با آن حافظه را بدون garbage collector مدیریت می‌کند، و در هفته‌های اول بیشترین خطای کامپایلر مربوط به همین است.

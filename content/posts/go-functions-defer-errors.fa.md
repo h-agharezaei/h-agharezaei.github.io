@@ -6,7 +6,7 @@ description = 'توابع Go با چند مقدار برگشتی، variadic و c
 categories = ["Go"]
 series = ["Go Fundamentals"]
 tags = ["go", "beginner", "functions", "errors", "defer"]
-cover = { image = "/images/covers/go-functions-defer-errors.fa.png", alt = "توابع، defer و مدیریت خطا در Go", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/go-functions-defer-errors.fa.png", alt = "توابع، defer و مدیریت خطا در Go", hiddenInSingle = true }
 +++
 
 در [مقاله‌ی قبل](/fa/posts/go-types-control-flow/) با نوع‌ها، متغیرها و کنترل جریان آشنا شدیم. حالا به بخشی می‌رسیم که شکل بیشترِ کدهای Go را تعیین می‌کند: توابع و مدیریت خطا. در Go استثنا (exception) وجود ندارد. تابع‌ها خطا را مثل یک مقدار معمولی برمی‌گردانند و کارِ پاک‌سازی با `defer` انجام می‌شود. وقتی این دو را بفهمید، خیلی از سلیقه‌های Go معنی پیدا می‌کند.

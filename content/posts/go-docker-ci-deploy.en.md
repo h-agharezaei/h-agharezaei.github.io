@@ -6,7 +6,7 @@ description = 'Deploy a Go service with Docker: a static binary, a multi-stage d
 categories = ["Go"]
 series = ["Go Backend"]
 tags = ["go", "backend", "docker", "ci", "github-actions", "deploy"]
-cover = { image = "/images/covers/go-docker-ci-deploy.png", alt = "Docker, CI and deploying a Go service", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/go-docker-ci-deploy.png", alt = "Docker, CI and deploying a Go service", hiddenInSingle = true }
 +++
 
 Profiling was the previous topic. Now the service has to leave my laptop. We take the `orders` service from [the net/http post](/posts/go-http-api-stdlib/), put it in a container, and let CI test and publish it. SIGTERM handling from [graceful shutdown](/posts/go-graceful-shutdown-workers/) matters even more here, because the orchestrator stops a container with exactly that signal.

@@ -6,7 +6,7 @@ description = 'یک store واقعی PostgreSQL برای سرویس سفارش�
 categories = ["Go"]
 series = ["Go Backend"]
 tags = ["go", "backend", "postgres", "pgx", "sqlc", "sql"]
-cover = { image = "/images/covers/go-postgres-pgx-sqlc.fa.png", alt = "Postgres با pgx و sqlc در Go", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/go-postgres-pgx-sqlc.fa.png", alt = "Postgres با pgx و sqlc در Go", hiddenInSingle = true }
 +++
 
 در [مقاله‌ی قبل](/fa/posts/go-http-api-stdlib/) API سفارش‌ها همه‌چیز را در یک map نگه می‌داشت. حالا یک دیتابیس واقعی به آن می‌دهیم. interface به نام `Repository` در سرویس تعریف شده است، همان‌طور که در [ساختار پروژه و Clean Architecture](/fa/posts/go-project-layout-clean-architecture/) دیدیم، پس store مربوط به Postgres فقط پیاده‌سازی دوم همان interface است. اول مستقیم با **pgx** (درایور و ابزارهای Postgres) کار می‌کنیم و بعد همان store را با **sqlc** تولید می‌کنیم.

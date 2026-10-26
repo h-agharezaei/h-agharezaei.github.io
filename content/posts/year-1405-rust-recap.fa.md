@@ -5,7 +5,7 @@ title = 'مرور سری Rust و جمع‌بندی سال ۱۴۰۵'
 description = 'نقشه‌ی هر ۳۰ پست سری Rust، درس‌هایی که مدام تکرار شدند، مقایسه‌ی صادقانه‌ی Go و Rust، شمارش واقعی پست‌ها و کارهای نیمه‌تمام در پایان سال ۱۴۰۵.'
 categories = ["Meta"]
 tags = ["rust", "go", "recap", "1405"]
-cover = { image = "/images/covers/year-1405-rust-recap.fa.png", alt = "مرور سری Rust و جمع‌بندی سال ۱۴۰۵", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/year-1405-rust-recap.fa.png", alt = "مرور سری Rust و جمع‌بندی سال ۱۴۰۵", hiddenInSingle = true }
 +++
 
 امروز آخرین روز سال ۱۴۰۵ است. بعد از [مرور سری Go در سال ۱۴۰۵](/fa/posts/year-1405-go-recap/)، این پست مرور Rust است: نقشه‌ی هر ۳۰ پست، چیزهایی که مدام برمی‌گشتند و چیزهایی که کم دارم. هر نکته از همان پستی آمده که لینکش را زده‌ام.

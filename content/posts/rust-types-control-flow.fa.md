@@ -6,7 +6,7 @@ description = 'متغیرهای پیش‌فرض immutable، shadowing، نوع�
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "beginner", "types", "control-flow"]
-cover = { image = "/images/covers/rust-types-control-flow.fa.png", alt = "نوع‌ها، متغیرها و کنترل جریان در Rust", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/rust-types-control-flow.fa.png", alt = "نوع‌ها، متغیرها و کنترل جریان در Rust", hiddenInSingle = true }
 +++
 
 در [مقاله‌ی قبل](/fa/posts/rust-getting-started/) Rust را نصب کردیم، با Cargo آشنا شدیم و اولین برنامه را اجرا کردیم. حالا به واژگان پایه نیاز داریم: متغیر چطور تعریف می‌شود، چه نوع‌هایی داریم و چطور شرط و حلقه بنویسیم. اگر از Go آمده باشی بیشترش آشناست، ولی چند پیش‌فرض دقیقاً برعکس چیزی است که انتظار داری.

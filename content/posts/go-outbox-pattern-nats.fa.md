@@ -6,7 +6,7 @@ description = 'مشکل dual write را در Go حل می‌کنیم: جدول o
 categories = ["Go"]
 series = ["Go Backend"]
 tags = ["go", "backend", "outbox", "postgres", "nats", "jetstream", "transactions"]
-cover = { image = "/images/covers/go-outbox-pattern-nats.fa.png", alt = "Outbox Pattern با Postgres و NATS در Go", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/go-outbox-pattern-nats.fa.png", alt = "Outbox Pattern با Postgres و NATS در Go", hiddenInSingle = true }
 +++
 
 بعد از [الگوهای concurrency در Go](/fa/posts/go-concurrency-patterns/) ابزار اجرای حلقه‌های پس‌زمینه را داریم. یک کار کلاسیک برای آن‌ها خبر دادن به بقیه‌ی سیستم است که چیزی اتفاق افتاده. وقتی سفارشی ذخیره می‌شود، سرویس‌های دیگر event با نام `order.created` می‌خواهند. ذخیره در Postgres و انتشار در NATS دو سیستم جدا هستند و هیچ transaction‌ای هر دو را پوشش نمی‌دهد. این همان **dual write problem** است و **outbox pattern** جواب استانداردش. این‌جا روی جدول سفارش‌ها از [Postgres با pgx و sqlc](/fa/posts/go-postgres-pgx-sqlc/) و ایده‌ی transaction از [الگوهای transaction در Go](/fa/posts/go-transactions-patterns/) سوار می‌شوم و برای انتشار از dedup مقاله‌ی [idempotency در JetStream](/fa/posts/nats-jetstream-idempotency/) استفاده می‌کنم.

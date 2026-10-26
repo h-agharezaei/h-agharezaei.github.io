@@ -6,7 +6,7 @@ description = 'Go functions with multiple returns, variadics and closures, plus 
 categories = ["Go"]
 series = ["Go Fundamentals"]
 tags = ["go", "beginner", "functions", "errors", "defer"]
-cover = { image = "/images/covers/go-functions-defer-errors.png", alt = "Functions, defer and error handling in Go", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/go-functions-defer-errors.png", alt = "Functions, defer and error handling in Go", hiddenInSingle = true }
 +++
 
 In the [previous post](/posts/go-types-control-flow/) we covered types, variables and control flow. Now we get to the part that shapes most Go code you will ever read: functions and error handling. Go has no exceptions. Functions return errors as ordinary values, and `defer` takes care of cleanup. Once this clicks, a lot of Go's style makes sense.

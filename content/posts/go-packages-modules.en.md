@@ -6,7 +6,7 @@ description = 'Go packages and modules: exported names, internal/, init order, i
 categories = ["Go"]
 series = ["Go Fundamentals"]
 tags = ["go", "beginner", "modules", "packages"]
-cover = { image = "/images/covers/go-packages-modules.png", alt = "Packages and modules: structuring a Go project", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/go-packages-modules.png", alt = "Packages and modules: structuring a Go project", hiddenInSingle = true }
 +++
 
 So far every example fit in one file. Real projects don't, and Go has two concepts for splitting them up that people often mix together. After [pointers and memory](/posts/go-pointers-memory/), this post builds a small multi-package project and looks at what the compiler enforces: visibility, `internal/`, initialization order, import cycles, and external dependencies.

@@ -6,7 +6,7 @@ description = 'تست واحد، تست یکپارچگی و doc test در Rust: 
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "testing", "documentation", "intermediate"]
-cover = { image = "/images/covers/rust-testing-docs.fa.png", alt = "تست و مستندسازی در Rust", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/rust-testing-docs.fa.png", alt = "تست و مستندسازی در Rust", hiddenInSingle = true }
 +++
 
 در [مقاله‌ی قبل](/fa/posts/rust-smart-pointers/) با smart pointerها آشنا شدیم. حالا سراغ چیزی می‌رویم که هر پروژه‌ی واقعی لازمش دارد: تست و مستندات. Rust هر دو را در خودش دارد و این دو به هم نزدیک‌تر از بیشتر زبان‌ها هستند، چون مثال‌های داخل مستندات کامپایل می‌شوند و مثل تست اجرا می‌شوند. اگر [مقاله‌ی تست در Go](/fa/posts/go-testing-basics/) را خوانده باشید، روند کار برایتان آشناست؛ تفاوت‌ها را آخر مقاله می‌گویم.

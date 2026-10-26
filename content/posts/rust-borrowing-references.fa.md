@@ -6,7 +6,7 @@ description = 'مفهوم borrowing و reference در Rust با کد قابل ا
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "beginner", "borrowing", "references"]
-cover = { image = "/images/covers/rust-borrowing-references.fa.png", alt = "Borrowing و Reference در Rust", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/rust-borrowing-references.fa.png", alt = "Borrowing و Reference در Rust", hiddenInSingle = true }
 +++
 
 در [مقاله‌ی قبل](/fa/posts/rust-ownership/) به یک الگوی دست‌وپاگیر رسیدیم: یک `String` را به تابع بدهیم و فقط برای اینکه بتوانیم دوباره از آن استفاده کنیم، پسش بگیریم. **Borrowing** راه‌حل است. به تابع یک reference می‌دهید، تابع از مقدار استفاده می‌کند و مالکیت جابه‌جا نمی‌شود. در این مقاله دو نوع reference، تنها قانون حاکم بر آن‌ها و خطاهای کامپایلری را می‌بینیم که حین یادگیری با آن‌ها روبه‌رو می‌شوید.

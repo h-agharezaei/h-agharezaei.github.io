@@ -6,7 +6,7 @@ description = 'A Rust orders service combining Axum, SQLx, thiserror, tracing, N
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "capstone", "axum", "sqlx", "tracing", "nats", "thiserror", "backend"]
-cover = { image = "/images/covers/rust-capstone-service.png", alt = "Rust capstone: a complete service", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/rust-capstone-service.png", alt = "Rust capstone: a complete service", hiddenInSingle = true }
 +++
 
 The [previous post](/posts/rust-wasm/) was about WebAssembly. This one is the last technical post of the series, and it builds nothing new: it wires the earlier pieces into one small `orders` service. It has the same API as the Go one from [Building an API with net/http in Go](/posts/go-http-api-stdlib/): `POST /orders`, `GET /orders/{id}`, `GET /orders`, `/healthz` and `/readyz`. The module split follows [Modules, crates and Cargo in Rust](/posts/rust-modules-crates-cargo/), and the Go side of the same idea is [Project layout and clean architecture in Go](/posts/go-project-layout-clean-architecture/).

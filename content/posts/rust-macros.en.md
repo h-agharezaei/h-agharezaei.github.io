@@ -6,7 +6,7 @@ description = 'Rust macros: write declarative macros with macro_rules! and a der
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "macros", "proc-macro", "intermediate"]
-cover = { image = "/images/covers/rust-macros.png", alt = "Macros in Rust", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/rust-macros.png", alt = "Macros in Rust", hiddenInSingle = true }
 +++
 
 In the [previous post](/posts/rust-trait-objects-dyn/) traits were the topic. Now to the other tool for abstraction: **macros**. You already use them every day: `println!`, `vec!`, and the `#[derive(Serialize)]` from [Serde and JSON in Rust](/posts/rust-serde-json/). In this post we write both kinds ourselves, a declarative macro with `macro_rules!` and a derive macro in its own crate.

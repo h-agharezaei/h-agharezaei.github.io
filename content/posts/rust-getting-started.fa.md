@@ -6,7 +6,7 @@ description = 'اولین مقاله‌ی سری Rust برای برنامه‌ن
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "cargo", "beginner", "tooling"]
-cover = { image = "/images/covers/rust-getting-started.fa.png", alt = "شروع کار با Rust: نصب، Cargo و اولین برنامه", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/rust-getting-started.fa.png", alt = "شروع کار با Rust: نصب، Cargo و اولین برنامه", hiddenInSingle = true }
 +++
 
 این اولین مقاله‌ی یک سری آموزشی Rust است، از مقدماتی تا پیشرفته. بیشتر سال‌های کاری‌ام را با Go و Node.js سرویس backend نوشته‌ام و حالا دارم Rust را علنی یاد می‌گیرم. هرجا مفید باشد Rust را با Go مقایسه می‌کنم، چون قبلاً چند مقاله درباره‌ی Go نوشته‌ام.

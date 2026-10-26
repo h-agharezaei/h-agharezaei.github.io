@@ -6,7 +6,7 @@ description = 'Rust threads with std only: spawn and join, move closures, mpsc c
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "concurrency", "threads", "intermediate"]
-cover = { image = "/images/covers/rust-concurrency-threads.png", alt = "Concurrency with threads in Rust", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/rust-concurrency-threads.png", alt = "Concurrency with threads in Rust", hiddenInSingle = true }
 +++
 
 In the [previous post](/posts/rust-testing-docs/) we covered tests and documentation. Now to the feature Rust is most proud of: "fearless concurrency". The claim is that ownership and borrowing, which you already know, also rule out data races at compile time. We will use only the standard library, and every error below comes from a real compile. If you know Go, this is the counterpart of [goroutines and channels](/posts/go-goroutines-channels/) and [sync, select and context](/posts/go-sync-select-context/).

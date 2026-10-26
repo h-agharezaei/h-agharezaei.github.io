@@ -6,7 +6,7 @@ description = 'Typed config from environment variables, slog with text and JSON 
 categories = ["Go"]
 series = ["Go Backend"]
 tags = ["go", "backend", "slog", "config", "errors"]
-cover = { image = "/images/covers/go-config-logging-errors.png", alt = "Config, structured logging and errors in Go", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/go-config-logging-errors.png", alt = "Config, structured logging and errors in Go", hiddenInSingle = true }
 +++
 
 In the [previous post](/posts/go-project-layout-clean-architecture/) we built a small `orders` service with a hard-coded `:8080` and a bare `log.Println`. Here we fix both and add the third thing every real service needs: a deliberate policy for errors at the boundary. The code is the same module, standard library only, evolved in place.

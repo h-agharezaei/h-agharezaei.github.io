@@ -6,7 +6,7 @@ description = 'متغیرها، zero value، نوع‌های پایه، ثابت
 categories = ["Go"]
 series = ["Go Fundamentals"]
 tags = ["go", "beginner", "types", "control-flow"]
-cover = { image = "/images/covers/go-types-control-flow.fa.png", alt = "نوع‌ها، متغیرها و کنترل جریان در Go", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/go-types-control-flow.fa.png", alt = "نوع‌ها، متغیرها و کنترل جریان در Go", hiddenInSingle = true }
 +++
 
 در [مقاله‌ی قبل](/fa/posts/go-getting-started/) Go را نصب کردیم، یک module ساختیم و اولین برنامه را اجرا کردیم. حالا سراغ اجزای پایه‌ای می‌رویم که هر برنامه‌ای از آن‌ها استفاده می‌کند: متغیرها، نوع‌ها و کنترل جریان. Go در این بخش‌ها ابزار کمتری از بیشتر زبان‌ها دارد و این عمدی است.

@@ -6,7 +6,7 @@ description = 'Rust generics and traits: generic functions and structs, default 
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "beginner", "generics", "traits"]
-cover = { image = "/images/covers/rust-generics-traits.png", alt = "Generics and traits in Rust", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/rust-generics-traits.png", alt = "Generics and traits in Rust", hiddenInSingle = true }
 +++
 
 In the [previous post](/posts/rust-modules-crates-cargo/) we split code into modules and crates. Now we write code that works for many types at once. In Rust that takes two ideas: **generics** (code parameterized over a type) and **traits** (a named set of behavior a type can have). You have already used both without naming them: `Option<T>` is generic, and `Display` and `Debug` are traits.

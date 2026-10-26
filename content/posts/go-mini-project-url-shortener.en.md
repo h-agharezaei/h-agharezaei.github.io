@@ -6,7 +6,7 @@ description = 'Build a Go URL shortener with only the standard library: net/http
 categories = ["Go"]
 series = ["Go Fundamentals"]
 tags = ["go", "beginner", "project", "http"]
-cover = { image = "/images/covers/go-mini-project-url-shortener.png", alt = "Mini project: a URL shortener in Go", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/go-mini-project-url-shortener.png", alt = "Mini project: a URL shortener in Go", hiddenInSingle = true }
 +++
 
 In the [previous post](/posts/go-cli-tool/) we built a command-line tool. This is the last post of the Go Fundamentals series, so instead of a new feature we put the pieces together: a small HTTP service that shortens URLs, using nothing but the standard library. You POST a long URL as JSON, get a short code back, and visiting `/<code>` redirects you. I ran everything with Go 1.26 on macOS, and the outputs are copied from real runs.

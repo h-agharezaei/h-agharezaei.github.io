@@ -6,7 +6,7 @@ description = 'یک API کوچک سفارش‌ها در ساختار لایه‌
 categories = ["Go"]
 series = ["Go Backend"]
 tags = ["go", "architecture", "clean-architecture", "backend"]
-cover = { image = "/images/covers/go-project-layout-clean-architecture.fa.png", alt = "ساختار پروژه و Clean Architecture در Go", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/go-project-layout-clean-architecture.fa.png", alt = "ساختار پروژه و Clean Architecture در Go", hiddenInSingle = true }
 +++
 
 این مقاله شروع سری Go Backend است. سری Go Fundamentals با [پکیج‌ها و ماژول‌ها](/fa/posts/go-packages-modules/) و [پروژه‌ی کوچک URL shortener](/fa/posts/go-mini-project-url-shortener/) تمام شد، یعنی جاهایی که همه‌چیز در چند فایل جا می‌شد. وقتی سرویس دیتابیس، لایه‌ی HTTP و قوانین کسب‌وکار واقعی پیدا کند، سؤال این می‌شود که هر چیز کجا باشد و چه کسی اجازه دارد چه کسی را import کند. اینجا یک سرویس کوچک `orders` را در ساختار لایه‌ای می‌سازیم و قانون‌های وابستگی را با ابزار خود Go بررسی می‌کنیم، نه با چشم.

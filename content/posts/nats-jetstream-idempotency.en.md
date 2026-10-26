@@ -7,7 +7,7 @@ description = 'What exactly-once really means in NATS JetStream: publish dedup w
 categories = ["Go"]
 series = ["NATS JetStream"]
 tags = ["go", "nats", "jetstream", "messaging", "idempotency", "exactly-once"]
-cover = { image = "/images/covers/nats-jetstream-idempotency.png", alt = "Idempotency and the meaning of exactly-once in JetStream", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/nats-jetstream-idempotency.png", alt = "Idempotency and the meaning of exactly-once in JetStream", hiddenInSingle = true }
 +++
 
 The [previous post](/posts/nats-jetstream-scaling-lag/) ended with an uncomfortable fact: when a worker dies without acking, the message is redelivered, so a job can run twice. People often answer this with "just use exactly-once". In this post I try to find out what that phrase can honestly mean, by testing the pieces JetStream gives us: deduplication at publish time, acks, and an idempotent handler.

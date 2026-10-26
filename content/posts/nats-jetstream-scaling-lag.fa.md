@@ -7,7 +7,7 @@ description = 'چند Worker را روی یک Consumer پایدار JetStream ا
 categories = ["Go"]
 series = ["NATS JetStream"]
 tags = ["go", "nats", "jetstream", "messaging", "scaling", "monitoring"]
-cover = { image = "/images/covers/nats-jetstream-scaling-lag.fa.png", alt = "چند Worker روی یک Consumer و مانیتورینگ lag در JetStream", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/nats-jetstream-scaling-lag.fa.png", alt = "چند Worker روی یک Consumer و مانیتورینگ lag در JetStream", hiddenInSingle = true }
 +++
 
 آخر [مقاله‌ی قبل](/fa/posts/nats-jetstream-retry-dlq/) دو موضوع را وعده داده بودم: اجرای بیش از یک Worker و زیر نظر گرفتن میزان عقب‌ماندگی. تا وقتی پیام‌ها کندتر از توان یک Worker می‌رسند همه‌چیز خوب است، اما بعدش دو سؤال پیش می‌آید: چطور Worker اضافه کنیم بدون اینکه چیزی دوبار پردازش شود، و از کجا بفهمیم صف دارد انباشته می‌شود؟

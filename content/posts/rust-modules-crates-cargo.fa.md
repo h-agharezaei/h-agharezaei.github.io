@@ -6,7 +6,7 @@ description = 'Module، crate و Cargo در Rust: package و crate، privacy و 
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "beginner", "cargo", "modules", "crates"]
-cover = { image = "/images/covers/rust-modules-crates-cargo.fa.png", alt = "Module، Crate و Cargo در Rust", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/rust-modules-crates-cargo.fa.png", alt = "Module، Crate و Cargo در Rust", hiddenInSingle = true }
 +++
 
 بعد از [مدیریت خطا با Result و Option](/fa/posts/rust-error-handling-result/)، هنوز همه‌ی مثال‌هایمان در یک فایل جا می‌شوند. این مقاله درباره‌ی تقسیم کد بین فایل‌ها و درباره‌ی Cargo است، ابزاری که پروژه را می‌سازد و مدیریت می‌کند. سه واژه راحت با هم قاطی می‌شوند، پس اول تعریف‌ها: **crate** یک واحد کامپایل است (کتاب‌خانه یا برنامه‌ی اجرایی)، **package** چیزی است که `Cargo.toml` توصیف می‌کند و یک یا چند crate در خود دارد، و **module** یک فضای نام داخل یک crate است.

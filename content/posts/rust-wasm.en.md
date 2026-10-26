@@ -6,7 +6,7 @@ description = 'Rust and WebAssembly: compile to wasm32-unknown-unknown and wasm3
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "wasm", "webassembly", "wasi", "wasm-bindgen", "intermediate"]
-cover = { image = "/images/covers/rust-wasm.png", alt = "Rust and WebAssembly", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/rust-wasm.png", alt = "Rust and WebAssembly", hiddenInSingle = true }
 +++
 
 [Release engineering](/posts/rust-docker-ci-release/) was the previous topic. This post is about a different kind of artifact: a `.wasm` file. In [the unsafe and FFI post](/posts/rust-unsafe-ffi/) we crossed a boundary with the C ABI, and Go did the same in [Calling Rust from Go over FFI](/posts/go-calls-rust-ffi/). WebAssembly is another way to cross a boundary, with a sandbox in the middle.

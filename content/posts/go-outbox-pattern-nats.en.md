@@ -6,7 +6,7 @@ description = 'Solve the dual-write problem in Go: an outbox table written in th
 categories = ["Go"]
 series = ["Go Backend"]
 tags = ["go", "backend", "outbox", "postgres", "nats", "jetstream", "transactions"]
-cover = { image = "/images/covers/go-outbox-pattern-nats.png", alt = "The outbox pattern with Postgres and NATS in Go", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/go-outbox-pattern-nats.png", alt = "The outbox pattern with Postgres and NATS in Go", hiddenInSingle = true }
 +++
 
 After [concurrency patterns in Go](/posts/go-concurrency-patterns/) we have the tools to run background loops. Here is a classic job for one: telling the rest of the system that something happened. When an order is saved, other services want an `order.created` event. Saving to Postgres and publishing to NATS are two systems, and no transaction spans both. This is the **dual-write problem**, and the **outbox pattern** is the standard answer. I build on the orders table from [Postgres with pgx and sqlc](/posts/go-postgres-pgx-sqlc/), use the transaction idea from [transaction patterns in Go](/posts/go-transactions-patterns/), and publish with the dedup from [idempotency in JetStream](/posts/nats-jetstream-idempotency/).

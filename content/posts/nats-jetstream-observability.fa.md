@@ -6,7 +6,7 @@ description = 'به یک Worker جت‌استریم در Go متریک Prometheu
 categories = ["Go"]
 series = ["NATS JetStream"]
 tags = ["go", "nats", "jetstream", "observability", "metrics", "tracing", "prometheus", "slog", "opentelemetry"]
-cover = { image = "/images/covers/nats-jetstream-observability.fa.png", alt = "Observability برای JetStream: متریک، لاگ و trace", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/nats-jetstream-observability.fa.png", alt = "Observability برای JetStream: متریک، لاگ و trace", hiddenInSingle = true }
 +++
 
 در [مقاله‌ی قبل](/fa/posts/go-graceful-shutdown-workers/) Worker یاد گرفت تمیز خاموش شود، ولی وقتی چیزی خراب می‌شود هنوز بیشتر حدس می‌زنیم. صف این وضع را بدتر می‌کند: Publisher و Worker مستقیم با هم حرف نمی‌زنند، پس یک پیام کند یا ناموفق ردپای روشنی باقی نمی‌گذارد. در این مقاله سه سیگنال معمول را اضافه می‌کنیم: **متریک** (الان سالم است؟)، **لاگ** (برای این پیام چه اتفاقی افتاد؟) و **trace** (یک درخواست چطور از Publisher به Worker رسید؟).

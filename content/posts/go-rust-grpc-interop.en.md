@@ -6,7 +6,7 @@ description = 'Go and Rust over gRPC: one .proto file, a Go server and a Rust to
 categories = ["Go", "Rust"]
 series = ["Go + Rust"]
 tags = ["go", "rust", "grpc", "protobuf", "interop", "tonic"]
-cover = { image = "/images/covers/go-rust-grpc-interop.png", alt = "Go and Rust talking over gRPC", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/go-rust-grpc-interop.png", alt = "Go and Rust talking over gRPC", hiddenInSingle = true }
 +++
 
 [The last post in this series](/posts/go-vs-rust-when-to-use/) compared the two languages. This one makes them work together, which is where gRPC is really useful: the contract is a `.proto` file, so the language behind each end does not matter. We take the orders service from [the Go gRPC post](/posts/go-grpc-service/), unchanged (same proto, same Go server and client), and add Rust on both sides: a client that calls the Go server, and a server that the Go client calls. The Rust side uses [async and Tokio](/posts/rust-async-tokio/); the handlers will look familiar if you read the [axum post](/posts/rust-http-axum-api/) and the [thiserror post](/posts/rust-thiserror-anyhow/).

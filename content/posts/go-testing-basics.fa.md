@@ -6,7 +6,7 @@ description = 'نوشتن تست با پکیج testing: فلگ‌های go test�
 categories = ["Go"]
 series = ["Go Fundamentals"]
 tags = ["go", "beginner", "testing", "benchmark"]
-cover = { image = "/images/covers/go-testing-basics.fa.png", alt = "تست در Go: table-driven و benchmark", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/go-testing-basics.fa.png", alt = "تست در Go: table-driven و benchmark", hiddenInSingle = true }
 +++
 
 در [مقاله‌ی قبل](/fa/posts/go-generics/) با generics آشنا شدیم. این بار سراغ چیزی می‌رویم که هر روز لازمش دارید: تست. Go ابزار اجرای تست و benchmark را در کتاب‌خانه‌ی استاندارد دارد؛ پس چیزی نصب نمی‌کنید و لازم نیست بین فریم‌ورک‌ها انتخاب کنید. تا آخر مقاله می‌دانید چطور تست **table-driven** بنویسید، فقط یک subtest را اجرا کنید، coverage بگیرید و دو پیاده‌سازی را با benchmark مقایسه کنید.

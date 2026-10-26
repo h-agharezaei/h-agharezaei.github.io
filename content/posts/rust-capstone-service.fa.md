@@ -6,7 +6,7 @@ description = 'سرویس سفارش‌ها در Rust با Axum، SQLx، thiserr
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "capstone", "axum", "sqlx", "tracing", "nats", "thiserror", "backend"]
-cover = { image = "/images/covers/rust-capstone-service.fa.png", alt = "پروژه‌ی پایانی Rust: یک سرویس کامل", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/rust-capstone-service.fa.png", alt = "پروژه‌ی پایانی Rust: یک سرویس کامل", hiddenInSingle = true }
 +++
 
 [مقاله‌ی قبل](/fa/posts/rust-wasm/) درباره‌ی WebAssembly بود. این آخرین مقاله‌ی فنی سری است و چیز تازه‌ای نمی‌سازد: تکه‌های قبلی را در یک سرویس کوچک به نام `orders` به هم وصل می‌کند. API آن همان API نسخه‌ی Go در [ساخت API با net/http در Go](/fa/posts/go-http-api-stdlib/) است: `POST /orders`، `GET /orders/{id}`، `GET /orders`، `/healthz` و `/readyz`. تقسیم به ماژول‌ها از [ماژول، crate و Cargo در Rust](/fa/posts/rust-modules-crates-cargo/) می‌آید و همین ایده در Go در [ساختار پروژه و clean architecture در Go](/fa/posts/go-project-layout-clean-architecture/) آمده است.

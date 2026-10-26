@@ -6,7 +6,7 @@ description = 'Benchmark Rust with Criterion: setup, BenchmarkGroup and Benchmar
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "performance", "benchmarking", "criterion", "intermediate"]
-cover = { image = "/images/covers/rust-performance-criterion.png", alt = "Performance and benchmarking with Criterion in Rust", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/rust-performance-criterion.png", alt = "Performance and benchmarking with Criterion in Rust", hiddenInSingle = true }
 +++
 
 The [previous post](/posts/rust-unsafe-ffi/) was about `unsafe` and FFI. This one is about a question that comes right after "does it work": is it fast, and compared to what? A hand-rolled loop around `Instant::now()` gives you one number with no idea how noisy it is. **Criterion** is the standard statistics-driven benchmark crate for Rust. If you know Go, the counterparts are `testing.B` from [the testing post](/posts/go-testing-basics/), `benchstat`, and [pprof](/posts/go-profiling-pprof/). The [earlier Go vs Rust post](/posts/go-vs-rust-when-to-use/) already warned that one microbenchmark proves little; here is how to at least measure one properly.

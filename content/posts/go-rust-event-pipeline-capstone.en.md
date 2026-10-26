@@ -6,7 +6,7 @@ description = 'A Go and Rust event pipeline on NATS: Postgres, the outbox patter
 categories = ["Go", "Rust"]
 series = ["Go + Rust"]
 tags = ["go", "rust", "nats", "jetstream", "outbox", "capstone", "postgres"]
-cover = { image = "/images/covers/go-rust-event-pipeline-capstone.png", alt = "Capstone: an event pipeline with Go, Rust and NATS", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/go-rust-event-pipeline-capstone.png", alt = "Capstone: an event pipeline with Go, Rust and NATS", hiddenInSingle = true }
 +++
 
 [The previous post](/posts/go-calls-rust-ffi/) put Rust inside a Go process. This last post of the series puts the pieces from the whole year side by side: Go services for the edges, a Rust worker for the business rule, and NATS in the middle. Nothing here is new technology. The point is how the parts fit, and what happens when one of them dies. I run it with one `run.sh`, then break it on purpose.

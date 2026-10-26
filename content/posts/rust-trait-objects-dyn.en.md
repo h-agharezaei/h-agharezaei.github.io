@@ -6,7 +6,7 @@ description = 'Rust trait objects and dyn: Box<dyn Trait>, static vs dynamic dis
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "traits", "dyn", "intermediate"]
-cover = { image = "/images/covers/rust-trait-objects-dyn.png", alt = "Trait objects and dyn in Rust", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/rust-trait-objects-dyn.png", alt = "Trait objects and dyn in Rust", hiddenInSingle = true }
 +++
 
 In the [previous post](/posts/rust-nats-async-client/) the Rust worker consumed messages from a Go program. Earlier, the gRPC posts ended on a question: how does Rust get the runtime polymorphism that Go gives us for free with interfaces? In [Generics and traits](/posts/rust-generics-traits/) we saw static dispatch, where every concrete type gets its own copy of the code. This post covers the other half: **trait objects**, written `dyn Trait`. They let one `Vec` or one `HashMap` hold different types. The Go side of the comparison is in [structs, methods and interfaces](/posts/go-structs-methods-interfaces/).

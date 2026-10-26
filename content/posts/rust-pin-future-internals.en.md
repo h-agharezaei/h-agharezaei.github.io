@@ -6,7 +6,7 @@ description = 'Rust async internals: the Future trait, wakers, a hand-written bl
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "async", "pin", "future", "advanced"]
-cover = { image = "/images/covers/rust-pin-future-internals.png", alt = "Futures, Pin and async internals in Rust", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/rust-pin-future-internals.png", alt = "Futures, Pin and async internals in Rust", hiddenInSingle = true }
 +++
 
 The [previous post](/posts/rust-performance-criterion/) was about measuring. This one opens the box under [async/await and Tokio](/posts/rust-async-tokio/): what is a future, who calls it, and why does `Pin` show up in every signature? We will build the pieces ourselves with only the standard library, then run the same code under Tokio at the end.

@@ -6,7 +6,7 @@ description = 'کار با serde و serde_json در Rust: derive کردن Serial
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "serde", "json", "intermediate"]
-cover = { image = "/images/covers/rust-serde-json.fa.png", alt = "Serde و JSON در Rust", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/rust-serde-json.fa.png", alt = "Serde و JSON در Rust", hiddenInSingle = true }
 +++
 
 در [مقاله‌ی قبل](/fa/posts/rust-async-tokio/) کد async را با Tokio اجرا کردیم. تقریباً هر سرویسی که I/O دارد، JSON هم حرف می‌زند؛ برای همین این مقاله درباره‌ی **serde** است، چارچوب استاندارد serialization در Rust. اگر نسخه‌ی Go را خوانده باشید، یعنی [کار با فایل، io.Reader/Writer و JSON در Go](/fa/posts/go-file-io-json/)، ساختار این مقاله آشنا به نظر می‌رسد و برای مقایسه از همان payload مربوط به `User` استفاده کرده‌ام.

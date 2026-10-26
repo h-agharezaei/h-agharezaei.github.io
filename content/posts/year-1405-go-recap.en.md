@@ -5,7 +5,7 @@ title = 'Go series recap for 1405'
 description = 'A map of the 39 Go-related posts from 1405: fundamentals, Go backend, NATS JetStream and Go + Rust, with the lessons that kept coming back.'
 categories = ["Meta"]
 tags = ["go", "recap", "1405", "nats", "backend"]
-cover = { image = "/images/covers/year-1405-go-recap.png", alt = "Go series recap for 1405", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/year-1405-go-recap.png", alt = "Go series recap for 1405", hiddenInSingle = true }
 +++
 
 A map for readers arriving at the Go posts, and a reference for me. There are 39 Go-related posts: 14 in Go Fundamentals, 12 in Go Backend, 9 in NATS JetStream and 4 in Go + Rust. Most came out since Aban 1405; the first two NATS posts predate that calendar.

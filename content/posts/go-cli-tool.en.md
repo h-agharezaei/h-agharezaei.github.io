@@ -6,7 +6,7 @@ description = 'Build wordstat, a real Go CLI: the flag package, subcommands, rea
 categories = ["Go"]
 series = ["Go Fundamentals"]
 tags = ["go", "beginner", "cli", "flag", "build"]
-cover = { image = "/images/covers/go-cli-tool.png", alt = "Building a command-line tool in Go", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/go-cli-tool.png", alt = "Building a command-line tool in Go", hiddenInSingle = true }
 +++
 
 In the [previous post](/posts/go-file-io-json/) we read files and wrote JSON through `io.Reader` and `io.Writer`. Now we put that to work in something you can actually install: a command-line tool. We build `wordstat`, which reads a file (or stdin) and prints line, word and byte counts plus the top-N words, as text or as JSON. Along the way: the `flag` package, subcommands, exit codes, a structure that is easy to test, and getting one binary for any platform.

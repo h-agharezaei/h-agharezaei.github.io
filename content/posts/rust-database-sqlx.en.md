@@ -6,7 +6,7 @@ description = 'Postgres in Rust with SQLx: PgPool, query_as and FromRow, bind pa
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "sqlx", "postgres", "database", "backend"]
-cover = { image = "/images/covers/rust-database-sqlx.png", alt = "Databases with SQLx in Rust", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/rust-database-sqlx.png", alt = "Databases with SQLx in Rust", hiddenInSingle = true }
 +++
 
 In the [previous post](/posts/rust-http-axum-api/) we built an orders API with Axum that kept everything in memory. This post swaps that for Postgres. I wrote a small `OrderStore` for this demo: a struct holding a connection pool, with `create`, `get`, `find`, `list` and a transactional method. It stands alone; plug it into Axum as shared state the same way. I use **SQLx**, an async SQL toolkit that is not an ORM: you write SQL, it handles pooling, parameters and row mapping. The Go counterpart is [Postgres with pgx and sqlc](/posts/go-postgres-pgx-sqlc/).

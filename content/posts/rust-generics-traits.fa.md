@@ -6,7 +6,7 @@ description = 'تابع و struct جنریک، trait با متد پیش‌فرض
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "beginner", "generics", "traits"]
-cover = { image = "/images/covers/rust-generics-traits.fa.png", alt = "Generics و Trait در Rust", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/rust-generics-traits.fa.png", alt = "Generics و Trait در Rust", hiddenInSingle = true }
 +++
 
 در [مقاله‌ی قبل](/fa/posts/rust-modules-crates-cargo/) کد را به ماژول و crate تقسیم کردیم. حالا می‌خواهیم کدی بنویسیم که برای چند نوع هم‌زمان کار کند. در Rust این کار روی دو ایده بنا شده: **generics** (کدی که نوع، پارامتر آن است) و **trait** (مجموعه‌ای نام‌دار از رفتار که یک نوع می‌تواند داشته باشد). این دو را قبلاً بی‌آنکه اسم ببریم استفاده کرده‌اید: `Option<T>` جنریک است و `Display` و `Debug` trait هستند.

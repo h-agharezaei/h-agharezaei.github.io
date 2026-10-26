@@ -6,7 +6,7 @@ description = 'رویداد و span ساخت‌یافته، EnvFilter، خروج
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "tracing", "observability", "async", "logging"]
-cover = { image = "/images/covers/rust-tracing-observability.fa.png", alt = "Observability در Rust با tracing", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/rust-tracing-observability.fa.png", alt = "Observability در Rust با tracing", hiddenInSingle = true }
 +++
 
 [مقاله‌ی قبل](/fa/posts/rust-pin-future-internals/) درون async را باز کرد. حالا سؤال عملی این است: وقتی سرویس هزاران task هم‌زمان دارد، چطور ببینیم برای یک درخواست مشخص چه اتفاقی افتاده؟ در این مقاله روی کدی شبیه [async/await و Tokio در Rust](/fa/posts/rust-async-tokio/) از crate به نام `tracing` استفاده می‌کنیم؛ همین ایده‌ها برای سرویسی مثل [ساخت API با Axum در Rust](/fa/posts/rust-http-axum-api/) هم صدق می‌کند. آخر مقاله آن را با `slog` در [کانفیگ، لاگ ساخت‌یافته و خطا در Go](/fa/posts/go-config-logging-errors/) مقایسه می‌کنم.

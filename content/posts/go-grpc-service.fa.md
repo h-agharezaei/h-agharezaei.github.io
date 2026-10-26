@@ -6,7 +6,7 @@ description = 'سرویس orders را با gRPC در Go بسازید: قرارد
 categories = ["Go"]
 series = ["Go Backend"]
 tags = ["go", "backend", "grpc", "protobuf", "interceptors", "api"]
-cover = { image = "/images/covers/go-grpc-service.fa.png", alt = "سرویس gRPC با Go", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/go-grpc-service.fa.png", alt = "سرویس gRPC با Go", hiddenInSingle = true }
 +++
 
 در [مقاله‌ی قبل](/fa/posts/go-outbox-pattern-nats/) مطمئن شدیم رویدادها قابل‌اعتماد از سرویس بیرون می‌روند. حالا همان سرویس `orders` یک در ورودی دوم می‌گیرد. نسخه‌ی REST آن را در [مقاله‌ی net/http](/fa/posts/go-http-api-stdlib/) ساختیم؛ اینجا عملیات همان است (ساخت، گرفتن، فهرست) اما قرارداد یک فایل `.proto` است و روی سیم، HTTP/2 با پیام‌های باینری داریم. دامنه، سرویس و store در حافظه بدون تغییر کپی شده‌اند، فقط یک متد `List` اضافه شده است. ایده‌ی [مقاله‌ی config و خطاها](/fa/posts/go-config-logging-errors/) هم برمی‌گردد: یک تابع خطاها را به code نگاشت می‌کند.

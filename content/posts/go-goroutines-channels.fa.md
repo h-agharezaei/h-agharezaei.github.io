@@ -6,7 +6,7 @@ description = 'آشنایی عملی با همزمانی در Go: goroutine، Wa
 categories = ["Go"]
 series = ["Go Fundamentals"]
 tags = ["go", "beginner", "concurrency", "goroutines", "channels"]
-cover = { image = "/images/covers/go-goroutines-channels.fa.png", alt = "Goroutine و Channel در Go", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/go-goroutines-channels.fa.png", alt = "Goroutine و Channel در Go", hiddenInSingle = true }
 +++
 
 در [مقاله‌ی قبل](/fa/posts/go-packages-modules/) کد را به package و module تقسیم کردیم. حالا به ویژگی‌ای می‌رسیم که Go بیشتر با آن شناخته می‌شود: همزمانی. در این مقاله goroutine، `sync.WaitGroup`، channel، خطای deadlock که هرکسی یک بار می‌بیند، یک pipeline کوچک با producer و worker و در آخر race detector را می‌بینیم. مقاله‌ی بعد سراغ `sync`، `select` و `context` می‌رود.

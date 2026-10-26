@@ -6,7 +6,7 @@ description = 'Install Go, create your first module with go mod init, and learn 
 categories = ["Go"]
 series = ["Go Fundamentals"]
 tags = ["go", "beginner", "tooling", "modules"]
-cover = { image = "/images/covers/go-getting-started.png", alt = "Getting started with Go: install, modules, tooling", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/go-getting-started.png", alt = "Getting started with Go: install, modules, tooling", hiddenInSingle = true }
 +++
 
 This is the first post of a beginner series, **Go Fundamentals**. The plan is to cover the language basics here, and then move on to a second, backend-oriented series: HTTP services, databases, concurrency in real systems. I already used Go in an earlier post on [NATS JetStream](/posts/nats-jetstream-go/), but that one assumed you could read Go. This series starts from zero.

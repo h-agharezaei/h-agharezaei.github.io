@@ -6,7 +6,7 @@ description = 'Rust modules, crates and Cargo: packages, pub and privacy errors,
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "beginner", "cargo", "modules", "crates"]
-cover = { image = "/images/covers/rust-modules-crates-cargo.png", alt = "Modules, crates and Cargo in Rust", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/rust-modules-crates-cargo.png", alt = "Modules, crates and Cargo in Rust", hiddenInSingle = true }
 +++
 
 After [error handling with Result and Option](/posts/rust-error-handling-result/), every example still fits in one file. This post is about splitting code up and about Cargo, which builds and manages the project. Three words are easy to mix up, so first the definitions: a **crate** is one compilation unit (a library or an executable), a **package** is what `Cargo.toml` describes and holds one or more crates, and a **module** is a namespace inside a crate.

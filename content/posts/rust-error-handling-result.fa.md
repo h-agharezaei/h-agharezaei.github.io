@@ -6,7 +6,7 @@ description = 'مدیریت خطا در Rust در عمل: Result و Option، ت�
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "beginner", "errors", "result", "option"]
-cover = { image = "/images/covers/rust-error-handling-result.fa.png", alt = "مدیریت خطا با Result و Option در Rust", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/rust-error-handling-result.fa.png", alt = "مدیریت خطا با Result و Option در Rust", hiddenInSingle = true }
 +++
 
 در [مقاله‌ی قبل](/fa/posts/rust-collections-strings/) با `Vec`، `HashMap` و رشته‌ها کار کردیم. چند متد آن‌ها `Option` برمی‌گرداند و parse کردن یک رشته `Result` برمی‌گرداند. این مقاله درباره‌ی همین دو نوع است و اینکه کد Rust چطور با شکست کنار می‌آید. مثل Go، در Rust هم استثنا (exception) نداریم، اما خطا یک مقدار برگشتیِ دوم هم نیست: بخشی از نوعِ مقدار برگشتی است و نمی‌شود فراموشش کرد.

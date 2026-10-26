@@ -6,7 +6,7 @@ description = 'مروری عملی بر slice، map و string در Go: مشکل 
 categories = ["Go"]
 series = ["Go Fundamentals"]
 tags = ["go", "beginner", "slice", "map", "string"]
-cover = { image = "/images/covers/go-slices-maps-strings.fa.png", alt = "Slice، Map و String در Go", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/go-slices-maps-strings.fa.png", alt = "Slice، Map و String در Go", hiddenInSingle = true }
 +++
 
 در [مقاله‌ی قبل](/fa/posts/go-functions-defer-errors/) درباره‌ی تابع‌ها، `defer` و مدیریت خطا در Go حرف زدیم. حالا سراغ سه نوعی می‌رویم که تقریباً در هر برنامه‌ی Go استفاده می‌شوند: **slice**، **map** و **string**. هر کدام رفتاری دارند که تازه‌کارها را غافلگیر می‌کند، برای همین کد را اجرا می‌کنیم و خروجی واقعی را می‌بینیم.

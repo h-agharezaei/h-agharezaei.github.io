@@ -6,7 +6,7 @@ description = 'پکیج و ماژول در Go چطور کار می‌کنند: �
 categories = ["Go"]
 series = ["Go Fundamentals"]
 tags = ["go", "beginner", "modules", "packages"]
-cover = { image = "/images/covers/go-packages-modules.fa.png", alt = "پکیج‌ها و ماژول‌ها: ساختار پروژه‌ی Go", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/go-packages-modules.fa.png", alt = "پکیج‌ها و ماژول‌ها: ساختار پروژه‌ی Go", hiddenInSingle = true }
 +++
 
 تا اینجا همه‌ی مثال‌ها در یک فایل جا می‌شدند. پروژه‌ی واقعی جا نمی‌شود و Go برای تقسیم‌کردنش دو مفهوم دارد که معمولاً با هم قاطی می‌شوند. بعد از [اشاره‌گرها و مدل حافظه](/fa/posts/go-pointers-memory/)، در این مقاله یک پروژه‌ی کوچک چندپکیجی می‌سازیم و می‌بینیم کامپایلر چه چیزهایی را اجباری می‌کند: دسترسی، `internal/`، ترتیب مقداردهی اولیه، import cycle و وابستگی‌های بیرونی.

@@ -4,7 +4,7 @@ draft = false
 title = 'اولین مقاله من'
 description = 'اولین مقاله وبلاگ شخصی من: چرا این سایت را ساختم، چه هدفی از نوشتن دارم و در ادامه چه مطالبی از تجربه‌ها و یادگیری‌هایم منتشر می‌شود.'
 tags = ["شروع", "معرفی"]
-cover = { image = "/images/covers/first-post.fa.png", alt = "اولین مقاله من", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/first-post.fa.png", alt = "اولین مقاله من", hiddenInSingle = true }
 +++
 
 ## خوش آمدید به وبلاگ من!

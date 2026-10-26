@@ -6,7 +6,7 @@ description = 'An honest Go vs Rust comparison from a backend engineer: one meas
 categories = ["Go", "Rust"]
 series = ["Go + Rust"]
 tags = ["go", "rust", "comparison", "backend"]
-cover = { image = "/images/covers/go-vs-rust-when-to-use.png", alt = "Go or Rust? When to use which", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/go-vs-rust-when-to-use.png", alt = "Go or Rust? When to use which", hiddenInSingle = true }
 +++
 
 The Go fundamentals are done and the Rust series has reached ownership, borrowing and errors, so this is a good place to stop and ask the question people always ask: which one should I use? I work mainly in Go and Node.js and I am still learning Rust, so treat this as one person's view with a little data, not a verdict. I will mark clearly what I measured and what is only my experience.

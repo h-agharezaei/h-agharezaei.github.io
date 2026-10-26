@@ -6,7 +6,7 @@ description = 'نقطه‌ی داغ یک سرویس Go را با pprof پیدا 
 categories = ["Go"]
 series = ["Go Backend"]
 tags = ["go", "backend", "pprof", "profiling", "performance", "benchmark"]
-cover = { image = "/images/covers/go-profiling-pprof.fa.png", alt = "پروفایلینگ با pprof در Go", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/go-profiling-pprof.fa.png", alt = "پروفایلینگ با pprof در Go", hiddenInSingle = true }
 +++
 
 [مقاله‌ی قبل](/fa/posts/go-rate-limiting-caching/) درباره‌ی rate limiting و caching بود. حالا سؤال دیگری داریم: سرویس کند است، دقیقاً چه چیزی را عوض کنیم؟ حدس زدن راه مطمئنی برای بهینه کردن خط اشتباه است. **pprof** ابزار **profiler** خودِ Go است و این‌جا روی یک سرویس کوچک `net/http` استفاده‌اش می‌کنیم که عمداً کندش کرده‌ام. مقاله روی [benchmark](/fa/posts/go-testing-basics/) و [مبانی حافظه](/fa/posts/go-pointers-memory/) از مقاله‌های قبل بنا شده است.

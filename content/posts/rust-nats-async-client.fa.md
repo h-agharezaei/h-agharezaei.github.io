@@ -6,7 +6,7 @@ description = 'یک Publisher و Worker با pull consumer روی JetStream در
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "nats", "jetstream", "async", "tokio"]
-cover = { image = "/images/covers/rust-nats-async-client.fa.png", alt = "کلاینت async NATS JetStream در Rust", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/rust-nats-async-client.fa.png", alt = "کلاینت async NATS JetStream در Rust", hiddenInSingle = true }
 +++
 
 در [مقاله‌ی قبل](/fa/posts/rust-thiserror-anyhow/) خطاهای تایپ‌دار را با `thiserror` و `anyhow` در سطح برنامه دیدیم. حالا آن‌ها را روی چیزی می‌گذارم که از Go می‌شناسم: یک Publisher و یک Worker روی JetStream با retry و سقف تعداد تحویل. نسخه‌ی Go در [مقاله‌ی اول JetStream](/fa/posts/nats-jetstream-go/) و [مقاله‌ی retry و dead-letter](/fa/posts/nats-jetstream-retry-dlq/) آمده است. این مقاله هم‌ارز Rust آن‌هاست، با `async-nats` و همان Tokio که در [مقاله‌ی async](/fa/posts/rust-async-tokio/) دیدیم. قسمت جذاب آخر کار است: Worker ِRust پیام‌هایی را مصرف می‌کند که یک برنامه‌ی Go منتشر کرده.

@@ -6,7 +6,7 @@ description = 'حافظه‌ی مشترک را با Mutex و atomic و Once ای
 categories = ["Go"]
 series = ["Go Fundamentals"]
 tags = ["go", "beginner", "concurrency", "context", "sync", "select"]
-cover = { image = "/images/covers/go-sync-select-context.fa.png", alt = "sync، select و context در Go", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/go-sync-select-context.fa.png", alt = "sync، select و context در Go", hiddenInSingle = true }
 +++
 
 در [مقاله‌ی قبل](/fa/posts/go-goroutines-channels/) goroutine راه انداختیم و از طریق channel با آن‌ها حرف زدیم. دو سؤال باز ماند: وقتی goroutineها مجبورند حافظه‌ی مشترک داشته باشند چه کنیم، و چطور به یک goroutine بگوییم متوقف شود؟ این مقاله جواب هر دو را با پکیج `sync`، دستور `select` و `context` می‌دهد.

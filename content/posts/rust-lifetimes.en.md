@@ -6,7 +6,7 @@ description = "Rust lifetimes with runnable code: the longest function, real E01
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "lifetimes", "intermediate", "borrowing"]
-cover = { image = "/images/covers/rust-lifetimes.png", alt = "Lifetimes in Rust", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/rust-lifetimes.png", alt = "Lifetimes in Rust", hiddenInSingle = true }
 +++
 
 In the [previous post](/posts/rust-generics-traits/) we wrote code that works over many types. Now we come back to references, the topic of [Borrowing and References in Rust](/posts/rust-borrowing-references/), which you should read first. There we saw that a reference must never outlive its value, and that the compiler sometimes asks for a "lifetime specifier". This post explains what that means and when you have to write one.

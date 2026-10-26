@@ -6,7 +6,7 @@ description = 'طراحی API در Rust برای ناممکن کردن حالت 
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "typestate", "api-design", "advanced"]
-cover = { image = "/images/covers/rust-typestate-patterns.fa.png", alt = "الگوی Type-State و طراحی API در Rust", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/rust-typestate-patterns.fa.png", alt = "الگوی Type-State و طراحی API در Rust", hiddenInSingle = true }
 +++
 
 موضوع قبلی tracing بود. این مقاله درباره‌ی چیزی است که پیش از هر خط log اتفاق می‌افتد: طراحی API طوری که اصلاً نشود باگ را نوشت. اسم این ایده «حالت نامعتبر را غیرقابل بیان کن» است (**make invalid states unrepresentable**). ابزارهایش را داریم: [struct و enum](/fa/posts/rust-structs-enums-pattern-matching/)، [جنریک‌ها و trait‌ها](/fa/posts/rust-generics-traits/) و مهم‌تر از همه [ownership](/fa/posts/rust-ownership/)، چون متدی که `self` را مصرف می‌کند یک move است و همین move است که type-state را ممکن می‌کند. همه‌چیز با Rust 1.90 (edition 2024) در یک workspace کوچک اجرا شد: یک کتاب‌خانه‌ی `api`، یک برنامه‌ی `app` و یک crate به اسم `fails` که برای هر خطای کامپایل یک برنامه‌ی کوچک دارد تا همه‌ی خطاها قابل تکرار باشند.

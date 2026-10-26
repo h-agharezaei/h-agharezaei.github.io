@@ -6,7 +6,7 @@ description = 'آموزش struct، بلوک impl، enum همراه با داده
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "beginner", "enums", "pattern-matching", "structs"]
-cover = { image = "/images/covers/rust-structs-enums-pattern-matching.fa.png", alt = "Struct، Enum و Pattern Matching در Rust", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/rust-structs-enums-pattern-matching.fa.png", alt = "Struct، Enum و Pattern Matching در Rust", hiddenInSingle = true }
 +++
 
 در [مقاله‌ی قبل](/fa/posts/rust-borrowing-references/) یاد گرفتیم چطور مقدارها را با reference قرض بدهیم. حالا می‌توانیم داده را مدل کنیم. اگر از Go می‌آیید، struct برایتان آشناست ولی enum نه: در Rust هر variant می‌تواند داده داشته باشد و `match` شما را مجبور می‌کند همه‌ی حالت‌ها را رسیدگی کنید. این ترکیب چیزی است که وقتی به زبان‌های دیگر برمی‌گردم بیشتر از همه دلم برایش تنگ می‌شود.

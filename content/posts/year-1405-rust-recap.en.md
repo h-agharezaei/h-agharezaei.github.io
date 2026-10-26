@@ -5,7 +5,7 @@ title = 'Rust series recap and a look back at 1405'
 description = 'Rust series recap for the Persian year 1405: a map of all 30 posts, recurring lessons, an honest Go and Rust comparison, real counts and open gaps.'
 categories = ["Meta"]
 tags = ["rust", "go", "recap", "1405"]
-cover = { image = "/images/covers/year-1405-rust-recap.png", alt = "Rust series recap and a look back at 1405", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/year-1405-rust-recap.png", alt = "Rust series recap and a look back at 1405", hiddenInSingle = true }
 +++
 
 Today is the last day of the Persian year 1405. After the [Go series recap for 1405](/posts/year-1405-go-recap/), this is the Rust one: a map of all 30 posts, what kept coming back, and what is missing. Each takeaway comes from the post it links to.

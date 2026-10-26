@@ -6,7 +6,7 @@ description = 'Build a Rust static library, link it into a Go program with cgo, 
 categories = ["Go", "Rust"]
 series = ["Go + Rust"]
 tags = ["go", "rust", "ffi", "cgo", "interop", "intermediate"]
-cover = { image = "/images/covers/go-calls-rust-ffi.png", alt = "Calling Rust from Go over FFI", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/go-calls-rust-ffi.png", alt = "Calling Rust from Go over FFI", hiddenInSingle = true }
 +++
 
 [The previous post of this series](/posts/go-rust-grpc-interop/) connected Go and Rust over the network with gRPC. This one is the in-process way: one binary, Rust compiled into a library, and Go calling it through the C ABI with **cgo**. The library is the `ffi-lib` crate from [Unsafe and FFI in Rust](/posts/rust-unsafe-ffi/), which exports `add`, `greet`, `free_string`, `checksum`, `point_length` and `point_scale` behind a hand-written `ffi_lib.h`. I use it unchanged. For pointers on the Go side, see the [pointers post](/posts/go-pointers-memory/).

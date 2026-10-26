@@ -6,7 +6,7 @@ description = 'unsafe در Rust: قابلیت‌هایی که باز می‌کن
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "unsafe", "ffi", "c", "intermediate"]
-cover = { image = "/images/covers/rust-unsafe-ffi.fa.png", alt = "Unsafe و FFI در Rust", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/rust-unsafe-ffi.fa.png", alt = "Unsafe و FFI در Rust", hiddenInSingle = true }
 +++
 
 [مقاله‌ی قبل](/fa/posts/rust-macros/) درباره‌ی macroها بود. این مقاله درباره‌ی دریچه‌ی فرار است: `unsafe`. هر چه تا اینجا یاد گرفتیم ([ownership](/fa/posts/rust-ownership/) و [smart pointerها](/fa/posts/rust-smart-pointers/)) همان چیزی است که Rust امن برایتان تضمین می‌کند. `unsafe` یعنی «این تضمین‌ها را خودم رعایت می‌کنم»، آن هم جایی که کامپایلر نمی‌تواند چک کند، بیشتر برای حرف زدن با C. Go هم همین ایده را با پکیج `unsafe` و `unsafe.Pointer` دارد ([مقاله‌ی pointerها](/fa/posts/go-pointers-memory/)). اینجا یک کتاب‌خانه‌ی کوچک با **C ABI** می‌سازیم و یک برنامه‌ی C را به آن لینک می‌کنیم.

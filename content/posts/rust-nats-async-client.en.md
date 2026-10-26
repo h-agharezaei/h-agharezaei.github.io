@@ -6,7 +6,7 @@ description = 'A JetStream publisher and pull-consumer worker in Rust with async
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "nats", "jetstream", "async", "tokio"]
-cover = { image = "/images/covers/rust-nats-async-client.png", alt = "An async NATS JetStream client in Rust", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/rust-nats-async-client.png", alt = "An async NATS JetStream client in Rust", hiddenInSingle = true }
 +++
 
 In the [previous post](/posts/rust-thiserror-anyhow/) we used typed errors with `thiserror` and `anyhow` at the application level. Now I put them to work on something I already know from Go: a JetStream publisher and a worker with retry and a maximum number of deliveries. The Go versions are in [the first JetStream post](/posts/nats-jetstream-go/) and [the retry and dead-letter post](/posts/nats-jetstream-retry-dlq/). This is the Rust counterpart, built on `async-nats` and the Tokio setup from [the async post](/posts/rust-async-tokio/). The best part comes at the end: the Rust worker consumes messages published by a Go program.

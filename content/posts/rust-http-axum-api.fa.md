@@ -6,7 +6,7 @@ description = 'ساخت یک API کوچک سفارش‌ها با Axum: route، e
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "axum", "http", "api", "tokio", "tower", "intermediate"]
-cover = { image = "/images/covers/rust-http-axum-api.fa.png", alt = "ساخت API با Axum در Rust", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/rust-http-axum-api.fa.png", alt = "ساخت API با Axum در Rust", hiddenInSingle = true }
 +++
 
 در [مقاله‌ی قبل](/fa/posts/rust-serde-json/) با serde و JSON آشنا شدیم و قول دادیم همان تایپ‌ها را برای بدنه‌ی درخواست و پاسخ به کار ببریم. این مقاله همان است. روی runtime مقاله‌ی [async در Rust با Tokio](/fa/posts/rust-async-tokio/) همان API کوچک سفارش‌های نسخه‌ی Go، یعنی [ساخت API با net/http در Go](/fa/posts/go-http-api-stdlib/)، را می‌سازیم: ساخت، گرفتن با id، فهرست، `422` برای خطای اعتبارسنجی و `404` برای سفارش ناموجود. از **Axum** استفاده می‌کنم، یک فریم‌ورک وب سبک روی Hyper و Tower.

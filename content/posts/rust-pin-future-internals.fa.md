@@ -6,7 +6,7 @@ description = 'async fn در Rust واقعاً چیست: trait به نام Futur
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "async", "pin", "future", "advanced"]
-cover = { image = "/images/covers/rust-pin-future-internals.fa.png", alt = "Future، Pin و درون async در Rust", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/rust-pin-future-internals.fa.png", alt = "Future، Pin و درون async در Rust", hiddenInSingle = true }
 +++
 
 [مقاله‌ی قبل](/fa/posts/rust-performance-criterion/) درباره‌ی اندازه‌گیری بود. این مقاله جعبه‌ی زیر [async/await و Tokio](/fa/posts/rust-async-tokio/) را باز می‌کند: future دقیقاً چیست، چه کسی آن را صدا می‌زند و چرا `Pin` در همه‌ی signatureها دیده می‌شود. قطعه‌ها را فقط با کتاب‌خانه‌ی استاندارد خودمان می‌سازیم و در انتها همان کد را زیر Tokio اجرا می‌کنیم.

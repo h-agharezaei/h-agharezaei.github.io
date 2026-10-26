@@ -6,7 +6,7 @@ description = 'چطور Worker جاب‌های JetStream در Go را تمیز �
 categories = ["Go"]
 series = ["NATS JetStream"]
 tags = ["go", "nats", "jetstream", "shutdown", "context", "signals"]
-cover = { image = "/images/covers/go-graceful-shutdown-workers.fa.png", alt = "خاموشی تمیز Workerها در Go", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/go-graceful-shutdown-workers.fa.png", alt = "خاموشی تمیز Workerها در Go", hiddenInSingle = true }
 +++
 
 [مقاله‌ی قبل](/fa/posts/nats-jetstream-idempotency/) با این جمله تمام شد که تحویل مجدد هنگام deploy رایج‌ترین جایی است که با پیام‌های تکراری روبه‌رو می‌شویم. deploy به Worker قدیمی یک سیگنال می‌فرستد و یک Worker جدید بالا می‌آورد. اگر قدیمی همین‌طوری بمیرد، هر کاری که وسط‌اش بوده بعداً دوباره تحویل داده می‌شود. در این مقاله این را با سیگنال واقعی آزمایش می‌کنم و بعد درستش می‌کنم. اگر `context` برایت تازه است اول [sync، select و context](/fa/posts/go-sync-select-context/) را بخوان.

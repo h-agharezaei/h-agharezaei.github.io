@@ -6,7 +6,7 @@ description = 'ساخت API با net/http در Go بدون فریم‌ورک: Se
 categories = ["Go"]
 series = ["Go Backend"]
 tags = ["go", "backend", "http", "api", "net-http", "middleware"]
-cover = { image = "/images/covers/go-http-api-stdlib.fa.png", alt = "ساخت API با net/http در Go", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/go-http-api-stdlib.fa.png", alt = "ساخت API با net/http در Go", hiddenInSingle = true }
 +++
 
 در [مقاله‌ی قبل](/fa/posts/go-config-logging-errors/) سرویس `orders` یک `Config` تایپ‌دار از متغیرهای محیطی گرفت، `slog` با handler متنی و JSON، یک شناسه‌ی درخواست که در context می‌ماند، و یک تابع (`statusOf`) که خطاها را به status کد HTTP تبدیل می‌کند. خود سرور هنوز ساده بود: یک read timeout، بدون محافظ panic، بدون سقف بدنه و بدون خاموش‌شدن مرتب. حالا لایه‌ی HTTP را رویش می‌سازیم، فقط با کتاب‌خانه‌ی استاندارد. از Go 1.22 router متد و wildcard را می‌فهمد، پس برای API کوچک سراغ فریم‌ورک نمی‌روم. در [پروژه‌ی URL shortener](/fa/posts/go-mini-project-url-shortener/) هم از `net/http` استفاده کرده بودیم؛ اینجا **middleware**، خواندن امن درخواست، timeout و تست را اضافه می‌کنیم.

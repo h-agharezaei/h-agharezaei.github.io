@@ -6,7 +6,7 @@ description = 'تست Consumerهای JetStream با go test ساده: یک nats-
 categories = ["Go"]
 series = ["NATS JetStream"]
 tags = ["go", "nats", "jetstream", "testing", "messaging"]
-cover = { image = "/images/covers/nats-jetstream-testing.fa.png", alt = "تست سرویس‌های JetStream با nats-server توکار", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/nats-jetstream-testing.fa.png", alt = "تست سرویس‌های JetStream با nats-server توکار", hiddenInSingle = true }
 +++
 
 [مقاله‌ی قبل](/fa/posts/nats-jetstream-observability/) درباره‌ی این بود که در production چطور ببینیم یک سرویس JetStream چه می‌کند. این مقاله درباره‌ی دیدن همین رفتار قبل از production است. در مقاله‌های اخیر چند رفتار را توضیح دادیم: [retry و dead-letter queue](/fa/posts/nats-jetstream-retry-dlq/) و [idempotency](/fa/posts/nats-jetstream-idempotency/). هر کدام را با یک برنامه‌ی موقت امتحان کردیم و خروجی را با چشم خواندیم. حالا همان بررسی‌ها را با [`go test`](/fa/posts/go-testing-basics/) به تست واقعی تبدیل می‌کنیم، بدون Docker و بدون سرور بیرونی، تا اگر کسی رفتار را خراب کرد، تست بلند شکست بخورد.

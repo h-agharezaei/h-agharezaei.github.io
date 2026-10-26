@@ -6,7 +6,7 @@ description = 'How Go models data and behavior: structs, embedding, value vs poi
 categories = ["Go"]
 series = ["Go Fundamentals"]
 tags = ["go", "beginner", "struct", "interface", "methods"]
-cover = { image = "/images/covers/go-structs-methods-interfaces.png", alt = "Structs, methods and interfaces in Go", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/go-structs-methods-interfaces.png", alt = "Structs, methods and interfaces in Go", hiddenInSingle = true }
 +++
 
 In the [previous post](/posts/go-slices-maps-strings/) we looked at slices, maps and strings. Now we need a way to group data and attach behavior to it. Go has no classes and no inheritance. It has **structs** for data, **methods** for behavior, and **interfaces** for abstraction, and these three small pieces cover most of what you would use classes for.

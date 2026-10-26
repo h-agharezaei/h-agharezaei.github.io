@@ -6,7 +6,7 @@ description = 'Rust smart pointers: Box for heap data and recursive types, Deref
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "smart-pointers", "box", "rc", "refcell", "intermediate"]
-cover = { image = "/images/covers/rust-smart-pointers.png", alt = "Smart pointers: Box, Rc and RefCell in Rust", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/rust-smart-pointers.png", alt = "Smart pointers: Box, Rc and RefCell in Rust", hiddenInSingle = true }
 +++
 
 In the [previous post](/posts/rust-closures-iterators/) I returned a `Box<dyn Fn>` and promised to explain it. A **smart pointer** is a struct that acts like a pointer but also owns the data and runs code when it goes away. You already know one: `String` and `Vec` own heap memory. This post covers the three you will meet most: `Box`, `Rc` and `RefCell`. It builds on [ownership](/posts/rust-ownership/): each of these exists for a case where plain ownership and borrowing are not enough.

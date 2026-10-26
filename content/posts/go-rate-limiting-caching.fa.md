@@ -6,7 +6,7 @@ description = 'Rate limit و cache در Go: محافظت از API با token buc
 categories = ["Go"]
 series = ["Go Backend"]
 tags = ["go", "backend", "rate-limiting", "caching", "singleflight", "middleware"]
-cover = { image = "/images/covers/go-rate-limiting-caching.fa.png", alt = "Rate limit و cache در Go", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/go-rate-limiting-caching.fa.png", alt = "Rate limit و cache در Go", hiddenInSingle = true }
 +++
 
 [مقاله‌ی قبل](/fa/posts/go-grpc-service/) به سرویس `orders` یک در ورودی gRPC داد. سرویسی که در دسترس است باید از مشتری‌هایش هم جان سالم به در ببرد: یک کلاینت پرسر و صدا نباید سهم بقیه را بخورد و یک سفارش پربازدید نباید هزار بار در ثانیه به دیتابیس برسد. این مقاله هر دو محافظ را به نسخه‌ی REST از [مقاله‌ی net/http](/fa/posts/go-http-api-stdlib/) اضافه می‌کند: یک middleware برای rate limit در زنجیره‌اش و یک cache جلوی `GetOrder`. کد، کپی همان نمونه است به‌علاوه‌ی متد `Pay` که برای invalidation لازم داریم.

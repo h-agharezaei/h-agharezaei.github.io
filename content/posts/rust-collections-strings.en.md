@@ -6,7 +6,7 @@ description = 'Rust collections and strings: Vec, HashMap, HashSet, BTreeMap, St
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "beginner", "collections", "vec", "hashmap", "string"]
-cover = { image = "/images/covers/rust-collections-strings.png", alt = "Collections and strings in Rust", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/rust-collections-strings.png", alt = "Collections and strings in Rust", hiddenInSingle = true }
 +++
 
 In the [previous post](/posts/rust-structs-enums-pattern-matching/) we modeled our own types with structs and enums. Now the standard library types that hold many values: **Vec**, **HashMap** and friends, and the two string types. They are where ownership and borrowing stop being theory, because the compiler will refuse code that looks perfectly reasonable in Go or Node.js. We will run code and read the actual messages.

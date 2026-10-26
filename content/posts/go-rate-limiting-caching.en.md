@@ -6,7 +6,7 @@ description = 'Go rate limiting and caching: a per-client token bucket with 429 
 categories = ["Go"]
 series = ["Go Backend"]
 tags = ["go", "backend", "rate-limiting", "caching", "singleflight", "middleware"]
-cover = { image = "/images/covers/go-rate-limiting-caching.png", alt = "Rate limiting and caching in Go", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/go-rate-limiting-caching.png", alt = "Rate limiting and caching in Go", hiddenInSingle = true }
 +++
 
 The [previous post](/posts/go-grpc-service/) gave `orders` a gRPC front door. A service that is reachable also has to survive its callers: one noisy client should not starve the others, and the same hot order should not hit the database a thousand times a second. This post adds both defences to the REST version from [the net/http post](/posts/go-http-api-stdlib/): a rate-limit middleware in its chain, and a cache in front of `GetOrder`. The code copies that demo and adds a `Pay` method, an update we need for invalidation.

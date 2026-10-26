@@ -6,7 +6,7 @@ description = 'ادامه‌ی مقاله‌ی قبل: چطور پیام‌ها�
 categories = ["Go"]
 series = ["NATS JetStream"]
 tags = ["go", "nats", "jetstream", "messaging", "retry"]
-cover = { image = "/images/covers/nats-jetstream-retry-dlq.fa.png", alt = "Retry و Dead-Letter Queue در NATS JetStream با Go", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/nats-jetstream-retry-dlq.fa.png", alt = "Retry و Dead-Letter Queue در NATS JetStream با Go", hiddenInSingle = true }
 +++
 
 در [مقاله‌ی قبل](/fa/posts/nats-jetstream-go/) یک Publisher و Worker ساده روی JetStream ساختیم. اما Workerِ آن مقاله فرض می‌کرد پردازش همیشه موفق است. در عمل پیام‌هایی هستند که هر بار fail می‌شوند. اگر کاری نکنیم، یا بی‌نهایت تکرار می‌شوند یا گم می‌شوند.

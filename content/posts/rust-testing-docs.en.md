@@ -6,7 +6,7 @@ description = 'Rust testing and docs: unit, integration and doc tests, assert ma
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "testing", "documentation", "intermediate"]
-cover = { image = "/images/covers/rust-testing-docs.png", alt = "Testing and documentation in Rust", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/rust-testing-docs.png", alt = "Testing and documentation in Rust", hiddenInSingle = true }
 +++
 
 In the [previous post](/posts/rust-smart-pointers/) we looked at smart pointers. Now a topic every real project needs: tests and docs. Rust has both built in, and they are closer than in most languages, because the examples in your documentation are compiled and run as tests. If you read the [Go testing post](/posts/go-testing-basics/), you will recognize the workflow, with some differences I point out at the end.

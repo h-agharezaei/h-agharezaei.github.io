@@ -6,7 +6,7 @@ description = 'Rust serde and JSON: derive Serialize and Deserialize, rename and
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "serde", "json", "intermediate"]
-cover = { image = "/images/covers/rust-serde-json.png", alt = "Serde and JSON in Rust", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/rust-serde-json.png", alt = "Serde and JSON in Rust", hiddenInSingle = true }
 +++
 
 In the [previous post](/posts/rust-async-tokio/) we ran async code with Tokio. Almost every service that does I/O also speaks JSON, so this post covers **serde**, the standard serialization framework in Rust. If you read the Go counterpart, [Files, io.Reader/Writer and JSON in Go](/posts/go-file-io-json/), the shape of this post will look familiar, and I reuse its `User` payload for parity.

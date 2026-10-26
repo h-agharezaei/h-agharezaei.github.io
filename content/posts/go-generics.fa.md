@@ -6,7 +6,7 @@ description = 'type parameter، constraint، تابع و type جنریک، type 
 categories = ["Go"]
 series = ["Go Fundamentals"]
 tags = ["go", "beginner", "generics", "slices", "maps"]
-cover = { image = "/images/covers/go-generics.fa.png", alt = "Generics در Go", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/go-generics.fa.png", alt = "Generics در Go", hiddenInSingle = true }
 +++
 
 در [مقاله‌ی قبل](/fa/posts/go-sync-select-context/) با goroutine، channel و context کار کردیم. این مقاله درباره‌ی **generics** است که از Go 1.18 آمده. با آن می‌شود یک تابع یا type نوشت که برای چند type کار کند و کامپایلر باز هم همه‌چیز را چک کند. می‌بینیم چه مشکلی را حل می‌کند، سینتکس constraint چیست، چند تابع و container جنریک می‌نویسیم، سراغ پکیج‌های استاندارد می‌رویم و در آخر می‌گوییم کِی نباید سراغش رفت.

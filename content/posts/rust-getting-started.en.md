@@ -7,7 +7,7 @@ description = 'Getting started with Rust for Go and Node.js developers: install 
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "cargo", "beginner", "tooling"]
-cover = { image = "/images/covers/rust-getting-started.png", alt = "Getting started with Rust: install, Cargo and a first program", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/rust-getting-started.png", alt = "Getting started with Rust: install, Cargo and a first program", hiddenInSingle = true }
 +++
 
 This is the first post in a Rust series, from beginner to advanced. I have spent most of my career writing backend services in Go and Node.js, and I am learning Rust in public. Where it helps, I will compare Rust with Go, since I have already written a few posts about Go.

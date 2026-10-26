@@ -6,7 +6,7 @@ description = 'درون runtime زبان Go را ببینید: مدل G-M-P، sc
 categories = ["Go"]
 series = ["Go Backend"]
 tags = ["go", "backend", "runtime", "scheduler", "gc", "performance"]
-cover = { image = "/images/covers/go-scheduler-gc-internals.fa.png", alt = "زمان‌بند runtime و GC در Go", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/go-scheduler-gc-internals.fa.png", alt = "زمان‌بند runtime و GC در Go", hiddenInSingle = true }
 +++
 
 در [مقاله‌ی قبل](/fa/posts/go-docker-ci-deploy/) سرویس را به‌شکل کانتینر تحویل دادیم. حالا به درون runtime همان پروسه نگاه می‌کنیم: goroutineها چطور روی CPU می‌نشینند و حافظه چطور پاک می‌شود. مقاله روی [goroutine و channel](/fa/posts/go-goroutines-channels/)، [پروفایلینگ با pprof](/fa/posts/go-profiling-pprof/) و [escape analysis و heap](/fa/posts/go-pointers-memory/) بنا شده است.

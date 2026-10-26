@@ -98,7 +98,7 @@ if __name__=="__main__":
             lang="fa" if f.endswith(".fa.md") else "en"; slug=os.path.basename(f)[:-6]
             m=re.search(r"^title = (?:'([^']*)'|\"([^\"]*)\")",t,re.M); title=m.group(1) if m.group(1) is not None else m.group(2)
             alt=title.replace("\\","\\\\").replace('"','\\"')
-            line=f'cover = {{ image = "/images/covers/{slug}{".fa" if lang=="fa" else ""}.png", alt = "{alt}", hiddenInSingle = true, hiddenInList = true }}\n'
+            line=f'cover = {{ image = "/images/covers/{slug}{".fa" if lang=="fa" else ""}.png", alt = "{alt}", hiddenInSingle = true }}\n'
             parts=t.split("+++\n",2); fm=parts[1] if parts[1].endswith("\n") else parts[1]+"\n"
             open(f,"w").write("+++\n"+fm+line+"+++\n"+parts[2]); n+=1; print("cover line added:",os.path.basename(f))
         print(n,"files updated"); sys.exit(0)

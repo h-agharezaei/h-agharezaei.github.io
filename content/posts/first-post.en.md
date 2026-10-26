@@ -4,7 +4,7 @@ draft = false
 title = 'My First Post'
 description = 'Welcome to my personal blog: why I created this site, to share experiences and knowledge, keep learning and connect with people who share my interests.'
 tags = ["start", "introduction"]
-cover = { image = "/images/covers/first-post.png", alt = "My First Post", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/first-post.png", alt = "My First Post", hiddenInSingle = true }
 +++
 
 ## Welcome to My Blog!

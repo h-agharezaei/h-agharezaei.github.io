@@ -6,7 +6,7 @@ description = 'Rust thiserror and anyhow: cut error boilerplate, report errors w
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "errors", "thiserror", "anyhow", "backend"]
-cover = { image = "/images/covers/rust-thiserror-anyhow.png", alt = "Errors in real apps: thiserror and anyhow", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/rust-thiserror-anyhow.png", alt = "Errors in real apps: thiserror and anyhow", hiddenInSingle = true }
 +++
 
 In the [previous post](/posts/rust-database-sqlx/) the typical source of errors was the database: connection failures, missing rows, constraint violations. Back in [error handling with Result](/posts/rust-error-handling-result/) we wrote the `Display`, `Error` and `From` impls by hand. That is fine for learning, but it is a lot of boilerplate. Two crates remove it: **thiserror** for error types you define, and **anyhow** for code that only needs to report errors. Go has its own answer, sentinel errors and `%w` wrapping, covered in [config, logging and errors in Go](/posts/go-config-logging-errors/).

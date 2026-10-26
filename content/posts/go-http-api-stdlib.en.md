@@ -6,7 +6,7 @@ description = 'Build a JSON API with Go net/http: ServeMux patterns, middleware,
 categories = ["Go"]
 series = ["Go Backend"]
 tags = ["go", "backend", "http", "api", "net-http", "middleware"]
-cover = { image = "/images/covers/go-http-api-stdlib.png", alt = "Building an API with net/http in Go", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/go-http-api-stdlib.png", alt = "Building an API with net/http in Go", hiddenInSingle = true }
 +++
 
 In the [previous post](/posts/go-config-logging-errors/) the `orders` service got a typed `Config` loaded from the environment, `slog` with text and JSON handlers, a request ID carried in the context, and one function (`statusOf`) that maps errors to HTTP statuses. The server itself was still minimal: one read timeout, no panic protection, no body limit, no shutdown. Now we build the HTTP layer on top, standard library only. Since Go 1.22 the router understands methods and wildcards, so for a small API I skip frameworks. We used `net/http` in the [URL shortener](/posts/go-mini-project-url-shortener/) too; here we add middleware, safe decoding, timeouts and tests.

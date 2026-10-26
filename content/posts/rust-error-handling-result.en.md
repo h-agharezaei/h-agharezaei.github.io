@@ -6,7 +6,7 @@ description = 'Rust error handling with Result and Option: unwrap vs expect, the
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "beginner", "errors", "result", "option"]
-cover = { image = "/images/covers/rust-error-handling-result.png", alt = "Error handling with Result and Option in Rust", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/rust-error-handling-result.png", alt = "Error handling with Result and Option in Rust", hiddenInSingle = true }
 +++
 
 In the [previous post](/posts/rust-collections-strings/) we worked with `Vec`, `HashMap` and strings. Several of their methods returned an `Option`, and parsing a string returns a `Result`. This post is about those two types and how Rust code deals with failure. Like Go, Rust has no exceptions, but errors are not a second return value either: they are part of the type of the return value, so you cannot forget they exist.

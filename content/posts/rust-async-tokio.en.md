@@ -6,7 +6,7 @@ description = 'Rust async/await and Tokio: lazy futures, spawn, join!, select!, 
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "async", "tokio", "intermediate"]
-cover = { image = "/images/covers/rust-async-tokio.png", alt = "async/await and Tokio in Rust", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/rust-async-tokio.png", alt = "async/await and Tokio in Rust", hiddenInSingle = true }
 +++
 
 In the [previous post](/posts/rust-concurrency-threads/) we used OS threads. Threads are fine for a handful of workers, but a server that waits on thousands of sockets does not want one thread per wait. That is what **async** is for: many tasks share a few threads and yield while they wait. As a Go developer I kept comparing it to goroutines, so I will do that at the end, carefully.

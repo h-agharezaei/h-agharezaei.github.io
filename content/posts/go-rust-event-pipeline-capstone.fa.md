@@ -7,7 +7,7 @@ description = 'Postgres، الگوی outbox، JetStream، یک worker با Rust 
 categories = ["Go", "Rust"]
 series = ["Go + Rust"]
 tags = ["go", "rust", "nats", "jetstream", "outbox", "capstone", "postgres"]
-cover = { image = "/images/covers/go-rust-event-pipeline-capstone.fa.png", alt = "پروژه‌ی پایانی: Pipeline رویدادمحور با Go، Rust و NATS", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/go-rust-event-pipeline-capstone.fa.png", alt = "پروژه‌ی پایانی: Pipeline رویدادمحور با Go، Rust و NATS", hiddenInSingle = true }
 +++
 
 [مقاله‌ی قبلی](/fa/posts/go-calls-rust-ffi/) Rust را داخل پردازه‌ی Go گذاشت. این آخرین مقاله‌ی سری، قطعه‌های کل این مجموعه را کنار هم می‌گذارد: سرویس‌های Go در لبه‌ها، یک worker با Rust برای قانون کسب‌وکار، و NATS در وسط. هیچ‌چیز تازه‌ای نیست؛ موضوع این است که اجزا چطور به هم وصل می‌شوند و وقتی یکی می‌میرد چه می‌شود. همه را با یک `run.sh` اجرا می‌کنم و بعد عمداً خرابش می‌کنم.

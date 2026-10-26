@@ -6,7 +6,7 @@ description = 'A small orders API in a layered Go layout: domain, service, store
 categories = ["Go"]
 series = ["Go Backend"]
 tags = ["go", "architecture", "clean-architecture", "backend"]
-cover = { image = "/images/covers/go-project-layout-clean-architecture.png", alt = "Project layout and clean architecture in Go", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/go-project-layout-clean-architecture.png", alt = "Project layout and clean architecture in Go", hiddenInSingle = true }
 +++
 
 This post starts the Go Backend series. The Go Fundamentals series ended with [packages and modules](/posts/go-packages-modules/) and the [URL shortener mini project](/posts/go-mini-project-url-shortener/), where everything fit in a handful of files. Once a service has a database, an HTTP layer and real business rules, the question becomes where things live and who is allowed to import whom. Here we build one small `orders` service in a layered layout and check the dependency rules with the toolchain instead of by eye.

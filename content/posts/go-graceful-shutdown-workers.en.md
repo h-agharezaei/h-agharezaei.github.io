@@ -6,7 +6,7 @@ description = 'Graceful shutdown for a Go JetStream worker: SIGTERM with signal.
 categories = ["Go"]
 series = ["NATS JetStream"]
 tags = ["go", "nats", "jetstream", "shutdown", "context", "signals"]
-cover = { image = "/images/covers/go-graceful-shutdown-workers.png", alt = "Graceful shutdown for Go workers", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/go-graceful-shutdown-workers.png", alt = "Graceful shutdown for Go workers", hiddenInSingle = true }
 +++
 
 The [previous post](/posts/nats-jetstream-idempotency/) ended by saying that redelivery during a deploy is the most common way to hit duplicates. A deploy sends your worker a signal and starts a new one. If the old one just dies, whatever it was doing is redelivered later. In this post I test that with real signals and then fix it. If `context` is new to you, read [sync, select and context](/posts/go-sync-select-context/) first.

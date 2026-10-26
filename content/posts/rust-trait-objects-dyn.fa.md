@@ -6,7 +6,7 @@ description = 'Trait object و dyn در Rust: Box<dyn Trait>، dispatch ایست
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "traits", "dyn", "intermediate"]
-cover = { image = "/images/covers/rust-trait-objects-dyn.fa.png", alt = "Trait Object و dyn در Rust", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/rust-trait-objects-dyn.fa.png", alt = "Trait Object و dyn در Rust", hiddenInSingle = true }
 +++
 
 در [مقاله‌ی قبل](/fa/posts/rust-nats-async-client/) Worker ِRust پیام‌های یک برنامه‌ی Go را مصرف کرد. پیش‌تر مقاله‌های gRPC با یک سؤال تمام شدند: Rust چطور چندریختی زمان اجرا را بسازد، همان چیزی که در Go با interface مجانی داریم؟ در [جنریک‌ها و trait‌ها](/fa/posts/rust-generics-traits/) dispatch ایستا را دیدیم، جایی که هر نوع مشخص نسخه‌ی خودش از کد را می‌گیرد. این مقاله نیمه‌ی دیگر است: **trait object** که به شکل `dyn Trait` نوشته می‌شود و اجازه می‌دهد یک `Vec` یا یک `HashMap` نوع‌های مختلف را نگه دارد. طرف Go ماجرا در [struct، متد و interface](/fa/posts/go-structs-methods-interfaces/) آمده است.

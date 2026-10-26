@@ -6,7 +6,7 @@ description = 'یک فایل proto، یک سرور Go و یک سرور Rust با
 categories = ["Go", "Rust"]
 series = ["Go + Rust"]
 tags = ["go", "rust", "grpc", "protobuf", "interop", "tonic"]
-cover = { image = "/images/covers/go-rust-grpc-interop.fa.png", alt = "ارتباط Go و Rust با gRPC", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/go-rust-grpc-interop.fa.png", alt = "ارتباط Go و Rust با gRPC", hiddenInSingle = true }
 +++
 
 [مقاله‌ی قبلی این سری](/fa/posts/go-vs-rust-when-to-use/) دو زبان را مقایسه کرد. این یکی آن‌ها را وادار به همکاری می‌کند، و همین‌جاست که gRPC به کار می‌آید: قرارداد یک فایل `.proto` است و فرقی نمی‌کند پشت هر سر کدام زبان باشد. سرویس orders را از [مقاله‌ی gRPC در Go](/fa/posts/go-grpc-service/) بدون تغییر برمی‌داریم (همان proto، همان سرور و کلاینت Go) و Rust را در هر دو سمت اضافه می‌کنیم: کلاینتی که سرور Go را صدا می‌زند و سروری که کلاینت Go صدایش می‌زند. سمت Rust از [async و Tokio](/fa/posts/rust-async-tokio/) استفاده می‌کند؛ اگر [مقاله‌ی axum](/fa/posts/rust-http-axum-api/) و [مقاله‌ی thiserror](/fa/posts/rust-thiserror-anyhow/) را خوانده باشید، handlerها آشنا به نظر می‌رسند.

@@ -6,7 +6,7 @@ description = 'یک URL shortener کوچک فقط با کتاب‌خانه‌ی 
 categories = ["Go"]
 series = ["Go Fundamentals"]
 tags = ["go", "beginner", "project", "http"]
-cover = { image = "/images/covers/go-mini-project-url-shortener.fa.png", alt = "پروژه‌ی کوچک: URL shortener با Go", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/go-mini-project-url-shortener.fa.png", alt = "پروژه‌ی کوچک: URL shortener با Go", hiddenInSingle = true }
 +++
 
 در [مقاله‌ی قبل](/fa/posts/go-cli-tool/) یک ابزار خط فرمان ساختیم. این آخرین مقاله‌ی سری Go Fundamentals است و به‌جای مبحث تازه، تکه‌ها را کنار هم می‌گذاریم: یک سرویس HTTP کوچک که URL را کوتاه می‌کند، فقط با کتاب‌خانه‌ی استاندارد. آدرس بلند را به‌صورت JSON با POST می‌فرستید، یک کد کوتاه می‌گیرید و با باز کردن `/<code>` به آدرس اصلی منتقل می‌شوید. همه‌چیز را با Go 1.26 روی macOS اجرا کرده‌ام و خروجی‌ها از اجرای واقعی کپی شده‌اند.

@@ -7,7 +7,7 @@ description = 'Run JetStream with three replicas, survive a node loss, pick a re
 categories = ["Go"]
 series = ["NATS JetStream"]
 tags = ["go", "nats", "jetstream", "cluster", "security", "production", "retention"]
-cover = { image = "/images/covers/nats-jetstream-production.png", alt = "JetStream in production: clustering, retention and security", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/nats-jetstream-production.png", alt = "JetStream in production: clustering, retention and security", hiddenInSingle = true }
 +++
 
 In the [previous post](/posts/nats-kv-object-store/) we used JetStream as a KV and blob store. This last post of the series is about what changes when it leaves your laptop: one server becomes three, streams need a retention plan, and not everyone should be allowed to publish everywhere. Monitoring and tests come first, so see [observability](/posts/nats-jetstream-observability/) and [testing](/posts/nats-jetstream-testing/); for shutting your workers down cleanly see [graceful shutdown](/posts/go-graceful-shutdown-workers/).

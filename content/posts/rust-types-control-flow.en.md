@@ -6,7 +6,7 @@ description = 'Rust types and control flow: immutable-by-default variables, shad
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "beginner", "types", "control-flow"]
-cover = { image = "/images/covers/rust-types-control-flow.png", alt = "Types, variables and control flow in Rust", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/rust-types-control-flow.png", alt = "Types, variables and control flow in Rust", hiddenInSingle = true }
 +++
 
 In the [previous post](/posts/rust-getting-started/) we installed Rust, met Cargo and ran a first program. Now we need the basic vocabulary: how to declare variables, which types exist, and how to branch and loop. Coming from Go, most of it will look familiar, but a few defaults are the opposite of what you expect.

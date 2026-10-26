@@ -6,7 +6,7 @@ description = 'A gRPC service in Go: proto3 contract, generated code, status cod
 categories = ["Go"]
 series = ["Go Backend"]
 tags = ["go", "backend", "grpc", "protobuf", "interceptors", "api"]
-cover = { image = "/images/covers/go-grpc-service.png", alt = "A gRPC service in Go", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/go-grpc-service.png", alt = "A gRPC service in Go", hiddenInSingle = true }
 +++
 
 In the [previous post](/posts/go-outbox-pattern-nats/) we made sure events leave the service reliably. Now the same `orders` service gets a second front door. We built its REST version in [the net/http post](/posts/go-http-api-stdlib/); here the operations are the same (create, get, list) but the contract is a `.proto` file and the wire is HTTP/2 with binary messages. The domain, service and in-memory store are copied unchanged, plus a `List` method. The error idea from [the config and errors post](/posts/go-config-logging-errors/) returns too: one function maps errors to codes.

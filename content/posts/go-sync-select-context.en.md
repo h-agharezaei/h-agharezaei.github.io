@@ -6,7 +6,7 @@ description = 'Go sync, select and context: protect shared state with Mutex, RWM
 categories = ["Go"]
 series = ["Go Fundamentals"]
 tags = ["go", "beginner", "concurrency", "context", "sync", "select"]
-cover = { image = "/images/covers/go-sync-select-context.png", alt = "sync, select and context in Go", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/go-sync-select-context.png", alt = "sync, select and context in Go", hiddenInSingle = true }
 +++
 
 In the [previous post](/posts/go-goroutines-channels/) we started goroutines and talked to them over channels. Two questions were left open: what do we do when goroutines must share memory, and how do we tell a goroutine to stop? This post answers both with the `sync` package, `select` and `context`.

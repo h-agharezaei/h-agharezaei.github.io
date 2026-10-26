@@ -7,7 +7,7 @@ description = 'Add Prometheus metrics, structured slog logs and W3C trace contex
 categories = ["Go"]
 series = ["NATS JetStream"]
 tags = ["go", "nats", "jetstream", "observability", "metrics", "tracing", "prometheus", "slog", "opentelemetry"]
-cover = { image = "/images/covers/nats-jetstream-observability.png", alt = "Observability for JetStream: metrics, logs and traces", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/nats-jetstream-observability.png", alt = "Observability for JetStream: metrics, logs and traces", hiddenInSingle = true }
 +++
 
 In the [previous post](/posts/go-graceful-shutdown-workers/) the worker learned to stop cleanly, but when something goes wrong we still mostly guess. A queue makes this worse: the publisher and the worker never talk directly, so a slow or failing message leaves no obvious trail. This post adds the three usual signals: **metrics** (is it healthy right now?), **logs** (what happened to this message?) and **traces** (how did one request travel from publisher to worker?).

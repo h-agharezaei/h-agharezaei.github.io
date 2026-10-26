@@ -7,7 +7,7 @@ description = 'A follow-up: retry failed messages with MaxDeliver and BackOff, t
 categories = ["Go"]
 series = ["NATS JetStream"]
 tags = ["go", "nats", "jetstream", "messaging", "retry"]
-cover = { image = "/images/covers/nats-jetstream-retry-dlq.png", alt = "Retry and Dead-Letter Queues in NATS JetStream with Go", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/nats-jetstream-retry-dlq.png", alt = "Retry and Dead-Letter Queues in NATS JetStream with Go", hiddenInSingle = true }
 +++
 
 In the [previous post](/posts/nats-jetstream-go/) we built a simple publisher and worker on JetStream. But that worker assumed processing always succeeds. In real systems some messages fail every single time, and if you do nothing they either retry forever or get lost.

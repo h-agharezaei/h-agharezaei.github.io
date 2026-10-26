@@ -6,7 +6,7 @@ description = 'Smart pointerها در Rust در عمل: Box برای داده‌
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "smart-pointers", "box", "rc", "refcell", "intermediate"]
-cover = { image = "/images/covers/rust-smart-pointers.fa.png", alt = "Smart Pointerها: Box، Rc و RefCell در Rust", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/rust-smart-pointers.fa.png", alt = "Smart Pointerها: Box، Rc و RefCell در Rust", hiddenInSingle = true }
 +++
 
 در [مقاله‌ی قبل](/fa/posts/rust-closures-iterators/) یک `Box<dyn Fn>` برگرداندیم و قول دادیم توضیحش بدهیم. **Smart pointer** ساختاری است که مثل pointer رفتار می‌کند، ولی مالک داده هم هست و وقتی از بین می‌رود کدی اجرا می‌کند. یکی‌اش را از قبل می‌شناسید: `String` و `Vec` مالک حافظه‌ی heap هستند. این مقاله سه تا از پرکاربردترین‌ها را پوشش می‌دهد: `Box`، `Rc` و `RefCell`. روی [ownership](/fa/posts/rust-ownership/) بنا شده است: هر کدام برای جایی وجود دارد که مالکیت و borrow ساده کافی نیست.

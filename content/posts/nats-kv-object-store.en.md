@@ -6,7 +6,7 @@ description = 'Use JetStream as a key-value store and a blob store from Go: revi
 categories = ["Go"]
 series = ["NATS JetStream"]
 tags = ["go", "nats", "jetstream", "kv", "object-store", "messaging"]
-cover = { image = "/images/covers/nats-kv-object-store.png", alt = "KV and Object Store in NATS", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/nats-kv-object-store.png", alt = "KV and Object Store in NATS", hiddenInSingle = true }
 +++
 
 In the [previous post](/posts/nats-jetstream-testing/) we tested JetStream services with an embedded server. This post uses the same trick for something new: JetStream also works as a **key-value store** (KV) and a **blob store** (Object Store). Both are built on streams, so there is nothing extra to run. They are handy for small shared state: feature flags, short-lived locks, [dedup keys](/posts/nats-jetstream-idempotency/), or a file that several services need.

@@ -6,7 +6,7 @@ description = 'Rust unsafe and FFI: what unsafe allows, wrapping it in a safe AP
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "unsafe", "ffi", "c", "intermediate"]
-cover = { image = "/images/covers/rust-unsafe-ffi.png", alt = "Unsafe and FFI in Rust", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/rust-unsafe-ffi.png", alt = "Unsafe and FFI in Rust", hiddenInSingle = true }
 +++
 
 The [previous post](/posts/rust-macros/) was about macros. This one is about the escape hatch: `unsafe`. Everything we have learned so far ([ownership](/posts/rust-ownership/), [smart pointers](/posts/rust-smart-pointers/)) is what safe Rust guarantees for you. `unsafe` is how you say "I will uphold those guarantees myself" when the compiler cannot check them, mostly to talk to C. Go has the same idea in its `unsafe` package with `unsafe.Pointer`, as a [pointer post](/posts/go-pointers-memory/) readers may know. Here we build a tiny C-ABI library and link a C program to it.

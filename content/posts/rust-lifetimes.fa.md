@@ -6,7 +6,7 @@ description = 'مفهوم lifetime در Rust با کد قابل اجرا: تاب
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "lifetimes", "intermediate", "borrowing"]
-cover = { image = "/images/covers/rust-lifetimes.fa.png", alt = "Lifetime در Rust", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/rust-lifetimes.fa.png", alt = "Lifetime در Rust", hiddenInSingle = true }
 +++
 
 در [مقاله‌ی قبل](/fa/posts/rust-generics-traits/) کدی نوشتیم که روی نوع‌های مختلف کار می‌کند. حالا به reference‌ها برمی‌گردیم؛ موضوعی که در [Borrowing و Reference در Rust](/fa/posts/rust-borrowing-references/) دیدیم و بهتر است اول آن را بخوانید. آنجا دیدیم که reference نباید بیشتر از مقدارش عمر کند و گاهی کامپایلر یک «lifetime specifier» می‌خواهد. این مقاله توضیح می‌دهد آن یعنی چه و کِی باید خودتان بنویسیدش.

@@ -6,7 +6,7 @@ description = 'نوشتن ماکروی declarative با macro_rules! و ماکر
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "macros", "proc-macro", "intermediate"]
-cover = { image = "/images/covers/rust-macros.fa.png", alt = "ماکروها در Rust", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/rust-macros.fa.png", alt = "ماکروها در Rust", hiddenInSingle = true }
 +++
 
 در [مقاله‌ی قبل](/fa/posts/rust-trait-objects-dyn/) موضوع traitها بود. حالا سراغ ابزار دیگرِ انتزاع می‌رویم: **ماکرو** (macro). هر روز از آن‌ها استفاده می‌کنید: `println!`، `vec!` و همان `#[derive(Serialize)]` که در [Serde و JSON در Rust](/fa/posts/rust-serde-json/) دیدیم. در این مقاله هر دو نوع را خودمان می‌نویسیم: ماکروی declarative با `macro_rules!` و ماکروی derive در یک crate جدا.

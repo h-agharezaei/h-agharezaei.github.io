@@ -6,7 +6,7 @@ description = 'worker pool محدود، errgroup با لغو در اولین خ�
 categories = ["Go"]
 series = ["Go Backend"]
 tags = ["go", "backend", "concurrency", "errgroup", "worker-pool", "semaphore"]
-cover = { image = "/images/covers/go-concurrency-patterns.fa.png", alt = "الگوهای concurrency: worker pool و errgroup", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/go-concurrency-patterns.fa.png", alt = "الگوهای concurrency: worker pool و errgroup", hiddenInSingle = true }
 +++
 
 [مقاله‌ی قبل](/fa/posts/go-transactions-patterns/) درباره‌ی تراکنش و الگوی repository بود. مثال‌های این مقاله Go ساده‌اند و دیتابیس نمی‌خواهند. در کد backend اغلب چند کار مستقل داریم (فراخوانی HTTP، query، فایل) که باید هم‌زمان اجرا شوند، ولی نه بی‌حد، و اگر یکی خراب شد بقیه متوقف شوند. این مقاله روی [goroutine و channel](/fa/posts/go-goroutines-channels/) و [sync، select و context](/fa/posts/go-sync-select-context/) بنا شده و الگوهایی را نشان می‌دهد که بیشتر از همه سراغشان می‌روم.

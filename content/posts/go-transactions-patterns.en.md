@@ -6,7 +6,7 @@ description = 'Go pgx transactions: rollback, a WithTx helper, a unit of work ov
 categories = ["Go"]
 series = ["Go Backend"]
 tags = ["go", "backend", "postgres", "transactions", "pgx", "repository"]
-cover = { image = "/images/covers/go-transactions-patterns.png", alt = "Transactions and the repository pattern in Go", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/go-transactions-patterns.png", alt = "Transactions and the repository pattern in Go", hiddenInSingle = true }
 +++
 
 In the [previous post](/posts/go-postgres-pgx-sqlc/) the orders service got a real Postgres store, but every call was its own little world. Real work often needs two writes that succeed or fail together. This post covers **transactions** in pgx, how to keep them out of the domain code, and the concurrency problems they do and do not solve.

@@ -6,7 +6,7 @@ description = 'Ship a Rust axum service: release profile size tuning with real b
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "docker", "ci", "github-actions", "release", "backend"]
-cover = { image = "/images/covers/rust-docker-ci-release.png", alt = "Docker, CI and releasing a Rust service", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/rust-docker-ci-release.png", alt = "Docker, CI and releasing a Rust service", hiddenInSingle = true }
 +++
 
 API design was the previous topic, in [typestate patterns](/posts/rust-typestate-patterns/). Now the service has to leave my laptop. This is the Rust twin of [Docker, CI and deploying a Go service](/posts/go-docker-ci-deploy/), and I use a small `orders` service in the style of [the Axum post](/posts/rust-http-axum-api/): `/orders`, `/healthz`, `/readyz`.

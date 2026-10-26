@@ -6,7 +6,7 @@ description = 'How pointers, pass-by-value, nil, escape analysis and Go 1.22 loo
 categories = ["Go"]
 series = ["Go Fundamentals"]
 tags = ["go", "beginner", "pointers", "memory"]
-cover = { image = "/images/covers/go-pointers-memory.png", alt = "Pointers and the memory model in Go", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/go-pointers-memory.png", alt = "Pointers and the memory model in Go", hiddenInSingle = true }
 +++
 
 In the [previous post](/posts/go-structs-methods-interfaces/) we gave methods pointer receivers without asking much about what a pointer actually is. This post fills that gap: how `&` and `*` work, why Go copies everything, what a nil pointer does to your program, and how the compiler decides where a value lives.

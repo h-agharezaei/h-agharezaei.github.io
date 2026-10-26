@@ -6,7 +6,7 @@ description = 'Closure و iterator در Rust در عمل: حالت‌های capt
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "closures", "iterators", "intermediate"]
-cover = { image = "/images/covers/rust-closures-iterators.fa.png", alt = "Closure و Iterator در Rust", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/rust-closures-iterators.fa.png", alt = "Closure و Iterator در Rust", hiddenInSingle = true }
 +++
 
 در [مقاله‌ی قبل](/fa/posts/rust-lifetimes/) دیدیم کامپایلر چطور طول عمر referenceها را دنبال می‌کند. Closure و iterator جایی است که این دانش به کار می‌آید: closure یک تابع کوچک است که متغیرهای اطرافش را capture می‌کند، پس باید از همان قانون‌های borrowing پیروی کند. Iteratorها نیمه‌ی دیگرند و با هم جای بیشترِ حلقه‌های اندیس‌دار را می‌گیرند.

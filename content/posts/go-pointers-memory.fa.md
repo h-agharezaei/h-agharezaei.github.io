@@ -6,7 +6,7 @@ description = 'اشاره‌گرها، pass-by-value، nil، escape analysis و 
 categories = ["Go"]
 series = ["Go Fundamentals"]
 tags = ["go", "beginner", "pointers", "memory"]
-cover = { image = "/images/covers/go-pointers-memory.fa.png", alt = "اشاره‌گرها و مدل حافظه در Go", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/go-pointers-memory.fa.png", alt = "اشاره‌گرها و مدل حافظه در Go", hiddenInSingle = true }
 +++
 
 در [مقاله‌ی قبل](/fa/posts/go-structs-methods-interfaces/) به متدها **pointer receiver** دادیم، بدون اینکه درباره‌ی خودِ اشاره‌گر زیاد حرف بزنیم. این مقاله همان خلأ را پر می‌کند: `&` و `*` چطور کار می‌کنند، چرا Go همه‌چیز را کپی می‌کند، اشاره‌گر nil با برنامه چه می‌کند و کامپایلر چطور تصمیم می‌گیرد یک مقدار کجا زندگی کند.

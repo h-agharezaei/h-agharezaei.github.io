@@ -6,7 +6,7 @@ description = 'Structured events, spans, EnvFilter, JSON output and the lost-spa
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "tracing", "observability", "async", "logging"]
-cover = { image = "/images/covers/rust-tracing-observability.png", alt = "Observability in Rust with tracing", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/rust-tracing-observability.png", alt = "Observability in Rust with tracing", hiddenInSingle = true }
 +++
 
 The [previous post](/posts/rust-pin-future-internals/) opened up async internals. Now the practical question: when a service runs thousands of tasks at once, how do you see what happened to one request? This post uses the `tracing` crate on the kind of code from [async/await and Tokio](/posts/rust-async-tokio/), and the same ideas apply to a service like the one in [Building an API with Axum](/posts/rust-http-axum-api/). I compare it with `slog` from [Config, structured logging and errors in Go](/posts/go-config-logging-errors/) at the end.

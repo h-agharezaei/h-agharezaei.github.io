@@ -6,7 +6,7 @@ description = 'کد Rust را درست benchmark کنید: راه‌اندازی
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "performance", "benchmarking", "criterion", "intermediate"]
-cover = { image = "/images/covers/rust-performance-criterion.fa.png", alt = "پرفورمنس و benchmark با Criterion در Rust", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/rust-performance-criterion.fa.png", alt = "پرفورمنس و benchmark با Criterion در Rust", hiddenInSingle = true }
 +++
 
 [مقاله‌ی قبل](/fa/posts/rust-unsafe-ffi/) درباره‌ی `unsafe` و FFI بود. این مقاله سؤالی را جواب می‌دهد که بعد از «کار می‌کند؟» می‌آید: سریع است، و نسبت به چه؟ یک حلقه‌ی دست‌ساز دور `Instant::now()` فقط یک عدد می‌دهد و نمی‌گوید چقدر نویزی است. **Criterion** کتاب‌خانه‌ی استاندارد benchmark آماری در Rust است. اگر Go بلدید، معادل‌هایش `testing.B` از [مقاله‌ی تست](/fa/posts/go-testing-basics/)، ابزار `benchstat` و [pprof](/fa/posts/go-profiling-pprof/) هستند. [مقاله‌ی مقایسه‌ی Go و Rust](/fa/posts/go-vs-rust-when-to-use/) هم قبلاً هشدار داده بود که یک microbenchmark چیز زیادی ثابت نمی‌کند؛ اینجا یاد می‌گیریم همان یکی را حداقل درست اندازه بگیریم.

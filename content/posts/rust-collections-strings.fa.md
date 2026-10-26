@@ -6,7 +6,7 @@ description = 'مروری عملی بر Vec، HashMap، HashSet، BTreeMap، Str
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "beginner", "collections", "vec", "hashmap", "string"]
-cover = { image = "/images/covers/rust-collections-strings.fa.png", alt = "Collectionها و String در Rust", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/rust-collections-strings.fa.png", alt = "Collectionها و String در Rust", hiddenInSingle = true }
 +++
 
 در [مقاله‌ی قبل](/fa/posts/rust-structs-enums-pattern-matching/) با struct و enum نوع‌های خودمان را ساختیم. حالا سراغ نوع‌های کتاب‌خانه‌ی استاندارد می‌رویم که چند مقدار را نگه می‌دارند: **Vec**، **HashMap** و همراهانشان، و دو نوع رشته. اینجا ownership و borrowing از تئوری بیرون می‌آیند، چون کامپایلر کدی را رد می‌کند که در Go یا Node.js کاملاً عادی به نظر می‌رسد. کد را اجرا می‌کنیم و پیام‌های واقعی را می‌خوانیم.

@@ -6,7 +6,7 @@ description = 'خواندن و نوشتن فایل با os و bufio، ترکیب
 categories = ["Go"]
 series = ["Go Fundamentals"]
 tags = ["go", "beginner", "json", "io"]
-cover = { image = "/images/covers/go-file-io-json.fa.png", alt = "کار با فایل، io.Reader/Writer و JSON در Go", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/go-file-io-json.fa.png", alt = "کار با فایل، io.Reader/Writer و JSON در Go", hiddenInSingle = true }
 +++
 
 در [مقاله‌ی قبل](/fa/posts/go-testing-basics/) تست و benchmark نوشتیم. برنامه‌های واقعی فایل می‌خوانند و با JSON کار می‌کنند؛ این مقاله هر دو را پوشش می‌دهد. ایده‌ی اصلی دو interface خیلی کوچک است، `io.Reader` و `io.Writer`: وقتی آن‌ها را بشناسید، فایل، buffer، اتصال شبکه و خروجی استاندارد همه یک شکل پیدا می‌کنند.

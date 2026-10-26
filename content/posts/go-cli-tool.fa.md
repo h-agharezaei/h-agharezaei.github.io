@@ -6,7 +6,7 @@ description = 'ساخت wordstat، یک ابزار خط فرمان واقعی ب
 categories = ["Go"]
 series = ["Go Fundamentals"]
 tags = ["go", "beginner", "cli", "flag", "build"]
-cover = { image = "/images/covers/go-cli-tool.fa.png", alt = "ساخت ابزار خط فرمان با Go", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/go-cli-tool.fa.png", alt = "ساخت ابزار خط فرمان با Go", hiddenInSingle = true }
 +++
 
 در [مقاله‌ی قبل](/fa/posts/go-file-io-json/) با `io.Reader` و `io.Writer` فایل خواندیم و JSON نوشتیم. حالا همان را در چیزی به کار می‌بریم که واقعاً می‌شود نصبش کرد: یک ابزار خط فرمان. ابزاری به نام `wordstat` می‌سازیم که یک فایل (یا stdin) را می‌خواند و تعداد خط، کلمه و بایت و N کلمه‌ی پرتکرار را به صورت متن یا JSON چاپ می‌کند. در مسیر با پکیج `flag`، زیردستورها، exit code، ساختاری که تست‌کردنش آسان است و ساختن یک باینری برای هر پلتفرم آشنا می‌شویم.

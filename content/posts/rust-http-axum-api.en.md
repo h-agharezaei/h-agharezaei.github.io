@@ -6,7 +6,7 @@ description = 'Build a JSON orders API with Rust Axum: routes, extractors, share
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "axum", "http", "api", "tokio", "tower", "intermediate"]
-cover = { image = "/images/covers/rust-http-axum-api.png", alt = "Building an API with Axum in Rust", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/rust-http-axum-api.png", alt = "Building an API with Axum in Rust", hiddenInSingle = true }
 +++
 
 In the [previous post](/posts/rust-serde-json/) we learned serde and JSON, and promised to use those types for request and response bodies. This is that post. On top of the Tokio runtime from [async Rust with Tokio](/posts/rust-async-tokio/) we build the same small orders API as in the Go counterpart, [Building an API with net/http in Go](/posts/go-http-api-stdlib/): create, get by id, list, a `422` for validation errors and a `404` for unknown orders. I use **Axum**, a thin web framework on top of Hyper and Tower.

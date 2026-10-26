@@ -6,7 +6,7 @@ description = 'Rust structs, impl blocks, enums with data, Option, exhaustive ma
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "beginner", "enums", "pattern-matching", "structs"]
-cover = { image = "/images/covers/rust-structs-enums-pattern-matching.png", alt = "Structs, enums and pattern matching in Rust", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/rust-structs-enums-pattern-matching.png", alt = "Structs, enums and pattern matching in Rust", hiddenInSingle = true }
 +++
 
 In the [previous post](/posts/rust-borrowing-references/) we learned how to lend values with references. Now we can model data. If you come from Go, structs will look familiar. Enums will not: in Rust a variant can carry data, and `match` forces you to handle every case. This combination is the feature I miss most when I go back to other languages.

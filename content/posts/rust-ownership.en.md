@@ -6,7 +6,7 @@ description = 'Rust ownership explained with runnable code: the three rules, sta
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "beginner", "ownership", "memory"]
-cover = { image = "/images/covers/rust-ownership.png", alt = "Ownership in Rust", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/rust-ownership.png", alt = "Ownership in Rust", hiddenInSingle = true }
 +++
 
 In the [previous post](/posts/rust-types-control-flow/) we covered types, variables and control flow, which felt familiar if you come from Go or Node.js. Ownership is the part that does not. It is the idea Rust uses to manage memory without a garbage collector, and it is what the compiler complains about most in your first weeks.

@@ -6,7 +6,7 @@ description = 'Rust type-state pattern: newtypes, a PhantomData builder, consumi
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "typestate", "api-design", "advanced"]
-cover = { image = "/images/covers/rust-typestate-patterns.png", alt = "The type-state pattern and API design in Rust", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/rust-typestate-patterns.png", alt = "The type-state pattern and API design in Rust", hiddenInSingle = true }
 +++
 
 The previous topic was tracing. This post is about something that happens before any log line: designing APIs so the bug cannot be written at all. The idea is called "make invalid states unrepresentable". We already have the tools: [structs and enums](/posts/rust-structs-enums-pattern-matching/), [generics and traits](/posts/rust-generics-traits/), and above all [ownership](/posts/rust-ownership/), because a `self`-consuming method is a move, and a move is what makes type-state work. Everything below was run with Rust 1.90 (edition 2024) in a small workspace: one `api` library crate, one `app` binary, and a `fails` crate with one tiny binary per compile error, so every error is reproducible.

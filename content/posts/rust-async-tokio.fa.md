@@ -6,7 +6,7 @@ description = 'async/await و Tokio در Rust در عمل: future تنبل، spa
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "async", "tokio", "intermediate"]
-cover = { image = "/images/covers/rust-async-tokio.fa.png", alt = "async/await و Tokio در Rust", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/rust-async-tokio.fa.png", alt = "async/await و Tokio در Rust", hiddenInSingle = true }
 +++
 
 در [مقاله‌ی قبل](/fa/posts/rust-concurrency-threads/) از thread سیستم‌عامل استفاده کردیم. thread برای چند worker خوب است، اما سروری که منتظر هزاران socket است نمی‌خواهد برای هر انتظار یک thread داشته باشد. جواب این مشکل **async** است: تعداد زیادی task چند thread را بین خودشان تقسیم می‌کنند و وقتی منتظرند، نوبت را به دیگری می‌دهند. من به عنوان برنامه‌نویس Go مدام آن را با goroutine مقایسه می‌کردم؛ آخر مقاله، با احتیاط، همین کار را می‌کنم.

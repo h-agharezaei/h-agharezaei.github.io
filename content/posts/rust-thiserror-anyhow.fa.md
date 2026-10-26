@@ -6,7 +6,7 @@ description = 'خطا در Rust با thiserror و anyhow: کوتاه کردن en
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "errors", "thiserror", "anyhow", "backend"]
-cover = { image = "/images/covers/rust-thiserror-anyhow.fa.png", alt = "خطا در اپلیکیشن واقعی: thiserror و anyhow", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/rust-thiserror-anyhow.fa.png", alt = "خطا در اپلیکیشن واقعی: thiserror و anyhow", hiddenInSingle = true }
 +++
 
 در [مقاله‌ی قبل](/fa/posts/rust-database-sqlx/) منبع معمول خطا دیتابیس بود: قطع اتصال، ردیف پیدا‌نشده، نقض constraint. در [مدیریت خطا با Result](/fa/posts/rust-error-handling-result/) پیاده‌سازی‌های `Display`، `Error` و `From` را دستی نوشتیم. برای یادگیری خوب است، اما کد تکراری زیادی دارد. دو crate این تکرار را حذف می‌کنند: **thiserror** برای نوع‌های خطایی که خودتان تعریف می‌کنید و **anyhow** برای کدی که فقط باید خطا را گزارش کند. Go هم جواب خودش را دارد، یعنی sentinel error و wrap کردن با `%w`، که در [پیکربندی، لاگ و خطا در Go](/fa/posts/go-config-logging-errors/) دیدیم.

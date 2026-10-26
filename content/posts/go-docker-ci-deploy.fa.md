@@ -6,7 +6,7 @@ description = 'کانتینری کردن سرویس Go: باینری استات�
 categories = ["Go"]
 series = ["Go Backend"]
 tags = ["go", "backend", "docker", "ci", "github-actions", "deploy"]
-cover = { image = "/images/covers/go-docker-ci-deploy.fa.png", alt = "Docker، CI و دیپلوی سرویس Go", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/go-docker-ci-deploy.fa.png", alt = "Docker، CI و دیپلوی سرویس Go", hiddenInSingle = true }
 +++
 
 موضوع مقاله‌ی قبل profiling بود. حالا سرویس باید از لپ‌تاپ من بیرون برود. سرویس `orders` از [مقاله‌ی net/http](/fa/posts/go-http-api-stdlib/) را در یک کانتینر می‌گذاریم و CI را مسئول تست و انتشارش می‌کنیم. مدیریت SIGTERM از [مقاله‌ی graceful shutdown](/fa/posts/go-graceful-shutdown-workers/) اینجا مهم‌تر هم می‌شود، چون orchestrator دقیقاً با همین سیگنال کانتینر را متوقف می‌کند.

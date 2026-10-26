@@ -6,7 +6,7 @@ description = 'مقایسه‌ی صادقانه‌ی Go و Rust از دید یک
 categories = ["Go", "Rust"]
 series = ["Go + Rust"]
 tags = ["go", "rust", "comparison", "backend"]
-cover = { image = "/images/covers/go-vs-rust-when-to-use.fa.png", alt = "Go یا Rust؟ هرکدام برای چه کاری", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/go-vs-rust-when-to-use.fa.png", alt = "Go یا Rust؟ هرکدام برای چه کاری", hiddenInSingle = true }
 +++
 
 مبانی Go تمام شده و سری Rust هم به ownership، borrowing و مدیریت خطا رسیده است. پس وقت خوبی است به پرسشی جواب بدهم که همیشه پرسیده می‌شود: کدام را انتخاب کنم؟ من بیشتر با Go و Node.js کار می‌کنم و Rust را هنوز یاد می‌گیرم؛ پس این نوشته نظر یک نفر همراه با کمی داده است، نه حکم نهایی. هرجا چیزی را اندازه گرفته‌ام صریح می‌گویم و هرجا فقط تجربه‌ی خودم است هم همین‌طور.

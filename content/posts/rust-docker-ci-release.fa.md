@@ -6,7 +6,7 @@ description = 'آماده‌سازی سرویس axum برای انتشار: rele
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "docker", "ci", "github-actions", "release", "backend"]
-cover = { image = "/images/covers/rust-docker-ci-release.fa.png", alt = "Docker، CI و release سرویس Rust", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/rust-docker-ci-release.fa.png", alt = "Docker، CI و release سرویس Rust", hiddenInSingle = true }
 +++
 
 موضوع مقاله‌ی قبل طراحی API بود، در [الگوهای typestate](/fa/posts/rust-typestate-patterns/). حالا سرویس باید از لپ‌تاپ من بیرون برود. این نسخه‌ی Rust از [Docker، CI و دیپلوی سرویس Go](/fa/posts/go-docker-ci-deploy/) است و یک سرویس کوچک `orders` به سبک [مقاله‌ی Axum](/fa/posts/rust-http-axum-api/) دارد: `/orders`، `/healthz` و `/readyz`.

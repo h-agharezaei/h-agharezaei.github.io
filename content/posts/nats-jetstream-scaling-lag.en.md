@@ -7,7 +7,7 @@ description = 'Scale processing by running several workers on one durable JetStr
 categories = ["Go"]
 series = ["NATS JetStream"]
 tags = ["go", "nats", "jetstream", "messaging", "scaling", "monitoring"]
-cover = { image = "/images/covers/nats-jetstream-scaling-lag.png", alt = "Multiple workers on one consumer and monitoring lag in JetStream", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/nats-jetstream-scaling-lag.png", alt = "Multiple workers on one consumer and monitoring lag in JetStream", hiddenInSingle = true }
 +++
 
 At the end of the [previous post](/posts/nats-jetstream-retry-dlq/) I promised two topics: running more than one worker, and watching how far behind the workers are. One worker is fine until messages arrive faster than it can process them. This post answers two questions: how do I add workers without processing anything twice, and how do I know the queue is backing up?

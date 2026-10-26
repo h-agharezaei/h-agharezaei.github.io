@@ -6,7 +6,7 @@ description = 'Go generics explained: type parameters, constraints, generic func
 categories = ["Go"]
 series = ["Go Fundamentals"]
 tags = ["go", "beginner", "generics", "slices", "maps"]
-cover = { image = "/images/covers/go-generics.png", alt = "Generics in Go", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/go-generics.png", alt = "Generics in Go", hiddenInSingle = true }
 +++
 
 In the [previous post](/posts/go-sync-select-context/) we worked with goroutines, channels and context. This post is about **generics**, which arrived in Go 1.18. They let you write one function or type that works for many types while the compiler still checks everything. We will look at the problem they solve, the constraint syntax, a few generic helpers and containers, the standard library packages built on them, and when you should not reach for them.

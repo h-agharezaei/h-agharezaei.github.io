@@ -6,7 +6,7 @@ description = 'Go داده و رفتار را چطور مدل می‌کند: str
 categories = ["Go"]
 series = ["Go Fundamentals"]
 tags = ["go", "beginner", "struct", "interface", "methods"]
-cover = { image = "/images/covers/go-structs-methods-interfaces.fa.png", alt = "Struct، متد و Interface در Go", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/go-structs-methods-interfaces.fa.png", alt = "Struct، متد و Interface در Go", hiddenInSingle = true }
 +++
 
 در [مقاله‌ی قبل](/fa/posts/go-slices-maps-strings/) با slice، map و string آشنا شدیم. حالا به راهی نیاز داریم که داده را گروه‌بندی کنیم و رفتار را به آن وصل کنیم. Go کلاس و وراثت ندارد. به‌جایش **struct** برای داده، **متد** برای رفتار و **interface** برای انتزاع دارد، و همین سه تکه‌ی کوچک بیشتر کاری را که با کلاس انجام می‌دادید پوشش می‌دهند.

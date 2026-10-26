@@ -6,7 +6,7 @@ description = 'Go scheduler and garbage collector internals: the G-M-P model, sc
 categories = ["Go"]
 series = ["Go Backend"]
 tags = ["go", "backend", "runtime", "scheduler", "gc", "performance"]
-cover = { image = "/images/covers/go-scheduler-gc-internals.png", alt = "The Go scheduler and garbage collector", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/go-scheduler-gc-internals.png", alt = "The Go scheduler and garbage collector", hiddenInSingle = true }
 +++
 
 In the [previous post](/posts/go-docker-ci-deploy/) we shipped our service as a container. Now we look inside the runtime of that process: how goroutines get onto CPUs, and how memory gets cleaned up. It builds on [goroutines and channels](/posts/go-goroutines-channels/), on [profiling with pprof](/posts/go-profiling-pprof/) and on [escape analysis and the heap](/posts/go-pointers-memory/).

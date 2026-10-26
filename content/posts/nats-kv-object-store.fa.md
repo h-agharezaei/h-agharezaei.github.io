@@ -6,7 +6,7 @@ description = 'KV و Object Store در NATS JetStream با Go: revision، compar
 categories = ["Go"]
 series = ["NATS JetStream"]
 tags = ["go", "nats", "jetstream", "kv", "object-store", "messaging"]
-cover = { image = "/images/covers/nats-kv-object-store.fa.png", alt = "KV و Object Store در NATS", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/nats-kv-object-store.fa.png", alt = "KV و Object Store در NATS", hiddenInSingle = true }
 +++
 
 در [مقاله‌ی قبل](/fa/posts/nats-jetstream-testing/) سرویس‌های JetStream را با یک سرور توکار تست کردیم. این مقاله از همان ترفند برای چیز تازه‌ای استفاده می‌کند: JetStream می‌تواند **key-value store** (KV) و **blob store** (Object Store) هم باشد. هر دو روی streamها ساخته شده‌اند و چیز اضافه‌ای برای اجرا لازم نیست. برای وضعیت کوچکِ مشترک عالی‌اند: feature flag، قفل‌های کوتاه‌مدت، [کلیدهای dedup](/fa/posts/nats-jetstream-idempotency/) یا فایلی که چند سرویس لازم دارند.

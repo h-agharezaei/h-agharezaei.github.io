@@ -6,7 +6,7 @@ description = 'Concurrency با thread در Rust: spawn و join، closure‌ها
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "concurrency", "threads", "intermediate"]
-cover = { image = "/images/covers/rust-concurrency-threads.fa.png", alt = "Concurrency با Thread در Rust", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/rust-concurrency-threads.fa.png", alt = "Concurrency با Thread در Rust", hiddenInSingle = true }
 +++
 
 در [مقاله‌ی قبل](/fa/posts/rust-testing-docs/) درباره‌ی تست و مستندسازی صحبت کردیم. حالا سراغ قابلیتی می‌رویم که Rust بیشترین افتخار را به آن می‌کند: «concurrency بدون ترس». ادعا این است که همان **ownership** و **borrowing** که می‌شناسید، **data race** را هم در زمان کامپایل غیرممکن می‌کند. فقط از کتاب‌خانه‌ی استاندارد استفاده می‌کنیم و همه‌ی خطاهای زیر از کامپایل واقعی آمده‌اند. اگر Go بلدید، این بخش معادل [goroutine و channel](/fa/posts/go-goroutines-channels/) و [sync، select و context](/fa/posts/go-sync-select-context/) است.

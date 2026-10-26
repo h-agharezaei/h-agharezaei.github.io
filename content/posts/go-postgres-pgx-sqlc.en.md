@@ -6,7 +6,7 @@ description = 'Use PostgreSQL in Go with pgx and sqlc: migrations, a connection 
 categories = ["Go"]
 series = ["Go Backend"]
 tags = ["go", "backend", "postgres", "pgx", "sqlc", "sql"]
-cover = { image = "/images/covers/go-postgres-pgx-sqlc.png", alt = "Postgres with pgx and sqlc in Go", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/go-postgres-pgx-sqlc.png", alt = "Postgres with pgx and sqlc in Go", hiddenInSingle = true }
 +++
 
 In the [previous post](/posts/go-http-api-stdlib/) the orders API stored everything in a map. Now we give it a real database. The `Repository` interface lives in the service, as we set up in [project layout and clean architecture](/posts/go-project-layout-clean-architecture/), so a Postgres store is just a second implementation of it. We use **pgx** (the Postgres driver and toolkit) directly first, then generate the same store with **sqlc**.

@@ -6,7 +6,7 @@ description = 'تراکنش‌ها با pgx در Go: rollback، تابع کمک�
 categories = ["Go"]
 series = ["Go Backend"]
 tags = ["go", "backend", "postgres", "transactions", "pgx", "repository"]
-cover = { image = "/images/covers/go-transactions-patterns.fa.png", alt = "تراکنش و الگوی Repository در Go", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/go-transactions-patterns.fa.png", alt = "تراکنش و الگوی Repository در Go", hiddenInSingle = true }
 +++
 
 در [مقاله‌ی قبل](/fa/posts/go-postgres-pgx-sqlc/) سرویس سفارش‌ها یک store واقعی Postgres گرفت، ولی هر فراخوانی دنیای جدا از بقیه بود. کار واقعی اغلب دو نوشتن می‌خواهد که یا هر دو انجام شوند یا هیچ‌کدام. این مقاله درباره‌ی **تراکنش** (transaction) در pgx است، اینکه چطور آن را از کد domain دور نگه داریم، و اینکه کدام مشکل‌های هم‌زمانی را حل می‌کند و کدام را نه.

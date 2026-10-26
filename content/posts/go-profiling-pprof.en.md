@@ -6,7 +6,7 @@ description = 'Find a Go hot spot with pprof: CPU, heap and goroutine profiles o
 categories = ["Go"]
 series = ["Go Backend"]
 tags = ["go", "backend", "pprof", "profiling", "performance", "benchmark"]
-cover = { image = "/images/covers/go-profiling-pprof.png", alt = "Profiling Go with pprof", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/go-profiling-pprof.png", alt = "Profiling Go with pprof", hiddenInSingle = true }
 +++
 
 The [previous post](/posts/go-rate-limiting-caching/) was about rate limiting and caching. Now a different question: the service is slow, so what do you change? Guessing is how people end up optimizing the wrong line. **pprof** is Go's built-in **profiler**, and this post uses it on a tiny `net/http` service that I made slow on purpose. It builds on [benchmarks](/posts/go-testing-basics/) and the [memory basics](/posts/go-pointers-memory/) from earlier.

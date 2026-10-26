@@ -6,7 +6,7 @@ description = 'A practical tour of Go slices, maps and strings: the shared backi
 categories = ["Go"]
 series = ["Go Fundamentals"]
 tags = ["go", "beginner", "slice", "map", "string"]
-cover = { image = "/images/covers/go-slices-maps-strings.png", alt = "Slices, maps and strings in Go", hiddenInSingle = true, hiddenInList = true }
+cover = { image = "/images/covers/go-slices-maps-strings.png", alt = "Slices, maps and strings in Go", hiddenInSingle = true }
 +++
 
 In the [previous post](/posts/go-functions-defer-errors/) we covered functions, `defer` and error handling. Now the three types you will use in almost every Go program: **slices**, **maps** and **strings**. Each has one behavior that surprises newcomers, so we will run code and look at the output instead of trusting intuition.

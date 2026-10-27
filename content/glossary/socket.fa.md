@@ -4,7 +4,7 @@ summary = "دستگیره‌ای از سیستم‌عامل که برنامه ب
 category = "Networking"
 fa_title = "سوکت"
 related = ["tcp"]
-posts = ["net-tcp-ip-model", "net-sockets-tcp-from-scratch", "net-udp-sockets", "net-http1-by-hand"]
+posts = ["net-tcp-ip-model", "net-sockets-tcp-from-scratch", "net-udp-sockets", "net-http1-by-hand", "net-websocket"]
 +++
 
 یک اتصال TCP با چهار مقدار آدرس مبدأ، port مبدأ، آدرس مقصد و port مقصد شناخته می‌شود. socket در حالت listen اتصال می‌پذیرد و هر اتصال پذیرفته‌شده یک socket تازه است.

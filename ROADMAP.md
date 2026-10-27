@@ -336,17 +336,17 @@ python3 scripts/generate-covers.py --default        # کاور پیش‌فرض �
 | 64 | 2027-03-03 | 1405/12/12 | EN3 | `eng-refactoring-safely` | Software Engineering | ✍️ |
 | 65 | 2027-03-05 | 1405/12/14 | AL11 | `algo-graphs-bfs-dfs` | Algorithms | ✍️ |
 | 66 | 2027-03-07 | 1405/12/16 | SC3 | `sec-injection-xss` | Software Security | ✍️ |
-| 67 | 2027-03-09 | 1405/12/18 | DB15 | `db-connection-pooling` | Databases | 📝 |
-| 68 | 2027-03-11 | 1405/12/20 | PY6 | `py-type-hints-mypy` | Python | 📝 |
-| 69 | 2027-03-13 | 1405/12/22 | NW9 | `net-http2` | Networking | 📝 |
-| 70 | 2027-03-15 | 1405/12/24 | ND13 | `node-validation-zod` | Node.js | 📝 |
-| 71 | 2027-03-17 | 1405/12/26 | EN4 | `eng-code-review` | Software Engineering | 📝 |
-| 72 | 2027-03-19 | 1405/12/28 | LX1 | `linux-shell-practical` | Linux | 📝 |
-| 73 | 2027-03-21 | 1406/01/01 | AL12 | `algo-shortest-paths-dijkstra` | Algorithms | 📝 |
-| 74 | 2027-03-22 | 1406/01/02 | SC4 | `sec-password-hashing` | Software Security | 📝 |
-| 75 | 2027-03-23 | 1406/01/03 | DB16 | `db-slow-query-case-study` | Databases | 📝 |
-| 76 | 2027-03-24 | 1406/01/04 | PY7 | `py-testing-pytest` | Python | 📝 |
-| 77 | 2027-03-25 | 1406/01/05 | NW10 | `net-websocket` | Networking | 📝 |
+| 67 | 2027-03-09 | 1405/12/18 | DB15 | `db-connection-pooling` | Databases | ✍️ |
+| 68 | 2027-03-11 | 1405/12/20 | PY6 | `py-type-hints-mypy` | Python | ✍️ |
+| 69 | 2027-03-13 | 1405/12/22 | NW9 | `net-http2` | Networking | ✍️ |
+| 70 | 2027-03-15 | 1405/12/24 | ND13 | `node-validation-zod` | Node.js | ✍️ |
+| 71 | 2027-03-17 | 1405/12/26 | EN4 | `eng-code-review` | Software Engineering | ✍️ |
+| 72 | 2027-03-19 | 1405/12/28 | LX1 | `linux-shell-practical` | Linux | ✍️ |
+| 73 | 2027-03-21 | 1406/01/01 | AL12 | `algo-shortest-paths-dijkstra` | Algorithms | ✍️ |
+| 74 | 2027-03-22 | 1406/01/02 | SC4 | `sec-password-hashing` | Software Security | ✍️ |
+| 75 | 2027-03-23 | 1406/01/03 | DB16 | `db-slow-query-case-study` | Databases | ✍️ |
+| 76 | 2027-03-24 | 1406/01/04 | PY7 | `py-testing-pytest` | Python | ✍️ |
+| 77 | 2027-03-25 | 1406/01/05 | NW10 | `net-websocket` | Networking | ✍️ |
 | 78 | 2027-03-26 | 1406/01/06 | EN5 | `eng-api-design-versioning-pagination` | Software Engineering | 📝 |
 | 79 | 2027-03-27 | 1406/01/07 | LX2 | `linux-filesystem-permissions` | Linux | 📝 |
 | 80 | 2027-03-28 | 1406/01/08 | ND14 | `node-worker-threads-cluster` | Node.js | 📝 |

@@ -4,7 +4,7 @@ summary = "پرچمی که فقط برای خاموش کردن فوری یک و�
 category = "Engineering"
 fa_title = "کلید اضطراری"
 related = ["feature-flag"]
-posts = ["eng-feature-flags-trunk-based"]
+posts = ["eng-feature-flags-trunk-based", "ds-deployment-strategies"]
 +++
 
 کلید اضطراری پرچمی است که بر همه‌ی قاعده‌های دیگر غالب می‌شود و ویژگی را برای همه خاموش می‌کند. چون deploy نمی‌خواهد، وقتی مسیر تازه در production خراب می‌کند سریع‌ترین واکنش اول است.

@@ -4,7 +4,7 @@ summary = "یک تراکنش طولانی کسب‌وکاری که به چند �
 category = "Distributed"
 fa_title = "saga"
 related = ["two-phase-commit", "compensating-transaction", "idempotency"]
-posts = ["ds-saga-vs-2pc"]
+posts = ["ds-saga-vs-2pc", "ds-modular-monolith-vs-microservices"]
 +++
 
 saga ایزولاسیون را کنار می‌گذارد: دیگران می‌توانند حالت‌های میانی را ببینند. اجرای آن یا با یک orchestrator است که state machine را ذخیره می‌کند، یا با واکنش سرویس‌ها به eventهای هم (choreography).

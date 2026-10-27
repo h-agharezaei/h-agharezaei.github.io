@@ -4,7 +4,7 @@ summary = "باگی که نتیجه‌اش به زمان‌بندیِ همگام
 category = "Go"
 fa_title = "شرایط مسابقه"
 related = ["mutex", "goroutine"]
-posts = ["go-sync-select-context", "go-concurrency-patterns", "eng-code-review", "node-worker-threads-cluster", "py-gil-threading", "py-multiprocessing"]
+posts = ["go-sync-select-context", "go-concurrency-patterns", "eng-code-review", "node-worker-threads-cluster", "py-gil-threading", "py-multiprocessing", "linux-scripting-cron-safely"]
 +++
 
 data race وقتی رخ می‌دهد که دو goroutine هم‌زمان به یک متغیر دسترسی داشته باشند و دست‌کم یکی بنویسد. نتیجه تعریف‌نشده است و اغلب فقط زیر بار دیده می‌شود. Go یک detector دارد: تست یا برنامه را با `go test -race` یا `go run -race` اجرا کنید.

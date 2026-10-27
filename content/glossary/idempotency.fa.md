@@ -4,7 +4,7 @@ summary = "پردازش چندباره‌ی یک عملیات همان اثر پ
 category = "Messaging"
 fa_title = "خودتوان‌بودن"
 related = ["jetstream", "dlq", "outbox-pattern"]
-posts = ["nats-jetstream-idempotency", "node-nats-jetstream", "eng-api-design-versioning-pagination", "ds-why-distributed-is-hard", "net-load-balancer-l4-l7", "eng-adr-documentation", "ds-circuit-breaker-bulkhead", "ds-cqrs-event-sourcing"]
+posts = ["nats-jetstream-idempotency", "node-nats-jetstream", "eng-api-design-versioning-pagination", "ds-why-distributed-is-hard", "net-load-balancer-l4-l7", "eng-adr-documentation", "ds-circuit-breaker-bulkhead", "ds-cqrs-event-sourcing", "ds-fault-injection-testing", "ds-modular-monolith-vs-microservices", "linux-scripting-cron-safely"]
 +++
 
 سیستم‌های پیام با تحویل at-least-once ممکن است پیام را دوباره تحویل بدهند، پس handlerها باید تکرار را تحمل کنند. روش‌های رایج: کلید idempotency در دیتابیس، unique constraint، یا deduplication با `Nats-Msg-Id` در JetStream سمت ناشر.

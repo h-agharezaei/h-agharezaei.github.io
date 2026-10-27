@@ -4,7 +4,7 @@ summary = "یک بررسی بسیار کوچک که نشان می‌دهد artif
 category = "Engineering"
 fa_title = "smoke test"
 related = ["health-check", "ci"]
-posts = ["eng-ci-cd-pipeline-design"]
+posts = ["eng-ci-cd-pipeline-design", "ds-deployment-strategies"]
 +++
 
 معمولاً: باینری را روی loopback اجرا می‌کنید و endpoint سلامتش را صدا می‌زنید.

@@ -413,17 +413,17 @@ python3 scripts/generate-covers.py --default        # کاور پیش‌فرض �
 | 141 | 2027-05-28 | 1406/03/07 | EN14 | `eng-ddd-basics` | Software Engineering | ✍️ |
 | 142 | 2027-05-29 | 1406/03/08 | DS12 | `ds-messaging-event-driven` | Distributed Systems | ✍️ |
 | 143 | 2027-05-30 | 1406/03/09 | LX12 | `linux-logs-journalctl` | Linux | ✍️ |
-| 144 | 2027-05-31 | 1406/03/10 | SC16 | `sec-logging-audit-incident-response` | Software Security | 📝 |
-| 145 | 2027-06-01 | 1406/03/11 | DS13 | `ds-service-discovery-load-balancing` | Distributed Systems | 📝 |
-| 146 | 2027-06-02 | 1406/03/12 | EN15 | `eng-monorepo-vs-polyrepo` | Software Engineering | 📝 |
-| 147 | 2027-06-03 | 1406/03/13 | DS14 | `ds-distributed-rate-limiting` | Distributed Systems | 📝 |
-| 148 | 2027-06-04 | 1406/03/14 | LX13 | `linux-strace-perf` | Linux | 📝 |
-| 149 | 2027-06-05 | 1406/03/15 | EN16 | `eng-estimation-planning` | Software Engineering | 📝 |
-| 150 | 2027-06-06 | 1406/03/16 | DS15 | `ds-fault-injection-testing` | Distributed Systems | 📝 |
-| 151 | 2027-06-07 | 1406/03/17 | LX14 | `linux-scripting-cron-safely` | Linux | 📝 |
-| 152 | 2027-06-08 | 1406/03/18 | DS16 | `ds-modular-monolith-vs-microservices` | Distributed Systems | 📝 |
-| 153 | 2027-06-09 | 1406/03/19 | DS17 | `ds-deployment-strategies` | Distributed Systems | 📝 |
-| 154 | 2027-06-10 | 1406/03/20 | DS18 | `ds-capacity-estimation` | Distributed Systems | 📝 |
+| 144 | 2027-05-31 | 1406/03/10 | SC16 | `sec-logging-audit-incident-response` | Software Security | ✍️ |
+| 145 | 2027-06-01 | 1406/03/11 | DS13 | `ds-service-discovery-load-balancing` | Distributed Systems | ✍️ |
+| 146 | 2027-06-02 | 1406/03/12 | EN15 | `eng-monorepo-vs-polyrepo` | Software Engineering | ✍️ |
+| 147 | 2027-06-03 | 1406/03/13 | DS14 | `ds-distributed-rate-limiting` | Distributed Systems | ✍️ |
+| 148 | 2027-06-04 | 1406/03/14 | LX13 | `linux-strace-perf` | Linux | ✍️ |
+| 149 | 2027-06-05 | 1406/03/15 | EN16 | `eng-estimation-planning` | Software Engineering | ✍️ |
+| 150 | 2027-06-06 | 1406/03/16 | DS15 | `ds-fault-injection-testing` | Distributed Systems | ✍️ |
+| 151 | 2027-06-07 | 1406/03/17 | LX14 | `linux-scripting-cron-safely` | Linux | ✍️ |
+| 152 | 2027-06-08 | 1406/03/18 | DS16 | `ds-modular-monolith-vs-microservices` | Distributed Systems | ✍️ |
+| 153 | 2027-06-09 | 1406/03/19 | DS17 | `ds-deployment-strategies` | Distributed Systems | ✍️ |
+| 154 | 2027-06-10 | 1406/03/20 | DS18 | `ds-capacity-estimation` | Distributed Systems | ✍️ |
 | 155 | 2027-06-11 | 1406/03/21 | DS19 | `ds-case-studies` | Distributed Systems | 📝 |
 | 156 | 2027-06-12 | 1406/03/22 | DS20 | `ds-capstone` | Distributed Systems | 📝 |
 

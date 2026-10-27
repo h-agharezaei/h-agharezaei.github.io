@@ -4,7 +4,7 @@ summary = "پیام کوچک و دوره‌ای (مثل ping) برای فهمی�
 category = "Networking"
 fa_title = "Heartbeat"
 related = ["websocket", "deadline"]
-posts = ["net-websocket", "ds-why-distributed-is-hard"]
+posts = ["net-websocket", "ds-why-distributed-is-hard", "ds-service-discovery-load-balancing"]
 +++
 
 یک اتصال TCP نیمه‌مرده می‌تواند مدت‌ها باز به نظر برسد. اگر ping تا پیش از deadline pong نگیرد، طرف مقابل رفته حساب می‌شود و اتصال بسته می‌شود.

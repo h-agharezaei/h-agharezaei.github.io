@@ -314,17 +314,17 @@ python3 scripts/generate-covers.py --default        # کاور پیش‌فرض �
 | 42 | 2027-01-18 | 1405/10/28 | PY2 | `py-types-control-flow` | Python | ✍️ |
 | 43 | 2027-01-20 | 1405/10/30 | AL8 | `algo-sorting` | Algorithms | ✍️ |
 | 44 | 2027-01-22 | 1405/11/02 | NW5 | `net-sockets-tcp-from-scratch` | Networking | ✍️ |
-| 45 | 2027-01-24 | 1405/11/04 | DB11 | `db-zero-downtime-migrations` | Databases | 📝 |
-| 46 | 2027-01-26 | 1405/11/06 | ND10 | `node-project-structure-config` | Node.js | 📝 |
-| 47 | 2027-01-28 | 1405/11/08 | PY3 | `py-functions-generators` | Python | 📝 |
-| 48 | 2027-01-30 | 1405/11/10 | DB12 | `db-partitioning` | Databases | 📝 |
-| 49 | 2027-02-01 | 1405/11/12 | AL9 | `algo-trees-bst-btree` | Algorithms | 📝 |
-| 50 | 2027-02-03 | 1405/11/14 | NW6 | `net-udp-sockets` | Networking | 📝 |
-| 51 | 2027-02-05 | 1405/11/16 | EN1 | `eng-testing-pyramid-tdd` | Software Engineering | 📝 |
-| 52 | 2027-02-07 | 1405/11/18 | PY4 | `py-classes-dataclasses` | Python | 📝 |
-| 53 | 2027-02-09 | 1405/11/20 | SC1 | `sec-threat-modeling-stride` | Software Security | 📝 |
-| 54 | 2027-02-11 | 1405/11/22 | ND11 | `node-postgres-pg` | Node.js | 📝 |
-| 55 | 2027-02-13 | 1405/11/24 | DB13 | `db-replication-streaming` | Databases | 📝 |
+| 45 | 2027-01-24 | 1405/11/04 | DB11 | `db-zero-downtime-migrations` | Databases | ✍️ |
+| 46 | 2027-01-26 | 1405/11/06 | ND10 | `node-project-structure-config` | Node.js | ✍️ |
+| 47 | 2027-01-28 | 1405/11/08 | PY3 | `py-functions-generators` | Python | ✍️ |
+| 48 | 2027-01-30 | 1405/11/10 | DB12 | `db-partitioning` | Databases | ✍️ |
+| 49 | 2027-02-01 | 1405/11/12 | AL9 | `algo-trees-bst-btree` | Algorithms | ✍️ |
+| 50 | 2027-02-03 | 1405/11/14 | NW6 | `net-udp-sockets` | Networking | ✍️ |
+| 51 | 2027-02-05 | 1405/11/16 | EN1 | `eng-testing-pyramid-tdd` | Software Engineering | ✍️ |
+| 52 | 2027-02-07 | 1405/11/18 | PY4 | `py-classes-dataclasses` | Python | ✍️ |
+| 53 | 2027-02-09 | 1405/11/20 | SC1 | `sec-threat-modeling-stride` | Software Security | ✍️ |
+| 54 | 2027-02-11 | 1405/11/22 | ND11 | `node-postgres-pg` | Node.js | ✍️ |
+| 55 | 2027-02-13 | 1405/11/24 | DB13 | `db-replication-streaming` | Databases | ✍️ |
 | 56 | 2027-02-15 | 1405/11/26 | NW7 | `net-http1-by-hand` | Networking | 📝 |
 | 57 | 2027-02-17 | 1405/11/28 | AL10 | `algo-tries-union-find` | Algorithms | 📝 |
 | 58 | 2027-02-19 | 1405/11/30 | EN2 | `eng-property-based-testing` | Software Engineering | 📝 |

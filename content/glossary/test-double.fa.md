@@ -4,7 +4,7 @@ summary = "شیء ساختگی (mock، stub، fake) که در تست جای وا
 category = "Node.js"
 fa_title = "جایگزین تست"
 related = ["dependency-injection"]
-posts = ["node-testing-builtin"]
+posts = ["node-testing-builtin", "eng-testing-pyramid-tdd"]
 +++
 
 شیء یا تابعی ساختگی که در تست جای وابستگی واقعی را می‌گیرد، مثل `mock.fn()` در Node.js. می‌تواند فراخوانی‌ها را ثبت هم بکند.

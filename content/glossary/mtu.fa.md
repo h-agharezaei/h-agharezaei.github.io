@@ -4,7 +4,7 @@ summary = "بزرگ‌ترین بسته‌ای که یک لینک در یک fram
 category = "Networking"
 fa_title = "MTU"
 related = ["mss", "encapsulation"]
-posts = ["net-tcp-ip-model"]
+posts = ["net-tcp-ip-model", "net-udp-sockets"]
 +++
 
 طبق مستندات، Ethernet معمولی MTU برابر ۱۵۰۰ بایت دارد. بسته‌ی IP بزرگ‌تر باید تکه‌تکه (fragment) یا رد شود.

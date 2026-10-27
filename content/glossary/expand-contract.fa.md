@@ -4,7 +4,7 @@ summary = "دستور پخت مایگریشن در گام‌های کوچک و �
 category = "Databases"
 fa_title = "expand/contract"
 related = ["backfill", "migration"]
-posts = ["db-zero-downtime-migrations"]
+posts = ["db-zero-downtime-migrations", "eng-refactoring-safely"]
 +++
 
 هر گام با کدی که همان لحظه اجراست سازگار است، پس هیچ گامی downtime نمی‌خواهد و تا قبل از آخرین گام (حذف) برگشت‌پذیر است.

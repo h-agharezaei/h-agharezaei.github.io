@@ -325,17 +325,17 @@ python3 scripts/generate-covers.py --default        # کاور پیش‌فرض �
 | 53 | 2027-02-09 | 1405/11/20 | SC1 | `sec-threat-modeling-stride` | Software Security | ✍️ |
 | 54 | 2027-02-11 | 1405/11/22 | ND11 | `node-postgres-pg` | Node.js | ✍️ |
 | 55 | 2027-02-13 | 1405/11/24 | DB13 | `db-replication-streaming` | Databases | ✍️ |
-| 56 | 2027-02-15 | 1405/11/26 | NW7 | `net-http1-by-hand` | Networking | 📝 |
-| 57 | 2027-02-17 | 1405/11/28 | AL10 | `algo-tries-union-find` | Algorithms | 📝 |
-| 58 | 2027-02-19 | 1405/11/30 | EN2 | `eng-property-based-testing` | Software Engineering | 📝 |
-| 59 | 2027-02-21 | 1405/12/02 | SC2 | `sec-owasp-top10-in-code` | Software Security | 📝 |
-| 60 | 2027-02-23 | 1405/12/04 | PY5 | `py-errors-context-managers` | Python | 📝 |
-| 61 | 2027-02-25 | 1405/12/06 | DB14 | `db-backup-restore-pitr` | Databases | 📝 |
-| 62 | 2027-02-27 | 1405/12/08 | ND12 | `node-nats-jetstream` | Node.js | 📝 |
-| 63 | 2027-03-01 | 1405/12/10 | NW8 | `net-tls-openssl` | Networking | 📝 |
-| 64 | 2027-03-03 | 1405/12/12 | EN3 | `eng-refactoring-safely` | Software Engineering | 📝 |
-| 65 | 2027-03-05 | 1405/12/14 | AL11 | `algo-graphs-bfs-dfs` | Algorithms | 📝 |
-| 66 | 2027-03-07 | 1405/12/16 | SC3 | `sec-injection-xss` | Software Security | 📝 |
+| 56 | 2027-02-15 | 1405/11/26 | NW7 | `net-http1-by-hand` | Networking | ✍️ |
+| 57 | 2027-02-17 | 1405/11/28 | AL10 | `algo-tries-union-find` | Algorithms | ✍️ |
+| 58 | 2027-02-19 | 1405/11/30 | EN2 | `eng-property-based-testing` | Software Engineering | ✍️ |
+| 59 | 2027-02-21 | 1405/12/02 | SC2 | `sec-owasp-top10-in-code` | Software Security | ✍️ |
+| 60 | 2027-02-23 | 1405/12/04 | PY5 | `py-errors-context-managers` | Python | ✍️ |
+| 61 | 2027-02-25 | 1405/12/06 | DB14 | `db-backup-restore-pitr` | Databases | ✍️ |
+| 62 | 2027-02-27 | 1405/12/08 | ND12 | `node-nats-jetstream` | Node.js | ✍️ |
+| 63 | 2027-03-01 | 1405/12/10 | NW8 | `net-tls-openssl` | Networking | ✍️ |
+| 64 | 2027-03-03 | 1405/12/12 | EN3 | `eng-refactoring-safely` | Software Engineering | ✍️ |
+| 65 | 2027-03-05 | 1405/12/14 | AL11 | `algo-graphs-bfs-dfs` | Algorithms | ✍️ |
+| 66 | 2027-03-07 | 1405/12/16 | SC3 | `sec-injection-xss` | Software Security | ✍️ |
 | 67 | 2027-03-09 | 1405/12/18 | DB15 | `db-connection-pooling` | Databases | 📝 |
 | 68 | 2027-03-11 | 1405/12/20 | PY6 | `py-type-hints-mypy` | Python | 📝 |
 | 69 | 2027-03-13 | 1405/12/22 | NW9 | `net-http2` | Networking | 📝 |

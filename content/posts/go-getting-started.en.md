@@ -160,11 +160,11 @@ go env GOPATH GOMODCACHE
 ```
 
 ```
-/Users/hossein/go
-/Users/hossein/go/pkg/mod
+/home/user/go
+/home/user/go/pkg/mod
 ```
 
-`GOMODCACHE` is where downloaded dependencies are stored, shared by all your projects. By default it lives under `GOPATH`. You do not need to put your own code there.
+The paths depend on your OS and username (for example `/Users/you/go` on macOS). `GOMODCACHE` is where downloaded dependencies are stored, shared by all your projects. By default it lives under `GOPATH`. You do not need to put your own code there.
 
 ## A few things to watch
 

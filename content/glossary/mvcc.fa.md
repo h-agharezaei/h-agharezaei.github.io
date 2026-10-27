@@ -4,7 +4,7 @@ summary = "کنترل هم‌زمانی چندنسخه‌ای: دیتابیس چ
 category = "Databases"
 fa_title = "MVCC"
 related = ["vacuum", "dead-tuple"]
-posts = ["db-mvcc-vacuum"]
+posts = ["db-mvcc-vacuum", "db-jsonb-fulltext-search", "db-locks-deadlocks"]
 +++
 
 در PostgreSQL دستور `UPDATE` ردیف را بازنویسی نمی‌کند؛ نسخه‌ی جدیدی می‌نویسد و نسخه‌ی قبلی را تمام‌شده علامت می‌زند. هر کوئری با یک snapshot تعیین می‌کند کدام نسخه‌ها را می‌تواند ببیند. هزینه‌اش نسخه‌های مرده‌ای است که [VACUUM](/fa/glossary/vacuum/) باید بعداً پاک کند.

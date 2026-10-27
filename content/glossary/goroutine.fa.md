@@ -4,7 +4,7 @@ summary = "اجرای سبکی از یک تابع که runtime زبان Go مد�
 category = "Go"
 fa_title = "گوروتین"
 related = ["channel", "mutex", "worker-pool"]
-posts = ["go-goroutines-channels", "go-scheduler-gc-internals"]
+posts = ["go-goroutines-channels", "go-scheduler-gc-internals", "net-sockets-tcp-from-scratch"]
 +++
 
 goroutine با کلیدواژه‌ی `go` شروع می‌شود. stack اولیه‌اش فقط چند کیلوبایت است و در صورت نیاز بزرگ می‌شود، برای همین می‌شود صدها هزار تا از آن‌ها داشت. scheduler زبان Go آن‌ها را روی تعداد کمتری thread سیستم‌عامل پخش می‌کند.

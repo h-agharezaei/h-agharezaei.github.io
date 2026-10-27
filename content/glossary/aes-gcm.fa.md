@@ -4,7 +4,7 @@ summary = "حالت رمزنگاری احراز‌شده: داده را پنها
 category = "Security"
 fa_title = "AES-GCM"
 related = ["nonce"]
-posts = ["sec-secrets-management"]
+posts = ["sec-secrets-management", "sec-crypto-mistakes"]
 +++
 
 Go آن را با `cipher.NewGCM` می‌دهد. برای هر پیام نانس یکتا می‌خواهد و می‌تواند داده‌ی اضافه (AAD) مثل شناسه‌ی رکورد را به متن رمزشده ببندد.

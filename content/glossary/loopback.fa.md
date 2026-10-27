@@ -4,7 +4,7 @@ summary = "loopback رابط مجازی‌ای است که ترافیک را ب�
 category = "Networking"
 fa_title = "Loopback"
 related = ["subnet"]
-posts = ["net-addressing-subnets", "net-udp-sockets", "net-troubleshooting-curl-traceroute"]
+posts = ["net-addressing-subnets", "net-udp-sockets", "net-troubleshooting-curl-traceroute", "sec-ssrf-deserialization"]
 +++
 
 آدرس‌های loopback (`127.0.0.1` و `::1`) هرگز از میزبان بیرون نمی‌روند. جای امنی برای آزمایش شبکه و سرورهای محلی‌اند.

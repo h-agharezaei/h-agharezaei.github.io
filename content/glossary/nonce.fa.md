@@ -4,7 +4,7 @@ summary = "مقداری که برای هر کلید فقط یک بار باید 
 category = "Security"
 fa_title = "نانس"
 related = ["aes-gcm"]
-posts = ["sec-secrets-management"]
+posts = ["sec-secrets-management", "sec-crypto-mistakes"]
 +++
 
 در AES-GCM یک نانس ۱۲ بایتی کنار متن رمزشده ذخیره می‌شود. تکرار آن با همان کلید هم محرمانگی و هم اصالت را از بین می‌برد. آن را با `crypto/rand` بسازید.

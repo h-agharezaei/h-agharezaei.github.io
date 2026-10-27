@@ -4,7 +4,7 @@ summary = "قاعده‌ای برای حل تعارض که مقدار با بز�
 category = "Distributed"
 fa_title = "آخرین نوشتن برنده است"
 related = ["clock-skew"]
-posts = ["ds-why-distributed-is-hard", "ds-cap-pacelc", "ds-logical-clocks"]
+posts = ["ds-why-distributed-is-hard", "ds-cap-pacelc", "ds-logical-clocks", "ds-replication-quorum"]
 +++
 
 ساده است، ولی با ساعت‌های ناهمگام ممکن است نوشتنی که واقعاً تازه‌تر است timestamp کوچک‌تری داشته باشد و بی‌صدا از بین برود.

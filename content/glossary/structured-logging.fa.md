@@ -4,7 +4,7 @@ summary = "نوشتن هر خط لاگ به‌صورت یک شیء JSON با ف�
 category = "Node.js"
 fa_title = "لاگ ساختاریافته"
 related = ["request-id"]
-posts = ["node-fastify-api"]
+posts = ["node-fastify-api", "eng-postmortems-blameless"]
 +++
 
 فیلدهایی مثل `level`، `reqId` و `res.statusCode` را ابزارها بدون regex فیلتر می‌کنند. Pino، لاگر داخل Fastify، هر خط را یک شیء JSON می‌نویسد.

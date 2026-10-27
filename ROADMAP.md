@@ -391,17 +391,17 @@ python3 scripts/generate-covers.py --default        # کاور پیش‌فرض �
 | 119 | 2027-05-06 | 1406/02/16 | AL18 | `algo-bloom-filter-consistent-hashing` | Algorithms | ✍️ |
 | 120 | 2027-05-07 | 1406/02/17 | PY13 | `py-packaging-publishing` | Python | ✍️ |
 | 121 | 2027-05-08 | 1406/02/18 | DS6 | `ds-circuit-breaker-bulkhead` | Distributed Systems | ✍️ |
-| 122 | 2027-05-09 | 1406/02/19 | LX8 | `linux-io-epoll` | Linux | 📝 |
-| 123 | 2027-05-10 | 1406/02/20 | EN11 | `eng-sli-slo-error-budgets` | Software Engineering | 📝 |
-| 124 | 2027-05-11 | 1406/02/21 | DS7 | `ds-replication-quorum` | Distributed Systems | 📝 |
-| 125 | 2027-05-12 | 1406/02/22 | SC12 | `sec-ssrf-deserialization` | Software Security | 📝 |
-| 126 | 2027-05-13 | 1406/02/23 | PY14 | `py-cli-scripts` | Python | 📝 |
-| 127 | 2027-05-14 | 1406/02/24 | LX9 | `linux-networking-ip-ss-nftables` | Linux | 📝 |
-| 128 | 2027-05-15 | 1406/02/25 | DS8 | `ds-sharding-consistent-hashing` | Distributed Systems | 📝 |
-| 129 | 2027-05-16 | 1406/02/26 | EN12 | `eng-postmortems-blameless` | Software Engineering | 📝 |
-| 130 | 2027-05-17 | 1406/02/27 | SC13 | `sec-crypto-mistakes` | Software Security | 📝 |
-| 131 | 2027-05-18 | 1406/02/28 | DS9 | `ds-consensus-raft` | Distributed Systems | 📝 |
-| 132 | 2027-05-19 | 1406/02/29 | PY15 | `py-data-csv-sqlite` | Python | 📝 |
+| 122 | 2027-05-09 | 1406/02/19 | LX8 | `linux-io-epoll` | Linux | ✍️ |
+| 123 | 2027-05-10 | 1406/02/20 | EN11 | `eng-sli-slo-error-budgets` | Software Engineering | ✍️ |
+| 124 | 2027-05-11 | 1406/02/21 | DS7 | `ds-replication-quorum` | Distributed Systems | ✍️ |
+| 125 | 2027-05-12 | 1406/02/22 | SC12 | `sec-ssrf-deserialization` | Software Security | ✍️ |
+| 126 | 2027-05-13 | 1406/02/23 | PY14 | `py-cli-scripts` | Python | ✍️ |
+| 127 | 2027-05-14 | 1406/02/24 | LX9 | `linux-networking-ip-ss-nftables` | Linux | ✍️ |
+| 128 | 2027-05-15 | 1406/02/25 | DS8 | `ds-sharding-consistent-hashing` | Distributed Systems | ✍️ |
+| 129 | 2027-05-16 | 1406/02/26 | EN12 | `eng-postmortems-blameless` | Software Engineering | ✍️ |
+| 130 | 2027-05-17 | 1406/02/27 | SC13 | `sec-crypto-mistakes` | Software Security | ✍️ |
+| 131 | 2027-05-18 | 1406/02/28 | DS9 | `ds-consensus-raft` | Distributed Systems | ✍️ |
+| 132 | 2027-05-19 | 1406/02/29 | PY15 | `py-data-csv-sqlite` | Python | ✍️ |
 | 133 | 2027-05-20 | 1406/02/30 | LX10 | `linux-ssh-keys` | Linux | 📝 |
 | 134 | 2027-05-21 | 1406/02/31 | EN13 | `eng-legacy-code` | Software Engineering | 📝 |
 | 135 | 2027-05-22 | 1406/03/01 | SC14 | `sec-memory-safety-c-vs-rust` | Software Security | 📝 |

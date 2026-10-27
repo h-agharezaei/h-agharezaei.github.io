@@ -4,7 +4,7 @@ summary = "SSRF (جعل درخواست سمت سرور): کاری که باعث 
 category = "Security"
 fa_title = "SSRF"
 related = ["loopback", "owasp-top-10"]
-posts = ["sec-owasp-top10-in-code"]
+posts = ["sec-owasp-top10-in-code", "sec-ssrf-deserialization"]
 +++
 
 هدف‌های رایج سرویس‌های داخلی روی loopback یا شبکه‌ی خصوصی‌اند. دفاع معمول allow-list میزبان‌هاست.

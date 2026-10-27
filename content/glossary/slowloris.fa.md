@@ -4,7 +4,7 @@ summary = "حمله‌ی منع سرویسی که در آن کلاینت درخ�
 category = "Node.js"
 fa_title = "Slowloris"
 related = ["keep-alive"]
-posts = ["node-http-server"]
+posts = ["node-http-server", "sec-threat-modeling-stride"]
 +++
 
 کلاینت کند هدر یا بدنه را چند بایت چند بایت می‌فرستد و هرگز تمامش نمی‌کند، پس هر اتصال منابع سرور را اشغال می‌کند. timeoutهایی مثل `headersTimeout` و `requestTimeout` دفاع اصلی‌اند.

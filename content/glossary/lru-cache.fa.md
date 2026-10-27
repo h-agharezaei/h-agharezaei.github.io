@@ -4,7 +4,7 @@ fa_title = "کش LRU"
 summary = "کشی با اندازه‌ی ثابت که وقتی پر شد کم‌استفاده‌ترین (least recently used) ورودی را بیرون می‌اندازد. معمولاً map به‌علاوه‌ی لیست دوپیوندی."
 category = "Algorithms"
 related = ["linked-list"]
-posts = ["algo-linked-lists"]
+posts = ["algo-linked-lists", "ds-capacity-estimation"]
 +++
 
 کشی با اندازه‌ی ثابت که وقتی پر شد ورودیِ کمتر استفاده‌شده در زمان اخیر را حذف می‌کند. ساخت رایج: یک map از کلید به node و یک [لیست پیوندی](/fa/glossary/linked-list/) دوطرفه که بر اساس تازگی مرتب است؛ بنابراین جست‌وجو، انتقال به ابتدا و حذف همگی O(1) هستند.

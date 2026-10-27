@@ -303,129 +303,129 @@ python3 scripts/generate-covers.py --default        # کاور پیش‌فرض �
 | 31 | 2026-12-27 | 1405/10/06 | ND7 | `node-http-server` | Node.js | ✍️ |
 | 32 | 2026-12-29 | 1405/10/08 | DB8 | `db-mvcc-vacuum` | Databases | ✍️ |
 | 33 | 2026-12-31 | 1405/10/10 | AL6 | `algo-heaps-priority-queues` | Algorithms | ✍️ |
-| 34 | 2027-01-02 | 1405/10/12 | NW3 | `net-dns-in-practice` | Networking | 📝 |
-| 35 | 2027-01-04 | 1405/10/14 | DB9 | `db-locks-deadlocks` | Databases | 📝 |
-| 36 | 2027-01-06 | 1405/10/16 | ND8 | `node-fastify-api` | Node.js | 📝 |
-| 37 | 2027-01-08 | 1405/10/18 | PY1 | `py-environment-uv-venv` | Python | 📝 |
-| 38 | 2027-01-10 | 1405/10/20 | AL7 | `algo-binary-search-invariants` | Algorithms | 📝 |
-| 39 | 2027-01-12 | 1405/10/22 | NW4 | `net-tcp-handshake-states` | Networking | 📝 |
-| 40 | 2027-01-14 | 1405/10/24 | DB10 | `db-jsonb-fulltext-search` | Databases | 📝 |
-| 41 | 2027-01-16 | 1405/10/26 | ND9 | `node-testing-builtin` | Node.js | 📝 |
-| 42 | 2027-01-18 | 1405/10/28 | PY2 | `py-types-control-flow` | Python | 📝 |
-| 43 | 2027-01-20 | 1405/10/30 | AL8 | `algo-sorting` | Algorithms | 📝 |
-| 44 | 2027-01-22 | 1405/11/02 | NW5 | `net-sockets-tcp-from-scratch` | Networking | 📝 |
-| 45 | 2027-01-24 | 1405/11/04 | DB11 | `db-zero-downtime-migrations` | Databases | 📝 |
-| 46 | 2027-01-26 | 1405/11/06 | ND10 | `node-project-structure-config` | Node.js | 📝 |
-| 47 | 2027-01-28 | 1405/11/08 | PY3 | `py-functions-generators` | Python | 📝 |
-| 48 | 2027-01-30 | 1405/11/10 | DB12 | `db-partitioning` | Databases | 📝 |
-| 49 | 2027-02-01 | 1405/11/12 | AL9 | `algo-trees-bst-btree` | Algorithms | 📝 |
-| 50 | 2027-02-03 | 1405/11/14 | NW6 | `net-udp-sockets` | Networking | 📝 |
-| 51 | 2027-02-05 | 1405/11/16 | EN1 | `eng-testing-pyramid-tdd` | Software Engineering | 📝 |
-| 52 | 2027-02-07 | 1405/11/18 | PY4 | `py-classes-dataclasses` | Python | 📝 |
-| 53 | 2027-02-09 | 1405/11/20 | SC1 | `sec-threat-modeling-stride` | Software Security | 📝 |
-| 54 | 2027-02-11 | 1405/11/22 | ND11 | `node-postgres-pg` | Node.js | 📝 |
-| 55 | 2027-02-13 | 1405/11/24 | DB13 | `db-replication-streaming` | Databases | 📝 |
-| 56 | 2027-02-15 | 1405/11/26 | NW7 | `net-http1-by-hand` | Networking | 📝 |
-| 57 | 2027-02-17 | 1405/11/28 | AL10 | `algo-tries-union-find` | Algorithms | 📝 |
-| 58 | 2027-02-19 | 1405/11/30 | EN2 | `eng-property-based-testing` | Software Engineering | 📝 |
-| 59 | 2027-02-21 | 1405/12/02 | SC2 | `sec-owasp-top10-in-code` | Software Security | 📝 |
-| 60 | 2027-02-23 | 1405/12/04 | PY5 | `py-errors-context-managers` | Python | 📝 |
-| 61 | 2027-02-25 | 1405/12/06 | DB14 | `db-backup-restore-pitr` | Databases | 📝 |
-| 62 | 2027-02-27 | 1405/12/08 | ND12 | `node-nats-jetstream` | Node.js | 📝 |
-| 63 | 2027-03-01 | 1405/12/10 | NW8 | `net-tls-openssl` | Networking | 📝 |
-| 64 | 2027-03-03 | 1405/12/12 | EN3 | `eng-refactoring-safely` | Software Engineering | 📝 |
-| 65 | 2027-03-05 | 1405/12/14 | AL11 | `algo-graphs-bfs-dfs` | Algorithms | 📝 |
-| 66 | 2027-03-07 | 1405/12/16 | SC3 | `sec-injection-xss` | Software Security | 📝 |
-| 67 | 2027-03-09 | 1405/12/18 | DB15 | `db-connection-pooling` | Databases | 📝 |
-| 68 | 2027-03-11 | 1405/12/20 | PY6 | `py-type-hints-mypy` | Python | 📝 |
-| 69 | 2027-03-13 | 1405/12/22 | NW9 | `net-http2` | Networking | 📝 |
-| 70 | 2027-03-15 | 1405/12/24 | ND13 | `node-validation-zod` | Node.js | 📝 |
-| 71 | 2027-03-17 | 1405/12/26 | EN4 | `eng-code-review` | Software Engineering | 📝 |
-| 72 | 2027-03-19 | 1405/12/28 | LX1 | `linux-shell-practical` | Linux | 📝 |
-| 73 | 2027-03-21 | 1406/01/01 | AL12 | `algo-shortest-paths-dijkstra` | Algorithms | 📝 |
-| 74 | 2027-03-22 | 1406/01/02 | SC4 | `sec-password-hashing` | Software Security | 📝 |
-| 75 | 2027-03-23 | 1406/01/03 | DB16 | `db-slow-query-case-study` | Databases | 📝 |
-| 76 | 2027-03-24 | 1406/01/04 | PY7 | `py-testing-pytest` | Python | 📝 |
-| 77 | 2027-03-25 | 1406/01/05 | NW10 | `net-websocket` | Networking | 📝 |
-| 78 | 2027-03-26 | 1406/01/06 | EN5 | `eng-api-design-versioning-pagination` | Software Engineering | 📝 |
-| 79 | 2027-03-27 | 1406/01/07 | LX2 | `linux-filesystem-permissions` | Linux | 📝 |
-| 80 | 2027-03-28 | 1406/01/08 | ND14 | `node-worker-threads-cluster` | Node.js | 📝 |
-| 81 | 2027-03-29 | 1406/01/09 | SC5 | `sec-sessions-vs-jwt` | Software Security | 📝 |
-| 82 | 2027-03-30 | 1406/01/10 | AL13 | `algo-topological-sort` | Algorithms | 📝 |
-| 83 | 2027-03-31 | 1406/01/11 | PY8 | `py-gil-threading` | Python | 📝 |
-| 84 | 2027-04-01 | 1406/01/12 | NW11 | `net-grpc-over-http2` | Networking | 📝 |
-| 85 | 2027-04-02 | 1406/01/13 | SC6 | `sec-oauth2-oidc` | Software Security | 📝 |
-| 86 | 2027-04-03 | 1406/01/14 | LX3 | `linux-processes-signals` | Linux | 📝 |
-| 87 | 2027-04-04 | 1406/01/15 | EN6 | `eng-openapi-contracts` | Software Engineering | 📝 |
-| 88 | 2027-04-05 | 1406/01/16 | ND15 | `node-profiling-memory-shutdown` | Node.js | 📝 |
-| 89 | 2027-04-06 | 1406/01/17 | AL14 | `algo-dynamic-programming-1` | Algorithms | 📝 |
-| 90 | 2027-04-07 | 1406/01/18 | PY9 | `py-multiprocessing` | Python | 📝 |
-| 91 | 2027-04-08 | 1406/01/19 | NW12 | `net-load-balancer-l4-l7` | Networking | 📝 |
-| 92 | 2027-04-09 | 1406/01/20 | SC7 | `sec-authorization-rbac-idor` | Software Security | 📝 |
-| 93 | 2027-04-10 | 1406/01/21 | LX4 | `linux-proc-observability` | Linux | 📝 |
-| 94 | 2027-04-11 | 1406/01/22 | EN7 | `eng-technical-debt` | Software Engineering | 📝 |
-| 95 | 2027-04-12 | 1406/01/23 | AL15 | `algo-dynamic-programming-2` | Algorithms | 📝 |
-| 96 | 2027-04-13 | 1406/01/24 | ND16 | `node-vs-go-when-to-use` | Node.js | 📝 |
-| 97 | 2027-04-14 | 1406/01/25 | PY10 | `py-asyncio` | Python | 📝 |
-| 98 | 2027-04-15 | 1406/01/26 | DS1 | `ds-why-distributed-is-hard` | Distributed Systems | 📝 |
-| 99 | 2027-04-16 | 1406/01/27 | NW13 | `net-troubleshooting-curl-traceroute` | Networking | 📝 |
-| 100 | 2027-04-17 | 1406/01/28 | SC8 | `sec-csrf-cors-headers` | Software Security | 📝 |
-| 101 | 2027-04-18 | 1406/01/29 | LX5 | `linux-systemd-units-timers` | Linux | 📝 |
-| 102 | 2027-04-19 | 1406/01/30 | EN8 | `eng-adr-documentation` | Software Engineering | 📝 |
-| 103 | 2027-04-20 | 1406/01/31 | DS2 | `ds-cap-pacelc` | Distributed Systems | 📝 |
-| 104 | 2027-04-21 | 1406/02/01 | AL16 | `algo-greedy-backtracking` | Algorithms | 📝 |
-| 105 | 2027-04-22 | 1406/02/02 | PY11 | `py-fastapi-pydantic` | Python | 📝 |
-| 106 | 2027-04-23 | 1406/02/03 | NW14 | `net-slow-request-case-study` | Networking | 📝 |
-| 107 | 2027-04-24 | 1406/02/04 | SC9 | `sec-tls-x509-certificates` | Software Security | 📝 |
-| 108 | 2027-04-25 | 1406/02/05 | DS3 | `ds-consistency-models` | Distributed Systems | 📝 |
-| 109 | 2027-04-26 | 1406/02/06 | LX6 | `linux-cgroups-namespaces` | Linux | 📝 |
-| 110 | 2027-04-27 | 1406/02/07 | EN9 | `eng-feature-flags-trunk-based` | Software Engineering | 📝 |
-| 111 | 2027-04-28 | 1406/02/08 | AL17 | `algo-string-algorithms` | Algorithms | 📝 |
-| 112 | 2027-04-29 | 1406/02/09 | DS4 | `ds-logical-clocks` | Distributed Systems | 📝 |
-| 113 | 2027-04-30 | 1406/02/10 | SC10 | `sec-secrets-management` | Software Security | 📝 |
-| 114 | 2027-05-01 | 1406/02/11 | PY12 | `py-sqlalchemy-postgres` | Python | 📝 |
-| 115 | 2027-05-02 | 1406/02/12 | LX7 | `linux-memory-page-cache-oom` | Linux | 📝 |
-| 116 | 2027-05-03 | 1406/02/13 | EN10 | `eng-ci-cd-pipeline-design` | Software Engineering | 📝 |
-| 117 | 2027-05-04 | 1406/02/14 | DS5 | `ds-timeouts-retries-backoff` | Distributed Systems | 📝 |
-| 118 | 2027-05-05 | 1406/02/15 | SC11 | `sec-supply-chain-vulns` | Software Security | 📝 |
-| 119 | 2027-05-06 | 1406/02/16 | AL18 | `algo-bloom-filter-consistent-hashing` | Algorithms | 📝 |
-| 120 | 2027-05-07 | 1406/02/17 | PY13 | `py-packaging-publishing` | Python | 📝 |
-| 121 | 2027-05-08 | 1406/02/18 | DS6 | `ds-circuit-breaker-bulkhead` | Distributed Systems | 📝 |
-| 122 | 2027-05-09 | 1406/02/19 | LX8 | `linux-io-epoll` | Linux | 📝 |
-| 123 | 2027-05-10 | 1406/02/20 | EN11 | `eng-sli-slo-error-budgets` | Software Engineering | 📝 |
-| 124 | 2027-05-11 | 1406/02/21 | DS7 | `ds-replication-quorum` | Distributed Systems | 📝 |
-| 125 | 2027-05-12 | 1406/02/22 | SC12 | `sec-ssrf-deserialization` | Software Security | 📝 |
-| 126 | 2027-05-13 | 1406/02/23 | PY14 | `py-cli-scripts` | Python | 📝 |
-| 127 | 2027-05-14 | 1406/02/24 | LX9 | `linux-networking-ip-ss-nftables` | Linux | 📝 |
-| 128 | 2027-05-15 | 1406/02/25 | DS8 | `ds-sharding-consistent-hashing` | Distributed Systems | 📝 |
-| 129 | 2027-05-16 | 1406/02/26 | EN12 | `eng-postmortems-blameless` | Software Engineering | 📝 |
-| 130 | 2027-05-17 | 1406/02/27 | SC13 | `sec-crypto-mistakes` | Software Security | 📝 |
-| 131 | 2027-05-18 | 1406/02/28 | DS9 | `ds-consensus-raft` | Distributed Systems | 📝 |
-| 132 | 2027-05-19 | 1406/02/29 | PY15 | `py-data-csv-sqlite` | Python | 📝 |
-| 133 | 2027-05-20 | 1406/02/30 | LX10 | `linux-ssh-keys` | Linux | 📝 |
-| 134 | 2027-05-21 | 1406/02/31 | EN13 | `eng-legacy-code` | Software Engineering | 📝 |
-| 135 | 2027-05-22 | 1406/03/01 | SC14 | `sec-memory-safety-c-vs-rust` | Software Security | 📝 |
-| 136 | 2027-05-23 | 1406/03/02 | DS10 | `ds-saga-vs-2pc` | Distributed Systems | 📝 |
-| 137 | 2027-05-24 | 1406/03/03 | PY16 | `py-ffi-pyo3-ctypes` | Python | 📝 |
-| 138 | 2027-05-25 | 1406/03/04 | LX11 | `linux-users-sudo-capabilities` | Linux | 📝 |
-| 139 | 2027-05-26 | 1406/03/05 | DS11 | `ds-cqrs-event-sourcing` | Distributed Systems | 📝 |
-| 140 | 2027-05-27 | 1406/03/06 | SC15 | `sec-fuzzing` | Software Security | 📝 |
-| 141 | 2027-05-28 | 1406/03/07 | EN14 | `eng-ddd-basics` | Software Engineering | 📝 |
-| 142 | 2027-05-29 | 1406/03/08 | DS12 | `ds-messaging-event-driven` | Distributed Systems | 📝 |
-| 143 | 2027-05-30 | 1406/03/09 | LX12 | `linux-logs-journalctl` | Linux | 📝 |
-| 144 | 2027-05-31 | 1406/03/10 | SC16 | `sec-logging-audit-incident-response` | Software Security | 📝 |
-| 145 | 2027-06-01 | 1406/03/11 | DS13 | `ds-service-discovery-load-balancing` | Distributed Systems | 📝 |
-| 146 | 2027-06-02 | 1406/03/12 | EN15 | `eng-monorepo-vs-polyrepo` | Software Engineering | 📝 |
-| 147 | 2027-06-03 | 1406/03/13 | DS14 | `ds-distributed-rate-limiting` | Distributed Systems | 📝 |
-| 148 | 2027-06-04 | 1406/03/14 | LX13 | `linux-strace-perf` | Linux | 📝 |
-| 149 | 2027-06-05 | 1406/03/15 | EN16 | `eng-estimation-planning` | Software Engineering | 📝 |
-| 150 | 2027-06-06 | 1406/03/16 | DS15 | `ds-fault-injection-testing` | Distributed Systems | 📝 |
-| 151 | 2027-06-07 | 1406/03/17 | LX14 | `linux-scripting-cron-safely` | Linux | 📝 |
-| 152 | 2027-06-08 | 1406/03/18 | DS16 | `ds-modular-monolith-vs-microservices` | Distributed Systems | 📝 |
-| 153 | 2027-06-09 | 1406/03/19 | DS17 | `ds-deployment-strategies` | Distributed Systems | 📝 |
-| 154 | 2027-06-10 | 1406/03/20 | DS18 | `ds-capacity-estimation` | Distributed Systems | 📝 |
-| 155 | 2027-06-11 | 1406/03/21 | DS19 | `ds-case-studies` | Distributed Systems | 📝 |
-| 156 | 2027-06-12 | 1406/03/22 | DS20 | `ds-capstone` | Distributed Systems | 📝 |
+| 34 | 2027-01-02 | 1405/10/12 | NW3 | `net-dns-in-practice` | Networking | ✍️ |
+| 35 | 2027-01-04 | 1405/10/14 | DB9 | `db-locks-deadlocks` | Databases | ✍️ |
+| 36 | 2027-01-06 | 1405/10/16 | ND8 | `node-fastify-api` | Node.js | ✍️ |
+| 37 | 2027-01-08 | 1405/10/18 | PY1 | `py-environment-uv-venv` | Python | ✍️ |
+| 38 | 2027-01-10 | 1405/10/20 | AL7 | `algo-binary-search-invariants` | Algorithms | ✍️ |
+| 39 | 2027-01-12 | 1405/10/22 | NW4 | `net-tcp-handshake-states` | Networking | ✍️ |
+| 40 | 2027-01-14 | 1405/10/24 | DB10 | `db-jsonb-fulltext-search` | Databases | ✍️ |
+| 41 | 2027-01-16 | 1405/10/26 | ND9 | `node-testing-builtin` | Node.js | ✍️ |
+| 42 | 2027-01-18 | 1405/10/28 | PY2 | `py-types-control-flow` | Python | ✍️ |
+| 43 | 2027-01-20 | 1405/10/30 | AL8 | `algo-sorting` | Algorithms | ✍️ |
+| 44 | 2027-01-22 | 1405/11/02 | NW5 | `net-sockets-tcp-from-scratch` | Networking | ✍️ |
+| 45 | 2027-01-24 | 1405/11/04 | DB11 | `db-zero-downtime-migrations` | Databases | ✍️ |
+| 46 | 2027-01-26 | 1405/11/06 | ND10 | `node-project-structure-config` | Node.js | ✍️ |
+| 47 | 2027-01-28 | 1405/11/08 | PY3 | `py-functions-generators` | Python | ✍️ |
+| 48 | 2027-01-30 | 1405/11/10 | DB12 | `db-partitioning` | Databases | ✍️ |
+| 49 | 2027-02-01 | 1405/11/12 | AL9 | `algo-trees-bst-btree` | Algorithms | ✍️ |
+| 50 | 2027-02-03 | 1405/11/14 | NW6 | `net-udp-sockets` | Networking | ✍️ |
+| 51 | 2027-02-05 | 1405/11/16 | EN1 | `eng-testing-pyramid-tdd` | Software Engineering | ✍️ |
+| 52 | 2027-02-07 | 1405/11/18 | PY4 | `py-classes-dataclasses` | Python | ✍️ |
+| 53 | 2027-02-09 | 1405/11/20 | SC1 | `sec-threat-modeling-stride` | Software Security | ✍️ |
+| 54 | 2027-02-11 | 1405/11/22 | ND11 | `node-postgres-pg` | Node.js | ✍️ |
+| 55 | 2027-02-13 | 1405/11/24 | DB13 | `db-replication-streaming` | Databases | ✍️ |
+| 56 | 2027-02-15 | 1405/11/26 | NW7 | `net-http1-by-hand` | Networking | ✍️ |
+| 57 | 2027-02-17 | 1405/11/28 | AL10 | `algo-tries-union-find` | Algorithms | ✍️ |
+| 58 | 2027-02-19 | 1405/11/30 | EN2 | `eng-property-based-testing` | Software Engineering | ✍️ |
+| 59 | 2027-02-21 | 1405/12/02 | SC2 | `sec-owasp-top10-in-code` | Software Security | ✍️ |
+| 60 | 2027-02-23 | 1405/12/04 | PY5 | `py-errors-context-managers` | Python | ✍️ |
+| 61 | 2027-02-25 | 1405/12/06 | DB14 | `db-backup-restore-pitr` | Databases | ✍️ |
+| 62 | 2027-02-27 | 1405/12/08 | ND12 | `node-nats-jetstream` | Node.js | ✍️ |
+| 63 | 2027-03-01 | 1405/12/10 | NW8 | `net-tls-openssl` | Networking | ✍️ |
+| 64 | 2027-03-03 | 1405/12/12 | EN3 | `eng-refactoring-safely` | Software Engineering | ✍️ |
+| 65 | 2027-03-05 | 1405/12/14 | AL11 | `algo-graphs-bfs-dfs` | Algorithms | ✍️ |
+| 66 | 2027-03-07 | 1405/12/16 | SC3 | `sec-injection-xss` | Software Security | ✍️ |
+| 67 | 2027-03-09 | 1405/12/18 | DB15 | `db-connection-pooling` | Databases | ✍️ |
+| 68 | 2027-03-11 | 1405/12/20 | PY6 | `py-type-hints-mypy` | Python | ✍️ |
+| 69 | 2027-03-13 | 1405/12/22 | NW9 | `net-http2` | Networking | ✍️ |
+| 70 | 2027-03-15 | 1405/12/24 | ND13 | `node-validation-zod` | Node.js | ✍️ |
+| 71 | 2027-03-17 | 1405/12/26 | EN4 | `eng-code-review` | Software Engineering | ✍️ |
+| 72 | 2027-03-19 | 1405/12/28 | LX1 | `linux-shell-practical` | Linux | ✍️ |
+| 73 | 2027-03-21 | 1406/01/01 | AL12 | `algo-shortest-paths-dijkstra` | Algorithms | ✍️ |
+| 74 | 2027-03-22 | 1406/01/02 | SC4 | `sec-password-hashing` | Software Security | ✍️ |
+| 75 | 2027-03-23 | 1406/01/03 | DB16 | `db-slow-query-case-study` | Databases | ✍️ |
+| 76 | 2027-03-24 | 1406/01/04 | PY7 | `py-testing-pytest` | Python | ✍️ |
+| 77 | 2027-03-25 | 1406/01/05 | NW10 | `net-websocket` | Networking | ✍️ |
+| 78 | 2027-03-26 | 1406/01/06 | EN5 | `eng-api-design-versioning-pagination` | Software Engineering | ✍️ |
+| 79 | 2027-03-27 | 1406/01/07 | LX2 | `linux-filesystem-permissions` | Linux | ✍️ |
+| 80 | 2027-03-28 | 1406/01/08 | ND14 | `node-worker-threads-cluster` | Node.js | ✍️ |
+| 81 | 2027-03-29 | 1406/01/09 | SC5 | `sec-sessions-vs-jwt` | Software Security | ✍️ |
+| 82 | 2027-03-30 | 1406/01/10 | AL13 | `algo-topological-sort` | Algorithms | ✍️ |
+| 83 | 2027-03-31 | 1406/01/11 | PY8 | `py-gil-threading` | Python | ✍️ |
+| 84 | 2027-04-01 | 1406/01/12 | NW11 | `net-grpc-over-http2` | Networking | ✍️ |
+| 85 | 2027-04-02 | 1406/01/13 | SC6 | `sec-oauth2-oidc` | Software Security | ✍️ |
+| 86 | 2027-04-03 | 1406/01/14 | LX3 | `linux-processes-signals` | Linux | ✍️ |
+| 87 | 2027-04-04 | 1406/01/15 | EN6 | `eng-openapi-contracts` | Software Engineering | ✍️ |
+| 88 | 2027-04-05 | 1406/01/16 | ND15 | `node-profiling-memory-shutdown` | Node.js | ✍️ |
+| 89 | 2027-04-06 | 1406/01/17 | AL14 | `algo-dynamic-programming-1` | Algorithms | ✍️ |
+| 90 | 2027-04-07 | 1406/01/18 | PY9 | `py-multiprocessing` | Python | ✍️ |
+| 91 | 2027-04-08 | 1406/01/19 | NW12 | `net-load-balancer-l4-l7` | Networking | ✍️ |
+| 92 | 2027-04-09 | 1406/01/20 | SC7 | `sec-authorization-rbac-idor` | Software Security | ✍️ |
+| 93 | 2027-04-10 | 1406/01/21 | LX4 | `linux-proc-observability` | Linux | ✍️ |
+| 94 | 2027-04-11 | 1406/01/22 | EN7 | `eng-technical-debt` | Software Engineering | ✍️ |
+| 95 | 2027-04-12 | 1406/01/23 | AL15 | `algo-dynamic-programming-2` | Algorithms | ✍️ |
+| 96 | 2027-04-13 | 1406/01/24 | ND16 | `node-vs-go-when-to-use` | Node.js | ✍️ |
+| 97 | 2027-04-14 | 1406/01/25 | PY10 | `py-asyncio` | Python | ✍️ |
+| 98 | 2027-04-15 | 1406/01/26 | DS1 | `ds-why-distributed-is-hard` | Distributed Systems | ✍️ |
+| 99 | 2027-04-16 | 1406/01/27 | NW13 | `net-troubleshooting-curl-traceroute` | Networking | ✍️ |
+| 100 | 2027-04-17 | 1406/01/28 | SC8 | `sec-csrf-cors-headers` | Software Security | ✍️ |
+| 101 | 2027-04-18 | 1406/01/29 | LX5 | `linux-systemd-units-timers` | Linux | ✍️ |
+| 102 | 2027-04-19 | 1406/01/30 | EN8 | `eng-adr-documentation` | Software Engineering | ✍️ |
+| 103 | 2027-04-20 | 1406/01/31 | DS2 | `ds-cap-pacelc` | Distributed Systems | ✍️ |
+| 104 | 2027-04-21 | 1406/02/01 | AL16 | `algo-greedy-backtracking` | Algorithms | ✍️ |
+| 105 | 2027-04-22 | 1406/02/02 | PY11 | `py-fastapi-pydantic` | Python | ✍️ |
+| 106 | 2027-04-23 | 1406/02/03 | NW14 | `net-slow-request-case-study` | Networking | ✍️ |
+| 107 | 2027-04-24 | 1406/02/04 | SC9 | `sec-tls-x509-certificates` | Software Security | ✍️ |
+| 108 | 2027-04-25 | 1406/02/05 | DS3 | `ds-consistency-models` | Distributed Systems | ✍️ |
+| 109 | 2027-04-26 | 1406/02/06 | LX6 | `linux-cgroups-namespaces` | Linux | ✍️ |
+| 110 | 2027-04-27 | 1406/02/07 | EN9 | `eng-feature-flags-trunk-based` | Software Engineering | ✍️ |
+| 111 | 2027-04-28 | 1406/02/08 | AL17 | `algo-string-algorithms` | Algorithms | ✍️ |
+| 112 | 2027-04-29 | 1406/02/09 | DS4 | `ds-logical-clocks` | Distributed Systems | ✍️ |
+| 113 | 2027-04-30 | 1406/02/10 | SC10 | `sec-secrets-management` | Software Security | ✍️ |
+| 114 | 2027-05-01 | 1406/02/11 | PY12 | `py-sqlalchemy-postgres` | Python | ✍️ |
+| 115 | 2027-05-02 | 1406/02/12 | LX7 | `linux-memory-page-cache-oom` | Linux | ✍️ |
+| 116 | 2027-05-03 | 1406/02/13 | EN10 | `eng-ci-cd-pipeline-design` | Software Engineering | ✍️ |
+| 117 | 2027-05-04 | 1406/02/14 | DS5 | `ds-timeouts-retries-backoff` | Distributed Systems | ✍️ |
+| 118 | 2027-05-05 | 1406/02/15 | SC11 | `sec-supply-chain-vulns` | Software Security | ✍️ |
+| 119 | 2027-05-06 | 1406/02/16 | AL18 | `algo-bloom-filter-consistent-hashing` | Algorithms | ✍️ |
+| 120 | 2027-05-07 | 1406/02/17 | PY13 | `py-packaging-publishing` | Python | ✍️ |
+| 121 | 2027-05-08 | 1406/02/18 | DS6 | `ds-circuit-breaker-bulkhead` | Distributed Systems | ✍️ |
+| 122 | 2027-05-09 | 1406/02/19 | LX8 | `linux-io-epoll` | Linux | ✍️ |
+| 123 | 2027-05-10 | 1406/02/20 | EN11 | `eng-sli-slo-error-budgets` | Software Engineering | ✍️ |
+| 124 | 2027-05-11 | 1406/02/21 | DS7 | `ds-replication-quorum` | Distributed Systems | ✍️ |
+| 125 | 2027-05-12 | 1406/02/22 | SC12 | `sec-ssrf-deserialization` | Software Security | ✍️ |
+| 126 | 2027-05-13 | 1406/02/23 | PY14 | `py-cli-scripts` | Python | ✍️ |
+| 127 | 2027-05-14 | 1406/02/24 | LX9 | `linux-networking-ip-ss-nftables` | Linux | ✍️ |
+| 128 | 2027-05-15 | 1406/02/25 | DS8 | `ds-sharding-consistent-hashing` | Distributed Systems | ✍️ |
+| 129 | 2027-05-16 | 1406/02/26 | EN12 | `eng-postmortems-blameless` | Software Engineering | ✍️ |
+| 130 | 2027-05-17 | 1406/02/27 | SC13 | `sec-crypto-mistakes` | Software Security | ✍️ |
+| 131 | 2027-05-18 | 1406/02/28 | DS9 | `ds-consensus-raft` | Distributed Systems | ✍️ |
+| 132 | 2027-05-19 | 1406/02/29 | PY15 | `py-data-csv-sqlite` | Python | ✍️ |
+| 133 | 2027-05-20 | 1406/02/30 | LX10 | `linux-ssh-keys` | Linux | ✍️ |
+| 134 | 2027-05-21 | 1406/02/31 | EN13 | `eng-legacy-code` | Software Engineering | ✍️ |
+| 135 | 2027-05-22 | 1406/03/01 | SC14 | `sec-memory-safety-c-vs-rust` | Software Security | ✍️ |
+| 136 | 2027-05-23 | 1406/03/02 | DS10 | `ds-saga-vs-2pc` | Distributed Systems | ✍️ |
+| 137 | 2027-05-24 | 1406/03/03 | PY16 | `py-ffi-pyo3-ctypes` | Python | ✍️ |
+| 138 | 2027-05-25 | 1406/03/04 | LX11 | `linux-users-sudo-capabilities` | Linux | ✍️ |
+| 139 | 2027-05-26 | 1406/03/05 | DS11 | `ds-cqrs-event-sourcing` | Distributed Systems | ✍️ |
+| 140 | 2027-05-27 | 1406/03/06 | SC15 | `sec-fuzzing` | Software Security | ✍️ |
+| 141 | 2027-05-28 | 1406/03/07 | EN14 | `eng-ddd-basics` | Software Engineering | ✍️ |
+| 142 | 2027-05-29 | 1406/03/08 | DS12 | `ds-messaging-event-driven` | Distributed Systems | ✍️ |
+| 143 | 2027-05-30 | 1406/03/09 | LX12 | `linux-logs-journalctl` | Linux | ✍️ |
+| 144 | 2027-05-31 | 1406/03/10 | SC16 | `sec-logging-audit-incident-response` | Software Security | ✍️ |
+| 145 | 2027-06-01 | 1406/03/11 | DS13 | `ds-service-discovery-load-balancing` | Distributed Systems | ✍️ |
+| 146 | 2027-06-02 | 1406/03/12 | EN15 | `eng-monorepo-vs-polyrepo` | Software Engineering | ✍️ |
+| 147 | 2027-06-03 | 1406/03/13 | DS14 | `ds-distributed-rate-limiting` | Distributed Systems | ✍️ |
+| 148 | 2027-06-04 | 1406/03/14 | LX13 | `linux-strace-perf` | Linux | ✍️ |
+| 149 | 2027-06-05 | 1406/03/15 | EN16 | `eng-estimation-planning` | Software Engineering | ✍️ |
+| 150 | 2027-06-06 | 1406/03/16 | DS15 | `ds-fault-injection-testing` | Distributed Systems | ✍️ |
+| 151 | 2027-06-07 | 1406/03/17 | LX14 | `linux-scripting-cron-safely` | Linux | ✍️ |
+| 152 | 2027-06-08 | 1406/03/18 | DS16 | `ds-modular-monolith-vs-microservices` | Distributed Systems | ✍️ |
+| 153 | 2027-06-09 | 1406/03/19 | DS17 | `ds-deployment-strategies` | Distributed Systems | ✍️ |
+| 154 | 2027-06-10 | 1406/03/20 | DS18 | `ds-capacity-estimation` | Distributed Systems | ✍️ |
+| 155 | 2027-06-11 | 1406/03/21 | DS19 | `ds-case-studies` | Distributed Systems | ✍️ |
+| 156 | 2027-06-12 | 1406/03/22 | DS20 | `ds-capstone` | Distributed Systems | ✍️ |
 
 ### عنوان‌ها
 

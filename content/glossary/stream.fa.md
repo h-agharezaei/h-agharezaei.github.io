@@ -4,7 +4,7 @@ summary = "شیئی که داده را تکه‌تکه جابه‌جا می‌ک
 category = "Node.js"
 fa_title = "استریم"
 related = ["backpressure", "high-water-mark", "event-loop"]
-posts = ["node-streams-backpressure"]
+posts = ["node-streams-backpressure", "net-sockets-tcp-from-scratch"]
 +++
 
 stream منبع یا مقصد داده‌ای است که تکه‌تکه پردازش می‌شود. Node.js چهار نوع دارد: Readable، Writable، Duplex و Transform. streamها با `pipeline` به هم وصل می‌شوند و مصرف‌کننده‌ی کند با [backpressure](/fa/glossary/backpressure/) محافظت می‌شود.

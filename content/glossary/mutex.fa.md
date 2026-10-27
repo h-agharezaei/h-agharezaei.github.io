@@ -4,7 +4,7 @@ summary = "قفلی که در هر لحظه فقط به یک goroutine اجاز�
 category = "Go"
 fa_title = "میوتکس"
 related = ["race-condition", "goroutine"]
-posts = ["go-sync-select-context"]
+posts = ["go-sync-select-context", "net-sockets-tcp-from-scratch", "py-gil-threading", "py-multiprocessing"]
 +++
 
 `sync.Mutex` یک بخش بحرانی را با `Lock()` و `Unlock()` محافظت می‌کند. این دو را همیشه جفت کنید، معمولاً با `defer`. `sync.RWMutex` اجازه می‌دهد چند خواننده هم‌زمان باشند یا فقط یک نویسنده. فراموش کردن قفل به [race condition](/fa/glossary/race-condition/) می‌انجامد.

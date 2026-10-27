@@ -4,7 +4,7 @@ summary = "planی که مکان ردیف‌های منطبق را از یک یا
 category = "Databases"
 fa_title = "Bitmap scan"
 related = ["composite-index"]
-posts = ["db-composite-partial-covering-indexes"]
+posts = ["db-composite-partial-covering-indexes", "db-slow-query-case-study"]
 +++
 
 با چند ایندکس، bitmapها را می‌شود با `BitmapAnd` یا `BitmapOr` ترکیب کرد.

@@ -4,7 +4,7 @@ summary = "یک ایندکس روی چند ستون که اول بر اساس س
 category = "Databases"
 fa_title = "ایندکس ترکیبی"
 related = ["covering-index", "partial-index"]
-posts = ["db-composite-partial-covering-indexes"]
+posts = ["db-composite-partial-covering-indexes", "db-slow-query-case-study"]
 +++
 
 ترتیب مهم است: `(a, b)` فیلتر روی `a` یا روی `a` و `b` را خوب جواب می‌دهد، ولی فیلتر فقط روی `b` را نه. ستون‌های equality را اول و ستون range را آخر بگذارید.

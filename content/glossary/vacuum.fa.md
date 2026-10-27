@@ -4,7 +4,7 @@ summary = "دستور نگهداری PostgreSQL که نسخه‌های مرده�
 category = "Databases"
 fa_title = "VACUUM"
 related = ["visibility-map"]
-posts = ["db-composite-partial-covering-indexes", "db-mvcc-vacuum"]
+posts = ["db-composite-partial-covering-indexes", "db-mvcc-vacuum", "db-partitioning"]
 +++
 
 autovacuum آن را در پس‌زمینه اجرا می‌کند و می‌توانید `VACUUM table` را دستی هم بزنید. جدول‌های پر‌update به آن نیاز دارند.

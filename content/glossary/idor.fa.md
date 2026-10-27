@@ -4,7 +4,7 @@ summary = "IDOR (ارجاع مستقیم ناامن به شیء): endpoint شی�
 category = "Security"
 fa_title = "IDOR"
 related = ["owasp-top-10"]
-posts = ["sec-owasp-top10-in-code"]
+posts = ["sec-owasp-top10-in-code", "sec-authorization-rbac-idor"]
 +++
 
 مثال: `GET /orders/2` سفارش باب را به آلیس می‌دهد. راه‌حل بررسی مالکیت در سرور برای هر خواندن است.

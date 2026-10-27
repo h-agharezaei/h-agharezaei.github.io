@@ -4,7 +4,7 @@ summary = "حلقه‌ای که به JavaScript تک‌threaded اجازه می�
 category = "Node.js"
 fa_title = "ایونت‌لوپ"
 related = ["libuv", "microtask", "thread-pool"]
-posts = ["node-event-loop", "py-gil-threading"]
+posts = ["node-event-loop", "py-gil-threading", "py-asyncio"]
 +++
 
 event loop مدام از فازها (timers، poll، check، close) می‌گذرد و callbackهای آماده را اجرا می‌کند. JavaScript شما روی یک thread اجرا می‌شود، پس یک کار همگام طولانی همه‌چیز را عقب می‌اندازد.

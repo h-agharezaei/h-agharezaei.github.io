@@ -358,17 +358,17 @@ python3 scripts/generate-covers.py --default        # کاور پیش‌فرض �
 | 86 | 2027-04-03 | 1406/01/14 | LX3 | `linux-processes-signals` | Linux | ✍️ |
 | 87 | 2027-04-04 | 1406/01/15 | EN6 | `eng-openapi-contracts` | Software Engineering | ✍️ |
 | 88 | 2027-04-05 | 1406/01/16 | ND15 | `node-profiling-memory-shutdown` | Node.js | ✍️ |
-| 89 | 2027-04-06 | 1406/01/17 | AL14 | `algo-dynamic-programming-1` | Algorithms | 📝 |
-| 90 | 2027-04-07 | 1406/01/18 | PY9 | `py-multiprocessing` | Python | 📝 |
-| 91 | 2027-04-08 | 1406/01/19 | NW12 | `net-load-balancer-l4-l7` | Networking | 📝 |
-| 92 | 2027-04-09 | 1406/01/20 | SC7 | `sec-authorization-rbac-idor` | Software Security | 📝 |
-| 93 | 2027-04-10 | 1406/01/21 | LX4 | `linux-proc-observability` | Linux | 📝 |
-| 94 | 2027-04-11 | 1406/01/22 | EN7 | `eng-technical-debt` | Software Engineering | 📝 |
-| 95 | 2027-04-12 | 1406/01/23 | AL15 | `algo-dynamic-programming-2` | Algorithms | 📝 |
-| 96 | 2027-04-13 | 1406/01/24 | ND16 | `node-vs-go-when-to-use` | Node.js | 📝 |
-| 97 | 2027-04-14 | 1406/01/25 | PY10 | `py-asyncio` | Python | 📝 |
-| 98 | 2027-04-15 | 1406/01/26 | DS1 | `ds-why-distributed-is-hard` | Distributed Systems | 📝 |
-| 99 | 2027-04-16 | 1406/01/27 | NW13 | `net-troubleshooting-curl-traceroute` | Networking | 📝 |
+| 89 | 2027-04-06 | 1406/01/17 | AL14 | `algo-dynamic-programming-1` | Algorithms | ✍️ |
+| 90 | 2027-04-07 | 1406/01/18 | PY9 | `py-multiprocessing` | Python | ✍️ |
+| 91 | 2027-04-08 | 1406/01/19 | NW12 | `net-load-balancer-l4-l7` | Networking | ✍️ |
+| 92 | 2027-04-09 | 1406/01/20 | SC7 | `sec-authorization-rbac-idor` | Software Security | ✍️ |
+| 93 | 2027-04-10 | 1406/01/21 | LX4 | `linux-proc-observability` | Linux | ✍️ |
+| 94 | 2027-04-11 | 1406/01/22 | EN7 | `eng-technical-debt` | Software Engineering | ✍️ |
+| 95 | 2027-04-12 | 1406/01/23 | AL15 | `algo-dynamic-programming-2` | Algorithms | ✍️ |
+| 96 | 2027-04-13 | 1406/01/24 | ND16 | `node-vs-go-when-to-use` | Node.js | ✍️ |
+| 97 | 2027-04-14 | 1406/01/25 | PY10 | `py-asyncio` | Python | ✍️ |
+| 98 | 2027-04-15 | 1406/01/26 | DS1 | `ds-why-distributed-is-hard` | Distributed Systems | ✍️ |
+| 99 | 2027-04-16 | 1406/01/27 | NW13 | `net-troubleshooting-curl-traceroute` | Networking | ✍️ |
 | 100 | 2027-04-17 | 1406/01/28 | SC8 | `sec-csrf-cors-headers` | Software Security | 📝 |
 | 101 | 2027-04-18 | 1406/01/29 | LX5 | `linux-systemd-units-timers` | Linux | 📝 |
 | 102 | 2027-04-19 | 1406/01/30 | EN8 | `eng-adr-documentation` | Software Engineering | 📝 |

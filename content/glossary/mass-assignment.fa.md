@@ -4,7 +4,7 @@ summary = "باگی که در آن سرور همه‌ی فیلدهای درخو�
 category = "Security"
 fa_title = "Mass assignment"
 related = ["stride"]
-posts = ["sec-threat-modeling-stride"]
+posts = ["sec-threat-modeling-stride", "sec-authorization-rbac-idor"]
 +++
 
 راه‌حل یک نوع ورودی allow-list است که فقط فیلدهای مجاز را دارد و بقیه را سرور حساب یا مقداردهی می‌کند.

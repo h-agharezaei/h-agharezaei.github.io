@@ -424,8 +424,8 @@ python3 scripts/generate-covers.py --default        # کاور پیش‌فرض �
 | 152 | 2027-06-08 | 1406/03/18 | DS16 | `ds-modular-monolith-vs-microservices` | Distributed Systems | ✍️ |
 | 153 | 2027-06-09 | 1406/03/19 | DS17 | `ds-deployment-strategies` | Distributed Systems | ✍️ |
 | 154 | 2027-06-10 | 1406/03/20 | DS18 | `ds-capacity-estimation` | Distributed Systems | ✍️ |
-| 155 | 2027-06-11 | 1406/03/21 | DS19 | `ds-case-studies` | Distributed Systems | 📝 |
-| 156 | 2027-06-12 | 1406/03/22 | DS20 | `ds-capstone` | Distributed Systems | 📝 |
+| 155 | 2027-06-11 | 1406/03/21 | DS19 | `ds-case-studies` | Distributed Systems | ✍️ |
+| 156 | 2027-06-12 | 1406/03/22 | DS20 | `ds-capstone` | Distributed Systems | ✍️ |
 
 ### عنوان‌ها
 

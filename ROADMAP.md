@@ -347,17 +347,17 @@ python3 scripts/generate-covers.py --default        # کاور پیش‌فرض �
 | 75 | 2027-03-23 | 1406/01/03 | DB16 | `db-slow-query-case-study` | Databases | ✍️ |
 | 76 | 2027-03-24 | 1406/01/04 | PY7 | `py-testing-pytest` | Python | ✍️ |
 | 77 | 2027-03-25 | 1406/01/05 | NW10 | `net-websocket` | Networking | ✍️ |
-| 78 | 2027-03-26 | 1406/01/06 | EN5 | `eng-api-design-versioning-pagination` | Software Engineering | 📝 |
-| 79 | 2027-03-27 | 1406/01/07 | LX2 | `linux-filesystem-permissions` | Linux | 📝 |
-| 80 | 2027-03-28 | 1406/01/08 | ND14 | `node-worker-threads-cluster` | Node.js | 📝 |
-| 81 | 2027-03-29 | 1406/01/09 | SC5 | `sec-sessions-vs-jwt` | Software Security | 📝 |
-| 82 | 2027-03-30 | 1406/01/10 | AL13 | `algo-topological-sort` | Algorithms | 📝 |
-| 83 | 2027-03-31 | 1406/01/11 | PY8 | `py-gil-threading` | Python | 📝 |
-| 84 | 2027-04-01 | 1406/01/12 | NW11 | `net-grpc-over-http2` | Networking | 📝 |
-| 85 | 2027-04-02 | 1406/01/13 | SC6 | `sec-oauth2-oidc` | Software Security | 📝 |
-| 86 | 2027-04-03 | 1406/01/14 | LX3 | `linux-processes-signals` | Linux | 📝 |
-| 87 | 2027-04-04 | 1406/01/15 | EN6 | `eng-openapi-contracts` | Software Engineering | 📝 |
-| 88 | 2027-04-05 | 1406/01/16 | ND15 | `node-profiling-memory-shutdown` | Node.js | 📝 |
+| 78 | 2027-03-26 | 1406/01/06 | EN5 | `eng-api-design-versioning-pagination` | Software Engineering | ✍️ |
+| 79 | 2027-03-27 | 1406/01/07 | LX2 | `linux-filesystem-permissions` | Linux | ✍️ |
+| 80 | 2027-03-28 | 1406/01/08 | ND14 | `node-worker-threads-cluster` | Node.js | ✍️ |
+| 81 | 2027-03-29 | 1406/01/09 | SC5 | `sec-sessions-vs-jwt` | Software Security | ✍️ |
+| 82 | 2027-03-30 | 1406/01/10 | AL13 | `algo-topological-sort` | Algorithms | ✍️ |
+| 83 | 2027-03-31 | 1406/01/11 | PY8 | `py-gil-threading` | Python | ✍️ |
+| 84 | 2027-04-01 | 1406/01/12 | NW11 | `net-grpc-over-http2` | Networking | ✍️ |
+| 85 | 2027-04-02 | 1406/01/13 | SC6 | `sec-oauth2-oidc` | Software Security | ✍️ |
+| 86 | 2027-04-03 | 1406/01/14 | LX3 | `linux-processes-signals` | Linux | ✍️ |
+| 87 | 2027-04-04 | 1406/01/15 | EN6 | `eng-openapi-contracts` | Software Engineering | ✍️ |
+| 88 | 2027-04-05 | 1406/01/16 | ND15 | `node-profiling-memory-shutdown` | Node.js | ✍️ |
 | 89 | 2027-04-06 | 1406/01/17 | AL14 | `algo-dynamic-programming-1` | Algorithms | 📝 |
 | 90 | 2027-04-07 | 1406/01/18 | PY9 | `py-multiprocessing` | Python | 📝 |
 | 91 | 2027-04-08 | 1406/01/19 | NW12 | `net-load-balancer-l4-l7` | Networking | 📝 |

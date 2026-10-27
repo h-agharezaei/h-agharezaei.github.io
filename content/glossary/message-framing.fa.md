@@ -4,7 +4,7 @@ summary = "قاعده‌هایی که در یک جریان بایتی مثل TCP
 category = "Networking"
 fa_title = "فریم‌بندی پیام"
 related = ["tcp", "stream"]
-posts = ["net-sockets-tcp-from-scratch", "net-udp-sockets", "net-http1-by-hand"]
+posts = ["net-sockets-tcp-from-scratch", "net-udp-sockets", "net-http1-by-hand", "net-grpc-over-http2"]
 +++
 
 TCP فقط بایت بدون مرز می‌دهد، پس خود پروتکل باید بگوید پیام کجا تمام می‌شود. دو روش رایج: جداکننده مثل newline، یا length prefix (یک عدد با اندازه‌ی ثابت پیش از payload). به [stream](/fa/glossary/stream/) نگاه کنید.

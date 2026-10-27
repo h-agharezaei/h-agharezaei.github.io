@@ -55,13 +55,13 @@ enableRobotsTXT = true
   title = "Roham"
 
   [languages.en.params]
-    description = "Personal website and blog of Roham, senior software engineer (Go & Node.js)."
-    homeTitle = "Roham | Senior Software Engineer (Go & Node.js)"
-    keywords = ["Roham", "software engineer", "Go", "Golang", "Node.js", "NATS JetStream", "backend", "microservices"]
+    description = "Personal website and blog of Roham, software engineer and tech lead (Go, Node.js & AI agents)."
+    homeTitle = "Roham | Software Engineer & Tech Lead (Go & Node.js)"
+    keywords = ["Roham", "software engineer", "tech lead", "Go", "Golang", "Node.js", "NATS JetStream", "backend", "distributed systems", "LLM", "AI agents", "microservices"]
 
     [languages.en.params.homeInfoParams]
       Title = "Hi, I'm Roham 👋"
-      Content = "Senior Software Engineer working with Go and Node.js. I care about clean architecture and efficient APIs, and I write about what I learn along the way."
+      Content = "Software engineer and tech lead with 16+ years of experience in backend engineering, distributed systems and LLM-based AI agents. I write about what I learn along the way."
 
     [[languages.en.params.socialIcons]]
       name = "github"
@@ -108,13 +108,13 @@ enableRobotsTXT = true
   title = "روهام"
 
   [languages.fa.params]
-    description = "وبسایت شخصی و وبلاگ روهام، مهندس نرم‌افزار ارشد (Go و Node.js)."
-    homeTitle = "روهام | مهندس نرم‌افزار ارشد (Go و Node.js)"
-    keywords = ["روهام", "مهندس نرم‌افزار", "Go", "گولنگ", "Node.js", "NATS JetStream", "بک‌اند", "میکروسرویس"]
+    description = "وبسایت شخصی و وبلاگ روهام، مهندس نرم‌افزار و رهبر فنی (Go، Node.js و عامل‌های هوش مصنوعی)."
+    homeTitle = "روهام | مهندس نرم‌افزار و رهبر فنی (Go و Node.js)"
+    keywords = ["روهام", "مهندس نرم‌افزار", "Go", "گولنگ", "Node.js", "NATS JetStream", "بک‌اند", "سیستم‌های توزیع‌شده", "رهبر فنی", "عامل هوش مصنوعی", "LLM", "میکروسرویس"]
 
     [languages.fa.params.homeInfoParams]
       Title = "سلام، من روهام هستم 👋"
-      Content = "مهندس نرم‌افزار ارشد با Go و Node.js. به معماری تمیز و APIهای کارآمد اهمیت می‌دهم و از چیزهایی که یاد می‌گیرم می‌نویسم."
+      Content = "مهندس نرم‌افزار و رهبر فنی با بیش از ۱۶ سال تجربه در مهندسی بک‌اند، سیستم‌های توزیع‌شده و عامل‌های هوش مصنوعی مبتنی بر LLM. از چیزهایی که یاد می‌گیرم می‌نویسم."
 
     [[languages.fa.params.socialIcons]]
       name = "github"

@@ -369,17 +369,17 @@ python3 scripts/generate-covers.py --default        # کاور پیش‌فرض �
 | 97 | 2027-04-14 | 1406/01/25 | PY10 | `py-asyncio` | Python | ✍️ |
 | 98 | 2027-04-15 | 1406/01/26 | DS1 | `ds-why-distributed-is-hard` | Distributed Systems | ✍️ |
 | 99 | 2027-04-16 | 1406/01/27 | NW13 | `net-troubleshooting-curl-traceroute` | Networking | ✍️ |
-| 100 | 2027-04-17 | 1406/01/28 | SC8 | `sec-csrf-cors-headers` | Software Security | 📝 |
-| 101 | 2027-04-18 | 1406/01/29 | LX5 | `linux-systemd-units-timers` | Linux | 📝 |
-| 102 | 2027-04-19 | 1406/01/30 | EN8 | `eng-adr-documentation` | Software Engineering | 📝 |
-| 103 | 2027-04-20 | 1406/01/31 | DS2 | `ds-cap-pacelc` | Distributed Systems | 📝 |
-| 104 | 2027-04-21 | 1406/02/01 | AL16 | `algo-greedy-backtracking` | Algorithms | 📝 |
-| 105 | 2027-04-22 | 1406/02/02 | PY11 | `py-fastapi-pydantic` | Python | 📝 |
-| 106 | 2027-04-23 | 1406/02/03 | NW14 | `net-slow-request-case-study` | Networking | 📝 |
-| 107 | 2027-04-24 | 1406/02/04 | SC9 | `sec-tls-x509-certificates` | Software Security | 📝 |
-| 108 | 2027-04-25 | 1406/02/05 | DS3 | `ds-consistency-models` | Distributed Systems | 📝 |
-| 109 | 2027-04-26 | 1406/02/06 | LX6 | `linux-cgroups-namespaces` | Linux | 📝 |
-| 110 | 2027-04-27 | 1406/02/07 | EN9 | `eng-feature-flags-trunk-based` | Software Engineering | 📝 |
+| 100 | 2027-04-17 | 1406/01/28 | SC8 | `sec-csrf-cors-headers` | Software Security | ✍️ |
+| 101 | 2027-04-18 | 1406/01/29 | LX5 | `linux-systemd-units-timers` | Linux | ✍️ |
+| 102 | 2027-04-19 | 1406/01/30 | EN8 | `eng-adr-documentation` | Software Engineering | ✍️ |
+| 103 | 2027-04-20 | 1406/01/31 | DS2 | `ds-cap-pacelc` | Distributed Systems | ✍️ |
+| 104 | 2027-04-21 | 1406/02/01 | AL16 | `algo-greedy-backtracking` | Algorithms | ✍️ |
+| 105 | 2027-04-22 | 1406/02/02 | PY11 | `py-fastapi-pydantic` | Python | ✍️ |
+| 106 | 2027-04-23 | 1406/02/03 | NW14 | `net-slow-request-case-study` | Networking | ✍️ |
+| 107 | 2027-04-24 | 1406/02/04 | SC9 | `sec-tls-x509-certificates` | Software Security | ✍️ |
+| 108 | 2027-04-25 | 1406/02/05 | DS3 | `ds-consistency-models` | Distributed Systems | ✍️ |
+| 109 | 2027-04-26 | 1406/02/06 | LX6 | `linux-cgroups-namespaces` | Linux | ✍️ |
+| 110 | 2027-04-27 | 1406/02/07 | EN9 | `eng-feature-flags-trunk-based` | Software Engineering | ✍️ |
 | 111 | 2027-04-28 | 1406/02/08 | AL17 | `algo-string-algorithms` | Algorithms | 📝 |
 | 112 | 2027-04-29 | 1406/02/09 | DS4 | `ds-logical-clocks` | Distributed Systems | 📝 |
 | 113 | 2027-04-30 | 1406/02/10 | SC10 | `sec-secrets-management` | Software Security | 📝 |

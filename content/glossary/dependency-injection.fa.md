@@ -4,7 +4,7 @@ summary = "دادن وابستگی‌ها (مثل زمان یا دیتابیس) 
 category = "Node.js"
 fa_title = "تزریق وابستگی"
 related = ["test-double"]
-posts = ["node-testing-builtin", "eng-testing-pyramid-tdd", "node-project-structure-config"]
+posts = ["node-testing-builtin", "eng-testing-pyramid-tdd", "node-project-structure-config", "py-fastapi-pydantic"]
 +++
 
 به‌جای اینکه تابع خودش `Date.now()` یا اتصال دیتابیس را بسازد، آن را پارامتر می‌گیرد. در تست یک نسخه‌ی ساختگی می‌دهید و نتیجه قطعی می‌شود.

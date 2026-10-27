@@ -4,7 +4,7 @@ summary = "سیگنال مؤدبانه‌ای که از پروسه می‌خوا
 category = "Node.js"
 fa_title = "SIGTERM"
 related = ["graceful-shutdown"]
-posts = ["node-profiling-memory-shutdown", "linux-processes-signals"]
+posts = ["node-profiling-memory-shutdown", "linux-processes-signals", "linux-systemd-units-timers", "py-fastapi-pydantic"]
 +++
 
 orchestratorها آن را قبل از SIGKILL (که نمی‌شود گرفتش) می‌فرستند. در Node.js با `process.once('SIGTERM', ...)` مدیریتش می‌کنید.

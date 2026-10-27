@@ -4,7 +4,7 @@ summary = "تستی که رفتار فعلی کد را با همه‌ی باگ�
 category = "Engineering"
 fa_title = "تست مشخصه‌نگار"
 related = ["refactoring", "regression"]
-posts = ["eng-refactoring-safely"]
+posts = ["eng-refactoring-safely", "eng-feature-flags-trunk-based"]
 +++
 
 تست characterization (یا golden-master و snapshot) کد را روی ورودی‌های زیاد اجرا می‌کند، خروجی‌ها را در فایل ذخیره می‌کند و اگر بعداً خروجی‌ای فرق کند شکست می‌خورد. ادعا نمی‌کند رفتار درست است، فقط می‌گوید عوض نشده است.

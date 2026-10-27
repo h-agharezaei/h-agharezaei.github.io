@@ -4,7 +4,7 @@ fa_title = "برنامه‌ریزی پویا"
 summary = "حل مسئله با ترکیب جواب زیرمسئله‌های کوچک‌تر که هر کدام یک بار حل و ذخیره می‌شود."
 category = "Algorithms"
 related = ["memoization", "overlapping-subproblems", "optimal-substructure"]
-posts = ["algo-dynamic-programming-1", "algo-dynamic-programming-2"]
+posts = ["algo-dynamic-programming-1", "algo-dynamic-programming-2", "algo-greedy-backtracking"]
 +++
 
 حل مسئله با ترکیب جواب زیرمسئله‌های کوچک‌تر که هر کدام یک بار حل و ذخیره می‌شود.

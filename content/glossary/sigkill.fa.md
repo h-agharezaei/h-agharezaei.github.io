@@ -4,7 +4,7 @@ summary = 'کشتن اجباری (سیگنال ۹)؛ نه گرفته می‌شو
 category = 'Linux'
 fa_title = 'SIGKILL'
 related = ["signal", "sigterm"]
-posts = ["linux-processes-signals"]
+posts = ["linux-processes-signals", "linux-systemd-units-timers"]
 +++
 
 کشتن اجباری (سیگنال ۹)؛ نه گرفته می‌شود نه نادیده، پس هیچ کد پاک‌سازی اجرا نمی‌شود. فقط بعد از شکست SIGTERM استفاده کنید. شل کد خروج ۱۳۷ (128+9) گزارش می‌کند.

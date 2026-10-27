@@ -4,7 +4,7 @@ summary = "گواهی X.509: سندی امضاشده که یک کلید عموم
 category = "Networking"
 fa_title = "گواهی X.509"
 related = ["certificate-authority", "subject-alt-name", "tls"]
-posts = ["net-tls-openssl"]
+posts = ["net-tls-openssl", "sec-tls-x509-certificates"]
 +++
 
 گواهی X.509 شامل کلید عمومی، صاحب گواهی (subject)، صادرکننده‌ی امضاکننده، بازه‌ی اعتبار و افزونه‌هایی مثل SubjectAltName است. دستور `openssl x509 -text` همه‌ی اینها را چاپ می‌کند.

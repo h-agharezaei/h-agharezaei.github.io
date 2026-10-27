@@ -3,7 +3,7 @@ title = "Dynamic programming"
 summary = "Solving a problem by combining answers to smaller subproblems, each solved once and stored."
 category = "Algorithms"
 related = ["memoization", "overlapping-subproblems", "optimal-substructure"]
-posts = ["algo-dynamic-programming-1", "algo-dynamic-programming-2"]
+posts = ["algo-dynamic-programming-1", "algo-dynamic-programming-2", "algo-greedy-backtracking"]
 +++
 
 Solving a problem by combining answers to smaller subproblems, each solved once and stored.

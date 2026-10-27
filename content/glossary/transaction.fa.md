@@ -4,7 +4,7 @@ summary = "گروهی از دستورها که دیتابیس آن‌ها را �
 category = "Databases"
 fa_title = "تراکنش"
 related = ["acid", "savepoint"]
-posts = ["db-transactions-acid", "db-mvcc-vacuum", "node-postgres-pg"]
+posts = ["db-transactions-acid", "db-mvcc-vacuum", "node-postgres-pg", "py-sqlalchemy-postgres"]
 +++
 
 در PostgreSQL هر دستور داخل یک تراکنش اجرا می‌شود؛ بدون `BEGIN` هر دستور تراکنش خودش را دارد (autocommit). `COMMIT` تغییرها را ماندگار می‌کند و `ROLLBACK` آن‌ها را دور می‌ریزد.

@@ -380,17 +380,17 @@ python3 scripts/generate-covers.py --default        # کاور پیش‌فرض �
 | 108 | 2027-04-25 | 1406/02/05 | DS3 | `ds-consistency-models` | Distributed Systems | ✍️ |
 | 109 | 2027-04-26 | 1406/02/06 | LX6 | `linux-cgroups-namespaces` | Linux | ✍️ |
 | 110 | 2027-04-27 | 1406/02/07 | EN9 | `eng-feature-flags-trunk-based` | Software Engineering | ✍️ |
-| 111 | 2027-04-28 | 1406/02/08 | AL17 | `algo-string-algorithms` | Algorithms | 📝 |
-| 112 | 2027-04-29 | 1406/02/09 | DS4 | `ds-logical-clocks` | Distributed Systems | 📝 |
-| 113 | 2027-04-30 | 1406/02/10 | SC10 | `sec-secrets-management` | Software Security | 📝 |
-| 114 | 2027-05-01 | 1406/02/11 | PY12 | `py-sqlalchemy-postgres` | Python | 📝 |
-| 115 | 2027-05-02 | 1406/02/12 | LX7 | `linux-memory-page-cache-oom` | Linux | 📝 |
-| 116 | 2027-05-03 | 1406/02/13 | EN10 | `eng-ci-cd-pipeline-design` | Software Engineering | 📝 |
-| 117 | 2027-05-04 | 1406/02/14 | DS5 | `ds-timeouts-retries-backoff` | Distributed Systems | 📝 |
-| 118 | 2027-05-05 | 1406/02/15 | SC11 | `sec-supply-chain-vulns` | Software Security | 📝 |
-| 119 | 2027-05-06 | 1406/02/16 | AL18 | `algo-bloom-filter-consistent-hashing` | Algorithms | 📝 |
-| 120 | 2027-05-07 | 1406/02/17 | PY13 | `py-packaging-publishing` | Python | 📝 |
-| 121 | 2027-05-08 | 1406/02/18 | DS6 | `ds-circuit-breaker-bulkhead` | Distributed Systems | 📝 |
+| 111 | 2027-04-28 | 1406/02/08 | AL17 | `algo-string-algorithms` | Algorithms | ✍️ |
+| 112 | 2027-04-29 | 1406/02/09 | DS4 | `ds-logical-clocks` | Distributed Systems | ✍️ |
+| 113 | 2027-04-30 | 1406/02/10 | SC10 | `sec-secrets-management` | Software Security | ✍️ |
+| 114 | 2027-05-01 | 1406/02/11 | PY12 | `py-sqlalchemy-postgres` | Python | ✍️ |
+| 115 | 2027-05-02 | 1406/02/12 | LX7 | `linux-memory-page-cache-oom` | Linux | ✍️ |
+| 116 | 2027-05-03 | 1406/02/13 | EN10 | `eng-ci-cd-pipeline-design` | Software Engineering | ✍️ |
+| 117 | 2027-05-04 | 1406/02/14 | DS5 | `ds-timeouts-retries-backoff` | Distributed Systems | ✍️ |
+| 118 | 2027-05-05 | 1406/02/15 | SC11 | `sec-supply-chain-vulns` | Software Security | ✍️ |
+| 119 | 2027-05-06 | 1406/02/16 | AL18 | `algo-bloom-filter-consistent-hashing` | Algorithms | ✍️ |
+| 120 | 2027-05-07 | 1406/02/17 | PY13 | `py-packaging-publishing` | Python | ✍️ |
+| 121 | 2027-05-08 | 1406/02/18 | DS6 | `ds-circuit-breaker-bulkhead` | Distributed Systems | ✍️ |
 | 122 | 2027-05-09 | 1406/02/19 | LX8 | `linux-io-epoll` | Linux | 📝 |
 | 123 | 2027-05-10 | 1406/02/20 | EN11 | `eng-sli-slo-error-budgets` | Software Engineering | 📝 |
 | 124 | 2027-05-11 | 1406/02/21 | DS7 | `ds-replication-quorum` | Distributed Systems | 📝 |

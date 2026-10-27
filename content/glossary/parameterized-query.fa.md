@@ -4,7 +4,7 @@ summary = "دستور SQL با جای‌نگهدار (`$1`) که مقدارها 
 category = "Security"
 fa_title = "Parameterized query"
 related = ["sql-injection"]
-posts = ["sec-injection-xss"]
+posts = ["sec-injection-xss", "py-sqlalchemy-postgres"]
 +++
 
 دیتابیس اول دستور را parse می‌کند و مقدارها را بعداً جا می‌دهد، پس مقدار هرگز ساختار query را عوض نمی‌کند. نام جدول و ستون نمی‌تواند پارامتر باشد.

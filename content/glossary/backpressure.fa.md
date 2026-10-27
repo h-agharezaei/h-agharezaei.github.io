@@ -4,7 +4,7 @@ summary = "سیگنالی از مصرف‌کننده‌ی کند به تولید
 category = "Node.js"
 fa_title = "بک‌پرشر"
 related = ["stream", "high-water-mark"]
-posts = ["node-streams-backpressure", "net-websocket", "py-asyncio"]
+posts = ["node-streams-backpressure", "net-websocket", "py-asyncio", "ds-circuit-breaker-bulkhead"]
 +++
 
 وقتی [stream](/fa/glossary/stream/) نمی‌تواند داده را به سرعت ورودی بپذیرد، `write()` مقدار `false` برمی‌گرداند. تولیدکننده باید تا رویداد `'drain'` صبر کند. نادیده گرفتن این سیگنال باعث می‌شود حافظه با اندازه‌ی صف انباشته بزرگ شود.

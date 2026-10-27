@@ -4,7 +4,7 @@ summary = "مقایسه‌ی رازها به‌شکلی که زمان اجرا �
 category = "Security"
 fa_title = "مقایسه‌ی زمان‌ثابت"
 related = ["password-hashing"]
-posts = ["sec-password-hashing"]
+posts = ["sec-password-hashing", "sec-secrets-management"]
 +++
 
 `==` معمولی ممکن است در اولین بایت متفاوت متوقف شود و از راه زمان اطلاعات نشت کند. در Go از `subtle.ConstantTimeCompare` استفاده کنید.

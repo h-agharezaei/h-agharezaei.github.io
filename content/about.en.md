@@ -1,18 +1,22 @@
 ---
 title: "About Me"
-description: "About Roham, a senior software engineer in Tehran working with Go, Node.js and event-driven systems (Kafka, NATS JetStream)."
+description: "About Roham, a software engineer and tech lead with 16+ years of experience in backend engineering, distributed systems and LLM-based AI agents."
 date: 2025-12-29
 ---
 
-Hi! I'm **Roham**, a Senior Software Engineer based in Tehran.
+Hi, I'm **Roham**, a software engineer and tech lead with over 16 years of experience designing and building software products.
 
-I mostly work with **Go** and **Node.js**, and I care about clean architecture, efficient APIs and the details that make backend systems reliable.
+My focus is backend engineering, distributed-systems architecture and building scalable, reliable services. Alongside **Go** and **Node.js**, I also build LLM-powered AI services and agents.
+
+Here I write about my experience, engineering challenges and the things I'm learning.
 
 ## What I work on
 
-- Designing and building backend services and APIs
-- Event-driven systems with Kafka and NATS JetStream
+- Designing and building backend services and APIs, from authentication and wallets to real-time communication
+- Distributed-systems architecture and event-driven systems with NATS JetStream and Kafka
 - Concurrency in Go: goroutines, contexts, connectivity and resilience
+- LLM-powered AI services and agents
+- Leading engineering teams, code review and architectural decisions
 - Market data and technical-analysis tooling (candles, indicators, signals)
 
 ## Currently exploring
@@ -22,8 +26,10 @@ I mostly work with **Go** and **Node.js**, and I care about clean architecture, 
 
 ## Skills
 
-- **Languages:** Go, TypeScript / Node.js (NestJS), Rust, Python
+- **Languages:** Go, TypeScript / Node.js (NestJS), Python, Rust
 - **Messaging:** Apache Kafka, NATS JetStream
+- **Data & infra:** PostgreSQL, Redis, MongoDB, AWS (Lambda, SQS, EventBridge)
+- **AI:** LLMs, OpenAI API, tool calling, AI agents
 - **Tooling:** Docker, Docker Compose, Hugo, GitHub Actions
 
 ## Contact

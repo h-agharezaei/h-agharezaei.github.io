@@ -1,5 +1,5 @@
 <meta charset="utf-8">
-{{- if hugo.IsProduction }}{{ partial "gtm_head.html" . }}{{ end }}
+{{- if hugo.IsProduction }}{{ partial "gtm_head.html" . }}{{ partial "gtag.html" . }}{{ end }}
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 {{- if hugo.IsProduction | or (eq site.Params.env "production") | and (ne .Params.robotsNoIndex true) }}

@@ -4,7 +4,7 @@ summary = "کلاینتی که فیلدهای ناشناخته را نادیده
 category = "Engineering"
 fa_title = "خواننده‌ی بردبار"
 related = ["semver"]
-posts = ["eng-api-design-versioning-pagination"]
+posts = ["eng-api-design-versioning-pagination", "ds-messaging-event-driven"]
 +++
 
 tolerant reader فقط فیلدهای لازم را برمی‌دارد و بقیه را نادیده می‌گیرد؛ پس اضافه‌کردن فیلد به پاسخ تغییری ایمن و غیرشکننده است. decoder سخت‌گیر که فیلد ناشناخته را رد می‌کند همان تغییر را به قطعی تبدیل می‌کند.

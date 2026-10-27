@@ -402,17 +402,17 @@ python3 scripts/generate-covers.py --default        # کاور پیش‌فرض �
 | 130 | 2027-05-17 | 1406/02/27 | SC13 | `sec-crypto-mistakes` | Software Security | ✍️ |
 | 131 | 2027-05-18 | 1406/02/28 | DS9 | `ds-consensus-raft` | Distributed Systems | ✍️ |
 | 132 | 2027-05-19 | 1406/02/29 | PY15 | `py-data-csv-sqlite` | Python | ✍️ |
-| 133 | 2027-05-20 | 1406/02/30 | LX10 | `linux-ssh-keys` | Linux | 📝 |
-| 134 | 2027-05-21 | 1406/02/31 | EN13 | `eng-legacy-code` | Software Engineering | 📝 |
-| 135 | 2027-05-22 | 1406/03/01 | SC14 | `sec-memory-safety-c-vs-rust` | Software Security | 📝 |
-| 136 | 2027-05-23 | 1406/03/02 | DS10 | `ds-saga-vs-2pc` | Distributed Systems | 📝 |
-| 137 | 2027-05-24 | 1406/03/03 | PY16 | `py-ffi-pyo3-ctypes` | Python | 📝 |
-| 138 | 2027-05-25 | 1406/03/04 | LX11 | `linux-users-sudo-capabilities` | Linux | 📝 |
-| 139 | 2027-05-26 | 1406/03/05 | DS11 | `ds-cqrs-event-sourcing` | Distributed Systems | 📝 |
-| 140 | 2027-05-27 | 1406/03/06 | SC15 | `sec-fuzzing` | Software Security | 📝 |
-| 141 | 2027-05-28 | 1406/03/07 | EN14 | `eng-ddd-basics` | Software Engineering | 📝 |
-| 142 | 2027-05-29 | 1406/03/08 | DS12 | `ds-messaging-event-driven` | Distributed Systems | 📝 |
-| 143 | 2027-05-30 | 1406/03/09 | LX12 | `linux-logs-journalctl` | Linux | 📝 |
+| 133 | 2027-05-20 | 1406/02/30 | LX10 | `linux-ssh-keys` | Linux | ✍️ |
+| 134 | 2027-05-21 | 1406/02/31 | EN13 | `eng-legacy-code` | Software Engineering | ✍️ |
+| 135 | 2027-05-22 | 1406/03/01 | SC14 | `sec-memory-safety-c-vs-rust` | Software Security | ✍️ |
+| 136 | 2027-05-23 | 1406/03/02 | DS10 | `ds-saga-vs-2pc` | Distributed Systems | ✍️ |
+| 137 | 2027-05-24 | 1406/03/03 | PY16 | `py-ffi-pyo3-ctypes` | Python | ✍️ |
+| 138 | 2027-05-25 | 1406/03/04 | LX11 | `linux-users-sudo-capabilities` | Linux | ✍️ |
+| 139 | 2027-05-26 | 1406/03/05 | DS11 | `ds-cqrs-event-sourcing` | Distributed Systems | ✍️ |
+| 140 | 2027-05-27 | 1406/03/06 | SC15 | `sec-fuzzing` | Software Security | ✍️ |
+| 141 | 2027-05-28 | 1406/03/07 | EN14 | `eng-ddd-basics` | Software Engineering | ✍️ |
+| 142 | 2027-05-29 | 1406/03/08 | DS12 | `ds-messaging-event-driven` | Distributed Systems | ✍️ |
+| 143 | 2027-05-30 | 1406/03/09 | LX12 | `linux-logs-journalctl` | Linux | ✍️ |
 | 144 | 2027-05-31 | 1406/03/10 | SC16 | `sec-logging-audit-incident-response` | Software Security | 📝 |
 | 145 | 2027-06-01 | 1406/03/11 | DS13 | `ds-service-discovery-load-balancing` | Distributed Systems | 📝 |
 | 146 | 2027-06-02 | 1406/03/12 | EN15 | `eng-monorepo-vs-polyrepo` | Software Engineering | 📝 |

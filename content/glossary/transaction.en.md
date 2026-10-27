@@ -3,7 +3,7 @@ title = "Transaction"
 summary = "A group of statements that the database treats as one unit: all of them take effect, or none do."
 category = "Databases"
 related = ["acid", "savepoint"]
-posts = ["db-transactions-acid", "db-mvcc-vacuum", "node-postgres-pg", "py-sqlalchemy-postgres", "py-data-csv-sqlite"]
+posts = ["db-transactions-acid", "db-mvcc-vacuum", "node-postgres-pg", "py-sqlalchemy-postgres", "py-data-csv-sqlite", "eng-ddd-basics"]
 +++
 
 In PostgreSQL every statement runs inside a transaction; without `BEGIN` each statement gets its own (autocommit). `COMMIT` makes the changes permanent and `ROLLBACK` discards them.

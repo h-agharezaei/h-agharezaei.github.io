@@ -4,7 +4,7 @@ summary = "یک بسته‌ی Python ساخته‌شده: فایل zip با پس
 category = "Python"
 fa_title = "wheel"
 related = ["sdist", "pypi", "pyproject-toml"]
-posts = ["py-packaging-publishing"]
+posts = ["py-packaging-publishing", "py-ffi-pyo3-ctypes"]
 +++
 
 نام فایل Python و پلتفرم پشتیبانی‌شده را نشان می‌دهد؛ برای Python خالص `py3-none-any`. نصب wheel یعنی باز کردن آن در `site-packages`.

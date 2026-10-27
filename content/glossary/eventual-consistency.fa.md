@@ -4,7 +4,7 @@ summary = "اگر writeها متوقف شوند، همه‌ی replicaها به �
 category = "Distributed"
 fa_title = "سازگاری نهایی (eventual consistency)"
 related = ["causal-consistency","replication"]
-posts = ["ds-consistency-models"]
+posts = ["ds-consistency-models", "ds-cqrs-event-sourcing", "ds-messaging-event-driven"]
 +++
 
 ضعیف‌ترین وعده‌ی مفید. نمی‌گوید همگرایی چقدر طول می‌کشد و در این فاصله read چه برمی‌گرداند.

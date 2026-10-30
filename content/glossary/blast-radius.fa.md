@@ -4,7 +4,7 @@ summary = "اینکه یک تغییر بد به چند کاربر یا درخو�
 category = "Distributed"
 fa_title = "شعاع آسیب"
 related = ["canary-release", "feature-flag"]
-posts = ["ds-deployment-strategies", "ds-fault-injection-testing"]
+posts = ["ds-deployment-strategies", "ds-fault-injection-testing", "binance-hack-hot-wallet-2026"]
 +++
 
 blast radius بخشی از سیستم یا ترافیک است که وقتی تغییری خراب شود آسیب می‌بیند. canary، cell و feature flag بیشتر برای کوچک کردن آن وجود دارند. می‌شود آن را تعداد درخواست‌هایی که نسخه‌ی بد جواب داده اندازه گرفت.

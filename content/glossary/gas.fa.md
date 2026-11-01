@@ -4,7 +4,7 @@ summary = "واحدی که EVM با آن کار را اندازه می‌گیر�
 category = "Blockchain"
 fa_title = "Gas"
 related = ["evm", "opcode", "halting-problem"]
-posts = ["bc-evm-internals-rust"]
+posts = ["bc-evm-internals-rust", "bc-solidity-first-contract"]
 +++
 
 فرستنده یک سقف gas تعیین می‌کند و بابت gas مصرف‌شده پول می‌دهد. چون هر قدم هزینه دارد، برنامه‌ی حلقه‌دار همیشه تمام می‌شود: یا کارش تمام می‌شود یا gas تمام می‌شود.

@@ -617,9 +617,9 @@ python3 scripts/generate-covers.py --default        # کاور پیش‌فرض �
 | 11 | 2027-06-23 | 1406/04/02 | BC11 | `bc-bitcoin-script-rust` | مبانی | Rust | ✍️ |
 | 12 | 2027-06-24 | 1406/04/03 | BC12 | `bc-toy-node-go` | مبانی | Go | ✍️ |
 | 13 | 2027-06-25 | 1406/04/04 | BC13 | `bc-evm-internals-rust` | اتریوم | Rust | ✍️ |
-| 14 | 2027-06-26 | 1406/04/05 | BC14 | `bc-solidity-first-contract` | اتریوم | Solidity | 📝 |
-| 15 | 2027-06-27 | 1406/04/06 | BC15 | `bc-foundry-testing-fuzzing` | اتریوم | Solidity | 📝 |
-| 16 | 2027-06-28 | 1406/04/07 | BC16 | `bc-erc20-erc721` | اتریوم | Solidity | 📝 |
+| 14 | 2027-06-26 | 1406/04/05 | BC14 | `bc-solidity-first-contract` | اتریوم | Solidity | ✍️ |
+| 15 | 2027-06-27 | 1406/04/06 | BC15 | `bc-foundry-testing-fuzzing` | اتریوم | Solidity | ✍️ |
+| 16 | 2027-06-28 | 1406/04/07 | BC16 | `bc-erc20-erc721` | اتریوم | Solidity | ✍️ |
 | 17 | 2027-06-29 | 1406/04/08 | BC17 | `bc-go-ethereum-client` | اتریوم | Go | 📝 |
 | 18 | 2027-06-30 | 1406/04/09 | BC18 | `bc-rust-alloy-client` | اتریوم | Rust | 📝 |
 | 19 | 2027-07-01 | 1406/04/10 | BC19 | `bc-event-indexer-go` | اتریوم | Go | 📝 |

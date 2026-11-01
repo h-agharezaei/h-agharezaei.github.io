@@ -2,7 +2,7 @@
 date = '2027-06-24T10:00:00+03:30'
 draft = false
 title = 'جمع‌بندی بخش اول: یک نود کامل کوچک با Go'
-description = 'یک full node کوچک با Go: پروسه‌های جدا روی loopback، بلاک روی دیسک با اعتبارسنجی دوباره، API از نوع JSON-RPC، کیف پول خط فرمان و خاموشی تمیز.'
+description = 'یک full node کوچک با Go: پروسه‌های جدا روی loopback، بلاک روی دیسک با اعتبارسنجی دوباره، API از نوع JSON-RPC، کیف‌پول خط فرمان و خاموشی تمیز.'
 categories = ["Blockchain"]
 series = ["Blockchain"]
 tags = ["blockchain", "go", "full-node", "json-rpc", "bitcoin"]
@@ -11,7 +11,7 @@ cover = { image = "/images/covers/bc-toy-node-go.fa.png", alt = "جمع‌بند
 
 پست قبلی، [Bitcoin Script: یک مفسر stack کوچک با Rust](/fa/posts/bc-bitcoin-script-rust/)، یک گریز کوتاه بود. کد Go از [Mempool، کارمزد و انتخاب تراکنش](/fa/posts/bc-mempool-fees/) ادامه دارد، جایی که همه‌ی نودها در یک پروسه بودند و با بسته شدنش همه‌چیز را فراموش می‌کردند.
 
-این پست بخش اول را می‌بندد: یک {{< term "full-node" "full node" >}} به اسم `toynode`، بلاک روی دیسک، API و کیف پول خط فرمان. تکه‌ها از [ساخت ابزار خط فرمان با Go](/fa/posts/go-cli-tool/)، [ساخت API با net/http در Go](/fa/posts/go-http-api-stdlib/) و [خاموشی تمیز Workerها در Go](/fa/posts/go-graceful-shutdown-workers/) می‌آیند.
+این پست بخش اول را می‌بندد: یک {{< term "full-node" "full node" >}} به اسم `toynode`، بلاک روی دیسک، API و کیف‌پول خط فرمان. تکه‌ها از [ساخت ابزار خط فرمان با Go](/fa/posts/go-cli-tool/)، [ساخت API با net/http در Go](/fa/posts/go-http-api-stdlib/) و [خاموشی تمیز Workerها در Go](/fa/posts/go-graceful-shutdown-workers/) می‌آیند.
 
 > اجرا با Go 1.27 روی macOS (arm64). کد مثال محلی است و فقط روی loopback. کلیدها از کلمه‌هایی مثل "miner" ساخته شده‌اند: عمومی‌اند و فقط برای دمو. مسیرهای موقت `<tmp>` نوشته شده‌اند.
 
@@ -97,7 +97,7 @@ bob 0xd94f176c: 20
 bob 0xd94f176c: 20
 ```
 
-کیف پول از n3 فرستاد، n1 ماین کرد و n2 جواب داد. لاگ n2:
+کیف‌پول از n3 فرستاد، n1 ماین کرد و n2 جواب داد. لاگ n2:
 
 ```
 [n2] block 4 0000359c9480 from n1: extended, 2 txs, relayed to 1
@@ -127,7 +127,7 @@ bob 0xd94f176c: 20
 | [BC9](/fa/posts/bc-forks-reorgs/) | درخت بلاک، reorg، داده‌ی undo |
 | [BC10](/fa/posts/bc-mempool-fees/) | mempool، نرخ کارمزد، RBF |
 | [BC11](/fa/posts/bc-bitcoin-script-rust/) | مفسر Script (با Rust، جدا) |
-| BC12 | پروسه، دیسک، API، کیف پول |
+| BC12 | پروسه، دیسک، API، کیف‌پول |
 
 ## چیزهایی که نود واقعی دارد و این ندارد
 

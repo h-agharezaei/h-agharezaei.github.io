@@ -594,10 +594,10 @@ python3 scripts/generate-covers.py --default        # کاور پیش‌فرض �
 دوره‌ی بلاکچین با دید برنامه‌نویس: اول یک بلاکچین کوچک را از صفر با Go می‌سازیم، بعد سراغ اتریوم، Solidity و کلاینت‌های Go و Rust می‌رویم، بعد DeFi و امنیت قرارداد، و در آخر موضوع‌های پیشرفته (PoS، rollup، bridge، ZK و مهندسی صرافی).
 
 - سری `Blockchain`، دسته `Blockchain`، رنگ کاور `#A3E635`. هر روز یک پست از 1406/03/23 (2027-06-13) تا 1406/04/23 (2027-07-14)، ساعت ۱۰:۰۰ تهران.
-- زبان کد: Go برای نود، کلاینت و indexer؛ Rust برای مفسرها (Bitcoin Script، EVM)، کیف پول HD و ZK؛ Solidity برای قراردادها. هر پست فقط یک زبان اصلی دارد تا خواننده گم نشود.
+- زبان کد: Go برای نود، کلاینت و indexer؛ Rust برای مفسرها (Bitcoin Script، EVM)، کیف‌پول HD و ZK؛ Solidity برای قراردادها. هر پست فقط یک زبان اصلی دارد تا خواننده گم نشود.
 - اجرای واقعی طبق [WRITING-GUIDE.md](WRITING-GUIDE.md): قراردادها با Foundry (`forge`، `anvil`) روی زنجیره‌ی محلی اجرا می‌شوند، نه روی mainnet یا testnet عمومی. هیچ کلید یا آدرس واقعی منتشر نمی‌شود.
 - پست‌های امنیتی (BC24، BC26) فقط دفاعی‌اند: حمله روی قرارداد خودمان در anvil، با رفع مشکل.
-- ارجاع به پست‌های قبلی: هک بایننس (کیف پول hot/cold)، Merkle و hash در الگوریتم‌ها، consensus و Raft در سیستم‌های توزیع‌شده، gRPC و Postgres در Go.
+- ارجاع به پست‌های قبلی: هک بایننس (کیف‌پول hot/cold)، Merkle و hash در الگوریتم‌ها، consensus و Raft در سیستم‌های توزیع‌شده، gRPC و Postgres در Go.
 - برچسب‌ها و glossary: واژه‌های جدید با دسته‌ی `Blockchain` به glossary اضافه می‌شوند؛ `merkle-tree`، `nonce`، `digital-signature`، `consensus` و `raft` از قبل هستند.
 
 ### تقویم
@@ -623,7 +623,7 @@ python3 scripts/generate-covers.py --default        # کاور پیش‌فرض �
 | 17 | 2027-06-29 | 1406/04/08 | BC17 | `bc-go-ethereum-client` | اتریوم | Go | 📝 |
 | 18 | 2027-06-30 | 1406/04/09 | BC18 | `bc-rust-alloy-client` | اتریوم | Rust | 📝 |
 | 19 | 2027-07-01 | 1406/04/10 | BC19 | `bc-event-indexer-go` | اتریوم | Go | 📝 |
-| 20 | 2027-07-02 | 1406/04/11 | BC20 | `bc-hd-wallets-rust` | اتریوم | Rust | 📝 |
+| 20 | 2027-07-02 | 1406/04/11 | BC20 | `bc-hd-wallets-rust` | اتریوم | Rust | ✍️ |
 | 21 | 2027-07-03 | 1406/04/12 | BC21 | `bc-amm-constant-product` | DeFi و امنیت | Solidity + Go | 📝 |
 | 22 | 2027-07-04 | 1406/04/13 | BC22 | `bc-lending-liquidation` | DeFi و امنیت | Solidity | 📝 |
 | 23 | 2027-07-05 | 1406/04/14 | BC23 | `bc-oracles` | DeFi و امنیت | Solidity | 📝 |
@@ -660,7 +660,7 @@ python3 scripts/generate-covers.py --default        # کاور پیش‌فرض �
 | BC17 | کار با اتریوم از Go با go-ethereum | Talking to Ethereum from Go with go-ethereum |
 | BC18 | کار با اتریوم از Rust با alloy | Talking to Ethereum from Rust with alloy |
 | BC19 | Event و ساخت indexer با Go و Postgres | Events and building an indexer with Go and Postgres |
-| BC20 | کیف پول HD: BIP-32، BIP-39 و BIP-44 با Rust | HD wallets: BIP-32, BIP-39 and BIP-44 in Rust |
+| BC20 | کیف‌پول HD: BIP-32، BIP-39 و BIP-44 با Rust | HD wallets: BIP-32, BIP-39 and BIP-44 in Rust |
 | BC21 | AMM و فرمول constant product | AMMs and the constant-product formula |
 | BC22 | وام‌دهی، وثیقه و liquidation | Lending, collateral and liquidation |
 | BC23 | Oracle و دستکاری قیمت | Oracles and price manipulation |

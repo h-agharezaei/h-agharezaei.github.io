@@ -90,7 +90,7 @@ head matches peer: false
 ## نقشه‌ی دوره
 
 ۱. مبانی (Go، یک پست Rust): hash، Merkle tree، کلید، تراکنش، proof of work، P2P، fork و یک نود کامل کوچک.
-۲. اتریوم (Solidity، Go، Rust): EVM، قرارداد با Foundry، توکن، کلاینت، indexer و کیف پول.
+۲. اتریوم (Solidity، Go، Rust): EVM، قرارداد با Foundry، توکن، کلاینت، indexer و کیف‌پول.
 ۳. DeFi و امنیت (Solidity، Go): AMM، وام‌دهی، oracle، امنیت قرارداد و MEV.
 ۴. پیشرفته: proof of stake، rollup، bridge، zero-knowledge، مهندسی صرافی و پروژه‌ی پایانی.
 

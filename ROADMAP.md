@@ -604,10 +604,10 @@ python3 scripts/generate-covers.py --default        # کاور پیش‌فرض �
 
 | # | تاریخ میلادی | تاریخ شمسی | شناسه | slug | بخش | زبان کد | وضعیت |
 |---|---|---|---|---|---|---|---|
-| 1 | 2027-06-13 | 1406/03/23 | BC1 | `bc-blockchain-for-programmers` | مبانی | Go | 📝 |
-| 2 | 2027-06-14 | 1406/03/24 | BC2 | `bc-hashes-blocks-chain` | مبانی | Go | 📝 |
-| 3 | 2027-06-15 | 1406/03/25 | BC3 | `bc-merkle-trees-proofs` | مبانی | Go | 📝 |
-| 4 | 2027-06-16 | 1406/03/26 | BC4 | `bc-keys-ecdsa-addresses` | مبانی | Go | 📝 |
+| 1 | 2027-06-13 | 1406/03/23 | BC1 | `bc-blockchain-for-programmers` | مبانی | Go | ✍️ |
+| 2 | 2027-06-14 | 1406/03/24 | BC2 | `bc-hashes-blocks-chain` | مبانی | Go | ✍️ |
+| 3 | 2027-06-15 | 1406/03/25 | BC3 | `bc-merkle-trees-proofs` | مبانی | Go | ✍️ |
+| 4 | 2027-06-16 | 1406/03/26 | BC4 | `bc-keys-ecdsa-addresses` | مبانی | Go | ✍️ |
 | 5 | 2027-06-17 | 1406/03/27 | BC5 | `bc-transactions-utxo` | مبانی | Go | 📝 |
 | 6 | 2027-06-18 | 1406/03/28 | BC6 | `bc-account-model-nonce` | مبانی | Go | 📝 |
 | 7 | 2027-06-19 | 1406/03/29 | BC7 | `bc-proof-of-work-mining` | مبانی | Go | 📝 |

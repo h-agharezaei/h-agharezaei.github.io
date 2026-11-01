@@ -624,9 +624,9 @@ python3 scripts/generate-covers.py --default        # کاور پیش‌فرض �
 | 18 | 2027-06-30 | 1406/04/09 | BC18 | `bc-rust-alloy-client` | اتریوم | Rust | ✍️ |
 | 19 | 2027-07-01 | 1406/04/10 | BC19 | `bc-event-indexer-go` | اتریوم | Go | ✍️ |
 | 20 | 2027-07-02 | 1406/04/11 | BC20 | `bc-hd-wallets-rust` | اتریوم | Rust | ✍️ |
-| 21 | 2027-07-03 | 1406/04/12 | BC21 | `bc-amm-constant-product` | DeFi و امنیت | Solidity + Go | 📝 |
-| 22 | 2027-07-04 | 1406/04/13 | BC22 | `bc-lending-liquidation` | DeFi و امنیت | Solidity | 📝 |
-| 23 | 2027-07-05 | 1406/04/14 | BC23 | `bc-oracles` | DeFi و امنیت | Solidity | 📝 |
+| 21 | 2027-07-03 | 1406/04/12 | BC21 | `bc-amm-constant-product` | DeFi و امنیت | Solidity + Go | ✍️ |
+| 22 | 2027-07-04 | 1406/04/13 | BC22 | `bc-lending-liquidation` | DeFi و امنیت | Solidity | ✍️ |
+| 23 | 2027-07-05 | 1406/04/14 | BC23 | `bc-oracles` | DeFi و امنیت | Solidity | ✍️ |
 | 24 | 2027-07-06 | 1406/04/15 | BC24 | `bc-contract-security` | DeFi و امنیت | Solidity | 📝 |
 | 25 | 2027-07-07 | 1406/04/16 | BC25 | `bc-gas-optimization-proxies` | DeFi و امنیت | Solidity | 📝 |
 | 26 | 2027-07-08 | 1406/04/17 | BC26 | `bc-mev-ordering` | DeFi و امنیت | Go | 📝 |

@@ -634,7 +634,7 @@ python3 scripts/generate-covers.py --default        # کاور پیش‌فرض �
 | 28 | 2027-07-10 | 1406/04/19 | BC28 | `bc-layer2-rollups` | پیشرفته | Go | ✍️ |
 | 29 | 2027-07-11 | 1406/04/20 | BC29 | `bc-bridges-cross-chain` | پیشرفته | Solidity + Go | ✍️ |
 | 30 | 2027-07-12 | 1406/04/21 | BC30 | `bc-zero-knowledge-rust` | پیشرفته | Rust | ✍️ |
-| 31 | 2027-07-13 | 1406/04/22 | BC31 | `bc-exchange-deposits-withdrawals` | پیشرفته | Go | 📝 |
+| 31 | 2027-07-13 | 1406/04/22 | BC31 | `bc-exchange-deposits-withdrawals` | پیشرفته | Go | ✍️ |
 | 32 | 2027-07-14 | 1406/04/23 | BC32 | `bc-capstone` | پیشرفته | Go + Rust | 📝 |
 
 ### عنوان‌ها

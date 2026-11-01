@@ -4,7 +4,7 @@ summary = "سیاستی در mempool که اجازه می‌دهد تراکنش 
 category = "Blockchain"
 fa_title = "replace-by-fee"
 related = ["mempool", "fee-rate", "double-spend"]
-posts = ["bc-mempool-fees"]
+posts = ["bc-mempool-fees", "bc-exchange-deposits-withdrawals"]
 +++
 
 راه درست برای بالا بردن کارمزد یک پرداخت گیرکرده است. قاعده‌های بیت‌کوین در BIP-125 آمده‌اند (کارمزد مطلق بیشتر، پرداخت هزینه‌ی relay خودش، سقف تعداد تراکنش‌های جایگزین‌شده). تا تراکنش تأیید نشده، جایگزین می‌تواند مقصد پرداخت را هم عوض کند؛ برای همین پرداخت تأییدنشده قطعی نیست.

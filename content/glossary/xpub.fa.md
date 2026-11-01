@@ -4,7 +4,7 @@ summary = "کلید عمومی توسعه‌یافته: کلید عمومی به
 category = "Blockchain"
 fa_title = "xpub"
 related = ["bip-32", "hardened-derivation", "hd-wallet"]
-posts = ["bc-hd-wallets-rust"]
+posts = ["bc-hd-wallets-rust", "bc-exchange-deposits-withdrawals"]
 +++
 
 یک سرور فقط‌نظارتی می‌تواند با xpub آدرس واریز تازه بسازد بی‌آن‌که کلید خصوصی داشته باشد. با این حال حساس است: همه‌ی آن آدرس‌ها را به هم وصل می‌کند و اگر کلید خصوصی یکی از فرزندهای غیر [hardened](/fa/glossary/hardened-derivation/) لو برود، کلید خصوصی والد را لو می‌دهد.

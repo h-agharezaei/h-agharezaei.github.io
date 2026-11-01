@@ -620,9 +620,9 @@ python3 scripts/generate-covers.py --default        # کاور پیش‌فرض �
 | 14 | 2027-06-26 | 1406/04/05 | BC14 | `bc-solidity-first-contract` | اتریوم | Solidity | ✍️ |
 | 15 | 2027-06-27 | 1406/04/06 | BC15 | `bc-foundry-testing-fuzzing` | اتریوم | Solidity | ✍️ |
 | 16 | 2027-06-28 | 1406/04/07 | BC16 | `bc-erc20-erc721` | اتریوم | Solidity | ✍️ |
-| 17 | 2027-06-29 | 1406/04/08 | BC17 | `bc-go-ethereum-client` | اتریوم | Go | 📝 |
+| 17 | 2027-06-29 | 1406/04/08 | BC17 | `bc-go-ethereum-client` | اتریوم | Go | ✍️ |
 | 18 | 2027-06-30 | 1406/04/09 | BC18 | `bc-rust-alloy-client` | اتریوم | Rust | 📝 |
-| 19 | 2027-07-01 | 1406/04/10 | BC19 | `bc-event-indexer-go` | اتریوم | Go | 📝 |
+| 19 | 2027-07-01 | 1406/04/10 | BC19 | `bc-event-indexer-go` | اتریوم | Go | ✍️ |
 | 20 | 2027-07-02 | 1406/04/11 | BC20 | `bc-hd-wallets-rust` | اتریوم | Rust | ✍️ |
 | 21 | 2027-07-03 | 1406/04/12 | BC21 | `bc-amm-constant-product` | DeFi و امنیت | Solidity + Go | 📝 |
 | 22 | 2027-07-04 | 1406/04/13 | BC22 | `bc-lending-liquidation` | DeFi و امنیت | Solidity | 📝 |

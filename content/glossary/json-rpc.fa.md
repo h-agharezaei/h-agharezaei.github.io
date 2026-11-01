@@ -4,7 +4,7 @@ summary = "پروتکل کوچک فراخوانی از راه دور: درخوا
 category = "Networking"
 fa_title = "JSON-RPC"
 related = ["full-node"]
-posts = ["bc-toy-node-go"]
+posts = ["bc-toy-node-go", "bc-go-ethereum-client"]
 +++
 
 نسخه‌ی 2.0 به لایه‌ی انتقال وابسته نیست؛ نودهای بلاکچین معمولاً آن را روی HTTP یا WebSocket ارائه می‌کنند. مثال: `{"jsonrpc":"2.0","id":1,"method":"getblockcount","params":[]}`.

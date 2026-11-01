@@ -4,7 +4,7 @@ summary = "زبانی که با وقت و حافظه‌ی کافی هر محاس
 category = "Blockchain"
 fa_title = "Turing-complete"
 related = ["bitcoin-script"]
-posts = ["bc-bitcoin-script-rust"]
+posts = ["bc-bitcoin-script-rust", "bc-evm-internals-rust"]
 +++
 
 بهایش این است که در حالت کلی نمی‌توان فهمید یک برنامه تمام می‌شود یا نه. [Bitcoin Script](/fa/glossary/bitcoin-script/) حلقه ندارد، پس هزینه‌ی یک اسکریپت به طولش محدود است.

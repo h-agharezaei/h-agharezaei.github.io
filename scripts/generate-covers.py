@@ -29,9 +29,10 @@ SER={"Go Fundamentals":("GO FUNDAMENTALS","مبانی Go","#00ADD8"),"Go Backend
 "Software Security":("SECURITY","امنیت نرم‌افزار","#EF4444"),
 "Software Engineering":("ENGINEERING","مهندسی نرم‌افزار","#14B8A6"),
 "Linux":("LINUX","لینوکس","#FACC15"),
-"Distributed Systems":("DISTRIBUTED","سیستم‌های توزیع‌شده","#D946EF")}
+"Distributed Systems":("DISTRIBUTED","سیستم‌های توزیع‌شده","#D946EF"),
+"Blockchain":("BLOCKCHAIN","بلاکچین","#A3E635")}
 # planned size of each new series (so "3 / 16" is right while only part of it is written)
-PLANNED={"Git":10, "Node.js":16, "Databases":16, "Algorithms":18, "Networking":14, "Python":16, "Software Security":16, "Software Engineering":16, "Linux":14, "Distributed Systems":20}
+PLANNED={"Git":10, "Node.js":16, "Databases":16, "Algorithms":18, "Networking":14, "Python":16, "Software Security":16, "Software Engineering":16, "Linux":14, "Distributed Systems":20, "Blockchain":32}
 def parse(path):
     t=open(path).read(); g=lambda k:(lambda m:(m.group(1) if m.group(1) is not None else m.group(2)) if m else None)(re.search(r"^%s = (?:'([^']*)'|\"([^\"]*)\")"%k,t,re.M))
     se=re.search(r'^series = \["([^"]+)"\]',t,re.M); ca=re.search(r'^categories = \[(.*?)\]',t,re.M); tg=re.search(r'^tags = \[(.*?)\]',t,re.M)

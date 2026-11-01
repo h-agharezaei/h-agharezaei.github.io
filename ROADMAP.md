@@ -588,3 +588,88 @@ python3 scripts/generate-covers.py --default        # کاور پیش‌فرض �
 | DS19 | case study: rate limiter و سامانه‌ی اعلان | Case studies: a rate limiter and a notification system |
 | DS20 | پروژه‌ی پایانی توزیع‌شده | Distributed systems capstone |
 <!-- NEW-SERIES-END -->
+
+## سری Blockchain: از پایه تا پیشرفته (32 پست)
+
+دوره‌ی بلاکچین با دید برنامه‌نویس: اول یک بلاکچین کوچک را از صفر با Go می‌سازیم، بعد سراغ اتریوم، Solidity و کلاینت‌های Go و Rust می‌رویم، بعد DeFi و امنیت قرارداد، و در آخر موضوع‌های پیشرفته (PoS، rollup، bridge، ZK و مهندسی صرافی).
+
+- سری `Blockchain`، دسته `Blockchain`، رنگ کاور `#A3E635`. هر روز یک پست از 1406/03/23 (2027-06-13) تا 1406/04/23 (2027-07-14)، ساعت ۱۰:۰۰ تهران.
+- زبان کد: Go برای نود، کلاینت و indexer؛ Rust برای مفسرها (Bitcoin Script، EVM)، کیف پول HD و ZK؛ Solidity برای قراردادها. هر پست فقط یک زبان اصلی دارد تا خواننده گم نشود.
+- اجرای واقعی طبق [WRITING-GUIDE.md](WRITING-GUIDE.md): قراردادها با Foundry (`forge`، `anvil`) روی زنجیره‌ی محلی اجرا می‌شوند، نه روی mainnet یا testnet عمومی. هیچ کلید یا آدرس واقعی منتشر نمی‌شود.
+- پست‌های امنیتی (BC24، BC26) فقط دفاعی‌اند: حمله روی قرارداد خودمان در anvil، با رفع مشکل.
+- ارجاع به پست‌های قبلی: هک بایننس (کیف پول hot/cold)، Merkle و hash در الگوریتم‌ها، consensus و Raft در سیستم‌های توزیع‌شده، gRPC و Postgres در Go.
+- برچسب‌ها و glossary: واژه‌های جدید با دسته‌ی `Blockchain` به glossary اضافه می‌شوند؛ `merkle-tree`، `nonce`، `digital-signature`، `consensus` و `raft` از قبل هستند.
+
+### تقویم
+
+| # | تاریخ میلادی | تاریخ شمسی | شناسه | slug | بخش | زبان کد | وضعیت |
+|---|---|---|---|---|---|---|---|
+| 1 | 2027-06-13 | 1406/03/23 | BC1 | `bc-blockchain-for-programmers` | مبانی | Go | 📝 |
+| 2 | 2027-06-14 | 1406/03/24 | BC2 | `bc-hashes-blocks-chain` | مبانی | Go | 📝 |
+| 3 | 2027-06-15 | 1406/03/25 | BC3 | `bc-merkle-trees-proofs` | مبانی | Go | 📝 |
+| 4 | 2027-06-16 | 1406/03/26 | BC4 | `bc-keys-ecdsa-addresses` | مبانی | Go | 📝 |
+| 5 | 2027-06-17 | 1406/03/27 | BC5 | `bc-transactions-utxo` | مبانی | Go | 📝 |
+| 6 | 2027-06-18 | 1406/03/28 | BC6 | `bc-account-model-nonce` | مبانی | Go | 📝 |
+| 7 | 2027-06-19 | 1406/03/29 | BC7 | `bc-proof-of-work-mining` | مبانی | Go | 📝 |
+| 8 | 2027-06-20 | 1406/03/30 | BC8 | `bc-p2p-gossip` | مبانی | Go | 📝 |
+| 9 | 2027-06-21 | 1406/03/31 | BC9 | `bc-forks-reorgs` | مبانی | Go | 📝 |
+| 10 | 2027-06-22 | 1406/04/01 | BC10 | `bc-mempool-fees` | مبانی | Go | 📝 |
+| 11 | 2027-06-23 | 1406/04/02 | BC11 | `bc-bitcoin-script-rust` | مبانی | Rust | 📝 |
+| 12 | 2027-06-24 | 1406/04/03 | BC12 | `bc-toy-node-go` | مبانی | Go | 📝 |
+| 13 | 2027-06-25 | 1406/04/04 | BC13 | `bc-evm-internals-rust` | اتریوم | Rust | 📝 |
+| 14 | 2027-06-26 | 1406/04/05 | BC14 | `bc-solidity-first-contract` | اتریوم | Solidity | 📝 |
+| 15 | 2027-06-27 | 1406/04/06 | BC15 | `bc-foundry-testing-fuzzing` | اتریوم | Solidity | 📝 |
+| 16 | 2027-06-28 | 1406/04/07 | BC16 | `bc-erc20-erc721` | اتریوم | Solidity | 📝 |
+| 17 | 2027-06-29 | 1406/04/08 | BC17 | `bc-go-ethereum-client` | اتریوم | Go | 📝 |
+| 18 | 2027-06-30 | 1406/04/09 | BC18 | `bc-rust-alloy-client` | اتریوم | Rust | 📝 |
+| 19 | 2027-07-01 | 1406/04/10 | BC19 | `bc-event-indexer-go` | اتریوم | Go | 📝 |
+| 20 | 2027-07-02 | 1406/04/11 | BC20 | `bc-hd-wallets-rust` | اتریوم | Rust | 📝 |
+| 21 | 2027-07-03 | 1406/04/12 | BC21 | `bc-amm-constant-product` | DeFi و امنیت | Solidity + Go | 📝 |
+| 22 | 2027-07-04 | 1406/04/13 | BC22 | `bc-lending-liquidation` | DeFi و امنیت | Solidity | 📝 |
+| 23 | 2027-07-05 | 1406/04/14 | BC23 | `bc-oracles` | DeFi و امنیت | Solidity | 📝 |
+| 24 | 2027-07-06 | 1406/04/15 | BC24 | `bc-contract-security` | DeFi و امنیت | Solidity | 📝 |
+| 25 | 2027-07-07 | 1406/04/16 | BC25 | `bc-gas-optimization-proxies` | DeFi و امنیت | Solidity | 📝 |
+| 26 | 2027-07-08 | 1406/04/17 | BC26 | `bc-mev-ordering` | DeFi و امنیت | Go | 📝 |
+| 27 | 2027-07-09 | 1406/04/18 | BC27 | `bc-proof-of-stake-bft` | پیشرفته | Go | 📝 |
+| 28 | 2027-07-10 | 1406/04/19 | BC28 | `bc-layer2-rollups` | پیشرفته | Go | 📝 |
+| 29 | 2027-07-11 | 1406/04/20 | BC29 | `bc-bridges-cross-chain` | پیشرفته | Solidity + Go | 📝 |
+| 30 | 2027-07-12 | 1406/04/21 | BC30 | `bc-zero-knowledge-rust` | پیشرفته | Rust | 📝 |
+| 31 | 2027-07-13 | 1406/04/22 | BC31 | `bc-exchange-deposits-withdrawals` | پیشرفته | Go | 📝 |
+| 32 | 2027-07-14 | 1406/04/23 | BC32 | `bc-capstone` | پیشرفته | Go + Rust | 📝 |
+
+### عنوان‌ها
+
+| شناسه | عنوان فارسی | عنوان انگلیسی |
+|---|---|---|
+| BC1 | بلاکچین از دید برنامه‌نویس: چه مسئله‌ای را حل می‌کند | Blockchain for programmers: what problem it actually solves |
+| BC2 | هش، بلاک و زنجیره: اولین بلاکچین با Go | Hashes, blocks and the chain: a first blockchain in Go |
+| BC3 | Merkle tree و اثبات عضویت | Merkle trees and inclusion proofs |
+| BC4 | کلید، امضای ECDSA و آدرس روی secp256k1 | Keys, ECDSA signatures and addresses on secp256k1 |
+| BC5 | تراکنش و مدل UTXO | Transactions and the UTXO model |
+| BC6 | مدل حساب، nonce و جلوگیری از replay | The account model, nonces and replay protection |
+| BC7 | Proof of Work، difficulty و mining | Proof of work, difficulty and mining |
+| BC8 | شبکه‌ی P2P و gossip بین نودها | P2P networking and gossip between nodes |
+| BC9 | Fork، reorg و قاعده‌ی زنجیره‌ی سنگین‌تر | Forks, reorgs and the heaviest-chain rule |
+| BC10 | Mempool، کارمزد و انتخاب تراکنش | The mempool, fees and transaction selection |
+| BC11 | Bitcoin Script: یک مفسر stack کوچک با Rust | Bitcoin Script: a tiny stack interpreter in Rust |
+| BC12 | جمع‌بندی بخش اول: یک نود کامل کوچک با Go | Part one wrap-up: a small full node in Go |
+| BC13 | EVM از درون: stack، memory، storage و gas با یک مفسر کوچک Rust | Inside the EVM: stack, memory, storage and gas with a tiny Rust interpreter |
+| BC14 | اولین قرارداد با Solidity و Foundry | A first contract with Solidity and Foundry |
+| BC15 | تست، fuzz و invariant با Foundry | Testing, fuzzing and invariants with Foundry |
+| BC16 | توکن‌ها: ERC-20 و ERC-721 | Tokens: ERC-20 and ERC-721 |
+| BC17 | کار با اتریوم از Go با go-ethereum | Talking to Ethereum from Go with go-ethereum |
+| BC18 | کار با اتریوم از Rust با alloy | Talking to Ethereum from Rust with alloy |
+| BC19 | Event و ساخت indexer با Go و Postgres | Events and building an indexer with Go and Postgres |
+| BC20 | کیف پول HD: BIP-32، BIP-39 و BIP-44 با Rust | HD wallets: BIP-32, BIP-39 and BIP-44 in Rust |
+| BC21 | AMM و فرمول constant product | AMMs and the constant-product formula |
+| BC22 | وام‌دهی، وثیقه و liquidation | Lending, collateral and liquidation |
+| BC23 | Oracle و دستکاری قیمت | Oracles and price manipulation |
+| BC24 | امنیت قرارداد: reentrancy، access control و نمونه‌های واقعی | Contract security: reentrancy, access control and real incidents |
+| BC25 | بهینه‌سازی gas و قرارداد قابل ارتقا با proxy | Gas optimization and upgradeable proxies |
+| BC26 | MEV و ترتیب تراکنش‌ها | MEV and transaction ordering |
+| BC27 | Proof of Stake، BFT و finality | Proof of stake, BFT and finality |
+| BC28 | Layer 2 و rollupها: optimistic و ZK | Layer 2 and rollups: optimistic and ZK |
+| BC29 | Bridge و ارتباط بین زنجیره‌ها | Bridges and cross-chain messaging |
+| BC30 | مبانی zero-knowledge proof با Rust | Zero-knowledge proof basics in Rust |
+| BC31 | مهندسی صرافی: واریز، برداشت، confirmation و reorg | Exchange engineering: deposits, withdrawals, confirmations and reorgs |
+| BC32 | پروژه‌ی پایانی بلاکچین با Go و Rust | Blockchain capstone with Go and Rust |

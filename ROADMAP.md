@@ -608,8 +608,8 @@ python3 scripts/generate-covers.py --default        # کاور پیش‌فرض �
 | 2 | 2027-06-14 | 1406/03/24 | BC2 | `bc-hashes-blocks-chain` | مبانی | Go | ✍️ |
 | 3 | 2027-06-15 | 1406/03/25 | BC3 | `bc-merkle-trees-proofs` | مبانی | Go | ✍️ |
 | 4 | 2027-06-16 | 1406/03/26 | BC4 | `bc-keys-ecdsa-addresses` | مبانی | Go | ✍️ |
-| 5 | 2027-06-17 | 1406/03/27 | BC5 | `bc-transactions-utxo` | مبانی | Go | 📝 |
-| 6 | 2027-06-18 | 1406/03/28 | BC6 | `bc-account-model-nonce` | مبانی | Go | 📝 |
+| 5 | 2027-06-17 | 1406/03/27 | BC5 | `bc-transactions-utxo` | مبانی | Go | ✍️ |
+| 6 | 2027-06-18 | 1406/03/28 | BC6 | `bc-account-model-nonce` | مبانی | Go | ✍️ |
 | 7 | 2027-06-19 | 1406/03/29 | BC7 | `bc-proof-of-work-mining` | مبانی | Go | 📝 |
 | 8 | 2027-06-20 | 1406/03/30 | BC8 | `bc-p2p-gossip` | مبانی | Go | 📝 |
 | 9 | 2027-06-21 | 1406/03/31 | BC9 | `bc-forks-reorgs` | مبانی | Go | 📝 |

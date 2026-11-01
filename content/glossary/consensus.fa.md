@@ -4,7 +4,7 @@ summary = "رسیدن گروهی از node‌ها به توافق روی یک م
 category = "Distributed"
 fa_title = "اجماع (consensus)"
 related = ["quorum", "raft"]
-posts = ["ds-consensus-raft"]
+posts = ["ds-consensus-raft", "bc-blockchain-for-programmers"]
 +++
 
 Raft و Paxos الگوریتم‌های consensus هستند. به زنده بودن اکثریت node‌ها نیاز دارند و برای همین خوشه‌ی 2f+1 تایی f خرابی را تحمل می‌کند.

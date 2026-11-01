@@ -4,7 +4,7 @@ summary = "هر رکورد hash رکورد قبلی را نگه می‌دارد�
 category = "Security"
 fa_title = "hash chain (زنجیره‌ی hash)"
 related = ["audit-log", "hmac"]
-posts = ["sec-logging-audit-incident-response"]
+posts = ["sec-logging-audit-incident-response", "bc-blockchain-for-programmers", "bc-hashes-blocks-chain"]
 +++
 
 hash chain لاگ را «دست‌کاری‌نمایان» می‌کند، نه «دست‌کاری‌ناپذیر»: کسی که کل فایل را بازنویسی کند زنجیره را دوباره حساب می‌کند. checkpointهای امضاشده در جای دیگر این شکاف را می‌بندند.

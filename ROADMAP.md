@@ -613,9 +613,9 @@ python3 scripts/generate-covers.py --default        # کاور پیش‌فرض �
 | 7 | 2027-06-19 | 1406/03/29 | BC7 | `bc-proof-of-work-mining` | مبانی | Go | ✍️ |
 | 8 | 2027-06-20 | 1406/03/30 | BC8 | `bc-p2p-gossip` | مبانی | Go | ✍️ |
 | 9 | 2027-06-21 | 1406/03/31 | BC9 | `bc-forks-reorgs` | مبانی | Go | ✍️ |
-| 10 | 2027-06-22 | 1406/04/01 | BC10 | `bc-mempool-fees` | مبانی | Go | 📝 |
+| 10 | 2027-06-22 | 1406/04/01 | BC10 | `bc-mempool-fees` | مبانی | Go | ✍️ |
 | 11 | 2027-06-23 | 1406/04/02 | BC11 | `bc-bitcoin-script-rust` | مبانی | Rust | ✍️ |
-| 12 | 2027-06-24 | 1406/04/03 | BC12 | `bc-toy-node-go` | مبانی | Go | 📝 |
+| 12 | 2027-06-24 | 1406/04/03 | BC12 | `bc-toy-node-go` | مبانی | Go | ✍️ |
 | 13 | 2027-06-25 | 1406/04/04 | BC13 | `bc-evm-internals-rust` | اتریوم | Rust | 📝 |
 | 14 | 2027-06-26 | 1406/04/05 | BC14 | `bc-solidity-first-contract` | اتریوم | Solidity | 📝 |
 | 15 | 2027-06-27 | 1406/04/06 | BC15 | `bc-foundry-testing-fuzzing` | اتریوم | Solidity | 📝 |

@@ -4,7 +4,7 @@ summary = "حمله یا اتفاقی که با تمام‌کردن یک منب�
 category = "Security"
 fa_title = "منع سرویس"
 related = ["slowloris", "stride"]
-posts = ["sec-threat-modeling-stride", "sec-fuzzing"]
+posts = ["sec-threat-modeling-stride", "sec-fuzzing", "bc-mempool-fees", "bc-toy-node-go"]
 +++
 
 دفاع‌های معمول محدودیت (اندازه‌ی بدنه، نرخ، همزمانی) و timeout هستند تا هیچ کلاینتی منبعی را رایگان نگه ندارد.

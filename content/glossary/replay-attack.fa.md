@@ -4,7 +4,7 @@ summary = "فرستادن دوباره‌ی یک پیام امضاشده‌ی م
 category = "Blockchain"
 fa_title = "حمله‌ی replay"
 related = ["nonce", "chain-id", "account-model"]
-posts = ["bc-account-model-nonce"]
+posts = ["bc-account-model-nonce", "bc-bridges-cross-chain"]
 +++
 
 امضا معتبر می‌ماند، پس گیرنده برای تشخیص پیام تکراری state لازم دارد: یک nonce یا شماره‌ی ترتیب، زمان انقضا، یا زمینه‌ای مثل chain ID داخل داده‌ی امضاشده.

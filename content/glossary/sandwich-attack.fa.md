@@ -4,7 +4,7 @@ summary = "گذاشتن یک معامله درست قبل و یکی درست ب�
 category = "Blockchain"
 fa_title = "sandwich attack"
 related = ["slippage", "amm"]
-posts = ["bc-amm-constant-product"]
+posts = ["bc-amm-constant-product", "bc-mev-ordering"]
 +++
 
 مهاجم اول می‌خرد، قربانی با قیمت بدتر می‌خرد و مهاجم می‌فروشد. این کار ممکن است چون تراکنش‌های در انتظار عمومی‌اند و روی ترتیبشان می‌شود اثر گذاشت. حداقل خروجیِ سخت‌گیرانه آسیب را محدود می‌کند.

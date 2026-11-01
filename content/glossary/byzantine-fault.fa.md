@@ -4,7 +4,7 @@ summary = "خطایی که در آن node فقط از کار نمی‌افتد،
 category = "Blockchain"
 fa_title = "Byzantine fault (خطای بیزانسی)"
 related = ["consensus", "distributed-ledger"]
-posts = ["bc-blockchain-for-programmers"]
+posts = ["bc-blockchain-for-programmers", "bc-proof-of-stake-bft"]
 +++
 
 پروتکل‌های crash-fault مثل Raft فرض می‌کنند nodeها صادق‌اند ولی ممکن است متوقف شوند. پروتکل‌های Byzantine fault tolerant (BFT) حتی وقتی بخشی از شرکت‌کننده‌ها نادرست‌اند کار می‌کنند؛ همان شرایطی که بلاکچین‌های عمومی برایش طراحی شده‌اند. هزینه‌اش پیام بیشتر است و در BFT کلاسیک بیش از دو سوم nodeها باید صادق باشند.

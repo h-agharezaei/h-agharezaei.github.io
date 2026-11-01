@@ -3,7 +3,7 @@ title = "Digital signature"
 summary = "A value computed with a private key that anyone with the public key can verify, proving origin and integrity."
 category = "Security"
 related = ["hmac"]
-posts = ["sec-crypto-mistakes", "bc-account-model-nonce", "bc-blockchain-for-programmers", "bc-keys-ecdsa-addresses", "bc-transactions-utxo"]
+posts = ["sec-crypto-mistakes", "bc-account-model-nonce", "bc-blockchain-for-programmers", "bc-keys-ecdsa-addresses", "bc-transactions-utxo", "bc-bitcoin-script-rust"]
 +++
 
 Ed25519 signatures are 64 bytes. Changing one byte of the message makes verification fail.

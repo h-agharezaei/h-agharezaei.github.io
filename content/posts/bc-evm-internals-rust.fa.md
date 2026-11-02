@@ -1,5 +1,5 @@
 +++
-date = '2027-06-25T10:00:00+03:30'
+date = '2026-11-14T18:00:00+03:30'
 draft = false
 title = 'EVM از درون: stack، memory، storage و gas با یک مفسر کوچک Rust'
 seoTitle = 'EVM از درون با یک مفسر کوچک Rust'

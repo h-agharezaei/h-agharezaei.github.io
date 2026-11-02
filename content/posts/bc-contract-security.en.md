@@ -1,5 +1,5 @@
 +++
-date = '2027-07-06T10:00:00+03:30'
+date = '2026-11-25T18:00:00+03:30'
 draft = false
 title = 'Contract security: reentrancy, access control and real incidents'
 seoTitle = 'Contract security: reentrancy and access control'

@@ -1,5 +1,5 @@
 +++
-date = '2027-07-06T10:00:00+03:30'
+date = '2026-11-25T18:00:00+03:30'
 draft = false
 title = 'امنیت قرارداد: reentrancy، access control و نمونه‌های واقعی'
 seoTitle = 'امنیت قرارداد: reentrancy و access control'

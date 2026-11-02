@@ -1,5 +1,5 @@
 +++
-date = '2027-07-11T10:00:00+03:30'
+date = '2026-11-30T18:00:00+03:30'
 draft = false
 title = 'Bridges and cross-chain messaging'
 description = 'Cross-chain bridge in Go and Solidity: lock-and-mint between two anvil chains, 2-of-3 ecrecover signatures, replay checks, stolen keys, rate limits.'

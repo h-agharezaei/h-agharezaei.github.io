@@ -1,5 +1,5 @@
 +++
-date = '2027-06-28T10:00:00+03:30'
+date = '2026-11-17T18:00:00+03:30'
 draft = false
 title = 'Tokens: ERC-20 and ERC-721'
 description = 'ERC-20 and ERC-721 written by hand in Solidity: balances as a mapping, allowances, safe NFT transfers, Foundry tests, and Transfer events read with cast.'

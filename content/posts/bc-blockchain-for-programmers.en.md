@@ -1,5 +1,5 @@
 +++
-date = '2027-06-13T10:00:00+03:30'
+date = '2026-11-02T18:00:00+03:30'
 draft = false
 title = 'Blockchain for programmers: what problem it actually solves'
 seoTitle = 'Blockchain for programmers: the problem it solves'

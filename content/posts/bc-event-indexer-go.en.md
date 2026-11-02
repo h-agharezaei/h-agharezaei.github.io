@@ -1,5 +1,5 @@
 +++
-date = '2027-07-01T10:00:00+03:30'
+date = '2026-11-20T18:00:00+03:30'
 draft = false
 title = 'Events and building an indexer with Go and Postgres'
 description = 'Event indexer in Go and Postgres: topics and data, header blooms, batched eth_getLogs, idempotent inserts, confirmations and a real reorg on anvil.'

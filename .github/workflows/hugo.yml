@@ -8,9 +8,10 @@ on:
       - main
 
   # Daily build so posts with a future date go live on their publish day
-  # 06:30 UTC = 10:00 Asia/Tehran
+  # 06:30 UTC = 10:00 Asia/Tehran, 14:30 UTC = 18:00 Asia/Tehran (Blockchain series)
   schedule:
     - cron: '30 6 * * *'
+    - cron: '30 14 * * *'
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:

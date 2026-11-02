@@ -1,5 +1,5 @@
 +++
-date = '2027-07-12T10:00:00+03:30'
+date = '2026-12-01T18:00:00+03:30'
 draft = false
 title = 'Zero-knowledge proof basics in Rust'
 description = 'Zero-knowledge proofs in Rust: a Schnorr proof on secp256k1, a cheating prover, Fiat-Shamir and its forgery bug, and nonce reuse leaking the secret.'

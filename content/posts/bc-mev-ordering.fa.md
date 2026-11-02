@@ -1,5 +1,5 @@
 +++
-date = '2027-07-08T10:00:00+03:30'
+date = '2026-11-27T18:00:00+03:30'
 draft = false
 title = 'MEV و ترتیب تراکنش‌ها'
 description = 'MEV روی anvil محلی: یک searcher با Go یک swap در انتظار را sandwich می‌کند، بعد minAmountOut واقعی و deadline جلویش را می‌گیرند؛ و ترتیب anvil.'

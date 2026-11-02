@@ -1,5 +1,5 @@
 +++
-date = '2027-07-05T10:00:00+03:30'
+date = '2026-11-24T18:00:00+03:30'
 draft = false
 title = 'Oracles and price manipulation'
 description = 'Oracles and price manipulation in Solidity: a one-transaction attack on my own AMM-priced lending market, then a TWAP oracle with a staleness check.'

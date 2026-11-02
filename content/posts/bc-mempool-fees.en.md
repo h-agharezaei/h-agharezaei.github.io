@@ -1,5 +1,5 @@
 +++
-date = '2027-06-22T10:00:00+03:30'
+date = '2026-11-11T18:00:00+03:30'
 draft = false
 title = 'The mempool, fees and transaction selection'
 description = 'A mempool in Go: admission by fee rate, block templates with ancestor packages, replace-by-fee, eviction when full and re-broadcast after a reorg.'

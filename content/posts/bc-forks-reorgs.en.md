@@ -1,5 +1,5 @@
 +++
-date = '2027-06-21T10:00:00+03:30'
+date = '2026-11-10T18:00:00+03:30'
 draft = false
 title = 'Forks, reorgs and the heaviest-chain rule'
 description = 'Forks and reorgs in Go: a block tree, fork choice by chainwork, UTXO rollback with undo data and a double spend after a loopback network partition.'

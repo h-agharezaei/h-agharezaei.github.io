@@ -1,5 +1,5 @@
 +++
-date = '2027-06-14T10:00:00+03:30'
+date = '2026-11-03T18:00:00+03:30'
 draft = false
 title = 'Hashes, blocks and the chain: a first blockchain in Go'
 seoTitle = 'Hashes, blocks and the chain: a blockchain in Go'

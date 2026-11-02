@@ -1,5 +1,5 @@
 +++
-date = '2027-06-19T10:00:00+03:30'
+date = '2026-11-08T18:00:00+03:30'
 draft = false
 title = 'Proof of Work، difficulty و mining'
 description = 'Proof of Work در Go: فیلد nonce و bits در header، ماین کردن و اعتبارسنجی، دو برابر شدن hash با هر بیت، retarget محدودشده و chainwork.'

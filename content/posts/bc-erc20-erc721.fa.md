@@ -1,5 +1,5 @@
 +++
-date = '2027-06-28T10:00:00+03:30'
+date = '2026-11-17T18:00:00+03:30'
 draft = false
 title = 'توکن‌ها: ERC-20 و ERC-721'
 description = 'ERC-20 و ERC-721 دست‌نویس با Solidity: موجودی به شکل mapping، allowance، انتقال امن NFT، تست با Foundry و خواندن رویدادهای Transfer با cast روی anvil.'

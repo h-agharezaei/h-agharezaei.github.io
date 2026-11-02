@@ -6,6 +6,7 @@ Usage (from anywhere):
   python3 scripts/generate-covers.py <slug> ...    # only these posts (re-renders them)
   python3 scripts/generate-covers.py --default     # site default cards (og-default[.fa].png)
   python3 scripts/generate-covers.py --front-matter  # add the `cover = {...}` line to posts that lack it
+  python3 scripts/generate-covers.py --front-matter <slug> ...  # same, only for these posts
 
 Images go to static/images/covers/<slug>.png and <slug>.fa.png. Needs Google Chrome (override with CHROME=...).
 Series names/colors are in SER below; add new series there.
@@ -29,9 +30,10 @@ SER={"Go Fundamentals":("GO FUNDAMENTALS","مبانی Go","#00ADD8"),"Go Backend
 "Software Security":("SECURITY","امنیت نرم‌افزار","#EF4444"),
 "Software Engineering":("ENGINEERING","مهندسی نرم‌افزار","#14B8A6"),
 "Linux":("LINUX","لینوکس","#FACC15"),
-"Distributed Systems":("DISTRIBUTED","سیستم‌های توزیع‌شده","#D946EF")}
+"Distributed Systems":("DISTRIBUTED","سیستم‌های توزیع‌شده","#D946EF"),
+"Blockchain":("BLOCKCHAIN","بلاکچین","#A3E635")}
 # planned size of each new series (so "3 / 16" is right while only part of it is written)
-PLANNED={"Git":10, "Node.js":16, "Databases":16, "Algorithms":18, "Networking":14, "Python":16, "Software Security":16, "Software Engineering":16, "Linux":14, "Distributed Systems":20}
+PLANNED={"Git":10, "Node.js":16, "Databases":16, "Algorithms":18, "Networking":14, "Python":16, "Software Security":16, "Software Engineering":16, "Linux":14, "Distributed Systems":20, "Blockchain":32}
 def parse(path):
     t=open(path).read(); g=lambda k:(lambda m:(m.group(1) if m.group(1) is not None else m.group(2)) if m else None)(re.search(r"^%s = (?:'([^']*)'|\"([^\"]*)\")"%k,t,re.M))
     se=re.search(r'^series = \["([^"]+)"\]',t,re.M); ca=re.search(r'^categories = \[(.*?)\]',t,re.M); tg=re.search(r'^tags = \[(.*?)\]',t,re.M)
@@ -103,11 +105,12 @@ def render(htmlsrc,outpng):
 if __name__=="__main__":
     os.makedirs(OUT,exist_ok=True)
     if "--front-matter" in sys.argv:
-        n=0
+        n=0; want=[a for a in sys.argv[1:] if not a.startswith("--")]  # optional slugs to limit to
         for f in sorted(glob.glob(R+"/content/posts/*.md")):
             t=open(f).read()
             if re.search(r"^cover\s*=",t,re.M): continue
             lang="fa" if f.endswith(".fa.md") else "en"; slug=os.path.basename(f)[:-6]
+            if want and slug not in want: continue
             m=re.search(r"^title = (?:'([^']*)'|\"([^\"]*)\")",t,re.M); title=m.group(1) if m.group(1) is not None else m.group(2)
             alt=title.replace("\\","\\\\").replace('"','\\"')
             line=f'cover = {{ image = "/images/covers/{slug}{".fa" if lang=="fa" else ""}.png", alt = "{alt}", hiddenInSingle = true }}\n'

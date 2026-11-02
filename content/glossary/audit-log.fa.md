@@ -4,7 +4,7 @@ summary = "یک رکورد مقاوم در برابر دست‌کاری از ا�
 category = "Security"
 fa_title = "audit log (لاگ audit)"
 related = ["hash-chain", "structured-logging"]
-posts = ["sec-logging-audit-incident-response"]
+posts = ["sec-logging-audit-incident-response", "bc-blockchain-for-programmers", "bc-capstone"]
 +++
 
 audit log به پرسش‌های حقوقی و تحقیقی جواب می‌دهد، نه پرسش‌های اشکال‌زدایی. هر رکورد یک کنشگر، عمل، منبع، نتیجه، شناسه‌ی درخواست، نشانی مبدأ و زمان UTC دارد. فقط افزودنی است و بهتر است بیرون از ماشینی که می‌نویسد نگه داشته شود.

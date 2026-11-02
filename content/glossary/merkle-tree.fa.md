@@ -4,7 +4,7 @@ summary = "درختی از hashها که هر والد hash فرزندانش ا�
 category = "Distributed"
 fa_title = "Merkle tree"
 related = ["anti-entropy"]
-posts = ["ds-replication-quorum"]
+posts = ["ds-replication-quorum", "bc-merkle-trees-proofs"]
 +++
 
 برای یافتن تفاوت، rootها را مقایسه می‌کنید و فقط در زیردرخت‌هایی که hash‌شان فرق دارد پایین می‌روید. اگر تفاوت کم باشد چند گره را مقایسه می‌کنید نه همه‌ی کلیدها را.

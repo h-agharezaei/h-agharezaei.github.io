@@ -1,5 +1,5 @@
 +++
-date = '2027-06-17T10:00:00+03:30'
+date = '2026-11-06T18:00:00+03:30'
 draft = false
 title = 'تراکنش و مدل UTXO'
 description = 'تراکنش UTXO در Go: ورودی، خروجی، sighash، txid، coinbase و کارمزد، همراه با رد شدن double spend، امضای جعلی و خرج بیش از موجودی.'

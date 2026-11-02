@@ -1,5 +1,5 @@
 +++
-date = '2027-07-13T10:00:00+03:30'
+date = '2026-12-02T18:00:00+03:30'
 draft = false
 title = 'Exchange engineering: deposits, withdrawals, confirmations and reorgs'
 seoTitle = 'Exchange deposits, withdrawals and reorgs in Go'

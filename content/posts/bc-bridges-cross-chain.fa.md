@@ -1,5 +1,5 @@
 +++
-date = '2027-07-11T10:00:00+03:30'
+date = '2026-11-30T18:00:00+03:30'
 draft = false
 title = 'Bridge و ارتباط بین زنجیره‌ها'
 description = 'bridge بین زنجیره‌ها با Go و Solidity: lock-and-mint بین دو anvil، امضای ۲ از ۳ با ecrecover، رد replay، کلیدهای دزدیده‌شده و سقف ضرب.'

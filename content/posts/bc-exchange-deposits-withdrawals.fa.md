@@ -1,5 +1,5 @@
 +++
-date = '2027-07-13T10:00:00+03:30'
+date = '2026-12-02T18:00:00+03:30'
 draft = false
 title = 'مهندسی صرافی: واریز، برداشت، confirmation و reorg'
 description = 'واریز و برداشت صرافی با Go و Postgres: ماشین حالت واریز، دفتر دوطرفه، یک reorg واقعی روی anvil، کلید idempotency و جایگزینی تراکنش گیرکرده.'

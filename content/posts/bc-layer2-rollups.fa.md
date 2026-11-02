@@ -1,5 +1,5 @@
 +++
-date = '2027-07-10T10:00:00+03:30'
+date = '2026-11-29T18:00:00+03:30'
 draft = false
 title = 'Layer 2 و rollupها: optimistic و ZK'
 description = 'rollup با Go و Solidity: یک optimistic rollup کوچک با state root از نوع Merkle، fraud proof برای جریمه‌ی sequencer دروغگو و gas اندازه‌گیری‌شده.'

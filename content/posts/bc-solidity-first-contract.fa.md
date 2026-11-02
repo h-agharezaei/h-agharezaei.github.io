@@ -1,5 +1,5 @@
 +++
-date = '2027-06-26T10:00:00+03:30'
+date = '2026-11-15T18:00:00+03:30'
 draft = false
 title = 'اولین قرارداد با Solidity و Foundry'
 description = 'اولین قرارداد Solidity با Foundry: یک خزانه‌ی کوچک ETH، چیدمان storage آن، دیپلوی روی زنجیره‌ی محلی anvil، فراخوانی با cast، یک revert و gas مصرفی.'

@@ -1,5 +1,5 @@
 +++
-date = '2027-06-20T10:00:00+03:30'
+date = '2026-11-09T18:00:00+03:30'
 draft = false
 title = 'P2P networking and gossip between nodes'
 description = 'P2P gossip in Go: a length-prefixed TCP protocol on loopback, a seen-set against loops, a late node syncing blocks and an invalid block rejected.'

@@ -1,5 +1,5 @@
 +++
-date = '2027-06-18T10:00:00+03:30'
+date = '2026-11-07T18:00:00+03:30'
 draft = false
 title = 'The account model, nonces and replay protection'
 description = 'Account model in Go: balances and nonces per address, replayed and out-of-order transactions rejected, chain ID against cross-chain replay, vs UTXO.'

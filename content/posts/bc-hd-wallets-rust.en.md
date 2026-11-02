@@ -1,5 +1,5 @@
 +++
-date = '2027-07-02T10:00:00+03:30'
+date = '2026-11-21T18:00:00+03:30'
 draft = false
 title = 'HD wallets: BIP-32, BIP-39 and BIP-44 in Rust'
 description = 'HD wallets in Rust: BIP-39 words to seed, BIP-32 checked against test vectors, BIP-44 Ethereum addresses, watch-only xpub servers and the xpub leak.'

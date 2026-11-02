@@ -1,5 +1,5 @@
 +++
-date = '2027-07-09T10:00:00+03:30'
+date = '2026-11-28T18:00:00+03:30'
 draft = false
 title = 'Proof of stake, BFT and finality'
 description = 'Proof of stake and BFT finality in Go: stake-weighted proposers, signed prevotes and precommits, a 2/3 quorum, and slashing for double-signing.'

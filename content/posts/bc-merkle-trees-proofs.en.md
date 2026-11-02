@@ -1,5 +1,5 @@
 +++
-date = '2027-06-15T10:00:00+03:30'
+date = '2026-11-04T18:00:00+03:30'
 draft = false
 title = 'Merkle trees and inclusion proofs'
 description = 'Merkle trees in Go: a block header with a Merkle root, odd leaf counts, leaf and node prefixes against second preimages, and inclusion proofs measured.'

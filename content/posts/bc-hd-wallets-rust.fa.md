@@ -1,5 +1,5 @@
 +++
-date = '2027-07-02T10:00:00+03:30'
+date = '2026-11-21T18:00:00+03:30'
 draft = false
 title = 'کیف‌پول HD: BIP-32، BIP-39 و BIP-44 با Rust'
 description = 'کیف‌پول HD با Rust: از کلمه‌های BIP-39 تا seed، BIP-32 سنجیده با test vector، آدرس اتریوم با BIP-44، سرور واریز با xpub و خطر لو رفتن xpub.'

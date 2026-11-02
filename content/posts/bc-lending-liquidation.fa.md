@@ -1,5 +1,5 @@
 +++
-date = '2027-07-04T10:00:00+03:30'
+date = '2026-11-23T18:00:00+03:30'
 draft = false
 title = 'وام‌دهی، وثیقه و liquidation'
 description = 'یک بازار وام با وثیقه‌ی بیشتر از وام در Solidity: سقف وام، بهره با index ثانیه‌ای، health factor و liquidation با پاداش، تست‌شده با Foundry.'

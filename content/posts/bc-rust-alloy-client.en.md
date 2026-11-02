@@ -1,5 +1,5 @@
 +++
-date = '2027-06-30T10:00:00+03:30'
+date = '2026-11-19T18:00:00+03:30'
 draft = false
 title = 'Talking to Ethereum from Rust with alloy'
 description = 'alloy from Rust: provider and wallet, an EIP-1559 send with receipt, sol! macro token calls, a custom error decoded to an enum, polled Transfer events.'

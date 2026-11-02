@@ -1,5 +1,5 @@
 +++
-date = '2027-07-03T10:00:00+03:30'
+date = '2026-11-22T18:00:00+03:30'
 draft = false
 title = 'AMM و فرمول constant product'
 description = 'یک AMM با فرمول constant product در Solidity: x*y=k، سهم LP، کارمزد ۰٫۳ درصد، گرد کردن به نفع استخر، جدول price impact، حد slippage و تست invariant.'

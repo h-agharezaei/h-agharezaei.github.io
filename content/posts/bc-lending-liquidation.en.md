@@ -1,5 +1,5 @@
 +++
-date = '2027-07-04T10:00:00+03:30'
+date = '2026-11-23T18:00:00+03:30'
 draft = false
 title = 'Lending, collateral and liquidation'
 description = 'An overcollateralized lending market in Solidity: borrow limits, a per-second interest index, health factor and liquidation with a bonus, in Foundry.'

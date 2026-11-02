@@ -1,5 +1,5 @@
 +++
-date = '2027-07-12T10:00:00+03:30'
+date = '2026-12-01T18:00:00+03:30'
 draft = false
 title = 'مبانی zero-knowledge proof با Rust'
 description = 'zero-knowledge proof با Rust: اثبات Schnorr روی secp256k1، اثبات‌کننده‌ی متقلب، Fiat-Shamir و باگ جعل آن، و لو رفتن راز با تکرار nonce.'

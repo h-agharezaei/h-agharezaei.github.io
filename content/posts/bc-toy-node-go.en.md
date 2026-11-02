@@ -1,5 +1,5 @@
 +++
-date = '2027-06-24T10:00:00+03:30'
+date = '2026-11-13T18:00:00+03:30'
 draft = false
 title = 'Part one wrap-up: a small full node in Go'
 description = 'A small full node in Go: separate processes on loopback, blocks on disk re-validated at start, a JSON-RPC API, a wallet CLI and graceful shutdown.'

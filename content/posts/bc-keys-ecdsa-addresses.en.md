@@ -1,5 +1,5 @@
 +++
-date = '2027-06-16T10:00:00+03:30'
+date = '2026-11-05T18:00:00+03:30'
 draft = false
 title = 'Keys, ECDSA signatures and addresses on secp256k1'
 description = 'secp256k1 keys in Go: ECDSA sign and verify, RFC 6979 nonces, nonce reuse leaking the key, low-S and an EIP-55 Ethereum address, with real output.'

@@ -1,5 +1,5 @@
 +++
-date = '2027-06-23T10:00:00+03:30'
+date = '2026-11-12T18:00:00+03:30'
 draft = false
 title = 'Bitcoin Script: یک مفسر stack کوچک با Rust'
 description = 'Bitcoin Script با Rust: یک مفسر stack کوچک که قفل P2PKH را با HASH160 و OP_CHECKSIG باز می‌کند، همراه با کلید اشتباه، امضای دست‌کاری‌شده و OP_RETURN.'

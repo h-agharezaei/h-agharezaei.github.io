@@ -1,5 +1,5 @@
 +++
-date = '2027-07-09T10:00:00+03:30'
+date = '2026-11-28T18:00:00+03:30'
 draft = false
 title = 'Proof of Stake، BFT و finality'
 description = 'proof of stake و finality از نوع BFT با Go: انتخاب proposer با وزن stake، رأی امضاشده‌ی prevote و precommit، quorum دو سوم و slashing برای امضای دوگانه.'

@@ -1,5 +1,5 @@
 +++
-date = '2027-06-22T10:00:00+03:30'
+date = '2026-11-11T18:00:00+03:30'
 draft = false
 title = 'Mempool، کارمزد و انتخاب تراکنش'
 description = 'mempool در Go: پذیرش تراکنش با نرخ کارمزد، ساخت block template با بسته‌ی اجداد، replace-by-fee، بیرون کردن تراکنش ارزان و broadcast دوباره بعد از reorg.'

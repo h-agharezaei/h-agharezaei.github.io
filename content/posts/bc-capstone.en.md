@@ -1,5 +1,5 @@
 +++
-date = '2027-07-14T10:00:00+03:30'
+date = '2026-12-03T18:00:00+03:30'
 draft = false
 title = 'Blockchain capstone with Go and Rust'
 description = 'Blockchain capstone with Go and Rust: a Rust signer holds the HD seed and enforces a policy; the Go exchange backend never sees a private key.'

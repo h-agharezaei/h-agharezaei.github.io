@@ -1,5 +1,5 @@
 +++
-date = '2027-07-07T10:00:00+03:30'
+date = '2026-11-26T18:00:00+03:30'
 draft = false
 title = 'بهینه‌سازی gas و قرارداد قابل ارتقا با proxy'
 description = 'بهینه‌سازی gas و قرارداد قابل ارتقا در Solidity: صرفه‌جویی اندازه‌گیری‌شده با storage packing و calldata، بعد یک proxy با EIP-1967 و storage collision.'

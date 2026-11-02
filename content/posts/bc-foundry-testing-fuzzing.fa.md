@@ -1,5 +1,5 @@
 +++
-date = '2027-06-27T10:00:00+03:30'
+date = '2026-11-16T18:00:00+03:30'
 draft = false
 title = 'تست، fuzz و invariant با Foundry'
 description = 'تست قرارداد Solidity با Foundry: تست واحد با cheatcode، fuzz با ورودی محدود، تست invariant با handler که باگ کاشته‌شده را پیدا می‌کند، gas و coverage.'

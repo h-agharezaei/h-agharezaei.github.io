@@ -1,5 +1,5 @@
 +++
-date = '2027-06-27T10:00:00+03:30'
+date = '2026-11-16T18:00:00+03:30'
 draft = false
 title = 'Testing, fuzzing and invariants with Foundry'
 description = 'Foundry tests in Solidity: unit tests with cheatcodes, bounded fuzz tests, an invariant test with a handler that finds a planted bug, gas and coverage.'

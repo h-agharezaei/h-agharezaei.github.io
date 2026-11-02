@@ -1,5 +1,5 @@
 +++
-date = '2027-06-15T10:00:00+03:30'
+date = '2026-11-04T18:00:00+03:30'
 draft = false
 title = 'Merkle tree و اثبات عضویت'
 description = 'Merkle tree با Go: root درخت در header بلاک، تعداد فرد برگ‌ها، پیشوند برگ و گره در برابر second preimage، و اثبات عضویت با اندازه‌ی واقعی.'

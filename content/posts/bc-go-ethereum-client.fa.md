@@ -1,5 +1,5 @@
 +++
-date = '2027-06-29T10:00:00+03:30'
+date = '2026-11-18T18:00:00+03:30'
 draft = false
 title = 'کار با اتریوم از Go با go-ethereum'
 description = 'go-ethereum در Go: chain ID، موجودی به wei، تراکنش امضاشده‌ی EIP-1559، فراخوانی توکن با abigen، decode خطای سفارشی و مدیریت nonce در ارسال هم‌زمان.'

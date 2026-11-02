@@ -1,5 +1,5 @@
 +++
-date = '2027-06-21T10:00:00+03:30'
+date = '2026-11-10T18:00:00+03:30'
 draft = false
 title = 'Fork، reorg و قاعده‌ی زنجیره‌ی سنگین‌تر'
 description = 'fork و reorg در Go: درخت بلاک، انتخاب زنجیره با chainwork، برگرداندن UTXO با داده‌ی undo و یک double spend بعد از partition شبکه روی loopback.'

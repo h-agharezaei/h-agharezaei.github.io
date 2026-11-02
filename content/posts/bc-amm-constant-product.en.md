@@ -1,5 +1,5 @@
 +++
-date = '2027-07-03T10:00:00+03:30'
+date = '2026-11-22T18:00:00+03:30'
 draft = false
 title = 'AMMs and the constant-product formula'
 description = 'A constant-product AMM in Solidity: x*y=k, LP shares, a 0.3% fee, rounding in favour of the pool, price impact, slippage limits and invariant tests.'

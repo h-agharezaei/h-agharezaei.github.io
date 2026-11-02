@@ -1,5 +1,5 @@
 +++
-date = '2027-06-26T10:00:00+03:30'
+date = '2026-11-15T18:00:00+03:30'
 draft = false
 title = 'A first contract with Solidity and Foundry'
 description = 'A first Solidity contract with Foundry: a small ETH vault, its storage layout, a deploy to a local anvil chain, cast calls, a revert and the gas used.'

@@ -593,7 +593,7 @@ python3 scripts/generate-covers.py --default        # کاور پیش‌فرض �
 
 دوره‌ی بلاکچین با دید برنامه‌نویس: اول یک بلاکچین کوچک را از صفر با Go می‌سازیم، بعد سراغ اتریوم، Solidity و کلاینت‌های Go و Rust می‌رویم، بعد DeFi و امنیت قرارداد، و در آخر موضوع‌های پیشرفته (PoS، rollup، bridge، ZK و مهندسی صرافی).
 
-- سری `Blockchain`، دسته `Blockchain`، رنگ کاور `#A3E635`. هر روز یک پست از 1406/03/23 (2027-06-13) تا 1406/04/23 (2027-07-14)، ساعت ۱۰:۰۰ تهران.
+- سری `Blockchain`، دسته `Blockchain`، رنگ کاور `#A3E635`. هر روز یک پست از 1405/08/11 (2026-11-02) تا 1405/09/12 (2026-12-03)، ساعت ۱۸:۰۰ تهران.
 - زبان کد: Go برای نود، کلاینت و indexer؛ Rust برای مفسرها (Bitcoin Script، EVM)، کیف‌پول HD و ZK؛ Solidity برای قراردادها. هر پست فقط یک زبان اصلی دارد تا خواننده گم نشود.
 - اجرای واقعی طبق [WRITING-GUIDE.md](WRITING-GUIDE.md): قراردادها با Foundry (`forge`، `anvil`) روی زنجیره‌ی محلی اجرا می‌شوند، نه روی mainnet یا testnet عمومی. هیچ کلید یا آدرس واقعی منتشر نمی‌شود.
 - پست‌های امنیتی (BC24، BC26) فقط دفاعی‌اند: حمله روی قرارداد خودمان در anvil، با رفع مشکل.
@@ -604,38 +604,38 @@ python3 scripts/generate-covers.py --default        # کاور پیش‌فرض �
 
 | # | تاریخ میلادی | تاریخ شمسی | شناسه | slug | بخش | زبان کد | وضعیت |
 |---|---|---|---|---|---|---|---|
-| 1 | 2027-06-13 | 1406/03/23 | BC1 | `bc-blockchain-for-programmers` | مبانی | Go | ✍️ |
-| 2 | 2027-06-14 | 1406/03/24 | BC2 | `bc-hashes-blocks-chain` | مبانی | Go | ✍️ |
-| 3 | 2027-06-15 | 1406/03/25 | BC3 | `bc-merkle-trees-proofs` | مبانی | Go | ✍️ |
-| 4 | 2027-06-16 | 1406/03/26 | BC4 | `bc-keys-ecdsa-addresses` | مبانی | Go | ✍️ |
-| 5 | 2027-06-17 | 1406/03/27 | BC5 | `bc-transactions-utxo` | مبانی | Go | ✍️ |
-| 6 | 2027-06-18 | 1406/03/28 | BC6 | `bc-account-model-nonce` | مبانی | Go | ✍️ |
-| 7 | 2027-06-19 | 1406/03/29 | BC7 | `bc-proof-of-work-mining` | مبانی | Go | ✍️ |
-| 8 | 2027-06-20 | 1406/03/30 | BC8 | `bc-p2p-gossip` | مبانی | Go | ✍️ |
-| 9 | 2027-06-21 | 1406/03/31 | BC9 | `bc-forks-reorgs` | مبانی | Go | ✍️ |
-| 10 | 2027-06-22 | 1406/04/01 | BC10 | `bc-mempool-fees` | مبانی | Go | ✍️ |
-| 11 | 2027-06-23 | 1406/04/02 | BC11 | `bc-bitcoin-script-rust` | مبانی | Rust | ✍️ |
-| 12 | 2027-06-24 | 1406/04/03 | BC12 | `bc-toy-node-go` | مبانی | Go | ✍️ |
-| 13 | 2027-06-25 | 1406/04/04 | BC13 | `bc-evm-internals-rust` | اتریوم | Rust | ✍️ |
-| 14 | 2027-06-26 | 1406/04/05 | BC14 | `bc-solidity-first-contract` | اتریوم | Solidity | ✍️ |
-| 15 | 2027-06-27 | 1406/04/06 | BC15 | `bc-foundry-testing-fuzzing` | اتریوم | Solidity | ✍️ |
-| 16 | 2027-06-28 | 1406/04/07 | BC16 | `bc-erc20-erc721` | اتریوم | Solidity | ✍️ |
-| 17 | 2027-06-29 | 1406/04/08 | BC17 | `bc-go-ethereum-client` | اتریوم | Go | ✍️ |
-| 18 | 2027-06-30 | 1406/04/09 | BC18 | `bc-rust-alloy-client` | اتریوم | Rust | ✍️ |
-| 19 | 2027-07-01 | 1406/04/10 | BC19 | `bc-event-indexer-go` | اتریوم | Go | ✍️ |
-| 20 | 2027-07-02 | 1406/04/11 | BC20 | `bc-hd-wallets-rust` | اتریوم | Rust | ✍️ |
-| 21 | 2027-07-03 | 1406/04/12 | BC21 | `bc-amm-constant-product` | DeFi و امنیت | Solidity + Go | ✍️ |
-| 22 | 2027-07-04 | 1406/04/13 | BC22 | `bc-lending-liquidation` | DeFi و امنیت | Solidity | ✍️ |
-| 23 | 2027-07-05 | 1406/04/14 | BC23 | `bc-oracles` | DeFi و امنیت | Solidity | ✍️ |
-| 24 | 2027-07-06 | 1406/04/15 | BC24 | `bc-contract-security` | DeFi و امنیت | Solidity | ✍️ |
-| 25 | 2027-07-07 | 1406/04/16 | BC25 | `bc-gas-optimization-proxies` | DeFi و امنیت | Solidity | ✍️ |
-| 26 | 2027-07-08 | 1406/04/17 | BC26 | `bc-mev-ordering` | DeFi و امنیت | Go | ✍️ |
-| 27 | 2027-07-09 | 1406/04/18 | BC27 | `bc-proof-of-stake-bft` | پیشرفته | Go | ✍️ |
-| 28 | 2027-07-10 | 1406/04/19 | BC28 | `bc-layer2-rollups` | پیشرفته | Go | ✍️ |
-| 29 | 2027-07-11 | 1406/04/20 | BC29 | `bc-bridges-cross-chain` | پیشرفته | Solidity + Go | ✍️ |
-| 30 | 2027-07-12 | 1406/04/21 | BC30 | `bc-zero-knowledge-rust` | پیشرفته | Rust | ✍️ |
-| 31 | 2027-07-13 | 1406/04/22 | BC31 | `bc-exchange-deposits-withdrawals` | پیشرفته | Go | ✍️ |
-| 32 | 2027-07-14 | 1406/04/23 | BC32 | `bc-capstone` | پیشرفته | Go + Rust | ✍️ |
+| 1 | 2026-11-02 | 1405/08/11 | BC1 | `bc-blockchain-for-programmers` | مبانی | Go | ✍️ |
+| 2 | 2026-11-03 | 1405/08/12 | BC2 | `bc-hashes-blocks-chain` | مبانی | Go | ✍️ |
+| 3 | 2026-11-04 | 1405/08/13 | BC3 | `bc-merkle-trees-proofs` | مبانی | Go | ✍️ |
+| 4 | 2026-11-05 | 1405/08/14 | BC4 | `bc-keys-ecdsa-addresses` | مبانی | Go | ✍️ |
+| 5 | 2026-11-06 | 1405/08/15 | BC5 | `bc-transactions-utxo` | مبانی | Go | ✍️ |
+| 6 | 2026-11-07 | 1405/08/16 | BC6 | `bc-account-model-nonce` | مبانی | Go | ✍️ |
+| 7 | 2026-11-08 | 1405/08/17 | BC7 | `bc-proof-of-work-mining` | مبانی | Go | ✍️ |
+| 8 | 2026-11-09 | 1405/08/18 | BC8 | `bc-p2p-gossip` | مبانی | Go | ✍️ |
+| 9 | 2026-11-10 | 1405/08/19 | BC9 | `bc-forks-reorgs` | مبانی | Go | ✍️ |
+| 10 | 2026-11-11 | 1405/08/20 | BC10 | `bc-mempool-fees` | مبانی | Go | ✍️ |
+| 11 | 2026-11-12 | 1405/08/21 | BC11 | `bc-bitcoin-script-rust` | مبانی | Rust | ✍️ |
+| 12 | 2026-11-13 | 1405/08/22 | BC12 | `bc-toy-node-go` | مبانی | Go | ✍️ |
+| 13 | 2026-11-14 | 1405/08/23 | BC13 | `bc-evm-internals-rust` | اتریوم | Rust | ✍️ |
+| 14 | 2026-11-15 | 1405/08/24 | BC14 | `bc-solidity-first-contract` | اتریوم | Solidity | ✍️ |
+| 15 | 2026-11-16 | 1405/08/25 | BC15 | `bc-foundry-testing-fuzzing` | اتریوم | Solidity | ✍️ |
+| 16 | 2026-11-17 | 1405/08/26 | BC16 | `bc-erc20-erc721` | اتریوم | Solidity | ✍️ |
+| 17 | 2026-11-18 | 1405/08/27 | BC17 | `bc-go-ethereum-client` | اتریوم | Go | ✍️ |
+| 18 | 2026-11-19 | 1405/08/28 | BC18 | `bc-rust-alloy-client` | اتریوم | Rust | ✍️ |
+| 19 | 2026-11-20 | 1405/08/29 | BC19 | `bc-event-indexer-go` | اتریوم | Go | ✍️ |
+| 20 | 2026-11-21 | 1405/08/30 | BC20 | `bc-hd-wallets-rust` | اتریوم | Rust | ✍️ |
+| 21 | 2026-11-22 | 1405/09/01 | BC21 | `bc-amm-constant-product` | DeFi و امنیت | Solidity + Go | ✍️ |
+| 22 | 2026-11-23 | 1405/09/02 | BC22 | `bc-lending-liquidation` | DeFi و امنیت | Solidity | ✍️ |
+| 23 | 2026-11-24 | 1405/09/03 | BC23 | `bc-oracles` | DeFi و امنیت | Solidity | ✍️ |
+| 24 | 2026-11-25 | 1405/09/04 | BC24 | `bc-contract-security` | DeFi و امنیت | Solidity | ✍️ |
+| 25 | 2026-11-26 | 1405/09/05 | BC25 | `bc-gas-optimization-proxies` | DeFi و امنیت | Solidity | ✍️ |
+| 26 | 2026-11-27 | 1405/09/06 | BC26 | `bc-mev-ordering` | DeFi و امنیت | Go | ✍️ |
+| 27 | 2026-11-28 | 1405/09/07 | BC27 | `bc-proof-of-stake-bft` | پیشرفته | Go | ✍️ |
+| 28 | 2026-11-29 | 1405/09/08 | BC28 | `bc-layer2-rollups` | پیشرفته | Go | ✍️ |
+| 29 | 2026-11-30 | 1405/09/09 | BC29 | `bc-bridges-cross-chain` | پیشرفته | Solidity + Go | ✍️ |
+| 30 | 2026-12-01 | 1405/09/10 | BC30 | `bc-zero-knowledge-rust` | پیشرفته | Rust | ✍️ |
+| 31 | 2026-12-02 | 1405/09/11 | BC31 | `bc-exchange-deposits-withdrawals` | پیشرفته | Go | ✍️ |
+| 32 | 2026-12-03 | 1405/09/12 | BC32 | `bc-capstone` | پیشرفته | Go + Rust | ✍️ |
 
 ### عنوان‌ها
 

@@ -1,5 +1,5 @@
 +++
-date = '2027-06-30T10:00:00+03:30'
+date = '2026-11-19T18:00:00+03:30'
 draft = false
 title = 'کار با اتریوم از Rust با alloy'
 description = 'alloy در Rust: provider و کیف‌پول، ارسال EIP-1559 با رسید، فراخوانی توکن با ماکروی sol!، decode خطای سفارشی به enum و دنبال کردن رویداد Transfer.'

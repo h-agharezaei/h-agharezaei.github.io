@@ -1,5 +1,5 @@
 +++
-date = '2027-06-29T10:00:00+03:30'
+date = '2026-11-18T18:00:00+03:30'
 draft = false
 title = 'Talking to Ethereum from Go with go-ethereum'
 description = 'go-ethereum from Go: chain ID, balances in wei, a signed EIP-1559 transaction, abigen token calls, a decoded custom error and nonces for concurrent sends.'

@@ -1,5 +1,5 @@
 +++
-date = '2027-06-17T10:00:00+03:30'
+date = '2026-11-06T18:00:00+03:30'
 draft = false
 title = 'Transactions and the UTXO model'
 description = 'UTXO transactions in Go: inputs, outputs, sighash, txid, coinbase and fees, with a double spend, a forged signature and an overspend rejected.'

@@ -1,0 +1,12 @@
+{{- /* Up to 4 related posts (same language), based on [related] in hugo.toml. */ -}}
+{{- $related := site.RegularPages.Related . | first 4 -}}
+{{- with $related -}}
+<aside class="related-posts">
+  <h2>{{ cond (eq $.Language.Lang "fa") "مطالب مرتبط" "Related posts" }}</h2>
+  <ul>
+    {{- range . }}
+    <li><a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a></li>
+    {{- end }}
+  </ul>
+</aside>
+{{- end -}}

@@ -3,6 +3,20 @@ defaultContentLanguage = 'en'
 defaultContentLanguageInSubdir = false
 theme = 'PaperMod'
 enableRobotsTXT = true
+enableGitInfo = true
+
+# Related posts at the end of each post. The series box already lists the series,
+# so related posts lean on tags to point across series.
+[related]
+  includeNewer = true
+  threshold = 50
+  toLower = true
+  [[related.indices]]
+    name = "tags"
+    weight = 100
+  [[related.indices]]
+    name = "categories"
+    weight = 20
 
 [taxonomies]
   category = "categories"

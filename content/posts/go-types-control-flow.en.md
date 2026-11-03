@@ -3,13 +3,14 @@ date = '2026-10-31T10:00:00+03:30'
 draft = false
 title = 'Types, variables and control flow in Go'
 description = "Variables, zero values, basic types, constants with iota, explicit conversion, and Go's if, for and switch, all with real runnable examples."
+contentType = 'tutorial'
 categories = ["Go"]
 series = ["Go Fundamentals"]
 tags = ["go", "beginner", "types", "control-flow"]
 cover = { image = "/images/covers/go-types-control-flow.png", alt = "Types, variables and control flow in Go", hiddenInSingle = true }
 +++
 
-In the [previous post](/posts/go-getting-started/) we installed Go, created a module and ran our first program. Now we need the building blocks every program uses: variables, types and control flow. Go has far fewer of them than most languages, and that is on purpose.
+Go gives you two ways to declare a variable, `var` and `:=`, and the difference matters from your first program: `:=` only works inside a function, inside a block it can silently shadow an outer variable, and an unused variable does not compile at all. The same strictness runs through the rest of the basics: there are no implicit type conversions, every variable has a defined zero value, and `for` is the only loop. Go has far fewer of these building blocks than most languages, and that is on purpose. If you have not installed Go yet, start with [Getting started with Go](/posts/go-getting-started/).
 
 > Everything below was run with Go 1.26.0 on macOS, and the outputs are copied from those runs.
 
@@ -181,7 +182,7 @@ for c := -10; c <= 40; c += 10 {
   40 C =  104.0 F  hot
 ```
 
-## A few things to watch
+## Common traps
 
 - `:=` inside an inner block creates a new variable and shadows the outer one. This is a classic source of "why is my value unchanged" bugs.
 - A nil map can be read but writing to it panics; create it with `make(map[string]int)` first.
@@ -197,4 +198,4 @@ for c := -10; c <= 40; c += 10 {
 
 ## What's next
 
-In the next post we cover functions, `defer` and error handling in Go, which is where Go's most recognizable style shows up.
+Functions, `defer` and error handling: where Go's most recognizable style, returning errors instead of throwing exceptions, shows up more than anywhere else.

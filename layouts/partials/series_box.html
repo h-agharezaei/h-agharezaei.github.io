@@ -1,0 +1,24 @@
+{{- /* "Part N of M" box with the full reading path of the series. */ -}}
+{{- with .GetTerms "series" -}}
+{{- $term := index . 0 -}}
+{{- $parts := $term.Pages.ByDate -}}
+{{- if gt (len $parts) 1 -}}
+{{- $fa := eq $.Language.Lang "fa" -}}
+{{- $idx := 0 -}}
+{{- range $i, $p := $parts -}}{{- if eq $p.RelPermalink $.RelPermalink -}}{{- $idx = add $i 1 -}}{{- end -}}{{- end -}}
+<details class="series-box">
+  <summary>
+    {{- if $fa -}}
+    سری <a href="{{ $term.RelPermalink }}">{{ $term.LinkTitle }}</a>، قسمت {{ $idx }} از {{ len $parts }}
+    {{- else -}}
+    Series <a href="{{ $term.RelPermalink }}">{{ $term.LinkTitle }}</a>, part {{ $idx }} of {{ len $parts }}
+    {{- end -}}
+  </summary>
+  <ol>
+    {{- range $parts }}
+    <li>{{ if eq .RelPermalink $.RelPermalink }}<strong>{{ .LinkTitle }}</strong>{{ else }}<a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a>{{ end }}</li>
+    {{- end }}
+  </ol>
+</details>
+{{- end -}}
+{{- end -}}

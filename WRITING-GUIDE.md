@@ -1,5 +1,7 @@
 # Writing guide for blog posts (read fully before writing)
 
+**Read [CONTENT_STYLE_GUIDE.md](CONTENT_STYLE_GUIDE.md) first.** It defines voice, tone and editorial checks. This file defines mechanics (front matter, length, glossary, demos, build). If they conflict: the truthfulness rules below win on facts, the style guide wins on voice and on how a post opens.
+
 Blog: Hugo + PaperMod, repo root = this directory. Author persona: "Roham", a senior backend engineer (Go & Node.js) learning and teaching in public. First person, plain, practical. The calendar, series and titles live in [ROADMAP.md](ROADMAP.md) (source of truth). Reference posts to imitate (read both languages of at least one): `content/posts/go-generics.*`, `content/posts/rust-ownership.*`, `content/posts/nats-jetstream-idempotency.*`.
 
 ## Deliverables per post
@@ -15,18 +17,20 @@ date = '<date from ROADMAP>T10:00:00+03:30'
 draft = false
 title = '<title in that language>'
 description = '<one sentence, 120-155 characters, main keyword first, only claims the post supports>'
+contentType = '<tutorial | engineering | analysis>'
 categories = ["<category from ROADMAP>"]
 series = ["<series name from ROADMAP>"]
 tags = ["lowercase", "english", "tags"]
 +++
 ```
+- `contentType`: `tutorial` explains a concept from basics to practical use; `engineering` is a problem, its solution, the decision and its trade-offs; `analysis` examines an incident, technology or architecture from an engineering point of view.
 - Single-quoted strings; if the string contains an apostrophe use double quotes. Broken front matter breaks the build for everybody.
 - If `title` + ` | Roham` would exceed 60 characters add `seoTitle = '...'` (≤ 52 chars EN, ≤ 50 FA) right after `title`.
 - Dates: Hugo does not build future dates (`buildFuture = false`), the daily workflow publishes each post on its day.
 
 ## Structure
-1. Intro paragraphs with NO heading: why this topic; link the previous post of the same series (fa: `/fa/posts/<slug>/`, en: `/posts/<slug>/`) and 2-4 relevant earlier posts.
-2. `##` sections: concept in small runnable examples, then a real run with real output, then `## A few things to watch` / `## چند نکته‌ی مهم` (3-5 bullets), then (fundamentals) `## Exercise` / `## تمرین`, then `## What's next` / `## قدم بعدی` naming the next post of the series by TITLE only (never write a slug in prose).
+1. Intro paragraphs with NO heading: open with a concrete problem, observation or question (not "in the previous post we did X, now we do Y"); say why the topic matters; link the previous post of the same series (woven into the prose, one clause is enough) (fa: `/fa/posts/<slug>/`, en: `/posts/<slug>/`) and 2-4 relevant earlier posts.
+2. `##` sections: concept in small runnable examples, then a real run with real output, then a short section of 3-5 pitfalls/trade-offs with a heading specific to the topic (e.g. `## Common traps`, `## Where this breaks`, `## When not to use it`; not the same generic heading every time). Tutorial series (fundamentals) also end with `## Exercise` / `## تمرین`; analysis, security and engineering posts do not. Series posts end with `## What's next` / `## قدم بعدی` naming the next post by TITLE only (never a slug) and saying in one sentence why it follows; avoid "in the next post we will look at...".
 3. Length: prose under **850 words per language**, counted as `sed '/^```/,/^```/d' file | wc -w` (tables and shown output count). Recount after your FINAL edit.
 
 ## Truthfulness rules (the most important part)

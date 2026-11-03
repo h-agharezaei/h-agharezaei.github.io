@@ -3,6 +3,7 @@ date = '2027-03-16T10:00:00+03:30'
 draft = false
 title = 'Go series recap for 1405'
 description = 'A map of the 39 Go-related posts from 1405: fundamentals, Go backend, NATS JetStream and Go + Rust, with the lessons that kept coming back.'
+contentType = 'analysis'
 categories = ["Meta"]
 tags = ["go", "recap", "1405", "nats", "backend"]
 cover = { image = "/images/covers/year-1405-go-recap.png", alt = "Go series recap for 1405", hiddenInSingle = true }

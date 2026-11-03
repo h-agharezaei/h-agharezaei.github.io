@@ -3,13 +3,14 @@ date = '2026-12-14T10:00:00+03:30'
 draft = false
 title = 'Mini project: a URL shortener in Go'
 description = 'Build a Go URL shortener with only the standard library: net/http routing, an RWMutex-protected store, crypto/rand codes, JSON and httptest tests.'
+contentType = 'tutorial'
 categories = ["Go"]
 series = ["Go Fundamentals"]
 tags = ["go", "beginner", "project", "http"]
 cover = { image = "/images/covers/go-mini-project-url-shortener.png", alt = "Mini project: a URL shortener in Go", hiddenInSingle = true }
 +++
 
-In the [previous post](/posts/go-cli-tool/) we built a command-line tool. This is the last post of the Go Fundamentals series, so instead of a new feature we put the pieces together: a small HTTP service that shortens URLs, using nothing but the standard library. You POST a long URL as JSON, get a short code back, and visiting `/<code>` redirects you. I ran everything with Go 1.26 on macOS, and the outputs are copied from real runs.
+A simple URL shortener is just a map and two handlers, but its shutdown order matters: save the file before in-flight requests finish, and a link created during shutdown is lost. This is the last post of the Go Fundamentals series, so after [the command-line tool](/posts/go-cli-tool/), instead of a new feature we put the pieces together: a small HTTP service that shortens URLs, using nothing but the standard library. You POST a long URL as JSON, get a short code back, and visiting `/<code>` redirects you. I ran everything with Go 1.26 on macOS, and the outputs are copied from real runs.
 
 ## Layout
 
@@ -162,7 +163,7 @@ HTTP/1.1 400 Bad Request
 
 (I trimmed some headers such as `Date`.) After Ctrl+C the log said `saved links.json, bye`, and the file held the two links I created. Starting the server again, the old code still redirected with a 302.
 
-## A few things to watch
+## Where this version falls short
 
 - `GET /{code}` also matches `GET /shorten`, so that path is treated as an unknown code. Real services reserve some words.
 - Always cap the request body; here `http.MaxBytesReader` limits it to 1 MiB.
@@ -177,4 +178,4 @@ HTTP/1.1 400 Bad Request
 
 ## What's next
 
-The fundamentals are done. From here the Go posts move to backend topics: next is graceful shutdown for Go workers with NATS, then project layout and clean architecture.
+The fundamentals are done, and from here the Go posts move to backend topics: first "Graceful shutdown for Go workers", which carries this shutdown problem over to NATS workers, then "Project layout and clean architecture in Go".

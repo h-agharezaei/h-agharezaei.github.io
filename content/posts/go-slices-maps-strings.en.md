@@ -3,13 +3,14 @@ date = '2026-11-06T10:00:00+03:30'
 draft = false
 title = 'Slices, maps and strings in Go'
 description = 'A practical tour of Go slices, maps and strings: the shared backing array gotcha, nil maps, UTF-8 byte vs rune counts, and a word-frequency counter.'
+contentType = 'tutorial'
 categories = ["Go"]
 series = ["Go Fundamentals"]
 tags = ["go", "beginner", "slice", "map", "string"]
 cover = { image = "/images/covers/go-slices-maps-strings.png", alt = "Slices, maps and strings in Go", hiddenInSingle = true }
 +++
 
-In the [previous post](/posts/go-functions-defer-errors/) we covered functions, `defer` and error handling. Now the three types you will use in almost every Go program: **slices**, **maps** and **strings**. Each has one behavior that surprises newcomers, so we will run code and look at the output instead of trusting intuition.
+In Go, `b := a[1:3]` does not copy: call `append` on `b` afterwards and it may silently overwrite an element of `a`. And `len("سلام")` is 8, not 4. **Slices**, **maps** and **strings** show up in almost every Go program, and each has one behavior that surprises newcomers. After [functions, `defer` and error handling](/posts/go-functions-defer-errors/), we look at these three by running code and reading the output instead of trusting intuition.
 
 > Everything below was run with Go 1.26 as a local example. Note that exact `cap` growth values are an implementation detail, not a language guarantee.
 
@@ -219,7 +220,7 @@ quick  1
 
 Because map order is unspecified, we copy the keys into a slice and sort them: by count descending, then alphabetically.
 
-## A few things to watch
+## Where slices and maps surprise you
 
 - Always assign the result of `append`, and remember it may or may not share memory with the original.
 - Sub-slices share the backing array; use `copy` or `a[:n:n]` when you need independence.
@@ -234,4 +235,4 @@ Because map order is unspecified, we copy the keys into a slice and sort them: b
 
 ## What's next
 
-Next we look at structs, methods and interfaces in Go, the building blocks for modeling your own types.
+"Structs, methods and interfaces in Go": so far we have only used the language's built-in types, and that post introduces the building blocks for modeling your own.

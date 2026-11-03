@@ -2,6 +2,7 @@
 date = '2027-04-04T10:00:00+03:30'
 draft = false
 title = 'OpenAPI and API contracts'
+contentType = 'tutorial'
 description = 'OpenAPI and API contracts in Go: write a spec, lint it, check real responses against it with kin-openapi and see a breaking change fail a test.'
 categories = ["Engineering"]
 series = ["Software Engineering"]
@@ -9,7 +10,7 @@ tags = ["openapi", "api-contract", "software-engineering", "testing", "go"]
 cover = { image = "/images/covers/eng-openapi-contracts.png", alt = "OpenAPI and API contracts", hiddenInSingle = true }
 +++
 
-In [API design: versioning and pagination](/posts/eng-api-design-versioning-pagination/) we decided what an API should look like. An {{< term "api-contract" "API contract" >}} is the written, checkable form of that decision. Without it, renaming one field breaks a client and nobody notices until production. The server itself comes from [Building an API with net/http in Go](/posts/go-http-api-stdlib/), and test basics from [Testing in Go](/posts/go-testing-basics/). Opinions are marked **in my opinion**; everything else was run.
+Make `currency` a required request field and every client still sending `{"item":"pen","qty":3}` is suddenly wrong. Without a written contract, a change like that, or renaming one field, breaks a client and nobody notices until production. An {{< term "api-contract" "API contract" >}} is the written, checkable form of the decisions from [API design: versioning and pagination](/posts/eng-api-design-versioning-pagination/). The server itself comes from [Building an API with net/http in Go](/posts/go-http-api-stdlib/), and test basics from [Testing in Go](/posts/go-testing-basics/). Opinions are marked **in my opinion**; everything else was run.
 
 > Go 1.26, Node 20.13.1, a local demo of my own. It is a small orders API, not the previous post's demo: I did not build on that one.
 
@@ -93,7 +94,7 @@ That is what a diff tool should report in CI. I tried to run `oasdiff` (pinned) 
 - Generating server stubs or clients (for example `oapi-codegen`): I did not run it.
 - {{< term "consumer-driven-contract" "Consumer-driven contracts" >}} with Pact: the clients write what they use and the server verifies it. I only mention it.
 
-## A few things to watch
+## How a contract drifts
 
 - A spec that no test checks is documentation that will drift.
 - Lint in {{< term "ci" "CI" >}}, and pin the linter version.
@@ -106,4 +107,4 @@ Take one endpoint of yours, write its schema, and add a contract test. Then rena
 
 ## What's next
 
-The next post is "Technical debt".
+“Technical debt”: from keeping one contract honest to measuring where cost piles up across a whole repo.

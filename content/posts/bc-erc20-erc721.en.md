@@ -3,13 +3,14 @@ date = '2026-11-17T18:00:00+03:30'
 draft = false
 title = 'Tokens: ERC-20 and ERC-721'
 description = 'ERC-20 and ERC-721 written by hand in Solidity: balances as a mapping, allowances, safe NFT transfers, Foundry tests, and Transfer events read with cast.'
+contentType = 'tutorial'
 categories = ["Blockchain"]
 series = ["Blockchain"]
 tags = ["blockchain", "solidity", "erc20", "erc721", "foundry"]
 cover = { image = "/images/covers/bc-erc20-erc721.png", alt = "Tokens: ERC-20 and ERC-721", hiddenInSingle = true }
 +++
 
-In [Testing, fuzzing and invariants with Foundry](/posts/bc-foundry-testing-fuzzing/) the vault got unit, fuzz and invariant tests. This post uses the same project and the same tools for the two contracts most people mean when they say "token": an {{< term "erc-20" "ERC-20" >}} fungible token and an {{< term "erc-721" "ERC-721" >}} NFT.
+What moves when you send a token, and how does the recipient's wallet find out? This post answers with the two contracts most people mean by "token": an {{< term "erc-20" "ERC-20" >}} fungible token and an {{< term "erc-721" "ERC-721" >}} NFT, in [the testing post's](/posts/bc-foundry-testing-fuzzing/) project.
 
 I wrote both by hand to see every line. They are teaching contracts, not audited. In production the usual choice is an audited library such as OpenZeppelin, not code from a blog post.
 
@@ -186,7 +187,7 @@ $ cast logs --from-block 0 --address $N "Transfer(address indexed from,address i
 
 Both events have the same first topic, `keccak256("Transfer(address,address,uint256)")`. The ERC-20 one has three topics and the amount in `data`; the ERC-721 one indexes the token id too, so it has four topics and empty data. An indexer must tell them apart by that, or by knowing the contract.
 
-## A few things to watch
+## Token integration traps
 
 - Never assume 18 decimals. Read `decimals()` and keep amounts as integers end to end.
 - Some real tokens break the standard, as I understand it (no `bool` return, fees on transfer). Libraries wrap calls for that reason.
@@ -201,4 +202,4 @@ Both events have the same first topic, `keccak256("Transfer(address,address,uint
 
 ## What's next
 
-Next post: **Talking to Ethereum from Go with go-ethereum**.
+Next post: **Talking to Ethereum from Go with go-ethereum**: the same steps, from code.

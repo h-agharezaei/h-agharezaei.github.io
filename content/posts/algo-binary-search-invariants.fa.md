@@ -3,19 +3,20 @@ date = '2027-01-10T10:00:00+03:30'
 draft = false
 title = 'جست‌وجوی دودویی و invariant'
 description = 'جست‌وجوی دودویی در Go با invariant: LowerBound و UpperBound، باگ‌های واقعی سرریز نقطه‌ی وسط و off-by-one، تست جامع و جست‌وجو روی جواب.'
+contentType = 'tutorial'
 categories = ["Algorithms"]
 series = ["Algorithms"]
 tags = ["algorithms", "binary-search", "go", "invariants", "testing"]
 cover = { image = "/images/covers/algo-binary-search-invariants.fa.png", alt = "جست‌وجوی دودویی و invariant", hiddenInSingle = true }
 +++
 
-در مقاله‌ی قبلی، [heap و priority queue](/fa/posts/algo-heaps-priority-queues/)، برای درست ماندن heap به یک invariant تکیه کردم. {{< term "binary-search" "جست‌وجوی دودویی" >}} جایی است که این عادت بیشترین سود را دارد: ایده‌اش در یک جمله جا می‌شود، ولی کدش به غلط‌نوشته‌شدن معروف است. روی یک slice مرتب کار می‌کند، مثل [آرایه‌ی پویا و slice از درون](/fa/posts/algo-dynamic-arrays/)، از [Generics در Go](/fa/posts/go-generics/) استفاده می‌کند و هزینه‌اش همان لگاریتمی است که در [تحلیل Big-O با اندازه‌گیری واقعی](/fa/posts/algo-big-o-measured/) دیدیم.
+`5` را با بازه‌ی بسته و شرط حلقه‌ی `lo < hi` در `[1 3 5]` جست‌وجو کنید، جواب `-1` می‌گیرید. ایده‌ی {{< term "binary-search" "جست‌وجوی دودویی" >}} در یک جمله جا می‌شود، ولی کدش به غلط‌نوشته‌شدن معروف است. درمانش همان عادتی است که در [heap و priority queue](/fa/posts/algo-heaps-priority-queues/) heap را درست نگه داشت: اول {{< term "invariant" "invariant" >}} را بنویسید. روی یک slice مرتب کار می‌کند، مثل [آرایه‌ی پویا و slice از درون](/fa/posts/algo-dynamic-arrays/)، از [Generics در Go](/fa/posts/go-generics/) استفاده می‌کند و هزینه‌اش همان لگاریتمی است که در [تحلیل Big-O با اندازه‌گیری واقعی](/fa/posts/algo-big-o-measured/) دیدیم.
 
 > Go 1.26، مثال محلی. ماشین مشغول بود، پس فقط تعداد عملیات (قطعی) را منتشر می‌کنم و زمانی نمی‌دهم.
 
 ## اول invariant را بنویسید
 
-{{< term "invariant" "invariant" >}} جمله‌ای است که در هر دور حلقه درست می‌ماند. من بازه‌ی نیم‌باز `[lo, hi)` را جست‌وجو می‌کنم و این جمله را در خود کد می‌نویسم:
+invariant جمله‌ای است که در هر دور حلقه درست می‌ماند. من بازه‌ی نیم‌باز `[lo, hi)` را جست‌وجو می‌کنم و این جمله را در خود کد می‌نویسم:
 
 ```go
 // Invariant: a[i] < x for every i < lo; a[i] >= x for every i >= hi.
@@ -126,7 +127,7 @@ n=100000  16   n=1000000 19
 
 هزار برابر شدن n حدود ۱۰ قدم اضافه می‌کند: جدول دو برابرشدن مقاله‌ی Big-O، برعکس.
 
-## چند نکته‌ی مهم
+## قاعده‌هایی که جلوی off-by-one را می‌گیرند
 
 - invariant را قبل از کد به‌صورت کامنت بنویسید.
 - `[lo, hi)` یا `[lo, hi]` را انتخاب کنید و شرط‌هایشان را قاطی نکنید.
@@ -140,4 +141,4 @@ n=100000  16   n=1000000 19
 
 ## قدم بعدی
 
-مرتب‌سازی: quick، merge و heap.
+مرتب‌سازی: quick، merge و heap: اینجا داده از قبل مرتب بود و حالا خود آن ترتیب را می‌سازیم.

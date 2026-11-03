@@ -3,13 +3,14 @@ date = '2027-04-08T10:00:00+03:30'
 draft = false
 title = 'load balancer لایه‌ی ۴ و ۷'
 description = 'load balancer لایه‌ی ۴ و ۷ با Go روی loopback: پخش بر اساس اتصال یا درخواست، مسیریابی، hash، health check و least connections.'
+contentType = 'tutorial'
 categories = ["Networking"]
 series = ["Networking"]
 tags = ["networking", "load-balancer", "reverse-proxy", "http", "go", "health-check"]
 cover = { image = "/images/covers/net-load-balancer-l4-l7.fa.png", alt = "load balancer لایه‌ی ۴ و ۷", hiddenInSingle = true }
 +++
 
-در [پست قبل](/fa/posts/net-grpc-over-http2/) یک اتصال HTTP/2 هفتاد و یک فراخوانی را حمل کرد. برای بازدهی عالی است، اما برای {{< term "load-balancer" "load balancer" >}} دردسر دارد: اگر فقط اتصال‌ها را ببیند، هر ۷۱ فراخوانی به یک سرور می‌رود. اینجا هر دو نوع را با Go می‌سازم، یک proxy لایه‌ی ۴ و یکی لایه‌ی ۷، و می‌شمارم درخواست‌ها کجا می‌نشینند.
+یک اتصال HTTP/2 در [پست قبل](/fa/posts/net-grpc-over-http2/) هفتاد و یک فراخوانی را حمل کرد. برای بازدهی عالی است، اما برای {{< term "load-balancer" "load balancer" >}} دردسر دارد: اگر فقط اتصال‌ها را ببیند، هر ۷۱ فراخوانی به یک سرور می‌رود. اینجا هر دو نوع را با Go می‌سازم، یک proxy لایه‌ی ۴ و یکی لایه‌ی ۷، و می‌شمارم درخواست‌ها کجا می‌نشینند. برای مرور لایه‌ها: [مدل TCP/IP](/fa/posts/net-tcp-ip-model/).
 
 > همه‌چیز روی `127.0.0.1` با port تصادفی (چاپ نشده)، Go 1.26، macOS و فقط کتابخانه‌ی استاندارد اجرا شد. ماشین مشغول بود، پس تعداد منتشر می‌کنم و زمان‌سنجی نه. nginx، HAProxy، Envoy و load balancer ابری را اجرا نکردم؛ بحث درباره‌ی ایده‌هاست.
 
@@ -90,7 +91,7 @@ least connections backend با کمترین درخواست در حال اجرا 
 
 لایه‌ی ۷ می‌تواند بر اساس path یا هدر مسیریابی کند، هدر را عوض کند، retry کند، درخواست‌های HTTP/2 را پخش کند و {{< term "tls" "TLS" >}} را تمام کند. هزینه‌اش: باید buffer و parse کند، کلید خصوصی پیش اوست و لایه‌ی ۴ ساده‌تر است و به پروتکل کاری ندارد. در TLS passthrough بالانسر لایه‌ی ۴ بایت‌های رمز‌شده را رد می‌کند و path را نمی‌بیند؛ در termination بالانسر لایه‌ی ۷ رمزگشایی می‌کند و اغلب دوباره برای backend رمز می‌کند. اینجا فقط توصیف می‌کنم؛ گواهی‌ها در [TLS و گواهی‌ها با openssl](/fa/posts/net-tls-openssl/) هستند.
 
-## چند نکته‌ی مهم
+## دام‌های load balancing
 
 - در لایه‌ی ۴ اتصال ماندگار (HTTP/2، gRPC، WebSocket) به یک backend می‌چسبد؛ برای آن‌ها پخش لایه‌ی ۷ بگذارید.
 - `X-Forwarded-For` را فقط از proxyهای خودتان باور کنید.
@@ -103,4 +104,4 @@ least connections backend با کمترین درخواست در حال اجرا 
 
 ## قدم بعدی
 
-پست بعدی «عیب‌یابی شبکه با curl، dig و traceroute» است.
+بعدی «عیب‌یابی شبکه با curl، dig و traceroute» است: پیدا کردن لایه‌ی خراب.

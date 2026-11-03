@@ -3,13 +3,14 @@ date = '2027-05-07T10:00:00+03:30'
 draft = false
 title = 'Packaging and publishing a Python project'
 description = 'Python packaging with uv: src layout, pyproject.toml, uv build, what is inside a wheel, entry points, editable installs, twine check and versions.'
+contentType = 'tutorial'
 categories = ["Python"]
 series = ["Python"]
 tags = ["python", "packaging", "uv", "pyproject", "wheel"]
 cover = { image = "/images/covers/py-packaging-publishing.png", alt = "Packaging and publishing a Python project", hiddenInSingle = true }
 +++
 
-In the [previous post](/posts/py-sqlalchemy-postgres/) we talked to Postgres from Python. Code only becomes useful to others once it can be installed. This post builds a tiny package, looks inside what `uv build` produces, and installs it into a clean environment. It builds on [the Python environment: venv and uv](/posts/py-environment-uv-venv/) and uses ideas from [type hints and mypy](/posts/py-type-hints-mypy/).
+With a flat layout, `import flatpkg` in the project root succeeds without installing anything, so your tests may run against the working copy instead of the installed package. Code only becomes useful to others once it can be installed, whether it talks to Postgres like [the previous post](/posts/py-sqlalchemy-postgres/) or not. This post builds a tiny package, looks inside what `uv build` produces, and installs it into a clean environment. It builds on [the Python environment: venv and uv](/posts/py-environment-uv-venv/) and uses ideas from [type hints and mypy](/posts/py-type-hints-mypy/).
 
 > uv 0.10.9, Python 3.14.0, build backend `uv_build`, in a throwaway directory. **Nothing was uploaded** anywhere: I have no PyPI credentials, so publishing was not run and I only describe it. The demo is a local example.
 
@@ -91,7 +92,7 @@ PEP 440 verified with `packaging.version`: `1.0.0a1`, `1.0.0rc1` and `1.0.0.dev3
 
 npm packages use `package.json` ([npm and package.json](/posts/node-npm-package-json/)) and publish source or a tarball. Go modules ([packages and modules](/posts/go-packages-modules/)) are fetched by import path from version control, with no separate build artifact. Python distributes a built wheel, plus an sdist.
 
-## A few things to watch
+## Before you publish
 
 - Use the src layout so tests hit the installed code.
 - Do not publish `uv.lock` for libraries.
@@ -104,4 +105,4 @@ Add a second command and a `[project.optional-dependencies]` extra, rebuild, and
 
 ## What's next
 
-The next post is "Command-line tools and scripts with Python".
+Next: "Command-line tools and scripts with Python", which writes the program behind an entry point like the one built here.

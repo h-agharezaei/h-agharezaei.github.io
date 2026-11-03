@@ -3,19 +3,20 @@ date = '2027-05-23T10:00:00+03:30'
 draft = false
 title = 'Sagas or two-phase commit?'
 description = 'Sagas or two-phase commit: a 2PC simulation that blocks, real PREPARE TRANSACTION on Postgres, and exhaustively checked order sagas with compensations.'
+contentType = 'engineering'
 categories = ["Distributed"]
 series = ["Distributed Systems"]
 tags = ["distributed-systems", "saga", "two-phase-commit", "transactions", "go", "postgres"]
 cover = { image = "/images/covers/ds-saga-vs-2pc.png", alt = "Sagas or two-phase commit?", hiddenInSingle = true }
 +++
 
-[The previous post](/posts/ds-consensus-raft/) agreed on one log. Real orders touch several services (stock, payment, shipping), and no single log covers them. Two answers exist: {{< term "two-phase-commit" "two-phase commit" >}} (2PC), which keeps atomicity, and a {{< term "saga" "saga" >}}, which gives up isolation. See [ACID](/posts/db-transactions-acid/), [outbox](/posts/go-outbox-pattern-nats/), [idempotency](/posts/nats-jetstream-idempotency/) and [retries](/posts/ds-timeouts-retries-backoff/).
+A real order touches several services (stock, payment, shipping), and no single log, like the one in [the previous post](/posts/ds-consensus-raft/), covers them. Two answers exist: {{< term "two-phase-commit" "two-phase commit" >}} (2PC), which keeps atomicity, and a {{< term "saga" "saga" >}}, which gives up isolation. See [ACID](/posts/db-transactions-acid/), [outbox](/posts/go-outbox-pattern-nats/), [idempotency](/posts/nats-jetstream-idempotency/) and [retries](/posts/ds-timeouts-retries-backoff/).
 
 > Honest labelling: the 2PC and saga parts are **simulations** in Go 1.26 on one machine: simulated clock, simulated network (seeded latency 1 to 3 ticks), in-process services. Counts and ticks only, no timings. Part 2 is a real PostgreSQL 18.3 on loopback, driven with `psql`.
 
 ## 2PC in a simulation
 
-A coordinator and three participants (inventory, payment, shipping), each locking one row. Phase 1: `PREPARE`; each participant makes its work durable, keeps the lock and votes. Phase 2: the coordinator logs its decision, then sends `COMMIT` or `ABORT`. A trimmed run where shipping votes no:
+A coordinator and three participants (inventory, payment, shipping), each locking one row. Phase 1: `PREPARE`; each participant makes its work durable, keeps the lock and votes. Phase 2: the coordinator logs its decision, then sends `COMMIT` or `ABORT`. Trimmed run where shipping votes no:
 
 ```
 t=  1  payment PREPARED (row locked, durable), votes YES
@@ -111,17 +112,13 @@ Seven reads saw money later refunded. Countermeasures: a visible `PENDING` state
 
 In my experience, sagas fit separate services and 2PC fits a few databases you control. Percolator and Spanner run 2PC over consensus groups to avoid a single coordinator; I only name them. TCC (try-confirm-cancel) is a saga with reservations as the "try".
 
-## A few things to watch
+## Where sagas go wrong
 
 - Log intent before the call and outcome after; crashes live in the gap.
 - Compensation is not rollback: a refund is a new fact; an email cannot be undone.
 - Put the step that cannot fail or be undone last.
 - Publish saga events through an outbox, or you lose them.
 - The simulation has no partitions and no real disks.
-
-## Exercise
-
-Move shipping first. Which compensations become costly, and does the checker still report zero violations?
 
 ## What's next
 

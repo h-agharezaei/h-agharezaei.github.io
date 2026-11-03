@@ -3,13 +3,14 @@ date = '2026-11-27T10:00:00+03:30'
 draft = false
 title = 'npm, package.json and lockfiles'
 description = 'npm and package.json explained with real runs: dependency types, semver ranges, package-lock.json, npm ci failures, audit and what npm pack publishes.'
+contentType = 'tutorial'
 categories = ["Node.js"]
 series = ["Node.js"]
 tags = ["nodejs", "npm", "package-json", "semver", "lockfile"]
 cover = { image = "/images/covers/node-npm-package-json.png", alt = "npm, package.json and lockfiles", hiddenInSingle = true }
 +++
 
-Every Node.js project starts with {{< term "npm" "npm" >}} and a `package.json`, and most production surprises ("it works on my machine") come from not understanding them. This is post 3 of the Node.js series. In the previous post, [Modules: ESM and CommonJS](/posts/node-modules-esm-cjs/), we saw how Node loads code; here we see how code from other people gets to your disk. The [event loop](/posts/node-event-loop/) post is the base for the series.
+Change one version in `package.json`, leave the {{< term "lockfile" "lockfile" >}} alone, and `npm ci` installs nothing. That failure is on purpose; most production surprises come from not understanding {{< term "npm" "npm" >}} and `package.json`. [Modules: ESM and CommonJS](/posts/node-modules-esm-cjs/) showed how Node loads code; here we see how other people's code gets to your disk. The series rests on the [event loop](/posts/node-event-loop/) post.
 
 > Run with Node v20.13.1 and npm 10.5.2 in a fresh local demo folder, against the real registry. Outputs are copied from real runs; registry results are "as of the day I ran them".
 
@@ -67,7 +68,7 @@ for (const r of ranges) console.log(r.padEnd(7), vers.filter(v => semver.satisfi
 
 ## The lockfile
 
-A range says what is allowed; the {{< term "lockfile" "lockfile" >}} records what was chosen. This is the entry for `semver` in `package-lock.json`:
+A range says what is allowed; the lockfile records what was chosen. This is the entry for `semver` in `package-lock.json`:
 
 ```json
 "node_modules/semver": {
@@ -111,7 +112,7 @@ semver      7.6.0   7.8.5   7.8.5
 
 In a second folder I had `lib/index.js`, `test/t.js`, `.env` and `NOTES.md`, with `"files": ["lib"]`. `npm pack --dry-run` listed only `lib/index.js` and `package.json`. Without `files`, npm falls back to rules such as `.npmignore`, so always check with a dry run before publishing. Other tools (pnpm, yarn) and `.npmrc` for registry settings exist; I did not use them here.
 
-## A few things to watch
+## Where dependencies surprise you
 
 - Commit `package-lock.json`; never edit it by hand.
 - Use `npm ci` in CI and Docker builds.
@@ -125,4 +126,4 @@ Create a project, install `ms`, then edit its range in `package.json` to somethi
 
 ## What's next
 
-Next: "Promises and async/await in Node.js".
+"Promises and async/await in Node.js": with packages in place, the series returns to async code itself.

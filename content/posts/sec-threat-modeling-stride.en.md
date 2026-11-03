@@ -3,13 +3,14 @@ date = '2027-02-09T10:00:00+03:30'
 draft = false
 title = 'Threat modeling with STRIDE'
 description = 'Threat modeling with STRIDE on a Go orders API: a data-flow diagram, a STRIDE table, three real demos (tampering, error leaks, DoS) and a template.'
+contentType = 'tutorial'
 categories = ["Security"]
 series = ["Software Security"]
 tags = ["security", "threat-modeling", "stride", "appsec", "go"]
 cover = { image = "/images/covers/sec-threat-modeling-stride.png", alt = "Threat modeling with STRIDE", hiddenInSingle = true }
 +++
 
-This opens the Software Security series. Before fixing bugs one by one, I want a way to find them early: {{< term "threat-modeling" "threat modeling" >}}. The `orders` service from this blog is our subject: the API from [Building an API with net/http in Go](/posts/go-http-api-stdlib/), with Postgres ([pgx and sqlc](/posts/go-postgres-pgx-sqlc/)) and NATS JetStream behind it.
+If an orders endpoint decodes the body straight into its struct, a client can order a 1500-cent book for 1 cent, already "paid". {{< term "threat-modeling" "Threat modeling" >}} finds bugs like this early, not one by one afterwards. The subject is the `orders` service: the API from [Building an API with net/http in Go](/posts/go-http-api-stdlib/), with Postgres ([pgx and sqlc](/posts/go-postgres-pgx-sqlc/)) and NATS JetStream behind it.
 
 > Defensive only. Every demo here is my own tiny Go program on `127.0.0.1`, standard library only, run with Go 1.26. Nothing targets a third party. The "database error" in demo 2 is invented text, not a real Postgres run.
 
@@ -55,7 +56,7 @@ $ curl -s -X POST 127.0.0.1:8101/orders -d '{"sku":"book","qty":1,"price_cents":
 {"id":1,"sku":"book","qty":1,"price_cents":1,"status":"paid"}
 ```
 
-A 1500-cent book became 1 cent and "paid". The fixed version decodes into a two-field input (`sku`, `qty`), looks the price up in a server-side catalog and sets the status itself:
+The fixed version decodes into a two-field input (`sku`, `qty`), looks the price up in a server-side catalog and sets the status itself:
 
 ```
 $ curl -s -X POST 127.0.0.1:8102/orders -d '{"sku":"book","qty":1,"price_cents":1,"status":"paid"}'
@@ -113,7 +114,7 @@ Top risks (L x I):
 Review date / trigger (new feature, new dependency):
 ```
 
-## A few things to watch
+## Keeping the model alive
 
 - Redraw the diagram when the architecture changes; an old model is worse than none.
 - Threats on flows are as real as threats on boxes.
@@ -126,4 +127,4 @@ Add an element to the diagram (a Redis cache, say) and write its six STRIDE rows
 
 ## What's next
 
-The next post is “The OWASP Top 10 in real code”.
+“The OWASP Top 10 in real code”: the common names for these threats, shown in Go.

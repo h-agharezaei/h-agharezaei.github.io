@@ -3,13 +3,14 @@ date = '2027-03-28T10:00:00+03:30'
 draft = false
 title = 'Worker threads and cluster in Node.js'
 description = 'Worker threads and cluster in Node.js: block the event loop on purpose, then fix it with workers, Atomics, a pool and cluster, with real runs.'
+contentType = 'tutorial'
 categories = ["Node.js"]
 series = ["Node.js"]
 tags = ["nodejs", "worker-threads", "cluster", "concurrency", "performance"]
 cover = { image = "/images/covers/node-worker-threads-cluster.png", alt = "Worker threads and cluster in Node.js", hiddenInSingle = true }
 +++
 
-In the previous post, [Input validation with Zod](/posts/node-validation-zod/), everything ran on one thread. That is fine for I/O, as I showed in [The Node.js event loop](/posts/node-event-loop/), but one slow synchronous function stops every request. This post shows that on purpose, then fixes it with {{< term "worker-threads" "worker threads" >}}, and finally spreads an HTTP server over processes with {{< term "node-cluster" "cluster" >}}. It builds on [An HTTP server with node:http](/posts/node-http-server/).
+While `fib(38)` ran on the main thread, a 10 ms `setInterval` ticked 0 times. Everything up to [Input validation with Zod](/posts/node-validation-zod/) ran on one thread: fine for I/O, as [The Node.js event loop](/posts/node-event-loop/) showed, but one slow synchronous function stops every request. I fix that with {{< term "worker-threads" "worker threads" >}}, then spread an HTTP server over processes with {{< term "node-cluster" "cluster" >}}, building on [An HTTP server with node:http](/posts/node-http-server/).
 
 > Node v20.13.1, local example scripts on 127.0.0.1. The machine was busy, so I report only counts, no timings. I did not run these on Linux or Windows.
 
@@ -112,7 +113,7 @@ alive workers now: 2 | killed was worker#1
 
 In Go a {{< term "goroutine" "goroutine" >}} is scheduled across cores by the runtime, so CPU work needs no extra API ([Goroutines and channels in Go](/posts/go-goroutines-channels/), [The Go scheduler and garbage collector](/posts/go-scheduler-gc-internals/)). In Node you choose threads or processes yourself, and each worker has its own heap.
 
-## A few things to watch
+## Where threads and processes bite
 
 - A worker has its own event loop and memory; only shared buffers are shared.
 - Do not start more CPU-bound workers than cores.
@@ -126,4 +127,4 @@ Make the pool respawn a worker after `error`, and test it with a job that throws
 
 ## What's next
 
-The next post is "Profiling, memory and graceful shutdown in Node.js".
+"Profiling, memory and graceful shutdown in Node.js": before adding workers, find where time and memory go.

@@ -3,13 +3,14 @@ date = '2027-01-26T10:00:00+03:30'
 draft = false
 title = 'ساختار پروژه و کانفیگ در Node.js'
 description = 'ساختار پروژه و کانفیگ در Node.js: لایه‌بندی، subpath imports، کانفیگ اعتبارسنجی‌شده از env، --env-file، parseArgs، پنهان‌کردن secret و تست با node:test.'
+contentType = 'tutorial'
 categories = ["Node.js"]
 series = ["Node.js"]
 tags = ["nodejs", "config", "project-structure", "environment-variables", "parseargs"]
 cover = { image = "/images/covers/node-project-structure-config.fa.png", alt = "ساختار پروژه و کانفیگ در Node.js", hiddenInSingle = true }
 +++
 
-در مقاله‌ی قبل، [تست در Node.js با node:test](/fa/posts/node-testing-builtin/)، تابع‌های کوچک را تست کردیم. حالا ساختاری می‌خواهم که با بزرگ‌شدن پروژه هم تست‌پذیر بماند، و کانفیگی که اگر غلط باشد بلند خطا بدهد. این مقاله معادل Node برای [ساختار پروژه و Clean Architecture در Go](/fa/posts/go-project-layout-clean-architecture/) و [کانفیگ، لاگ ساختاریافته و خطا در Go](/fa/posts/go-config-logging-errors/) است و روی [سرور HTTP](/fa/posts/node-http-server/) و [ماژول‌های ESM](/fa/posts/node-modules-esm-cjs/) سوار می‌شود.
+`if (process.env.DEBUG)` برای `DEBUG=false` هم درست است، چون هر مقدار env رشته است. چنین باگ‌های کانفیگی فقط وقتی بلند خطا می‌دهند که پروژه برای گرفتنشان ساخته شده باشد. [تست در Node.js با node:test](/fa/posts/node-testing-builtin/) تابع‌های کوچک را پوشش داد؛ حالا ساختاری می‌خواهم که با بزرگ‌شدن پروژه هم تست‌پذیر بماند، و کانفیگی که اگر غلط باشد بلند خطا بدهد. این مقاله معادل Node برای [ساختار پروژه و Clean Architecture در Go](/fa/posts/go-project-layout-clean-architecture/) و [کانفیگ، لاگ ساختاریافته و خطا در Go](/fa/posts/go-config-logging-errors/) است و روی [سرور HTTP](/fa/posts/node-http-server/) و [ماژول‌های ESM](/fa/posts/node-modules-esm-cjs/) سوار می‌شود.
 
 > Node نسخه‌ی v20.13.1. کد یک مثال محلی است (پروژه‌ی ESM و بدون وابستگی)؛ همه‌ی خروجی‌ها از اجرای واقعی روی loopback کپی شده‌اند. زمان‌بندی نگرفتم چون سیستم مشغول بود.
 
@@ -116,7 +117,7 @@ const cfg = loadConfig({ file: { port: 1111 }, env: { ...base, APP_PORT: '2222' 
 assert.equal(cfg.port, 3333);
 ```
 
-## چند نکته‌ی مهم
+## کانفیگی که بی‌صدا غلط است
 
 - `NODE_ENV` فقط یک رشته می‌گذارد. خود Node با آن کاری نمی‌کند؛ طبق مستندات بعضی کتابخانه‌ها (مثلاً Express) رفتارشان را عوض می‌کنند. بدون آن `undefined` و با آن `production` چاپ شد. منطق خودتان را روی آن بنا نکنید؛ تنظیم صریح بگذارید.
 - `.env` را در git نگذارید و secret واقعی commit نکنید.
@@ -129,4 +130,4 @@ assert.equal(cfg.port, 3333);
 
 ## قدم بعدی
 
-مقاله‌ی بعد «Postgres از Node.js با pg» است: وصل‌کردن `dbUrl` همین کانفیگ به یک دیتابیس واقعی.
+«Postgres از Node.js با pg»: `dbUrl` همین کانفیگ آنجا به یک دیتابیس واقعی وصل می‌شود.

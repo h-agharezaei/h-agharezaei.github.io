@@ -4,13 +4,14 @@ draft = false
 title = 'Observability for JetStream: metrics, logs and traces'
 seoTitle = 'JetStream Observability: Metrics, Logs, Traces'
 description = 'Add Prometheus metrics, structured slog logs and W3C trace context propagation through NATS headers to a Go JetStream worker, with real output.'
+contentType = 'tutorial'
 categories = ["Go"]
 series = ["NATS JetStream"]
 tags = ["go", "nats", "jetstream", "observability", "metrics", "tracing", "prometheus", "slog", "opentelemetry"]
 cover = { image = "/images/covers/nats-jetstream-observability.png", alt = "Observability for JetStream: metrics, logs and traces", hiddenInSingle = true }
 +++
 
-In the [previous post](/posts/go-graceful-shutdown-workers/) the worker learned to stop cleanly, but when something goes wrong we still mostly guess. A queue makes this worse: the publisher and the worker never talk directly, so a slow or failing message leaves no obvious trail. This post adds the three usual signals: **metrics** (is it healthy right now?), **logs** (what happened to this message?) and **traces** (how did one request travel from publisher to worker?).
+When a queue worker misbehaves we mostly guess, and the queue itself makes this worse: the publisher and the worker never talk directly, so a slow or failing message leaves no obvious trail. The worker from the [previous post](/posts/go-graceful-shutdown-workers/) now stops cleanly, but that alone does not show what it is doing while it runs. So we add the three usual signals: **metrics** (is it healthy right now?), **logs** (what happened to this message?) and **traces** (how did one request travel from publisher to worker?).
 
 The demo is one local Go program: an embedded `nats-server` v2.15.1 with JetStream, `nats.go` v1.54.0, `prometheus/client_golang` v1.23.2 and OpenTelemetry v1.43.0, on Go 1.26. A publisher sends about 60 jobs per second to a single serial worker. Every 10th job fails on its first delivery. For the lag numbers themselves see [the scaling post](/posts/nats-jetstream-scaling-lag/); for `slog` basics see [config, logging and errors](/posts/go-config-logging-errors/).
 
@@ -103,7 +104,7 @@ Same trace ID on both sides, and the failed first attempt and the retry are two 
 
 Without inventing numbers: alert on `consumer_num_pending` that keeps growing instead of settling (the worker cannot keep up), on a rising share of `failed` or `redelivered_ok`, and on any messages in the dead-letter stream from [the retry post](/posts/nats-jetstream-retry-dlq/), where the depth should normally be zero. Pick thresholds from your own baseline.
 
-## A few things to watch
+## Blind spots and costs
 
 - `ConsumerInfo` is a request to the server; sample every second or so, not per message.
 - The gauges are only as fresh as the sampling interval.
@@ -113,4 +114,4 @@ Without inventing numbers: alert on `consumer_num_pending` that keeps growing in
 
 ## What's next
 
-Everything here ran against an embedded server, which also makes testing easy. The next post is about testing JetStream services with an embedded nats-server.
+Everything here ran against an embedded server, which also makes testing easy; Testing JetStream services with an embedded nats-server builds on exactly that.

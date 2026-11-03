@@ -3,19 +3,20 @@ date = '2026-12-01T18:00:00+03:30'
 draft = false
 title = 'Zero-knowledge proof basics in Rust'
 description = 'Zero-knowledge proofs in Rust: a Schnorr proof on secp256k1, a cheating prover, Fiat-Shamir and its forgery bug, and nonce reuse leaking the secret.'
+contentType = 'tutorial'
 categories = ["Blockchain"]
 series = ["Blockchain"]
 tags = ["blockchain", "rust", "zero-knowledge", "schnorr", "cryptography", "secp256k1"]
 cover = { image = "/images/covers/bc-zero-knowledge-rust.png", alt = "Zero-knowledge proof basics in Rust", hiddenInSingle = true }
 +++
 
-The previous post, [Bridges and cross-chain messaging](/posts/bc-bridges-cross-chain/), was about one chain trusting a claim about another. Zero-knowledge proofs go further: convince someone a statement is true without showing why. In [Merkle trees and inclusion proofs](/posts/bc-merkle-trees-proofs/) the proof revealed the leaf; in [Keys, ECDSA signatures and addresses on secp256k1](/posts/bc-keys-ecdsa-addresses/) a reused nonce leaked a private key. Both come back here.
+Can you convince someone a statement is true without showing why? A {{< term "zero-knowledge-proof" "zero-knowledge proof" >}} does, a step beyond [Bridges and cross-chain messaging](/posts/bc-bridges-cross-chain/), where one chain trusted a claim about another. In [Merkle trees and inclusion proofs](/posts/bc-merkle-trees-proofs/) the proof revealed the leaf; in [Keys, ECDSA signatures and addresses on secp256k1](/posts/bc-keys-ecdsa-addresses/) a reused nonce leaked a private key. Both come back here.
 
 > Toy code for learning, not production. Every secret is a fresh random scalar and is never printed. Rust 1.90, `k256` 0.13.4 (feature `arithmetic`), `sha2` 0.10.9, `rand_core` 0.6.4, macOS (arm64). The demo is a local Cargo project.
 
 ## What a proof promises
 
-A {{< term "zero-knowledge-proof" "zero-knowledge proof" >}} runs between a prover and a verifier and promises:
+A zero-knowledge proof runs between a prover and a verifier and promises:
 
 - **Completeness**: an honest prover with the secret always convinces.
 - **Soundness**: a prover without the secret fails, except with negligible probability.
@@ -135,7 +136,7 @@ Schnorr proves one fixed statement. General systems prove "this program ran corr
 
 Real systems use libraries such as arkworks, halo2 or RISC Zero; I did not use them here.
 
-## A few things to watch
+## Where proofs break
 
 - Hash everything into the challenge: domain tag, generator, public key, commitment, message.
 - Never reuse or bias a nonce; one repeat gives the secret away.
@@ -150,4 +151,4 @@ Real systems use libraries such as arkworks, halo2 or RISC Zero; I did not use t
 
 ## What's next
 
-Next post: **Exchange engineering: deposits, withdrawals, confirmations and reorgs**.
+**Exchange engineering: deposits, withdrawals, confirmations and reorgs**: from cryptography back to backend work.

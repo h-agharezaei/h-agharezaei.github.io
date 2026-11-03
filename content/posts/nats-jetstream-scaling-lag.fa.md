@@ -4,19 +4,20 @@ draft = false
 title = 'چند Worker روی یک Consumer و مانیتورینگ lag در JetStream'
 seoTitle = 'چند Worker و مانیتورینگ lag در JetStream'
 description = 'چند Worker را روی یک Consumer پایدار JetStream اجرا کنید، ببینید اگر یکی crash کند چه می‌شود، و با ConsumerInfo میزان عقب‌ماندگی (lag) را زیر نظر بگیرید.'
+contentType = 'tutorial'
 categories = ["Go"]
 series = ["NATS JetStream"]
 tags = ["go", "nats", "jetstream", "messaging", "scaling", "monitoring"]
 cover = { image = "/images/covers/nats-jetstream-scaling-lag.fa.png", alt = "چند Worker روی یک Consumer و مانیتورینگ lag در JetStream", hiddenInSingle = true }
 +++
 
-آخر [مقاله‌ی قبل](/fa/posts/nats-jetstream-retry-dlq/) دو موضوع را وعده داده بودم: اجرای بیش از یک Worker و زیر نظر گرفتن میزان عقب‌ماندگی. تا وقتی پیام‌ها کندتر از توان یک Worker می‌رسند همه‌چیز خوب است، اما بعدش دو سؤال پیش می‌آید: چطور Worker اضافه کنیم بدون اینکه چیزی دوبار پردازش شود، و از کجا بفهمیم صف دارد انباشته می‌شود؟
+یک Worker تا وقتی کافی است که پیام‌ها کندتر از توانش برسند؛ بعد دو سؤال پیش می‌آید: چطور Worker اضافه کنیم بدون اینکه چیزی دوبار پردازش شود، و از کجا بفهمیم صف دارد انباشته می‌شود؟ [مقاله‌ی قبل](/fa/posts/nats-jetstream-retry-dlq/) هر دو را باز گذاشته بود.
 
 > همه‌ی مثال‌های زیر را با یک `nats-server` تعبیه‌شده (با JetStream و یک پوشه‌ی موقت برای ذخیره‌سازی) و `nats.go` نسخه‌ی v1.54.0 روی Go 1.26 اجرا کرده‌ام و خروجی‌ها از همان اجراها هستند.
 
 ## چند Worker، یک Consumer پایدار
 
-نکته‌ی خاصی وجود ندارد. هر Worker به همان **durable consumer** وصل می‌شود و سرور هر پیام را فقط به یکی از آن‌ها می‌دهد:
+ترفند خاصی ندارد: هر Worker به همان **durable consumer** وصل می‌شود و سرور هر پیام را فقط به یکی از آن‌ها می‌دهد:
 
 ```go
 sub, err := js.PullSubscribe("jobs.new", "workers", nats.Bind("JOBS", "workers"))
@@ -38,11 +39,11 @@ Consumer یک بار با `AckExplicitPolicy` ساخته شده بود. سه gor
 deliveries=30 unique=30 pending=0 ackPending=0 redelivered=0
 ```
 
-۳۰ تحویل، ۳۰ کار یکتا و هیچ تحویل مجددی. کل کار حدود ۲ ثانیه طول کشید، در حالی‌که یک Worker تنها به ۶ ثانیه نیاز داشت. به ترتیب هم دقت کن: `job-06` قبل از `job-04` شروع شد.
+۳۰ تحویل، ۳۰ کار یکتا و هیچ تحویل مجددی. کل کار حدود ۲ ثانیه طول کشید، به‌جای ۶ ثانیه‌ی یک Worker تنها. به ترتیب دقت کن: `job-06` قبل از `job-04` شروع شد.
 
 ## وسط کار یک Worker می‌میرد
 
-حالا بخش جالب. `AckWait` را ۲ ثانیه گذاشتم، ۱۰ کار منتشر کردم و کاری کردم که `w2` روی پیام دومش «crash» کند، یعنی بدون ack متوقف شود:
+`AckWait` را ۲ ثانیه گذاشتم، ۱۰ کار منتشر کردم و کاری کردم که `w2` روی پیام دومش «crash» کند، یعنی بدون ack متوقف شود:
 
 ```
   0.1s w2 got job-06 (stream seq 6, delivery #1)
@@ -54,12 +55,12 @@ deliveries=11 unique=10 pending=0 ackPending=0 redelivered=0
 
 سرور به اندازه‌ی `AckWait` صبر کرد و بعد `job-06` را به Workerی که هنوز زنده بود (`w1`) داد. شبکه‌ی ایمنی همین است: ack نیامد یعنی پیام گم نمی‌شود. دو نتیجه دارد:
 
-- **تحویل at-least-once است.** Workerِ مرده ممکن است نصف کار یا کل آن را انجام داده باشد، پس پردازش باید در برابر تکرار ایمن باشد. موضوع مقاله‌ی بعد همین است.
-- **ترتیب بین Workerها تضمین نمی‌شود.** `job-06` خیلی بعد از `job-10` پردازش شد. اگر ترتیب سخت‌گیرانه لازم داری، باید طراحی دیگری (مثلاً یک Consumer با یک Worker، یا تقسیم کار بر اساس subject) انتخاب کنی.
+- **تحویل at-least-once است.** Workerِ مرده ممکن است نصف کار یا کل آن را انجام داده باشد، پس پردازش باید در برابر تکرار ایمن باشد.
+- **ترتیب بین Workerها تضمین نمی‌شود.** `job-06` خیلی بعد از `job-10` پردازش شد. اگر ترتیب سخت‌گیرانه لازم داری، طراحی دیگری لازم است (مثلاً یک Consumer با یک Worker، یا تقسیم کار بر اساس subject).
 
 ## خواندن lag با ConsumerInfo
 
-برای دیدن صف انباشته‌شده از سرور درباره‌ی Consumer می‌پرسیم. مانیتور کوچک من فقط یک ticker است:
+برای دیدن صف انباشته‌شده از سرور درباره‌ی Consumer می‌پرسیم. مانیتور من فقط یک ticker است:
 
 ```go
 i, err := js.ConsumerInfo("JOBS", "workers")
@@ -98,9 +99,9 @@ fmt.Printf("pending=%d ackPending=%d redelivered=%d delivered=%d ackFloor=%d\n",
 
 ## Endpoint مانیتورینگ HTTP
 
-اگر سرور با پورت مانیتورینگ HTTP اجرا شود، همین اعداد را بدون کلاینت هم می‌شود خواند. سرور تعبیه‌شده را با `HTTPPort: 8222` بالا آوردم، ۵ پیام مصرف‌نشده در stream گذاشتم و `curl 'localhost:8222/jsz?consumers=true'` زدم. در JSON، Consumer مربوط به stream با نام `JOBS` این مقادیر را داشت: `num_pending` برابر ۵، و `num_ack_pending` و `num_redelivered` برابر ۰. برای scrape کردن با Prometheus یا یک چک سریع از شل مناسب است.
+اگر سرور با پورت مانیتورینگ HTTP اجرا شود، همین اعداد را بدون کلاینت هم می‌شود خواند. سرور تعبیه‌شده را با `HTTPPort: 8222` بالا آوردم، ۵ پیام مصرف‌نشده در stream گذاشتم و `curl 'localhost:8222/jsz?consumers=true'` زدم. در JSON، Consumer مربوط به stream `JOBS` این مقادیر را داشت: `num_pending` برابر ۵، و `num_ack_pending` و `num_redelivered` برابر ۰. برای scrape با Prometheus یا یک چک سریع از شل مناسب است.
 
-## چند نکته‌ی مهم
+## خواندن درست اعداد
 
 - روی رشد مداوم `NumPending` هشدار بگذار، نه روی یک مقدار بالا. موج ناگهانی عادی است، خطِ پیوسته صعودی مشکل است.
 - اگر `NumAckPending` بالا برود و `AckFloor` ثابت بماند، Workerها گیر کرده‌اند یا crash می‌کنند، حتی اگر `pending` خوب به نظر برسد.
@@ -110,4 +111,4 @@ fmt.Printf("pending=%d ackPending=%d redelivered=%d delivered=%d ackFloor=%d\n",
 
 ## قدم بعدی
 
-تحویل مجدد یعنی ممکن است یک کار دوبار اجرا شود. مقاله‌ی بعد درباره‌ی idempotency و معنی واقعی «exactly-once» در JetStream است: `Nats-Msg-Id`، پنجره‌ی duplicate و Consumerهای idempotent.
+تحویل مجدد یعنی ممکن است یک کار دوبار اجرا شود. «Idempotency و معنای exactly-once در JetStream» به همین مشکل می‌پردازد: `Nats-Msg-Id`، پنجره‌ی duplicate و Consumerهای idempotent.

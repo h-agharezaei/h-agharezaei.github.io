@@ -3,13 +3,14 @@ date = '2027-02-04T10:00:00+03:30'
 draft = false
 title = 'سرویس gRPC با Go'
 description = 'سرویس orders را با gRPC در Go بسازید: قرارداد proto3، کد تولیدشده، status code، interceptor، deadline، استریم سمت سرور، metadata، health check و توقف مرتب.'
+contentType = 'tutorial'
 categories = ["Go"]
 series = ["Go Backend"]
 tags = ["go", "backend", "grpc", "protobuf", "interceptors", "api"]
 cover = { image = "/images/covers/go-grpc-service.fa.png", alt = "سرویس gRPC با Go", hiddenInSingle = true }
 +++
 
-در [مقاله‌ی قبل](/fa/posts/go-outbox-pattern-nats/) مطمئن شدیم رویدادها قابل‌اعتماد از سرویس بیرون می‌روند. حالا همان سرویس `orders` یک در ورودی دوم می‌گیرد. نسخه‌ی REST آن را در [مقاله‌ی net/http](/fa/posts/go-http-api-stdlib/) ساختیم؛ اینجا عملیات همان است (ساخت، گرفتن، فهرست) اما قرارداد یک فایل `.proto` است و روی سیم، HTTP/2 با پیام‌های باینری داریم. دامنه، سرویس و store در حافظه بدون تغییر کپی شده‌اند، فقط یک متد `List` اضافه شده است. ایده‌ی [مقاله‌ی config و خطاها](/fa/posts/go-config-logging-errors/) هم برمی‌گردد: یک تابع خطاها را به code نگاشت می‌کند.
+اگر handler یک سرویس {{< term "grpc" "gRPC" >}} یک `error` ساده برگرداند، کلاینت `Unknown` می‌بیند و اگر کلاینت deadline نگذارد، فراخوانی ممکن است تا ابد منتظر بماند. این قاعده‌ها وقتی مهم می‌شوند که سرویس `orders`، که در [Outbox Pattern](/fa/posts/go-outbox-pattern-nats/) رویدادهایش قابل‌اعتماد شد، یک در ورودی دوم می‌گیرد. نسخه‌ی REST آن را در [مقاله‌ی net/http](/fa/posts/go-http-api-stdlib/) ساختیم؛ اینجا عملیات همان است (ساخت، گرفتن، فهرست) اما قرارداد یک فایل `.proto` است و روی سیم، HTTP/2 با پیام‌های باینری داریم. دامنه، سرویس و store در حافظه بدون تغییر کپی شده‌اند، فقط یک متد `List` اضافه شده است. ایده‌ی [مقاله‌ی config و خطاها](/fa/posts/go-config-logging-errors/) هم برمی‌گردد: یک تابع خطاها را به code نگاشت می‌کند.
 
 > Go 1.26، macOS (arm64)، protoc 33.4، protoc-gen-go v1.36.11، protoc-gen-go-grpc 1.5.1 و grpc-go v1.84.0. در لاگ‌ها زمان حذف شده است. `grpcurl` روی ماشین من نصب نیست، پس همه‌ی فراخوانی‌های زیر از یک کلاینت کوچک Go آمده‌اند.
 
@@ -106,7 +107,7 @@ func toStatus(err error) error {
 
 ## Interceptor
 
-**Interceptor** همان middleware در {{< term "grpc" "gRPC" >}} است. نوع unary دور یک handler را می‌گیرد؛ برای RPCهای استریم هم جفتی جدا لازم است.
+**Interceptor** همان middleware در gRPC است. نوع unary دور یک handler را می‌گیرد؛ برای RPCهای استریم هم جفتی جدا لازم است.
 
 ```go
 func Recovery(ctx context.Context, req any, info *grpc.UnaryServerInfo, h grpc.UnaryHandler) (resp any, err error) {
@@ -170,7 +171,7 @@ INFO stopped
 
 فراخوانی عادی تمام شد (`NotFound`، چون سفارشی با شناسه‌ی `slow` نیست) و قطع نشد. `Stop()` آن را فوراً می‌بست.
 
-## چند نکته که باید حواستان باشد
+## قاعده‌هایی که نباید بشکنید
 
 - شماره‌ی فیلد را هرگز دوباره استفاده یا عوض نکنید؛ `reserved` کنید. افزودن فیلد تازه تغییر امن است.
 - اسکالرهای ساده‌ی proto3 نمی‌توانند «تنظیم‌نشده» را بگویند؛ جایی که مهم است از `optional` استفاده کنید.
@@ -180,4 +181,4 @@ INFO stopped
 
 ## قدم بعدی
 
-مقاله‌ی بعد: Go و Rust با gRPC با هم حرف می‌زنند. همین `.proto` یک کلاینت Rust هم تولید می‌کند تا ببینیم تعامل بین دو زبان در عمل چه شکلی دارد.
+قدم بعدی «ارتباط Go و Rust با gRPC» است، چون همین `.proto` یک کلاینت Rust هم تولید می‌کند و آنجا می‌بینیم تعامل بین دو زبان در عمل چه شکلی دارد.

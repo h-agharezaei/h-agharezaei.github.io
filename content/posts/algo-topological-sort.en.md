@@ -3,13 +3,14 @@ date = '2027-03-30T10:00:00+03:30'
 draft = false
 title = 'Topological sort and dependencies'
 description = 'Topological sort in Go with Kahn and DFS: stable order, exact cycle paths, parallel waves, critical path and go list -deps, with operation counts.'
+contentType = 'tutorial'
 categories = ["Algorithms"]
 series = ["Algorithms"]
 tags = ["algorithms", "graphs", "topological-sort", "dependencies", "go"]
 cover = { image = "/images/covers/algo-topological-sort.png", alt = "Topological sort and dependencies", hiddenInSingle = true }
 +++
 
-In the previous post, [Shortest paths and Dijkstra](/posts/algo-shortest-paths-dijkstra/), edges carried a cost. Here they carry an order: "build `log` before `db`". Builds, imports and task runners all need this, and the tools are the [graph traversals](/posts/algo-graphs-bfs-dfs/) and a [queue](/posts/algo-stacks-queues-deques/) you already know.
+`go list -deps` prints every package after everything it imports, because the Go toolchain needs that order to compile. Builds and task runners need it too: "build `log` before `db`". Edges carried a cost in [Shortest paths and Dijkstra](/posts/algo-shortest-paths-dijkstra/); here they carry an order, and the tools are the [graph traversals](/posts/algo-graphs-bfs-dfs/) and a [queue](/posts/algo-stacks-queues-deques/) you know.
 
 > Go 1.26, local example, tests with `go test -race`. The load average was above 4, so I publish only counts, no timings.
 
@@ -86,9 +87,9 @@ internal/goarch
 tiny
 ```
 
-(I cut the standard library lines.) Each package appears after everything it imports, and `tiny` itself is last. That is a topological order, and the Go toolchain needs one to compile. I only checked this tiny case by eye, not the whole standard library.
+(I cut the standard library lines.) Each package appears after everything it imports, and `tiny` itself is last. That is a topological order. I only checked this tiny case by eye, not the whole standard library.
 
-## A few things to watch
+## Ordering pitfalls
 
 - The order is not unique; if you need repeatability, add a tie-break.
 - Check for cycles and report the path, not just "failed".
@@ -101,4 +102,4 @@ Add task durations to `Waves` and compute the earliest finish time per task and 
 
 ## What's next
 
-Some problems have overlapping subproblems that a graph order can't help with. The next post is "Dynamic programming 1: the idea and memoization".
+"Dynamic programming 1: the idea and memoization" follows: some problems have overlapping subproblems no graph order helps with.

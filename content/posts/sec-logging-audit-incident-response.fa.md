@@ -3,13 +3,14 @@ date = '2027-05-31T10:00:00+03:30'
 draft = false
 title = 'لاگ، audit و واکنش به حادثه'
 description = 'لاگ امنیتی در Go: فیلدهای audit، تست redaction، log injection، لاگ زنجیره‌ی hash، قاعده‌های تشخیص با precision و recall و یک runbook.'
+contentType = 'tutorial'
 categories = ["Security"]
 series = ["Software Security"]
 tags = ["security", "logging", "audit", "incident-response", "go"]
 cover = { image = "/images/covers/sec-logging-audit-incident-response.fa.png", alt = "لاگ، audit و واکنش به حادثه", hiddenInSingle = true }
 +++
 
-مقاله‌ی قبلی، [fuzzing برای پیدا کردن باگ امنیتی](/fa/posts/sec-fuzzing/)، پیش از مهاجم دنبال باگ می‌گشت. بعضی باز هم رد می‌شوند و آن‌وقت باید بتوانید بفهمید چه شد. برای سازوکار لاگ [لاگ‌ها و journalctl](/fa/posts/linux-logs-journalctl/) را ببینید.
+باگی از [fuzzing برای پیدا کردن باگ امنیتی](/fa/posts/sec-fuzzing/) و بقیه‌ی بررسی‌ها رد شده. لاگ‌هایتان می‌توانند بگویند چه کسی، چه وقت، با کدام شیء چه کرد؟ برای سازوکار لاگ [لاگ‌ها و journalctl](/fa/posts/linux-logs-journalctl/) را ببینید.
 
 > فقط دفاعی. کد Go 1.26 خودم، رویدادهای تولیدشده، نشانی‌های بازه‌ی مستندات و کاربران ساختگی. مثال محلی.
 
@@ -96,7 +97,7 @@ full rewrite        chain: ok   checkpoint 5: hash differs from the log
 
 تمرین میزی (ساختگی): ساعت ۰۳:۰۰ حسابی که صاحبش خواب است نقشش عوض می‌شود. چک‌لیست را بلند مرور کنید و اولین گام ناشناخته را یادداشت کنید.
 
-## چند نکته‌ی مهم
+## پیش از حادثه
 
 - actor و تصمیم را لاگ کنید، هرگز راز را.
 - ورودی کاربر را ساختاریافته کنید.

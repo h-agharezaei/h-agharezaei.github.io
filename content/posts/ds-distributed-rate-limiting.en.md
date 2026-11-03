@@ -3,19 +3,20 @@ date = '2027-06-03T10:00:00+03:30'
 draft = false
 title = 'Distributed rate limiting'
 description = 'Distributed rate limiting in Go: why N local limiters over-admit, window algorithms compared, an exact NATS KV compare-and-set limiter, and failure modes.'
+contentType = 'engineering'
 categories = ["Distributed"]
 series = ["Distributed Systems"]
 tags = ["distributed-systems", "rate-limiting", "nats", "kv", "go"]
 cover = { image = "/images/covers/ds-distributed-rate-limiting.png", alt = "Distributed rate limiting", hiddenInSingle = true }
 +++
 
-[The previous post](/posts/ds-service-discovery-load-balancing/) spread requests over many replicas. That breaks a limit that worked on one machine: the single-process token bucket from [rate limiting and caching in Go](/posts/go-rate-limiting-caching/) now exists N times. Here "100 requests per second per client" must mean 100 across the fleet.
+Put a 100 req/s {{< term "token-bucket" "token bucket" >}} on each of 10 replicas, route randomly: all 19922 requests get through. The single-process bucket from [rate limiting and caching in Go](/posts/go-rate-limiting-caching/) now exists N times, while "100 requests per second per client" must mean 100 across the fleet. The [previous post](/posts/ds-service-discovery-load-balancing/) spread the requests.
 
 > Honest labelling: everything except the NATS section is a seeded Go 1.26 **simulation** on one machine, with counts instead of timings. The NATS section is real: an embedded nats-server on loopback. I did not run Redis.
 
 ## N local limiters
 
-Four clients each offer about 500 req/s for 10 s. Every replica has its own {{< term "token-bucket" "token bucket" >}} per client, 100 req/s, burst 10. The ideal total is about 4040.
+Four clients each offer about 500 req/s for 10 s. Every replica has its own token bucket per client, 100 req/s, burst 10. The ideal total is about 4040.
 
 ```
 N=1  sticky=true  offered=19875 allowed=4036
@@ -99,16 +100,12 @@ A `Retry-After` header cuts attempts 13 times, and jitter flattens the peak; see
 
 **Fairness and cost.** With a global limit of 1000, a tenant offering 5000 took 898 and three tenants offering 200 each got 33 to 36. A per-tenant cap of 300 gave 300, 200, 200, 200, hence hierarchical limits: global, tenant, user. For 300 mixed reads (cost 1) and writes (cost 5), a count limit of 100 admitted cost 208; a cost budget of 100 admitted 44 requests.
 
-## A few things to watch
+## Decisions to make early
 
 - Check the limit in one place, or it is N times larger.
 - Decide fail open or closed per endpoint before the outage.
 - Send `Retry-After`.
 
-## Exercise
-
-Add a user level inside each tenant in the fairness test and check that no cap is passed.
-
 ## What's next
 
-Next: “Failure testing with fault injection”.
+“Failure testing with fault injection”: failures like the retry storms simulated here get injected into a real client.

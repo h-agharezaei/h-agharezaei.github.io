@@ -3,13 +3,14 @@ date = '2027-05-09T10:00:00+03:30'
 draft = false
 title = 'I/O and epoll'
 description = 'Linux I/O and epoll from the man pages: blocking vs non-blocking, select, poll, epoll, level vs edge triggering, and real kqueue demos on macOS.'
+contentType = 'tutorial'
 categories = ["Linux"]
 series = ["Linux"]
 tags = ["linux", "epoll", "kqueue", "io", "go", "macos"]
 cover = { image = "/images/covers/linux-io-epoll.png", alt = "I/O and epoll", hiddenInSingle = true }
 +++
 
-I wrote this on a Mac, where the equivalent is {{< term "kqueue" "kqueue" >}}; epoll itself did not run here. This is the eighth post of the Linux series, after [Memory, the page cache and the OOM killer](/posts/linux-memory-page-cache-oom/). The question: how can one thread serve thousands of connections? Facts about epoll come from the man pages (epoll(7), select(2)); everything marked "ran" was run on macOS with Go and Python, on loopback only.
+How can one thread serve thousands of connections? It is the question behind Go's netpoller and every event loop. As with [Memory, the page cache and the OOM killer](/posts/linux-memory-page-cache-oom/), I wrote this on a Mac, where the equivalent is {{< term "kqueue" "kqueue" >}}; epoll itself did not run here. Facts about epoll come from the man pages (epoll(7), select(2)); everything marked "ran" was run on macOS with Go and Python, on loopback only.
 
 ## Blocking and non-blocking
 
@@ -74,7 +75,7 @@ I wrote the epoll version with the `syscall` package behind `//go:build linux`: 
 
 If several processes wait on one listening socket, one connection may wake them all and only one wins: the {{< term "thundering-herd" "thundering herd" >}}. The epoll(7) page mentions `EPOLLEXCLUSIVE` for this, and `EPOLLONESHOT` to disarm a descriptor after one event; I did not test either.
 
-## A few things to watch
+## Where event loops break
 
 - Not a Linux result: all output here is kqueue.
 - A readiness API tells you to try, not that the call will succeed; handle `EAGAIN`.
@@ -87,4 +88,4 @@ On a throwaway Linux box, port the kqueue demo to `epoll`, then run `strace -c` 
 
 ## What's next
 
-The next post is “Linux networking: ip, ss and nftables”.
+Next: “Linux networking: ip, ss and nftables”, inspecting and filtering those sockets.

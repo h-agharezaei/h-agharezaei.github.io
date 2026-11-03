@@ -3,13 +3,14 @@ date = '2027-01-09T10:00:00+03:30'
 draft = false
 title = 'Postgres with pgx and sqlc in Go'
 description = 'Use PostgreSQL in Go with pgx and sqlc: migrations, a connection pool, query deadlines, SQL injection and the same service test, on the orders service.'
+contentType = 'tutorial'
 categories = ["Go"]
 series = ["Go Backend"]
 tags = ["go", "backend", "postgres", "pgx", "sqlc", "sql"]
 cover = { image = "/images/covers/go-postgres-pgx-sqlc.png", alt = "Postgres with pgx and sqlc in Go", hiddenInSingle = true }
 +++
 
-In the [previous post](/posts/go-http-api-stdlib/) the orders API stored everything in a map. Now we give it a real database. The `Repository` interface lives in the service, as we set up in [project layout and clean architecture](/posts/go-project-layout-clean-architecture/), so a Postgres store is just a second implementation of it. We use **pgx** (the Postgres driver and toolkit) directly first, then generate the same store with **sqlc**.
+Replacing an in-memory map with Postgres should not change the service code, and here it does not: one service test passes against the in-memory, pgx and sqlc stores alike. That works because `Repository` lives in the service ([project layout and clean architecture](/posts/go-project-layout-clean-architecture/)), so Postgres is just a second implementation of it for the [net/http API](/posts/go-http-api-stdlib/). We use **pgx** (the Postgres driver and toolkit) directly first, then generate the same store with **sqlc**.
 
 > Everything ran with Go 1.26 on macOS against a real PostgreSQL 18.3. There is no Docker here, so the demo starts real Postgres binaries with the `embedded-postgres` module (v1.34.0) on a free port. pgx is v5.11.0, sqlc is v1.31.1.
 
@@ -165,7 +166,7 @@ PASS
 
 The sqlc package passed the same subtests. The service code did not change at all.
 
-## A few things to watch
+## pgx and sqlc traps
 
 - `SELECT *` with `RowToStructByName` fails if the struct and columns differ, which is useful, but list columns explicitly in production queries.
 - Always `defer cancel()` after `WithTimeout`, and set a deadline at the edge of every request.
@@ -175,4 +176,4 @@ The sqlc package passed the same subtests. The service code did not change at al
 
 ## What's next
 
-Next: transactions and the repository pattern in Go, where several writes must succeed or fail together.
+Next is "Transactions and the repository pattern in Go", because each write here commits on its own, while several writes often must succeed or fail together.

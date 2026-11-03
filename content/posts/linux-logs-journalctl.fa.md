@@ -3,13 +3,14 @@ date = '2027-05-30T10:00:00+03:30'
 draft = false
 title = 'لاگ‌ها و journalctl'
 description = 'لاگ‌ها و journalctl از روی مستندات: فیلدهای ژورنال، اولویت‌ها، فیلترها، نگهداری، rate limit و logrotate، با نمونه‌های Go برای slog، parser و linter.'
+contentType = 'tutorial'
 categories = ["Linux"]
 series = ["Linux"]
 tags = ["linux", "logging", "journalctl", "journald", "logrotate", "slog", "go", "macos"]
 cover = { image = "/images/covers/linux-logs-journalctl.fa.png", alt = "لاگ‌ها و journalctl", hiddenInSingle = true }
 +++
 
-این را روی یک مک نوشتم؛ هیچ‌چیز اینجا روی Linux اجرا نشده است. این دوازدهمین پست سری Linux است، بعد از [کاربر، sudo و capability](/fa/posts/linux-users-sudo-capabilities/). حقایق از man pageهای journalctl، journald.conf، systemd.journal-fields، syslog(3) و logrotate است؛ متن Linux‌مانند با عبارت «نمونه‌ی تصویری، ضبط‌نشده» علامت خورده. مرتبط: [systemd: واحدها و تایمرها](/fa/posts/linux-systemd-units-timers/) و [پیکربندی، لاگ ساختاریافته و خطا در Go](/fa/posts/go-config-logging-errors/).
+با `Storage=auto` و بدون `/var/log/journal`، ژورنال لاگ‌ها را با reboot از دست می‌دهد؛ بهتر است پیش از نیاز به آن‌ها این را بدانید. مثل [کاربر، sudo و capability](/fa/posts/linux-users-sudo-capabilities/)، این را روی مک نوشتم، نه Linux. حقایق از man pageهای journalctl، journald.conf، systemd.journal-fields، syslog(3) و logrotate است؛ متن Linux‌مانند با «نمونه‌ی تصویری، ضبط‌نشده» علامت خورده. مرتبط: [systemd: واحدها و تایمرها](/fa/posts/linux-systemd-units-timers/) و [پیکربندی، لاگ ساختاریافته و خطا در Go](/fa/posts/go-config-logging-errors/).
 
 ## لاگ متنی و ژورنال
 
@@ -90,7 +91,7 @@ parser‌ای برای قالب `-o json` نوشتم (هر خط یک شیء، م
 | فیلتر | فیلد، `-p`، `-u` | `--predicate`، subsystem |
 | نوشتن | stdout، `logger`، syslog | `os_log`، `logger` |
 
-## چند نکته‌ی مهم
+## دام‌های لاگ‌نویسی
 
 - `Storage=` را بررسی کنید: `auto` بدون `/var/log/journal` با ریبوت لاگ را از دست می‌دهد.
 - زمان را UTC لاگ کنید.
@@ -104,4 +105,4 @@ parser‌ای برای قالب `-o json` نوشتم (هر خط یک شیء، م
 
 ## قدم بعدی
 
-پست بعدی «strace و perf برای عیب‌یابی» است.
+بعدی «strace و perf برای عیب‌یابی» است، برای وقتی که لاگ‌ها نمی‌گویند چرا.

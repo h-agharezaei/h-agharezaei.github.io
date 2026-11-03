@@ -3,13 +3,14 @@ date = '2027-03-12T10:00:00+03:30'
 draft = false
 title = 'Docker، CI و release سرویس Rust'
 description = 'آماده‌سازی سرویس axum برای انتشار: release profile و اندازه‌ی باینری، باینری استاتیک musl، Dockerfile چندمرحله‌ای و GitHub Actions با actionlint.'
+contentType = 'tutorial'
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "docker", "ci", "github-actions", "release", "backend"]
 cover = { image = "/images/covers/rust-docker-ci-release.fa.png", alt = "Docker، CI و release سرویس Rust", hiddenInSingle = true }
 +++
 
-موضوع مقاله‌ی قبل طراحی API بود، در [الگوهای typestate](/fa/posts/rust-typestate-patterns/). حالا سرویس باید از لپ‌تاپ من بیرون برود. این نسخه‌ی Rust از [Docker، CI و دیپلوی سرویس Go](/fa/posts/go-docker-ci-deploy/) است و یک سرویس کوچک `orders` به سبک [مقاله‌ی Axum](/fa/posts/rust-http-axum-api/) دارد: `/orders`، `/healthz` و `/readyz`.
+روی این سرویس، `opt-level = "z"` به‌تنهایی باینری release را بزرگ‌تر کرد، نه کوچک‌تر. بعد از [الگوهای typestate](/fa/posts/rust-typestate-patterns/)، سرویس باید از لپ‌تاپ من بیرون برود. این نسخه‌ی Rust از [Docker، CI و دیپلوی سرویس Go](/fa/posts/go-docker-ci-deploy/) است و یک سرویس کوچک `orders` به سبک [مقاله‌ی Axum](/fa/posts/rust-http-axum-api/) دارد: `/orders`، `/healthz` و `/readyz`.
 
 > **توضیح صادقانه.** Docker daemon روی این ماشین خاموش است و روشنش نکردم، پس `docker build` را هرگز اجرا نکردم. Dockerfile زیر با هدف درست بودن نوشته شده، ولی image ساخته نشده و اینجا نه اندازه‌ی image هست و نه خروجی لایه‌ها. چیزی که واقعاً اجرا کردم، روی Rust 1.90.0 (macOS arm64): build‌های release و اندازه‌شان، cross build برای linux/arm64 با musl، endpoint‌ها، SIGTERM، clippy، rustfmt و `actionlint`.
 
@@ -29,7 +30,7 @@ cover = { image = "/images/covers/rust-docker-ci-release.fa.png", alt = "Docker�
 | fat + cgu 1 + strip + abort | 895872 |
 | همان + `opt-level = "z"` | 787192 |
 
-هر تنظیم به‌تنهایی کمی کم می‌کند (`strip` و `lto = "fat"` بیشتر از بقیه)، ولی با هم ۲٫۰۹ مگابایت را به ۰٫۹۰ مگابایت می‌رسانند. `opt-level = "z"` به‌تنهایی باینری را بزرگ‌تر کرد؛ دلیلش را بررسی نکردم. `panic = "abort"` unwinding را حذف می‌کند؛ panic پروسه را می‌کشد. با orchestrator که ری‌استارتش می‌کند قابل قبول است، ولی تغییر رفتار است. من fat + cgu 1 + strip + abort را انتخاب کردم و `opt-level` را پیش‌فرض گذاشتم، چون سرعت برایم مهم‌تر از ۱۰۰ کیلوبایت آخر است:
+هر تنظیم به‌تنهایی کمی کم می‌کند (`strip` و `lto = "fat"` بیشتر از بقیه)، ولی با هم ۲٫۰۹ مگابایت را به ۰٫۹۰ مگابایت می‌رسانند. دلیل بزرگ‌تر شدن با `opt-level = "z"` را بررسی نکردم. `panic = "abort"` unwinding را حذف می‌کند؛ panic پروسه را می‌کشد. با orchestrator که ری‌استارتش می‌کند قابل قبول است، ولی تغییر رفتار است. من fat + cgu 1 + strip + abort را انتخاب کردم و `opt-level` را پیش‌فرض گذاشتم، چون سرعت برایم مهم‌تر از ۱۰۰ کیلوبایت آخر است:
 
 ```toml
 [profile.release]
@@ -140,11 +141,11 @@ exit=0 (both)
 - `cargo audit` یا `cargo deny` را در CI اجرا کنید (اینجا اجرایشان نکردم؛ فقط اشاره می‌کنم).
 - toolchain را pin کنید (`1.90.0`).
 
-## چند نکته که باید حواستان باشد
+## پیش از اعتماد به این تنظیمات
 
 - قبل از اعتماد به Dockerfile، `docker build` را خودتان اجرا کنید.
 - `panic = "abort"` رفتار panic را عوض می‌کند؛ ببینید چیزی به `catch_unwind` وابسته نباشد.
 
 ## قدم بعدی
 
-مقاله‌ی بعد: Rust و WebAssembly، همین زبان برای یک مقصد کاملاً متفاوت.
+«Rust و WebAssembly»: همین زبان برای مقصدی کاملاً متفاوت.

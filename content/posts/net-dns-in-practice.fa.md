@@ -3,13 +3,14 @@ date = '2027-01-02T10:00:00+03:30'
 draft = false
 title = 'DNS در عمل'
 description = 'DNS در عمل با اجرای واقعی dig، ساخت دستی یک query با struct پایتون و یک authoritative server کوچک در Go: رکوردها، TTL، NXDOMAIN و واگذاری.'
+contentType = 'tutorial'
 categories = ["Networking"]
 series = ["Networking"]
 tags = ["networking", "dns", "dig", "udp", "go", "python"]
 cover = { image = "/images/covers/net-dns-in-practice.fa.png", alt = "DNS در عمل", hiddenInSingle = true }
 +++
 
-در [مقاله‌ی قبل](/fa/posts/net-addressing-subnets/) با آدرس‌های IP حساب کردیم، ولی کسی آن‌ها را تایپ نمی‌کند. آدم‌ها نام تایپ می‌کنند و {{< term "dns" "DNS" >}} نام را به آدرس تبدیل می‌کند. لایه‌ها را در [مقاله‌ی مدل TCP/IP](/fa/posts/net-tcp-ip-model/) دیدیم: DNS یک پروتکل لایه‌ی کاربرد است که معمولاً روی {{< term "udp" "UDP" >}} سوار می‌شود. این بار پاسخ‌های واقعی را با `dig` می‌خوانیم، یک query را بایت‌به‌بایت می‌سازیم و یک سرور کوچک می‌نویسیم.
+کسی آدرس IP تایپ نمی‌کند؛ آدم‌ها نام تایپ می‌کنند و {{< term "dns" "DNS" >}} پیش از شروع درخواست، نام را به آدرس تبدیل می‌کند. [مقاله‌ی قبل](/fa/posts/net-addressing-subnets/) با همین آدرس‌ها حساب کرد و [مقاله‌ی مدل TCP/IP](/fa/posts/net-tcp-ip-model/) لایه‌ها را نشان داد: DNS یک پروتکل لایه‌ی کاربرد است که معمولاً روی {{< term "udp" "UDP" >}} سوار می‌شود. این بار پاسخ‌های واقعی را با `dig` می‌خوانیم، یک query را بایت‌به‌بایت می‌سازیم و یک سرور کوچک می‌نویسیم.
 
 > macOS (arm64)، Go 1.26، Python 3.14 و `dig` 9.10. در هر `dig` یک resolver عمومی (`1.1.1.1`) را صریح نوشته‌ام تا آدرس resolver خودم هیچ‌جا نیاید؛ هرجا چیزی را حذف یا جایگزین کرده‌ام گفته‌ام. دموهای loopback روی `127.0.0.1` هستند. هیچ زمانی اندازه نگرفته‌ام.
 
@@ -101,7 +102,7 @@ $ dig @127.0.0.1 -p 5300 example.com
 status: NXDOMAIN
 ```
 
-`aa` پرچم authoritative است؛ dig هشدار می‌دهد recursion در دسترس نیست که درست هم هست.
+`aa` پرچم authoritative است؛ dig هشدار می‌دهد recursion در دسترس نیست که درست است.
 
 ## resolver درون برنامه
 
@@ -112,9 +113,9 @@ shop.test [127.0.0.1] <nil>
 missing.example.com [] lookup missing.example.com no such host
 ```
 
-(خطای واقعی آدرس resolver سیستم را هم نوشته بود که حذفش کردم.) `socket.getaddrinfo` در Python از سیستم‌عامل رد می‌شود: `localhost` همان `127.0.0.1` را داد و `example.com` دو آدرس IPv4 عمومی‌اش را. سیستم‌عامل `/etc/hosts` و resolverهای تنظیم‌شده را به ترتیبی که تنظیمات سیستم تعیین می‌کند بررسی می‌کند؛ آن را فقط با کلمات گفتم و چیزی از تنظیمات را paste نکردم. Go می‌تواند resolver خالص خودش یا کتاب‌خانه‌ی C را به کار ببرد: با `GODEBUG=netdns=go` و `netdns=cgo` هر دو `localhost` و `example.com` را resolve کردند و ادعای من همین است و بس.
+(خطای واقعی آدرس resolver سیستم را هم نوشته بود که حذفش کردم.) `socket.getaddrinfo` در Python از سیستم‌عامل رد می‌شود: `localhost` همان `127.0.0.1` را داد و `example.com` دو آدرس IPv4 عمومی‌اش را. سیستم‌عامل `/etc/hosts` و resolverهای تنظیم‌شده را به ترتیبی که تنظیمات سیستم تعیین می‌کند بررسی می‌کند؛ آن را فقط توصیف کردم و چیزی paste نکردم. Go می‌تواند resolver خالص خودش یا کتاب‌خانه‌ی C را به کار ببرد: با `GODEBUG=netdns=go` و `netdns=cgo` هر دو `localhost` و `example.com` را resolve کردند و ادعای من همین است.
 
-## چند نکته‌ی مهم
+## دام‌های رایج DNS
 
 - بسیاری از «درخواست‌های کند» در واقع جست‌وجوی کند هستند: cache miss چند رفت‌وبرگشت خرج دارد و resolver خراب پیش از شروع درخواست اصلی یک timeout اضافه می‌کند. یک مقاله‌ی case study بعدی یکی از این‌ها را دنبال می‌کند.
 - TTL کم یعنی تغییر سریع ولی جست‌وجوی بیشتر؛ TTL زیاد برعکس.
@@ -128,4 +129,4 @@ missing.example.com [] lookup missing.example.com no such host
 
 ## قدم بعدی
 
-مقاله‌ی بعد «TCP: دست‌دادن و حالت‌های اتصال» است.
+بعدی «TCP: دست‌دادن و حالت‌های اتصال» است: با آدرس در دست، کلاینت اتصال باز می‌کند.

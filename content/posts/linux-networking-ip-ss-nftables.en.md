@@ -3,13 +3,14 @@ date = '2027-05-14T10:00:00+03:30'
 draft = false
 title = 'Linux networking: ip, ss and nftables'
 description = 'Linux networking from the man pages: reading ip and ss, nftables hooks and a default-drop server rule set, plus a Go linter and /proc/net/tcp parser.'
+contentType = 'tutorial'
 categories = ["Linux"]
 series = ["Linux"]
 tags = ["linux", "networking", "iproute2", "ss", "nftables", "firewall", "go", "macos"]
 cover = { image = "/images/covers/linux-networking-ip-ss-nftables.png", alt = "Linux networking: ip, ss and nftables", hiddenInSingle = true }
 +++
 
-I wrote this on a Mac; nothing here ran on Linux. This is the ninth post of the Linux series, after [I/O and epoll](/posts/linux-io-epoll/). Sockets are now in the kernel's hands, so how do you inspect them and decide which packets may reach them? Facts come from man pages and kernel docs; Linux-looking text is labelled "illustrative, not captured", with documentation addresses only. Background: [IP addressing and subnets](/posts/net-addressing-subnets/) and [TCP: the handshake and connection states](/posts/net-tcp-handshake-states/).
+Once sockets are in the kernel's hands, how do you inspect them and decide which packets may reach them? Get the second wrong over SSH and you are locked out. As with [I/O and epoll](/posts/linux-io-epoll/), I wrote this on a Mac, not Linux. Facts come from man pages and kernel docs; Linux-looking text is labelled "illustrative, not captured", with documentation addresses only. Background: [IP addressing and subnets](/posts/net-addressing-subnets/) and [TCP: the handshake and connection states](/posts/net-tcp-handshake-states/).
 
 ## ip: addresses, routes, neighbours
 
@@ -102,7 +103,7 @@ The program also passed `GOOS=linux GOARCH=arm64 go vet ./... && go build`; it w
 
 Containers get their own network stack through a network {{< term "namespace" "namespace" >}}, see [cgroups and namespaces](/posts/linux-cgroups-namespaces/). Per the ip-netns and ip-link man pages, `ip netns add net0` creates one and `ip link add ... type veth` creates a {{< term "veth" "veth" >}} pair, two virtual interfaces joined like a cable; move one end into the namespace with `ip link set ... netns net0`. Not run.
 
-## A few things to watch
+## Firewall cautions
 
 - Start from default drop, but keep an out-of-band console: a wrong rule over SSH locks you out.
 - Allow `iif "lo"` and established/related first, or local services and replies break.
@@ -116,4 +117,4 @@ On a throwaway VM, run `ss -tlnp`, then `ss -tan` while one `curl` is open, and 
 
 ## What's next
 
-The next post is “SSH and keys”.
+Next: “SSH and keys”, the first casualty of a bad rule.

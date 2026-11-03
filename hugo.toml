@@ -93,6 +93,11 @@ enableGitInfo = true
     pageRef = "/posts"
     weight = 10
   [[languages.en.menu.main]]
+    identifier = "notes"
+    name = "Notes"
+    pageRef = "/notes"
+    weight = 15
+  [[languages.en.menu.main]]
     identifier = "projects"
     name = "Projects"
     pageRef = "/projects"
@@ -145,6 +150,11 @@ enableGitInfo = true
     name = "مقالات"
     pageRef = "/posts"
     weight = 10
+  [[languages.fa.menu.main]]
+    identifier = "notes"
+    name = "یادداشت‌ها"
+    pageRef = "/notes"
+    weight = 15
   [[languages.fa.menu.main]]
     identifier = "projects"
     name = "پروژه‌ها"

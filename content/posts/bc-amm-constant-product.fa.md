@@ -3,15 +3,14 @@ date = '2026-11-22T18:00:00+03:30'
 draft = false
 title = 'AMM و فرمول constant product'
 description = 'یک AMM با فرمول constant product در Solidity: x*y=k، سهم LP، کارمزد ۰٫۳ درصد، گرد کردن به نفع استخر، جدول price impact، حد slippage و تست invariant.'
+contentType = 'tutorial'
 categories = ["Blockchain"]
 series = ["Blockchain"]
 tags = ["blockchain", "solidity", "defi", "amm", "foundry", "go"]
 cover = { image = "/images/covers/bc-amm-constant-product.fa.png", alt = "AMM و فرمول constant product", hiddenInSingle = true }
 +++
 
-پست قبلی، [کیف‌پول HD: BIP-32، BIP-39 و BIP-44 با Rust](/fa/posts/bc-hd-wallets-rust/)، درباره‌ی کلیدها بود. حالا سری وارد DeFi می‌شود: قراردادهایی که توکن نگه می‌دارند و معامله می‌کنند.
-
-صرافی معمولاً order book دارد و موتور تطبیق، خریدار و فروشنده را جفت می‌کند. روی زنجیره هر سفارش و لغو gas می‌خورد و منتظر بلاک می‌ماند. {{< term "amm" "AMM" >}} (بازارساز خودکار) order book را کنار می‌گذارد: یک قرارداد دو توکن نگه می‌دارد و یک فرمول قیمت را تعیین می‌کند. یک نسخه‌ی کوچک برای دو [توکن ERC-20](/fa/posts/bc-erc20-erc721/) می‌سازم، مثل [پست تست با Foundry](/fa/posts/bc-foundry-testing-fuzzing/) تستش می‌کنم و حسابش را با یک برنامه‌ی کوچک Go چک می‌کنم.
+صرافی معمولاً order book دارد و موتور تطبیق، خریدار و فروشنده را جفت می‌کند. روی زنجیره هر سفارش و لغو gas می‌خورد و منتظر بلاک می‌ماند. {{< term "amm" "AMM" >}} (بازارساز خودکار) order book را کنار می‌گذارد: یک قرارداد دو توکن نگه می‌دارد و یک فرمول قیمت را تعیین می‌کند. بعد از [کلیدها](/fa/posts/bc-hd-wallets-rust/)، سری وارد DeFi می‌شود: یک نسخه‌ی کوچک برای دو [توکن ERC-20](/fa/posts/bc-erc20-erc721/) می‌سازم، مثل [پست تست](/fa/posts/bc-foundry-testing-fuzzing/) تستش می‌کنم و حسابش را با یک برنامه‌ی کوچک Go چک می‌کنم.
 
 > اجرا با Foundry 1.8.7، solc 0.8.38 و Go 1.27.3 روی macOS (arm64). دمو یک پروژه‌ی محلی Foundry است که فقط forge-std دارد؛ `DemoToken` بدون تغییر از پست توکن‌ها کپی شده. طراحی، تا جایی که من می‌فهمم، ساده‌شده‌ی Uniswap v2 است. قرارداد آموزشی است و audit نشده.
 
@@ -136,7 +135,7 @@ Ran 2 test suites in 16.23s (16.23s CPU time): 8 tests passed, 0 failed, 0 skipp
 (addresses shortened)
 ```
 
-## چند نکته‌ی مهم
+## هزینه‌های پنهان
 
 - هیچ swapی را با `minAmountOut = 0` یا deadline دور نفرستید. حداقل را off-chain از یک quote تازه حساب کنید.
 - price impact به عمق استخر بستگی دارد. استخر کم‌عمق یعنی معامله‌ی گران.
@@ -152,4 +151,4 @@ Ran 2 test suites in 16.23s (16.23s CPU time): 8 tests passed, 0 failed, 0 skipp
 
 ## قدم بعدی
 
-پست بعد: **وام‌دهی، وثیقه و liquidation**.
+پست بعد: **وام‌دهی، وثیقه و liquidation**؛ قرارداد جای کارمند وام را می‌گیرد.

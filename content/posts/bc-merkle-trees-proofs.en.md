@@ -3,13 +3,14 @@ date = '2026-11-04T18:00:00+03:30'
 draft = false
 title = 'Merkle trees and inclusion proofs'
 description = 'Merkle trees in Go: a block header with a Merkle root, odd leaf counts, leaf and node prefixes against second preimages, and inclusion proofs measured.'
+contentType = 'tutorial'
 categories = ["Blockchain"]
 series = ["Blockchain"]
 tags = ["blockchain", "go", "merkle-tree", "hashing", "data-structures"]
 cover = { image = "/images/covers/bc-merkle-trees-proofs.png", alt = "Merkle trees and inclusion proofs", hiddenInSingle = true }
 +++
 
-In the [previous post](/posts/bc-hashes-blocks-chain/) the block header committed to the payload with a single `DataHash`. To check that one payment is in a block, you need the whole block. A {{< term "merkle-tree" "Merkle tree" >}} fixes that: the header still holds 32 bytes, but anyone can prove one transaction is in the block with a few hashes. We used one in [Replication and quorums](/posts/ds-replication-quorum/) to compare replicas; trees in general are in [Search trees and the B-tree](/posts/algo-trees-bst-btree/).
+When a block header commits to its payload with a single `DataHash`, as in the [previous post](/posts/bc-hashes-blocks-chain/), checking that one payment is in a block takes the whole block. A {{< term "merkle-tree" "Merkle tree" >}} fixes that: the header still holds 32 bytes, but anyone can prove one transaction is in the block with a few hashes. We used one in [Replication and quorums](/posts/ds-replication-quorum/) to compare replicas; trees in general are in [Search trees and the B-tree](/posts/algo-trees-bst-btree/).
 
 I copied last post's `toychain` module and extended it: `Header.DataHash` became `MerkleRoot`, and `Block.Data` became `Txs [][]byte`. Transactions are still opaque byte payloads; signed transactions come in the next two posts.
 
@@ -136,7 +137,7 @@ edit one tx: block 1: merkle root does not match transactions
 
 Block 2's root equals sibling 0 above: a one-transaction root is that transaction's leaf hash.
 
-## A few things to watch
+## Limits of a proof
 
 - A proof is only as good as the root. Take the root from a header you validated, never from the prover.
 - Write your odd-count rule down; promote and duplicate give different roots.
@@ -152,4 +153,4 @@ Block 2's root equals sibling 0 above: a one-transaction root is that transactio
 
 ## What's next
 
-The next post is "Keys, ECDSA signatures and addresses on secp256k1": transactions stop being plain bytes and get signed.
+"Keys, ECDSA signatures and addresses on secp256k1" comes next: transactions stop being plain bytes and get signed.

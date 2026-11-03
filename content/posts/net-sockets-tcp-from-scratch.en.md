@@ -3,13 +3,14 @@ date = '2027-01-22T10:00:00+03:30'
 draft = false
 title = 'A TCP server and client from scratch'
 description = 'A TCP server in Go from scratch: Accept loop, byte-stream framing, a length-prefixed KV protocol, deadlines, half-close and clean shutdown.'
+contentType = 'tutorial'
 categories = ["Networking"]
 series = ["Networking"]
 tags = ["networking", "tcp", "sockets", "go", "framing", "protocol"]
 cover = { image = "/images/covers/net-sockets-tcp-from-scratch.png", alt = "A TCP server and client from scratch", hiddenInSingle = true }
 +++
 
-In [the previous post](/posts/net-tcp-handshake-states/) we watched a connection open and close. Now we write both ends. The {{< term "socket" "socket" >}} API is small, but one fact about {{< term "tcp" "TCP" >}} bites everybody: it has no messages. We met this in [the TCP/IP model post](/posts/net-tcp-ip-model/); here we deal with it. The code uses `goroutine`s as in [goroutines and channels](/posts/go-goroutines-channels/).
+Two `Write` calls on one end can arrive as one `Read` on the other, and one write can arrive as three reads, because {{< term "tcp" "TCP" >}} has no messages. The {{< term "socket" "socket" >}} API is small, but this fact bites everybody. [The previous post](/posts/net-tcp-handshake-states/) watched a connection open and close, and [the TCP/IP model post](/posts/net-tcp-ip-model/) showed the stream; here we write both ends and deal with it. The code uses `goroutine`s as in [goroutines and channels](/posts/go-goroutines-channels/).
 
 > Everything ran on `127.0.0.1` with a random port (`:0`), Go 1.26, macOS. No addresses of my machine appear; ephemeral ports in one error line were replaced by `PORT`. The demo is a local example directory. The machine was busy, so I show no timings.
 
@@ -108,7 +109,7 @@ A `go test -race` test starts 20 clients, each doing 50 SET/GET pairs; it passed
 
 Python's `socket` module is a thin wrapper over the same calls: `bind`, `listen`, `accept`, `recv`, `sendall`. A 14-line echo server and client in one process printed `client got b'ping\n'`. Node has `net.createServer`, which fires a callback per connection (compare [node:http](/posts/node-http-server/)); I did not run a Node version here.
 
-## A few things to watch
+## Hardening checklist
 
 - Never assume one `Write` equals one `Read`; loop or use `io.ReadFull`.
 - Cap every length you read from the network before allocating.
@@ -122,4 +123,4 @@ Add a `DEL k` command to both modes. Then make the frame reader accept a client 
 
 ## What's next
 
-The next post is "UDP and how it differs from TCP".
+Next is "UDP and how it differs from TCP": a protocol that keeps message boundaries, so framing goes away, but so do the guarantees TCP gave us here.

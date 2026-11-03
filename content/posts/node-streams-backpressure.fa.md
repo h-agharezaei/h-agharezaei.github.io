@@ -3,13 +3,14 @@ date = '2026-12-17T10:00:00+03:30'
 draft = false
 title = 'stream و backpressure در Node.js'
 description = 'stream و backpressure در Node.js با اجرای واقعی: حافظه‌ی readFileSync در برابر stream، pipeline با gzip، برگشتن false از write()، drain و مدیریت خطا.'
+contentType = 'tutorial'
 categories = ["Node.js"]
 series = ["Node.js"]
 tags = ["nodejs", "streams", "backpressure", "pipeline", "javascript"]
 cover = { image = "/images/covers/node-streams-backpressure.fa.png", alt = "stream و backpressure در Node.js", hiddenInSingle = true }
 +++
 
-در مقاله‌ی قبل، [خطا و unhandled rejection در Node.js](/fa/posts/node-errors-unhandled-rejections/)، شکست‌ها را دیدنی کردیم. حالا مسئله‌ای دیگر: داده‌ای که بزرگ‌تر از آن است که بخواهیم کامل در حافظه نگهش داریم. جواب، **{{< term "stream" "stream" >}}** است. این مقاله روی [event loop](/fa/posts/node-event-loop/) و [Promise و async/await](/fa/posts/node-promises-async-await/) بنا شده. اگر از Go می‌آیید، معادلش [کار با فایل، io.Reader/Writer و JSON در Go](/fa/posts/go-file-io-json/) است.
+خواندن یک فایل ۵۰ مگابایتی با `readFileSync` حافظه‌ی process را حدود ۵۰ مگابایت بالا برد؛ خواندنش به شکل **{{< term "stream" "stream" >}}** حدود نصف این. داده‌ای که نمی‌خواهیم کامل در حافظه نگهش داریم مسئله‌ای متفاوت از شکست‌های [خطا و unhandled rejection در Node.js](/fa/posts/node-errors-unhandled-rejections/) است و جواب Node برایش stream است. این مقاله روی [event loop](/fa/posts/node-event-loop/) و [Promise و async/await](/fa/posts/node-promises-async-await/) بنا شده. اگر از Go می‌آیید، معادلش [کار با فایل، io.Reader/Writer و JSON در Go](/fa/posts/go-file-io-json/) است.
 
 > همه‌چیز با Node نسخه‌ی v20.13.1 روی یک ماشین اجرا شده است. اسکریپت‌ها مثال‌های محلی هستند و خروجی‌ها از اجرای واقعی کپی شده‌اند.
 
@@ -111,7 +112,7 @@ readable destroyed: false writable destroyed: false writable ended: false
 
 فقط stream خطادار بسته شد. منبع و مقصد باز ماندند: یک leak، و writable هرگز تمام نمی‌شود. `.pipe()` خطا را منتقل نمی‌کند.
 
-## چند نکته‌ی مهم
+## جایی که بافر بی‌صدا بزرگ می‌شود
 
 - `pipeline` را به `.pipe()` ترجیح بدهید و rejection آن را حتماً مدیریت کنید.
 - اگر خودتان `write()` را صدا می‌زنید، مقدار برگشتی را بررسی کنید و منتظر `'drain'` بمانید.
@@ -125,4 +126,4 @@ readable destroyed: false writable destroyed: false writable ended: false
 
 ## قدم بعدی
 
-مقاله‌ی بعد «سرور HTTP با node:http» است، جایی که خود درخواست و پاسخ هم stream هستند.
+«سرور HTTP با node:http»: آنجا خود درخواست و پاسخ هم stream هستند، پس همه‌ی این قاعده‌ها مستقیم به کار می‌آیند.

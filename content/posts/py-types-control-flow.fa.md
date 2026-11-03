@@ -3,13 +3,14 @@ date = '2027-01-18T10:00:00+03:30'
 draft = false
 title = 'نوع‌ها و کنترل جریان در Python'
 description = 'نوع‌ها و کنترل جریان در Python برای برنامه‌نویس‌های Go و Node.js: تایپ پویا اما قوی، int، float، str، reference، for-else و match روی 3.14.'
+contentType = 'tutorial'
 categories = ["Python"]
 series = ["Python"]
 tags = ["python", "beginner", "types", "control-flow"]
 cover = { image = "/images/covers/py-types-control-flow.fa.png", alt = "نوع‌ها و کنترل جریان در Python", hiddenInSingle = true }
 +++
 
-در [مقاله‌ی قبل](/fa/posts/py-environment-uv-venv/) محیط Python را با venv و uv آماده کردیم. حالا سراغ اجزای پایه می‌رویم: نوع‌ها، نام‌ها و کنترل جریان. اگر مثل من از Go آمده‌اید، بزرگ‌ترین تغییر این است که نوع روی مقدار است، نه روی متغیر. مقایسه با [نوع‌ها و کنترل جریان در Go](/fa/posts/go-types-control-flow/) را فقط جایی آورده‌ام که از واقعیتش مطمئنم.
+در Python، `b = a` چیزی را کپی نمی‌کند: به `b` عضو اضافه کنید و `a` هم عوض می‌شود، چون نام برچسبی روی شیء است، نه جعبه. اگر مثل من از Go آمده‌اید، بزرگ‌ترین تغییر پایه‌های زبان همین است: نوع روی مقدار است، نه روی متغیر. با محیطی که در [پست قبل](/fa/posts/py-environment-uv-venv/) آماده شد، سراغ نوع‌ها، نام‌ها و کنترل جریان می‌رویم. مقایسه با [نوع‌ها و کنترل جریان در Go](/fa/posts/go-types-control-flow/) را فقط جایی آورده‌ام که از واقعیتش مطمئنم.
 
 > همه‌ی مثال‌ها با Python 3.14.0 روی macOS اجرا شده‌اند (`python3 --version` همین را چاپ می‌کند). فایل‌های دمو اسکریپت‌های محلی `basics.py` و `flow.py` هستند. برای خطاهای syntax فقط خط آخر خروجی را آورده‌ام.
 
@@ -194,7 +195,7 @@ Point(x=1, y=2) -> point 1,2
 
 caseها از بالا به پایین امتحان می‌شوند. guard (`if n < 0`) مربوط به `-5` است، `Point(x=0, y=0)` یک class pattern است و `case _` حالت پیش‌فرض.
 
-## چند نکته‌ی مهم
+## دام‌های رایج
 
 - من یک اسکریپت را `types.py` نام‌گذاری کردم و همه‌ی importها با `cannot import name 'GenericAlias' from 'types'` خراب شدند. فایل‌هایتان را هم‌نام ماژول‌های کتابخانه‌ی استاندارد نکنید.
 - `float` برای پول باگ است. از `Decimal` ساخته‌شده از رشته استفاده کنید.
@@ -210,4 +211,4 @@ caseها از بالا به پایین امتحان می‌شوند. guard (`if 
 
 ## قدم بعدی
 
-مقاله‌ی بعدی «توابع، closure و generator در Python» است.
+قدم بعد «توابع، closure و generator در Python» است: با مقدارها، نام‌ها و کنترل جریان در دست، آجر بعدی تابع است.

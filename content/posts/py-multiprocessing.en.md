@@ -3,13 +3,14 @@ date = '2027-04-07T10:00:00+03:30'
 draft = false
 title = 'Multiprocessing in Python'
 description = 'Multiprocessing in Python on macOS: spawn and the main guard, Pool and ProcessPoolExecutor, pickling limits, Value, Manager, shared memory, errors.'
+contentType = 'tutorial'
 categories = ["Python"]
 series = ["Python"]
 tags = ["python", "multiprocessing", "concurrency", "processes", "pickle"]
 cover = { image = "/images/covers/py-multiprocessing.png", alt = "Multiprocessing in Python", hiddenInSingle = true }
 +++
 
-In [the previous post](/posts/py-gil-threading/) we saw that the GIL lets threads help with waiting but not with computing. For CPU work the standard answer is {{< term "process" "processes" >}}: each has its own interpreter and its own GIL. This post runs the `multiprocessing` module on macOS and shows where it bites. If you know Go ([getting started](/posts/go-getting-started/)), expect more ceremony than `go f()`.
+Send a list of a million ints to a worker and about 4.9 MB travels each way. That is the price of {{< term "process" "processes" >}}, Python's standard answer for CPU work: each has its own interpreter and its own GIL, which matters because [the GIL](/posts/py-gil-threading/) lets threads help with waiting but not with computing. This post runs the `multiprocessing` module on macOS and shows where it bites. If you know Go ([getting started](/posts/go-getting-started/)), expect more ceremony than `go f()`.
 
 > Python 3.14.0 on macOS, demos in a local directory. The machine was busy (load average above 6), so I publish **no speed numbers**, only counts and bytes. I did not run anything on Linux.
 
@@ -104,7 +105,7 @@ The executor raised `bad input 2` the same way.
 
 Threads share memory but share one GIL; processes parallelize pure Python but cost startup time and pickling. A goroutine is cheap and shares memory ([goroutines and channels](/posts/go-goroutines-channels/)). Node's `worker_threads` are separate threads with their own event loops ([worker threads and cluster](/posts/node-worker-threads-cluster/)); a Python process is closer to a whole new interpreter.
 
-## A few things to watch
+## Where processes get expensive
 
 - Always use the `if __name__ == '__main__':` guard; the default start method differs per OS.
 - Functions and arguments must be picklable; keep tasks coarse.

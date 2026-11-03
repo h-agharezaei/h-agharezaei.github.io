@@ -3,13 +3,14 @@ date = '2026-11-26T18:00:00+03:30'
 draft = false
 title = 'بهینه‌سازی gas و قرارداد قابل ارتقا با proxy'
 description = 'بهینه‌سازی gas و قرارداد قابل ارتقا در Solidity: صرفه‌جویی اندازه‌گیری‌شده با storage packing و calldata، بعد یک proxy با EIP-1967 و storage collision.'
+contentType = 'tutorial'
 categories = ["Blockchain"]
 series = ["Blockchain"]
 tags = ["blockchain", "solidity", "gas", "proxy", "foundry", "evm"]
 cover = { image = "/images/covers/bc-gas-optimization-proxies.fa.png", alt = "بهینه‌سازی gas و قرارداد قابل ارتقا با proxy", hiddenInSingle = true }
 +++
 
-[امنیت قرارداد: reentrancy، access control و نمونه‌های واقعی](/fa/posts/bc-contract-security/) قراردادهایم را امن‌تر کرد. این پست ارزان‌ترشان می‌کند، بعد سراغ تغییرناپذیری کد دیپلوی‌شده می‌رود. پایه‌ی هر دو [EVM از درون](/fa/posts/bc-evm-internals-rust/) است: storage گران‌ترین بخش {{< term "gas" "gas" >}} است.
+storage گران‌ترین بخش {{< term "gas" "gas" >}} است ([EVM از درون](/fa/posts/bc-evm-internals-rust/))، ولی استخر من هفت slot مصرف می‌کرد در حالی که پنج کافی بود، و کد دیپلوی‌شده هم تغییر نمی‌کند. [امنیت قرارداد: reentrancy، access control و نمونه‌های واقعی](/fa/posts/bc-contract-security/) قراردادهایم را امن‌تر کرد؛ این پست ارزان‌تر و قابل ارتقایشان می‌کند.
 
 > Foundry 1.8.7 و solc 0.8.38 روی macOS (arm64)، روی کپی پروژه‌ی پست قبل. gas برای کد و تنظیمات یکسان قطعی است. کد آموزشی است، audit نشده.
 
@@ -136,7 +137,7 @@ proxy هرگز constructor پیاده‌سازی را اجرا نمی‌کند،
 
 تفاوت UUPS و transparent، تا جایی که از مستندات OpenZeppelin می‌فهمم، در جای منطق ارتقاست. transparent آن را در proxy نگه می‌دارد و فراخوانی admin را جلو نمی‌فرستد تا تداخلی پیش نیاید؛ `upgradeTo` من هر تابع implementation با همان {{< term "function-selector" "selector" >}} را می‌پوشاند. UUPS آن را در implementation می‌گذارد: proxy ارزان‌تر، ولی نسخه‌ای بدون آن یعنی پایان ارتقاها.
 
-## چند نکته‌ی مهم
+## دام‌های بهینه‌سازی و ارتقا
 
 - با `forge snapshot --diff` اندازه بگیرید، نه افسانه.
 - فقط متغیرهای پرمصرف را pack کنید و هر cast کوچک‌کننده را چک کنید.
@@ -150,4 +151,4 @@ proxy هرگز constructor پیاده‌سازی را اجرا نمی‌کند،
 
 ## قدم بعدی
 
-پست بعد: **MEV و ترتیب تراکنش‌ها**.
+**MEV و ترتیب تراکنش‌ها**: از هزینه‌ی تراکنش به زمان اجرای آن.

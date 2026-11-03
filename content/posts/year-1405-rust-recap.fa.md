@@ -3,6 +3,7 @@ date = '2027-03-20T10:00:00+03:30'
 draft = false
 title = 'مرور سری Rust و جمع‌بندی سال ۱۴۰۵'
 description = 'نقشه‌ی هر ۳۰ پست سری Rust، درس‌هایی که مدام تکرار شدند، مقایسه‌ی صادقانه‌ی Go و Rust، شمارش واقعی پست‌ها و کارهای نیمه‌تمام در پایان سال ۱۴۰۵.'
+contentType = 'analysis'
 categories = ["Meta"]
 tags = ["rust", "go", "recap", "1405"]
 cover = { image = "/images/covers/year-1405-rust-recap.fa.png", alt = "مرور سری Rust و جمع‌بندی سال ۱۴۰۵", hiddenInSingle = true }

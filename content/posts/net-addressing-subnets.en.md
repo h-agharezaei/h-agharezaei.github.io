@@ -3,13 +3,14 @@ date = '2026-12-25T10:00:00+03:30'
 draft = false
 title = 'IP addressing and subnets'
 description = 'IP addressing and subnets explained with real Go and Python runs: CIDR, netmask, host counts, splitting a /24, IPv6 basics and longest-prefix match.'
+contentType = 'tutorial'
 categories = ["Networking"]
 series = ["Networking"]
 tags = ["networking", "ip", "subnet", "cidr", "ipv6", "go", "python"]
 cover = { image = "/images/covers/net-addressing-subnets.png", alt = "IP addressing and subnets", hiddenInSingle = true }
 +++
 
-In the [previous post](/posts/net-tcp-ip-model/) we followed a packet through the layers. The network layer put an address on it, and I skipped over how those addresses work. They are the part you meet daily: a security group rule, a Kubernetes pod range, a VPN that clashes with the office network. All of it is arithmetic on bits, so we will compute it with `net/netip` in Go and `ipaddress` in Python.
+A security group rule, a Kubernetes pod range, a VPN that clashes with the office network: you meet IP addresses and prefixes daily, and all of it is arithmetic on bits. The [previous post](/posts/net-tcp-ip-model/) followed a packet through the layers and skipped over how its address works; here we compute it with `net/netip` in Go and `ipaddress` in Python.
 
 > Everything ran on macOS (arm64) with Go 1.26 and Python 3.14. All addresses are from the documentation ranges (`192.0.2.0/24`, `198.51.100.0/24`, `203.0.113.0/24`) or invented. The only real system fact is the loopback lines from `ifconfig lo0`, reduced to those lines.
 
@@ -103,7 +104,7 @@ A router holds a table of prefixes and next hops, and the most specific matching
 
 `10.1.2.9` matches four routes; the `/24` wins. The `/0` default route catches everything else. Both versions agree. This is a toy, not how a kernel does it.
 
-## A few things to watch
+## Where subnet math bites
 
 - Host counts: usable hosts are 2^h - 2, but not for `/31` and `/32`.
 - Overlaps: my check found `10.0.0.0/24` overlaps `10.0.0.128/25`. Use `Overlaps` before you add a subnet; clashes are painful later.

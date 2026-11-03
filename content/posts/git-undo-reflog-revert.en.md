@@ -3,13 +3,14 @@ date = '2026-11-07T10:00:00+03:30'
 draft = false
 title = 'Undoing work: reflog, revert and cherry-pick'
 description = 'Git undo with reflog, reset, revert and cherry-pick: what each command changes, how to recover from a hard reset, and what Git cannot bring back.'
+contentType = 'tutorial'
 categories = ["Git"]
 series = ["Git"]
 tags = ["git", "beginner", "reflog", "revert", "cherry-pick"]
 cover = { image = "/images/covers/git-undo-reflog-revert.png", alt = "Undoing work: reflog, revert and cherry-pick", hiddenInSingle = true }
 +++
 
-In the [previous post](/posts/git-resolve-conflicts/) we resolved conflicts. Now the question every developer asks sooner or later: "I ran something and my work is gone. Can I get it back?" Most of the time you can, because Git rarely deletes anything right away. The trick is knowing which tool to reach for.
+Run `git reset --hard HEAD~2` and two commits vanish from `git log`. That is the moment every developer meets sooner or later: "I ran something and my work is gone. Can I get it back?" Most of the time you can, because Git rarely deletes anything right away; the exception is work that was never committed. The trick is knowing which tool to reach for, whether the damage came from a reset or from a [conflict resolution](/posts/git-resolve-conflicts/) that went wrong.
 
 > Everything below was run with Git 2.39.2 in a throwaway repository, and the outputs are copied from those runs.
 
@@ -139,7 +140,7 @@ dangling commit 0b1fb07a5e6289f46c88e2cd5ceaf064d9e01737
 
 `git branch rescue 0b1fb07` brought it back. According to the docs, reflog entries expire after 90 days if reachable and 30 days if not (`gc.reflogExpire`, `gc.reflogExpireUnreachable`), and `git gc` may then delete the objects. I did not test that.
 
-## A few things to watch
+## Rules for recovery
 
 - Before `reset --hard`, run `git status`. Uncommitted work is not recoverable.
 - Never amend or reset commits you already pushed; use `revert` there.
@@ -153,4 +154,4 @@ In a temp repo make three commits, `git reset --hard HEAD~2`, then recover with 
 
 ## What's next
 
-The next post is "Finding a bug with git bisect".
+The next post is "Finding a bug with git bisect": undoing a commit is easy, finding the one that broke things is the harder part.

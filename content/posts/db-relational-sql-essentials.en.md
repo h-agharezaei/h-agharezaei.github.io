@@ -3,13 +3,14 @@ date = '2026-11-19T10:00:00+03:30'
 draft = false
 title = 'The relational model and essential SQL'
 description = 'The relational model and essential SQL with real PostgreSQL 18 output: keys, joins, GROUP BY, NULL traps, CTEs and constraint errors with SQLSTATE codes.'
+contentType = 'tutorial'
 categories = ["Databases"]
 series = ["Databases"]
 tags = ["databases", "sql", "postgres", "relational", "beginner"]
 cover = { image = "/images/covers/db-relational-sql-essentials.png", alt = "The relational model and essential SQL", hiddenInSingle = true }
 +++
 
-This post opens the Databases series. In the Go posts we already talked to Postgres from code, see [Postgres with pgx and sqlc in Go](/posts/go-postgres-pgx-sqlc/) and [Transactions and the repository pattern in Go](/posts/go-transactions-patterns/). Here we step back and learn the database side properly, starting with SQL itself.
+Ask "who has referred nobody?" with `NOT IN` and you get zero rows, no error, just because the subquery returns a {{< term "sql-null" "NULL" >}}. The worst SQL bugs look like this: the query runs and silently returns the wrong answer. In the Go posts we already talked to Postgres from code, in [Postgres with pgx and sqlc in Go](/posts/go-postgres-pgx-sqlc/) and [Transactions and the repository pattern in Go](/posts/go-transactions-patterns/); this series steps back and learns the database side properly, starting with SQL itself.
 
 > Everything below ran on a real PostgreSQL 18.3 with `psql`, on a tiny hand-written dataset: 6 customers, 4 products, 5 orders. All the series posts share this "shop" schema.
 
@@ -86,7 +87,7 @@ FROM customers c JOIN orders o ON o.customer_id = c.id GROUP BY c.country ORDER 
 
 ## NULL is not a value
 
-{{< term "sql-null" "NULL" >}} means unknown, and I ran each of these:
+NULL means unknown, and I ran each of these:
 
 ```text
 SELECT NULL = NULL AS eq, NULL IS NULL AS is_null;      -- eq: (empty)   is_null: t
@@ -137,7 +138,7 @@ DETAIL:  Key (id)=(1) is still referenced from table "orders".
 
 Your Go or Node code should branch on these codes, not on the message text.
 
-## A few things to watch
+## Common SQL traps
 
 - `= NULL` never matches; use `IS NULL`. Beware `NOT IN` with a subquery that can return NULL.
 - `LIMIT`/`OFFSET` without `ORDER BY` is not stable.
@@ -151,4 +152,4 @@ On your own copy of the data: list products that were never ordered (use `LEFT J
 
 ## What's next
 
-Next: Schema design and normalization.
+Schema design and normalization: a correct query does not help on a bad schema, so the next question is what the tables themselves should look like.

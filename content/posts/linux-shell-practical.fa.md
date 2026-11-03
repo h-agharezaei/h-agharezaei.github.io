@@ -3,13 +3,14 @@ date = '2027-03-19T10:00:00+03:30'
 draft = false
 title = 'پوسته‌ی کاربردی: pipe، redirect و xargs'
 description = 'pipe، redirect و xargs در پوسته با اجرای واقعی: کد خروج، pipefail، تله‌های quoting، find -print0 و process substitution، تست‌شده روی macOS.'
+contentType = 'tutorial'
 categories = ["Linux"]
 series = ["Linux"]
 tags = ["linux", "shell", "bash", "pipes", "redirects", "xargs"]
 cover = { image = "/images/covers/linux-shell-practical.fa.png", alt = "پوسته‌ی کاربردی: pipe، redirect و xargs", hiddenInSingle = true }
 +++
 
-این اولین پست سری Linux است و از جایی شروع می‌کند که بیشتر روزم آنجا می‌گذرد: پوسته (**shell**). pipe، redirect و `xargs` ابزارهای کوچک را به برنامه‌های یک‌بارمصرف تبدیل می‌کنند و چند قاعده‌ی quoting تعیین می‌کند این برنامه‌ها امن‌اند یا نه. همین ابزارها در اشکال‌زدایی سوکت هم به کار می‌آیند، مثل [پست سرور TCP](/fa/posts/net-sockets-tcp-from-scratch/).
+`ls -1 $f` روی `my report.txt` دو بار خطا می‌دهد و `false | true` موفقیت گزارش می‌کند. همین قاعده‌ها امن بودن یک دستور پوسته (**shell**) را تعیین می‌کنند و سری Linux از اینجا شروع می‌شود. همین ابزارها در اشکال‌زدایی سوکت هم به کار می‌آیند، مثل [پست سرور TCP](/fa/posts/net-sockets-tcp-from-scratch/).
 
 > توضیح صادقانه: این پست را روی **macOS** نوشتم که userland از نوع BSD دارد و هسته‌ی Linux ندارد. همه‌ی خروجی‌ها واقعی‌اند (`/bin/sh` و برای bash، نسخه‌ی 3.2.57). چیزی را روی Linux اجرا نکردم و `shellcheck` نصب نیست، پس اجرایش نکردم. هرجا GNU فرق دارد، از man page نقل می‌کنم. مسیر خانه با `<home>` جایگزین شده است.
 
@@ -108,7 +109,7 @@ ls: b.txt: No such file or directory
 - `sed -i 's/x/y/' file` با خطای `command c expects \ followed by text` شکست خورد، چون `sed` در BSD یک آرگومان پسوند می‌خواهد: `sed -i '' ...` کار کرد. در GNU، پسوند به `-i` چسبیده است، پس اسکریپت قابل‌حمل از `-i` پرهیز می‌کند.
 - ورودی خالی: طبق man page خود macOS، `xargs` در GNU حتی با ورودی خالی دستور را یک‌بار اجرا می‌کند و گزینه‌ی `-r` جلوی آن را می‌گیرد. اینجا `printf '' | xargs echo ran` چیزی چاپ نکرد و `-r` پذیرفته می‌شود.
 
-## چند نکته‌ی مهم
+## دام‌های رایج shell
 
 - به‌طور پیش‌فرض `"$var"` و `"$@"` را quote کنید.
 - برای نام فایل از `-print0` و `-0` استفاده کنید، هرگز `find | xargs` خالی.
@@ -122,4 +123,4 @@ ls: b.txt: No such file or directory
 
 ## قدم بعدی
 
-پست بعدی «سیستم فایل و مجوزها» است.
+بعدی «سیستم فایل و مجوزها» است، چون هر اسکریپتی با فایل کار دارد.

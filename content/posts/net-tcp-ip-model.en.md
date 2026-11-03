@@ -3,13 +3,14 @@ date = '2026-12-19T10:00:00+03:30'
 draft = false
 title = 'The TCP/IP model and the path of a packet'
 description = 'The TCP/IP model with real code: build IPv4 and TCP headers by hand, verify the checksum, then watch one loopback connection and a TCP byte stream.'
+contentType = 'tutorial'
 categories = ["Networking"]
 series = ["Networking"]
 tags = ["networking", "tcp-ip", "tcp", "ip", "sockets", "http"]
 cover = { image = "/images/covers/net-tcp-ip-model.png", alt = "The TCP/IP model and the path of a packet", hiddenInSingle = true }
 +++
 
-Every service I wrote in this blog, like the [net/http API](/posts/go-http-api-stdlib/) or the [gRPC service](/posts/go-grpc-service/), ends with one call: "send these bytes to that address". This new series looks at what happens under that call. We start with the map: the layers, and how one HTTP request becomes a packet.
+Every service I wrote in this blog, like the [net/http API](/posts/go-http-api-stdlib/) or the [gRPC service](/posts/go-grpc-service/), ends with one call: "send these bytes to that address". What happens under that call? We start with the map: the layers, and how one HTTP request becomes a packet.
 
 > Everything ran on macOS (arm64) with Python 3.14, `curl`, `nc` and `lsof`. I have no root here, so there is no packet capture; instead we build headers by hand and watch sockets. All addresses are loopback or documentation examples (`192.0.2.10`, `198.51.100.20`), and the demo uses a random local port.
 
@@ -65,7 +66,7 @@ That `0xffff` is exactly what the algorithm promises for an intact header. A rou
 
 ## Loopback and the MTU
 
-`ifconfig lo0` reduced to the loopback lines (the real output also lists my other interfaces, which I removed):
+`ifconfig lo0` reduced to the loopback lines (my other interfaces removed):
 
 ```
 lo0: flags=8049<UP,LOOPBACK,RUNNING,MULTICAST> mtu 16384
@@ -100,7 +101,7 @@ The server has one listening socket and one accepted socket; `nc` has the other 
 
 ## TCP is a stream
 
-Let me send 100,000 bytes as ten separate 10,000-byte writes and see what the receiver gets from `recv()`. I ran it twice:
+I sent 100,000 bytes as ten 10,000-byte writes and printed what `recv()` returned, twice:
 
 ```
 sent: 10 writes of 10000 bytes = 100000
@@ -110,7 +111,7 @@ recv() sizes: [65536, 4464, 30000] total 100000
 
 The total always matches, but the chunk sizes do not follow my writes and change between runs. TCP delivers an ordered stream of bytes with no message boundaries. This is why HTTP has `Content-Length` and chunked encoding, and why gRPC adds a length prefix to every message.
 
-## A few things to watch
+## Common mistakes about layers
 
 - "Layer 7" and "layer 4" load balancers differ in which header they read: the first understands HTTP, the second only IP and ports.
 - Never assume one `Write` equals one `Read`; always frame your messages.
@@ -124,4 +125,4 @@ Change the script to add a TCP option (for example MSS, kind 2, length 4, value 
 
 ## What's next
 
-The next post is "IP addressing and subnets".
+Next is "IP addressing and subnets", because I skipped over how the addresses on these packets work.

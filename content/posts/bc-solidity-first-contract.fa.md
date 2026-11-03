@@ -3,15 +3,16 @@ date = '2026-11-15T18:00:00+03:30'
 draft = false
 title = 'اولین قرارداد با Solidity و Foundry'
 description = 'اولین قرارداد Solidity با Foundry: یک خزانه‌ی کوچک ETH، چیدمان storage آن، دیپلوی روی زنجیره‌ی محلی anvil، فراخوانی با cast، یک revert و gas مصرفی.'
+contentType = 'tutorial'
 categories = ["Blockchain"]
 series = ["Blockchain"]
 tags = ["blockchain", "ethereum", "solidity", "foundry", "evm"]
 cover = { image = "/images/covers/bc-solidity-first-contract.fa.png", alt = "اولین قرارداد با Solidity و Foundry", hiddenInSingle = true }
 +++
 
-در [پست قبلی](/fa/posts/bc-evm-internals-rust/) bytecode دست‌نویس اجرا کردیم. کسی قرارداد را این‌طور نمی‌نویسد. در این پست یک {{< term "smart-contract" "قرارداد هوشمند" >}} واقعی با {{< term "solidity" "Solidity" >}} می‌نویسم، کامپایلش می‌کنم، خروجی کامپایلر را نگاه می‌کنم و روی یک زنجیره‌ی محلی اجرایش می‌کنم.
+تراکنش شکست‌خورده هم در بلاک می‌ماند و فرستنده هزینه‌اش را می‌دهد؛ برای دیدنش قرارداد واقعی لازم است، نه bytecode دست‌نویس [پست قبلی](/fa/posts/bc-evm-internals-rust/). این‌جا یک {{< term "smart-contract" "قرارداد هوشمند" >}} با {{< term "solidity" "Solidity" >}} می‌نویسم، کامپایل می‌کنم، خروجی کامپایلر را می‌بینم و روی زنجیره‌ی محلی اجرا می‌کنم.
 
-ابزار {{< term "foundry" "Foundry" >}} است: `forge` می‌سازد و تست می‌کند، `anvil` یک نود محلی اتریوم است و `cast` از ترمینال با آن حرف می‌زند. تست‌هایش هم با Solidity نوشته می‌شوند و این برای پست بعد مهم است. اگر [مدل حساب، nonce و جلوگیری از replay](/fa/posts/bc-account-model-nonce/) را خوانده باشید، قرارداد فقط یک نوع دیگر حساب است: حسابی که کد و storage خودش را دارد.
+ابزار {{< term "foundry" "Foundry" >}} است: `forge` می‌سازد و تست می‌کند، `anvil` یک نود محلی اتریوم است و `cast` از ترمینال با آن حرف می‌زند. تست‌هایش هم با Solidity نوشته می‌شوند و این برای پست بعد مهم است. اگر [مدل حساب](/fa/posts/bc-account-model-nonce/) را خوانده باشید، قرارداد فقط یک نوع دیگر حساب است: حسابی که کد و storage خودش را دارد.
 
 > اجرا با Foundry 1.8.7 روی macOS (arm64)؛ `forge` برای `pragma ^0.8.24` نسخه‌ی solc 0.8.38 را انتخاب و دانلود کرد. کد مثال محلی است و anvil فقط روی `127.0.0.1`. آدرس‌های پایین حساب‌های تست عمومی anvil هستند: همه آن‌ها را می‌شناسند و روی هیچ شبکه‌ی واقعی پولی ندارند.
 
@@ -217,7 +218,7 @@ $ cast storage $V 0
 0x000000000000000000000001f39fd6e51aad88f6f4ce6ab8827279cfffb92266
 ```
 
-## چند نکته‌ی مهم
+## دام‌های قرارداد اول
 
 - چیدمان storage فرمت ذخیره‌ی قرارداد است. جابه‌جا کردن متغیرها معنای اسلات‌ها را عوض می‌کند؛ وقتی پای proxy وسط بیاید این مهم می‌شود.
 - فراخوانی view با `cast call` ممکن است موفق شود در حالی که تراکنش شکست می‌خورد؛ حقیقت `status` رسید است.

@@ -3,13 +3,14 @@ date = '2026-11-30T18:00:00+03:30'
 draft = false
 title = 'Bridges and cross-chain messaging'
 description = 'Cross-chain bridge in Go and Solidity: lock-and-mint between two anvil chains, 2-of-3 ecrecover signatures, replay checks, stolen keys, rate limits.'
+contentType = 'tutorial'
 categories = ["Blockchain"]
 series = ["Blockchain"]
 tags = ["blockchain", "go", "solidity", "bridge", "foundry", "security"]
 cover = { image = "/images/covers/bc-bridges-cross-chain.png", alt = "Bridges and cross-chain messaging", hiddenInSingle = true }
 +++
 
-In [Layer 2 and rollups: optimistic and ZK](/posts/bc-layer2-rollups/) the L1 contract could check the rollup itself: the data was on L1. Two independent chains cannot do that. Chain B has no idea what happened on chain A unless someone tells it, and a {{< term "bridge" "bridge" >}} is mostly the question of whom B believes.
+Chain B has no idea what happened on chain A unless someone tells it, and a {{< term "bridge" "bridge" >}} is mostly the question of whom B believes. In [Layer 2 and rollups: optimistic and ZK](/posts/bc-layer2-rollups/) the L1 contract could check the rollup itself: the data was on L1. Two independent chains cannot do that.
 
 I built the simplest common design, {{< term "lock-and-mint" "lock-and-mint" >}}, between two local chains. It reuses replay protection from [The account model, nonces and replay protection](/posts/bc-account-model-nonce/), signatures from [Keys, ECDSA signatures and addresses on secp256k1](/posts/bc-keys-ecdsa-addresses/) and confirmations from [Events and building an indexer](/posts/bc-event-indexer-go/).
 
@@ -113,7 +114,7 @@ The same test continues with the mitigations I built in:
 
 The stronger model removes the trusted signers: B runs a {{< term "light-client" "light client" >}} of A and verifies A's consensus and a Merkle proof of the deposit, or a ZK proof of the same. I did not build either; as I understand it, the cost is gas and complexity, and it is only as safe as the source chain's finality.
 
-## A few things to watch
+## Common bridge traps
 
 - Sign over source and destination chain ids and contracts, plus a nonce. A contract address alone is not unique across chains.
 - Wait for confirmations before signing; a reorged deposit means minted tokens with nothing locked.
@@ -127,4 +128,4 @@ The stronger model removes the trusted signers: B runs a {{< term "light-client"
 
 ## What's next
 
-Next post: **Zero-knowledge proof basics in Rust**.
+**Zero-knowledge proof basics in Rust**: proofs are how stronger designs remove trusted signers.

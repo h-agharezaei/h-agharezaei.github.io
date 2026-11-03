@@ -3,13 +3,14 @@ date = '2026-11-29T10:00:00+03:30'
 draft = false
 title = 'B-tree indexes and EXPLAIN ANALYZE'
 description = 'B-tree indexes in PostgreSQL with real EXPLAIN ANALYZE plans: sequential scan vs index, tree height, index-only scans and what indexes cost on writes.'
+contentType = 'tutorial'
 categories = ["Databases"]
 series = ["Databases"]
 tags = ["postgresql", "databases", "index", "btree", "explain", "performance"]
 cover = { image = "/images/covers/db-indexes-btree-explain.png", alt = "B-tree indexes and EXPLAIN ANALYZE", hiddenInSingle = true }
 +++
 
-In the [previous post](/posts/db-schema-design-normalization/) we designed the shop schema. Now the schema has 200k orders and the first slow query shows up: all orders of one customer. A {{< term "database-index" "database index" >}} is the usual answer, but let us check it with a {{< term "query-plan" "query plan" >}}.
+For one customer's 10 orders, PostgreSQL read the whole 200k-row table from [Schema design and normalization](/posts/db-schema-design-normalization/). The usual fix is a {{< term "database-index" "database index" >}}; a {{< term "query-plan" "query plan" >}} shows whether it works.
 
 > Everything ran on a real PostgreSQL 18.3 with the full seed (20k customers, 200k orders). Before this post the only indexes were the primary keys and `customers.email`. I use `EXPLAIN (ANALYZE, BUFFERS, TIMING OFF, SUMMARY OFF)` and show buffer counts (8 KB pages touched), not milliseconds, because pages are the same on every machine.
 
@@ -63,7 +64,7 @@ SELECT * FROM orders ORDER BY id DESC LIMIT 5;
  Limit -> Index Scan Backward using orders_pkey ... Buffers: shared hit=8
 ```
 
-Eight pages for the last five orders. On the unindexed `created_at` the same query needs a `Sort` over a full `Seq Scan` (3357 pages). Ask for only indexed columns and the table can be skipped:
+On the unindexed `created_at` the same query needs a `Sort` over a full `Seq Scan` (3357 pages). Ask for only indexed columns and the table can be skipped:
 
 ```text
 SELECT customer_id FROM orders WHERE customer_id BETWEEN 100 AND 110;
@@ -87,7 +88,7 @@ Almost double the {{< term "wal" "WAL" >}} for the same rows, because every inse
 
 ## Unique indexes and unused indexes
 
-A `UNIQUE` constraint is a B-tree that also rejects duplicates, so inserting an existing email fails:
+A `UNIQUE` constraint is a B-tree that also rejects duplicates:
 
 ```text
 ERROR:  duplicate key value violates unique constraint "customers_email_key"
@@ -96,9 +97,9 @@ DETAIL:  Key (email)=(user1@example.com) already exists.
 
 To find indexes you pay for but never use, read `pg_stat_user_indexes`: `idx_scan` counts how often each was used. In my run `customers_email_key` had `idx_scan = 0` and 1376 kB of size. Check over a long period before dropping anything.
 
-## A few things to watch
+## Common mistakes with EXPLAIN and indexes
 
-- Always run `EXPLAIN ANALYZE` on realistic data: on 1000 rows the planner prefers a `Seq Scan` and you learn nothing.
+- Run `EXPLAIN ANALYZE` on realistic data: on 1000 rows the planner prefers a `Seq Scan` and you learn nothing.
 - `EXPLAIN ANALYZE` executes the query. Wrap `INSERT`, `UPDATE`, `DELETE` in a transaction you roll back.
 - A big gap between `actual rows` and `rows` means stale statistics (`ANALYZE`).
 - Every index adds write work and disk space. Index what you filter, join and sort on, not every column.
@@ -113,4 +114,4 @@ To find indexes you pay for but never use, read `pg_stat_user_indexes`: `idx_sca
 
 ## What's next
 
-Next post: Composite, partial and covering indexes.
+Composite, partial and covering indexes: real queries rarely filter on one column.

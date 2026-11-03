@@ -3,13 +3,14 @@ date = '2027-04-02T10:00:00+03:30'
 draft = false
 title = 'OAuth2 و OIDC'
 description = 'OAuth2 و OIDC در Go روی localhost: جریان Authorization Code با PKCE، state، اعتبارسنجی ID token با JWKS، scope و چرخش refresh token، با خروجی واقعی.'
+contentType = 'tutorial'
 categories = ["Security"]
 series = ["Software Security"]
 tags = ["security", "oauth2", "oidc", "pkce", "jwt", "go"]
 cover = { image = "/images/covers/sec-oauth2-oidc.fa.png", alt = "OAuth2 و OIDC", hiddenInSingle = true }
 +++
 
-مقاله‌ی قبلی، [session یا JWT؟](/fa/posts/sec-sessions-vs-jwt/)، درباره‌ی چیزی بود که سرور بعد از login نگه می‌دارد. اینجا پرسش این است که login را چه کسی انجام می‌دهد. «ورود با X» و «به این برنامه اجازه بده سفارش‌هایم را بخواند» هر دو {{< term "oauth2" "OAuth2" >}} و {{< term "oidc" "OpenID Connect" >}} هستند. خلاصه: OAuth2 **مجوزدهی** (authorization) است، یعنی این توکن چه کاری می‌تواند بکند، و OIDC با ID token **احراز هویت** (authentication) را اضافه می‌کند، یعنی چه کسی وارد شده. API سمت منبع همان API سفارش‌هاست از [ساخت API با net/http در Go](/fa/posts/go-http-api-stdlib/).
+authorization code نشت‌کرده بدون verifierی که فقط کلاینت واقعی دارد به درد دزد نمی‌خورد: سرور دموی من جواب `400 invalid_grant` می‌دهد. کل این جریان روی بررسی‌های کوچکی مثل همین بنا شده است. [session یا JWT؟](/fa/posts/sec-sessions-vs-jwt/) درباره‌ی چیزی بود که سرور بعد از login نگه می‌دارد؛ اینجا پرسش این است که login را چه کسی انجام می‌دهد. «ورود با X» و «به این برنامه اجازه بده سفارش‌هایم را بخواند» هر دو {{< term "oauth2" "OAuth2" >}} و {{< term "oidc" "OpenID Connect" >}} هستند. خلاصه: OAuth2 **مجوزدهی** (authorization) است، یعنی این توکن چه کاری می‌تواند بکند، و OIDC با ID token **احراز هویت** (authentication) را اضافه می‌کند، یعنی چه کسی وارد شده. API سمت منبع همان API سفارش‌هاست از [ساخت API با net/http در Go](/fa/posts/go-http-api-stdlib/).
 
 > فقط دفاعی. همه‌چیز روی `127.0.0.1` در یک برنامه‌ی Go 1.26 فقط با کتابخانه‌ی استاندارد اجرا شد: یک authorization server، یک resource server و یک کلاینت. توکن‌ها JWT با RS256 هستند که خودم با `crypto/rsa` امضا کردم. هیچ identity provider واقعی، مرورگر یا حساب شخص ثالثی در کار نبود. «کاربر» از قبل وارد شده و خودکار موافقت می‌کند و callback کلاینت یک 302 چاپ‌شده است، نه listener واقعی. دمویی جداست.
 
@@ -114,7 +115,7 @@ use rt2 (same family): 400 family revoked
 
 اگر توکن قدیمی دوباره ظاهر شود، یا دزد از آن استفاده می‌کند یا صاحب، پس سرور کل خانواده را باطل می‌کند.
 
-## چند نکته‌ی مهم
+## جایی که پیاده‌سازی OAuth خراب می‌شود
 
 - `redirect_uri` را در سرور دقیقاً مطابقت دهید؛ تطبیق پیشوندی یا wildcard زمینه‌ی open-redirect می‌سازد.
 - طبق RFC 9700 (بهترین رویه‌ی فعلی امنیت OAuth 2.0، که برای این دو نکته بررسی‌اش کردم) کلاینت‌ها نباید از Implicit grant استفاده کنند و Resource Owner Password Credentials grant نباید استفاده شود. از جریان code با PKCE استفاده کنید. هیچ‌کدام از این دو جریان ناپسند را اجرا نکردم.
@@ -128,4 +129,4 @@ use rt2 (same family): 400 family revoked
 
 ## قدم بعدی
 
-مقاله‌ی بعدی «مجوزدهی: RBAC و IDOR» است.
+«مجوزدهی: RBAC و IDOR» بعد از این می‌آید، چون توکن معتبر فقط می‌گوید فراخواننده کیست؛ اینکه با هر شیء چه کاری می‌تواند بکند هنوز تصمیم سرور است.

@@ -3,13 +3,14 @@ date = '2027-06-10T10:00:00+03:30'
 draft = false
 title = 'Capacity estimation'
 description = "Capacity estimation with Go and Postgres: peak QPS, Little's law, bytes per row, cache hit rates, the queueing knee, a server count and a tornado table."
+contentType = 'tutorial'
 categories = ["Distributed"]
 series = ["Distributed Systems"]
 tags = ["distributed-systems", "capacity-planning", "queueing", "performance", "go"]
 cover = { image = "/images/covers/ds-capacity-estimation.png", alt = "Capacity estimation", hiddenInSingle = true }
 +++
 
-[The previous post](/posts/ds-deployment-strategies/) was about shipping a change safely. This one asks how many machines it runs on. {{< term "capacity-planning" "Capacity planning" >}} is arithmetic plus a few cheap measurements, and the goal is the right order of magnitude; within 2x is a good result.
+An orders-like row whose columns add up to about 39 bytes took 128.5 bytes in Postgres with its header and indexes: 3.3x the naive guess. {{< term "capacity-planning" "Capacity planning" >}} is arithmetic plus a few cheap measurements, and the goal is the right order of magnitude; within 2x is a good result. The [previous post](/posts/ds-deployment-strategies/) shipped a change safely; this one sizes it.
 
 > Honest labelling: the traffic numbers and prices are invented, the queue and cache runs are seeded Go simulations, and the memory and Postgres numbers were measured on my laptop (one machine, loopback). The load was high, so I show counts and bytes, no timings, and I did not measure any server's requests per second.
 
@@ -29,14 +30,14 @@ rows after 1 year  120 million
 
 ## Storage: measure bytes per row
 
-Naive estimate: add the column sizes. I created an orders-like table (primary key plus two indexes) on a throwaway Postgres 18.3:
+I created an orders-like table (primary key plus two indexes) on a throwaway Postgres 18.3:
 
 ```
 n=20000   heap 1417216  total 2998272  bytes/row 149.9
 n=100000  heap 7069696  total 12845056 bytes/row 128.5   (heap 70.7 + indexes 57.4)
 ```
 
-The columns add up to about 39 bytes (four 8-byte values plus a short status), so the real cost is 3.3x the naive number. According to the Postgres docs a heap tuple carries a header of about 23 bytes, plus a line pointer and alignment; the [indexes](/posts/db-indexes-btree-explain/) are the rest. Extrapolated linearly, 100M rows is about 12.9 GB per copy, a floor, since indexes deepen. The first 20k rows cost more per row (149.9) than the full 100k, so do not extrapolate from tiny samples.
+The 39 bytes are four 8-byte values plus a short status. According to the Postgres docs a heap tuple carries a header of about 23 bytes, plus a line pointer and alignment; the [indexes](/posts/db-indexes-btree-explain/) are the rest. Extrapolated linearly, 100M rows is about 12.9 GB per copy, a floor, since indexes deepen. The first 20k rows cost more per row (149.9) than the full 100k, so do not extrapolate from tiny samples.
 
 ## Memory: working set and cache
 
@@ -118,7 +119,7 @@ Demand and per-server capacity move the answer 2.8x; the utilisation target 1.4x
 
 A model is a hypothesis. Load-test it with k6, wrk, vegeta or hey (I only name them) and find the knee. Targets come from [SLOs](/posts/eng-sli-slo-error-budgets/). Then repeat: forecast from real growth, keep N+1 or N+2 headroom, and remember autoscaling has limits. The well-known "latency numbers every programmer should know" list (attributed to Jeff Dean and Peter Norvig) is a useful shape of the hardware, but its figures date; re-measure.
 
-## A few things to watch
+## Common estimation mistakes
 
 - Peak, not average, sizes the system; peak-to-average is an assumption to check.
 - Estimates of data size must use measured bytes per row, indexes included.
@@ -131,4 +132,4 @@ Put your own service into the model and find the top two tornado entries. How wo
 
 ## What's next
 
-The next post is "Case studies: a rate limiter and a notification system".
+“Case studies: a rate limiter and a notification system”: this arithmetic, applied to two classic design questions.

@@ -3,6 +3,7 @@ date = '2026-11-21T10:00:00+03:30'
 draft = false
 title = 'Modules: ESM and CommonJS'
 description = 'Node.js ESM and CommonJS compared with real runs: how Node picks a system, interop, ERR_REQUIRE_ESM, exports maps, caching and circular imports.'
+contentType = 'tutorial'
 categories = ["Node.js"]
 series = ["Node.js"]
 tags = ["nodejs", "modules", "esm", "commonjs", "javascript"]
@@ -105,7 +106,7 @@ Live bindings also show up with `export let count`: the importer printed `0` the
 
 `import fs from 'fs'` and `'node:fs'` are the same object (`true`). The prefix makes built-ins explicit, and for `node:test` it is required: `require('test')` gave `MODULE_NOT_FOUND`, `require('node:test')` worked.
 
-## A few things to watch
+## Where interop breaks
 
 - Pick one system per project and set `"type"` explicitly. This is my own judgment: new code in ESM, `.cjs` only where a tool demands it.
 - Do not assume named imports from CommonJS; use the default import when unsure.
@@ -118,4 +119,4 @@ Make a package with `exports` for `import` and `require`, plus a `"./package.jso
 
 ## What's next
 
-The next post is "npm, package.json and lockfiles".
+"npm, package.json and lockfiles": we have seen our own modules, and next come the packages that arrive from outside and whose versions need pinning.

@@ -3,13 +3,14 @@ date = '2026-11-10T18:00:00+03:30'
 draft = false
 title = 'Forks, reorgs and the heaviest-chain rule'
 description = 'Forks and reorgs in Go: a block tree, fork choice by chainwork, UTXO rollback with undo data and a double spend after a loopback network partition.'
+contentType = 'tutorial'
 categories = ["Blockchain"]
 series = ["Blockchain"]
 tags = ["blockchain", "go", "reorg", "fork-choice", "bitcoin"]
 cover = { image = "/images/covers/bc-forks-reorgs.png", alt = "Forks, reorgs and the heaviest-chain rule", hiddenInSingle = true }
 +++
 
-In the [previous post](/posts/bc-p2p-gossip/) nodes gossiped blocks, but a block that competed with the tip was logged and ignored. Two miners can find a block at the same height, and a {{< term "network-partition" "network partition" >}} can let two groups build separate histories for a while. In [CAP and PACELC, correctly](/posts/ds-cap-pacelc/) terms, proof of work chooses availability: both sides keep producing blocks, and the losing side's history is undone afterwards.
+Two miners can find a block at the same height, and a {{< term "network-partition" "network partition" >}} can let two groups build separate histories for a while. The gossiping nodes of the [previous post](/posts/bc-p2p-gossip/) logged and ignored any block that competed with the tip. In [CAP and PACELC, correctly](/posts/ds-cap-pacelc/) terms, proof of work chooses availability: both sides keep producing blocks, and the losing side's history is undone afterwards.
 
 In [Proof of work, difficulty and mining](/posts/bc-proof-of-work-mining/) every block got a `Bits` field and the chain a running total of work. Now that total decides which branch wins.
 
@@ -123,7 +124,7 @@ Before healing, Bob had 40 with one confirmation. After it, the miner's payment 
 
 A block is never final in proof of work; it only gets harder to replace as work piles on top of it. That is {{< term "probabilistic-finality" "probabilistic finality" >}}. The Bitcoin whitepaper shows that an attacker with less than half the hash power falls behind exponentially, so each {{< term "confirmation" "confirmation" >}} lowers the risk. Six confirmations is a common convention for Bitcoin; exchanges set their own numbers per chain and amount. Bob just saw why one is not enough.
 
-## A few things to watch
+## Reorg traps
 
 - Choose by chainwork, never by height.
 - Validate side-branch headers immediately and their transactions when they become active; mark failures so their children are refused.

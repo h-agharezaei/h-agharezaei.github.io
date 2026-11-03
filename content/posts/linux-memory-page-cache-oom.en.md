@@ -3,13 +3,14 @@ date = '2027-05-02T10:00:00+03:30'
 draft = false
 title = 'Memory, the page cache and the OOM killer'
 description = 'Linux memory explained from man pages: free vs available, the page cache, overcommit, OOM scores and cgroup limits, plus a Go program that runs on macOS.'
+contentType = 'tutorial'
 categories = ["Linux"]
 series = ["Linux"]
 tags = ["linux", "memory", "page-cache", "oom-killer", "go", "macos"]
 cover = { image = "/images/covers/linux-memory-page-cache-oom.png", alt = "Memory, the page cache and the OOM killer", hiddenInSingle = true }
 +++
 
-I wrote this on a Mac; nothing here ran on Linux. This is the seventh post of the Linux series, after [cgroups and namespaces: the base of containers](/posts/linux-cgroups-namespaces/). The question: why does `free` show little free memory, and why did a service die with exit code 137? Facts come from man pages and kernel docs; Linux-looking text is labelled "illustrative, not captured".
+Why does `free` show little free memory, and why did a service die with exit code 137? Only the second is a real problem. As with [cgroups and namespaces: the base of containers](/posts/linux-cgroups-namespaces/), I wrote this on a Mac, not Linux. Facts come from man pages and kernel docs; Linux-looking text is labelled "illustrative, not captured".
 
 ## Reading free and /proc/meminfo
 
@@ -76,7 +77,7 @@ Exit code 137 is 128+9, a {{< term "sigkill" "SIGKILL" >}}, as in [Processes and
 Memory cgroup out of memory: Killed process 4242 (app)
 ```
 
-## A few things to watch
+## Common memory misreadings
 
 - Low `free` is fine; low `available` is not.
 - Compare RSS, not VSZ, with limits.
@@ -89,4 +90,4 @@ On a throwaway Linux box, run `free` before and after `cat bigfile > /dev/null`.
 
 ## What's next
 
-The next post is “I/O and epoll”.
+Next: “I/O and epoll”, on how one thread serves thousands of connections.

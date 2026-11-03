@@ -2,6 +2,7 @@
 date = '2027-03-26T10:00:00+03:30'
 draft = false
 title = 'API design: versioning and pagination'
+contentType = 'engineering'
 description = 'API design in Go: offset pagination skips and repeats rows, cursor pagination does not; additive versus breaking changes and Sunset headers, run.'
 categories = ["Engineering"]
 series = ["Software Engineering"]
@@ -9,7 +10,7 @@ tags = ["api-design", "pagination", "versioning", "software-engineering", "go"]
 cover = { image = "/images/covers/eng-api-design-versioning-pagination.png", alt = "API design: versioning and pagination", hiddenInSingle = true }
 +++
 
-After [Effective code review](/posts/eng-code-review/) comes a thing reviewers can rarely fix later: the shape of a public API. Once clients depend on it, every mistake is a migration. Two decisions bite most often: how a list is {{< term "pagination" "paginated" >}} and how the API changes over time. The server is plain `net/http`, in the style of [Building an API with net/http](/posts/go-http-api-stdlib/); I wrote a small new one with 250 seeded orders in memory. Opinions are marked **in my opinion**; everything else was run with curl on `127.0.0.1`.
+Fetch page 1 of a newest-first list, create one order, fetch page 2: order 151 shows up twice. Delete one instead: 151 is never shown. No [code review](/posts/eng-code-review/) fixes that later: it is the shape of a public API. Once clients depend on it, every mistake is a migration. Two decisions bite most often: how a list is {{< term "pagination" "paginated" >}} and how the API changes over time. The server is plain `net/http`, in the style of [Building an API with net/http](/posts/go-http-api-stdlib/); I wrote a small new one with 250 seeded orders in memory. Opinions are marked **in my opinion**; the rest was run with curl on `127.0.0.1`.
 
 ## Offset pagination and its trap
 
@@ -102,16 +103,12 @@ The date is invented. According to RFC 8594 `Sunset` carries the HTTP-date after
 
 Pagination is read-only, so it is safe to retry. For POSTs, accept a client-supplied key so a retry does not create two orders; the idea is the same as {{< term "idempotency" "idempotency" >}} in [Idempotency in JetStream](/posts/nats-jetstream-idempotency/). I did not build it here.
 
-## A few things to watch
+## Mistakes that turn into migrations
 
 - Choose keyset for any list that grows or changes while being read; use offset only for small, stable lists.
 - Never change the meaning of a field in place; add a new one.
 - A deprecation without a date and a successor is a rumour.
 
-## Exercise
-
-Run the two scenarios against your own list endpoint: insert and delete a row between page 1 and page 2. Does any id repeat or vanish? If so, write down what a keyset version would sort by.
-
 ## What's next
 
-The next post is "OpenAPI and API contracts".
+“OpenAPI and API contracts”: these decisions hold only if the contract is written down and checked against real responses.

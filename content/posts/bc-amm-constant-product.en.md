@@ -3,15 +3,14 @@ date = '2026-11-22T18:00:00+03:30'
 draft = false
 title = 'AMMs and the constant-product formula'
 description = 'A constant-product AMM in Solidity: x*y=k, LP shares, a 0.3% fee, rounding in favour of the pool, price impact, slippage limits and invariant tests.'
+contentType = 'tutorial'
 categories = ["Blockchain"]
 series = ["Blockchain"]
 tags = ["blockchain", "solidity", "defi", "amm", "foundry", "go"]
 cover = { image = "/images/covers/bc-amm-constant-product.png", alt = "AMMs and the constant-product formula", hiddenInSingle = true }
 +++
 
-The previous post, [HD wallets: BIP-32, BIP-39 and BIP-44 in Rust](/posts/bc-hd-wallets-rust/), was about keys. Now the series moves to DeFi: contracts that hold tokens and trade them.
-
-An exchange usually runs an order book: buyers and sellers post prices and a matching engine pairs them. On a chain every order and cancel costs gas and waits for a block. An {{< term "amm" "AMM" >}} (automated market maker) drops the order book. A contract holds two tokens and a formula sets the price. I build a minimal one for two [ERC-20 tokens](/posts/bc-erc20-erc721/), test it the way [the Foundry testing post](/posts/bc-foundry-testing-fuzzing/) did, and check its math with a small Go program.
+An exchange usually runs an order book: buyers and sellers post prices and a matching engine pairs them. On a chain every order and cancel costs gas and waits for a block. An {{< term "amm" "AMM" >}} (automated market maker) drops the order book. A contract holds two tokens and a formula sets the price. Moving from [keys](/posts/bc-hd-wallets-rust/) to DeFi, I build a minimal one for two [ERC-20 tokens](/posts/bc-erc20-erc721/), test it the way [the Foundry testing post](/posts/bc-foundry-testing-fuzzing/) did, and check its math with a small Go program.
 
 > Foundry 1.8.7, solc 0.8.38, Go 1.27.3, macOS (arm64). The demo is a local Foundry project with forge-std only; `DemoToken` is copied unchanged from the tokens post. The design follows Uniswap v2 as I understand it, much simplified. A teaching contract: not audited.
 
@@ -136,7 +135,7 @@ Then I planted the bug: `getAmountOut` rounding up. The runner broke the invaria
 (addresses shortened)
 ```
 
-## A few things to watch
+## Hidden costs
 
 - Never send a swap with `minAmountOut = 0` or a far deadline. Compute the minimum off-chain from a fresh quote.
 - Price impact depends on pool depth. A thin pool is an expensive pool.
@@ -152,4 +151,4 @@ Then I planted the bug: `getAmountOut` rounding up. The runner broke the invaria
 
 ## What's next
 
-Next post: **Lending, collateral and liquidation**.
+Next post: **Lending, collateral and liquidation**, where a contract replaces the loan officer.

@@ -3,13 +3,14 @@ date = '2027-05-06T10:00:00+03:30'
 draft = false
 title = 'Bloom filters and consistent hashing'
 description = 'Bloom filters and consistent hashing in Go: measured false-positive rates, memory, keys remapped when a node is added, vnode balance and rendezvous.'
+contentType = 'tutorial'
 categories = ["Algorithms"]
 series = ["Algorithms"]
 tags = ["algorithms", "bloom-filter", "consistent-hashing", "hashing", "go"]
 cover = { image = "/images/covers/algo-bloom-filter-consistent-hashing.png", alt = "Bloom filters and consistent hashing", hiddenInSingle = true }
 +++
 
-The last post of the series is about two ideas built on hashing, the same trick as in [A hash table from scratch](/posts/algo-hash-tables/). A {{< term "bloom-filter" "Bloom filter" >}} answers "is this key in the set?" with very little memory, at the price of sometimes saying yes wrongly. {{< term "consistent-hashing" "Consistent hashing" >}} decides which server owns a key so that adding a server moves few keys. The previous post was [String algorithms: KMP and Rabin–Karp](/posts/algo-string-algorithms/).
+Going from four nodes to five with `hash(key) % N` moved 80,194 of 100,000 keys; a hash ring moved 22,588. Both ideas here are built on hashing, the same trick as in [A hash table from scratch](/posts/algo-hash-tables/). A {{< term "bloom-filter" "Bloom filter" >}} answers "is this key in the set?" with very little memory, at the price of sometimes saying yes wrongly. {{< term "consistent-hashing" "Consistent hashing" >}} decides which server owns a key so that adding a server moves few keys. The previous post was [String algorithms: KMP and Rabin–Karp](/posts/algo-string-algorithms/).
 
 > Go 1.26, local example, tests with `go test -race`. Machine load was not low, so I publish counts and bytes, not timings. Hash: FNV-1a followed by a splitmix64 mixing step.
 
@@ -91,7 +92,7 @@ func Rendezvous(nodes []string, key string) string {
 
 It moved 20,137 keys (close to the ideal 20%) and balanced best (1.010). The cost is O(nodes) per lookup instead of O(log points). Fine for tens of nodes, worse for thousands.
 
-## A few things to watch
+## Limits of both
 
 - A Bloom filter must be sized in advance for n; past that, the error rises quickly.
 - Hash quality matters: I added a mixing step because raw FNV on similar names is weak.

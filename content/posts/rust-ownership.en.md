@@ -3,13 +3,14 @@ date = '2026-11-08T10:00:00+03:30'
 draft = false
 title = 'Ownership in Rust'
 description = 'Rust ownership explained with runnable code: the three rules, stack vs heap, moves, Copy, clone, functions and Drop, with a real compiler error.'
+contentType = 'tutorial'
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "beginner", "ownership", "memory"]
 cover = { image = "/images/covers/rust-ownership.png", alt = "Ownership in Rust", hiddenInSingle = true }
 +++
 
-In the [previous post](/posts/rust-types-control-flow/) we covered types, variables and control flow, which felt familiar if you come from Go or Node.js. {{< term "ownership" "Ownership" >}} is the part that does not. It is the idea Rust uses to manage memory without a garbage collector, and it is what the compiler complains about most in your first weeks.
+Write `let b = a;` with `a` as a `String`, use `a` again, and the program does not compile: error E0382. Make `a` an `i32` and the same code compiles without any change. The difference is {{< term "ownership" "ownership" >}}. Unlike the types and control flow of the [previous post](/posts/rust-types-control-flow/), it has no real equivalent in Go or Node.js. It is the idea Rust uses to manage memory without a garbage collector, and it is what the compiler complains about most in your first weeks.
 
 > Everything below was compiled and run with Rust 1.90, and the outputs are copied from those runs.
 
@@ -150,7 +151,7 @@ drop first
 
 `inner` is dropped at the closing brace of its block. `third` is dropped when `consume` returns, because the function owned it. At the end of `main`, locals are dropped in reverse order of declaration: `second` before `first`.
 
-## A few things to watch
+## Common mistakes with moves
 
 - A move is not just for `let`. Passing to a function, pushing into a `Vec` or returning from a block all move.
 - Do not reach for `.clone()` every time the compiler complains. It works, but it hides a copy and often means the design wants a borrow.
@@ -166,4 +167,4 @@ drop first
 
 ## What's next
 
-Moving values in and out of functions is clumsy. In the next post, borrowing and references in Rust, we will see how to let a function use a value without taking ownership.
+Moving values in and out of functions is clumsy. Borrowing and references in Rust shows how a function can use a value without taking ownership.

@@ -3,19 +3,20 @@ date = '2027-06-06T10:00:00+03:30'
 draft = false
 title = 'Failure testing with fault injection'
 description = 'Fault injection testing in Go: a loopback fault proxy and RoundTripper wrapper that expose four real client bugs, with seeded runs you can replay.'
+contentType = 'tutorial'
 categories = ["Distributed"]
 series = ["Distributed Systems"]
 tags = ["distributed-systems", "fault-injection", "chaos-engineering", "testing", "go"]
 cover = { image = "/images/covers/ds-fault-injection-testing.png", alt = "Failure testing with fault injection", hiddenInSingle = true }
 +++
 
-[The previous post](/posts/ds-distributed-rate-limiting/) was about limits. [Timeouts and retries](/posts/ds-timeouts-retries-backoff/) and [circuit breakers](/posts/ds-circuit-breaker-bulkhead/) are code for the day a dependency misbehaves, and code never run on that day is a guess. {{< term "fault-injection" "Fault injection" >}} makes the bad day happen on purpose, cheaply. The method around it is {{< term "chaos-engineering" "chaos engineering" >}}. Test basics: [Go testing](/posts/go-testing-basics/), [JetStream tests](/posts/nats-jetstream-testing/).
+In one run every order "succeeded", yet 16 customers paid twice. [Timeouts and retries](/posts/ds-timeouts-retries-backoff/) and [circuit breakers](/posts/ds-circuit-breaker-bulkhead/) are code for the day a dependency misbehaves, and code never run on that day is a guess. {{< term "fault-injection" "Fault injection" >}} makes the bad day happen on purpose, cheaply. The method around it is {{< term "chaos-engineering" "chaos engineering" >}}. The [previous post](/posts/ds-distributed-rate-limiting/) was about limits; test basics: [Go testing](/posts/go-testing-basics/), [JetStream tests](/posts/nats-jetstream-testing/).
 
 > Honest labelling: everything is Go 1.26 on loopback, one machine. A proxy on 127.0.0.1 models a bad network; it is not one. Randomness is seeded and I print counts, not timings (the machine was busy).
 
 ## A taxonomy of faults
 
-Latency, errors (5xx, 4xx), connection reset or refused, hangs, truncated responses, corrupted payloads, slow bodies, clock skew, resource exhaustion, process kill. My demo covers the first seven; I did not build the last three.
+Latency, errors (5xx, 4xx), connection reset or refused, hangs, truncated responses, corrupted payloads, slow bodies, clock skew, resource exhaustion, process kill. My demo covers the first seven.
 
 ## Two injectors
 
@@ -51,7 +52,7 @@ Hypothesis: with 10% injected 503 (seed 7), retries keep the steady state.
     steady state: HOLDS
 ```
 
-The budgeted client sits exactly on the line: no comfortable margin. A {{< term "retry-budget" "retry budget" >}} caps retries at a share of traffic; {{< term "jitter" "jitter" >}} spreads them.
+The budgeted client sits exactly on the line. A {{< term "retry-budget" "retry budget" >}} caps retries at a share of traffic; {{< term "jitter" "jitter" >}} spreads them.
 
 ## Four bugs it finds
 
@@ -62,7 +63,7 @@ The budgeted client sits exactly on the line: no comfortable margin. A {{< term 
   retry + Idempotency-Key (after)    ok=100/100 attempts=122 charges=100 double-charged=0
 ```
 
-Every order "succeeded", yet 16 customers paid twice. The success rate never shows it; the check must include the server's own count. The fix is an {{< term "idempotency" "idempotency" >}} key.
+The success rate never shows those 16 double charges; the check must include the server's own count. The fix is an {{< term "idempotency" "idempotency" >}} key.
 
 **b) No timeout.** Fault: blackhole. The test waits 2 seconds:
 
@@ -87,11 +88,11 @@ The outage is not survived either way; the budget only stops us making it worse.
   probe fixed (after)  final state=closed    rejected= 27 ok in ticks 65..119: 55/55
 ```
 
-I planted the breaker bug myself; real bugs will be stranger. Tests pass with `go test -race`.
+Real bugs will be stranger. Tests pass with `go test -race`.
 
 ## Reproducing a failure by seed
 
-Same seed, same transcript (fault log, per-order outcomes, charges). The md5 of the transcript:
+Same seed, same transcript (fault log, per-order outcomes, charges); its md5:
 
 ```
   seed 42, run 1: md5 1a6089762f2084ba9da0a3e6ab92b0b8
@@ -107,7 +108,7 @@ Going further is {{< term "deterministic-simulation" "deterministic simulation" 
 
 In my experience: RoundTripper unit tests in CI on every commit, the proxy in CI or staging, production only with guardrails. A {{< term "game-day" "game day" >}} needs a runbook, named roles, abort conditions and a communication channel. I would never inject faults in production without them.
 
-## A few things to watch
+## Rules for a fault experiment
 
 - State the hypothesis first, with a number.
 - Check correctness (double charges), not only availability.
@@ -120,4 +121,4 @@ Add a clock-skew fault to the RoundTripper (shift the `Date` header) and test a 
 
 ## What's next
 
-The next post is “Modular monolith or microservices?”.
+“Modular monolith or microservices?”: each network boundary is a new place for these faults; should you create more?

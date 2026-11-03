@@ -3,13 +3,14 @@ date = '2027-01-24T10:00:00+03:30'
 draft = false
 title = 'Zero-downtime migrations'
 description = 'Zero-downtime migrations on PostgreSQL 18.3: which ALTERs rewrite the table, NOT VALID constraints, CREATE INDEX CONCURRENTLY and expand/contract.'
+contentType = 'engineering'
 categories = ["Databases"]
 series = ["Databases"]
 tags = ["databases", "postgresql", "migrations", "zero-downtime", "ddl"]
 cover = { image = "/images/covers/db-zero-downtime-migrations.png", alt = "Zero-downtime migrations", hiddenInSingle = true }
 +++
 
-In the [previous post](/posts/db-jsonb-fulltext-search/) we added JSONB and search indexes to a table. On a laptop that is free; on a live table with traffic, the same {{< term "migration" "migration" >}} can freeze the application. The cost is rarely the SQL itself, it is the [locks](/posts/db-locks-deadlocks/) it takes and how long it holds them. This post checks, statement by statement, what is safe. It uses what we learned about [MVCC](/posts/db-mvcc-vacuum/), [indexes](/posts/db-indexes-btree-explain/) and [transactions](/posts/db-transactions-acid/).
+Adding a column with a constant default to 200k rows is instant; the same column with `DEFAULT clock_timestamp()` rewrites the whole table into a new file. On a laptop that difference, like building the indexes from [JSONB and full-text search](/posts/db-jsonb-fulltext-search/), goes unnoticed; on a live table with traffic, a {{< term "migration" "migration" >}} can freeze the application. The cost is rarely the SQL itself, it is the [locks](/posts/db-locks-deadlocks/) it takes and how long it holds them. This post checks, statement by statement, what is safe. It uses what we learned about [MVCC](/posts/db-mvcc-vacuum/), [indexes](/posts/db-indexes-btree-explain/) and [transactions](/posts/db-transactions-acid/).
 
 > Everything ran on a real PostgreSQL 18.3, on a copy of the 200k-row `orders` table (`orders_m`). Two or three sessions were driven by one small Go program in a fixed order. Some of these behaviours depend on the version; I only ran 18.3. No timings: the machine was busy, so I use deterministic signals instead.
 
@@ -114,7 +115,7 @@ rows still NULL: 0  mismatches: 0
 
 Between steps both old and new code work, which is the whole point.
 
-## A few things to watch
+## Rules for DDL in production
 
 - `RENAME COLUMN` is a metadata change (per the docs; I did not run it) but breaks running code; the recipe above is for compatibility, not speed.
 - Every DDL in production gets `lock_timeout` and a retry loop.
@@ -122,10 +123,6 @@ Between steps both old and new code work, which is the whole point.
 - Behaviour such as which type changes skip a rewrite is version dependent: test on your version with `pg_relation_filenode()`.
 - Migration tools (goose, Flyway and the like) only run files in order; they do not make a statement safe.
 
-## Exercise
-
-Copy a table, then plan "make `status` `NOT NULL` and add a foreign key" with no long blocking lock. For each statement predict the lock, then confirm it in `pg_locks`.
-
 ## What's next
 
-The next post is "Table partitioning": splitting one huge table into parts the planner can skip.
+Table partitioning: when a table grows too big to treat as one piece, splitting it into parts the planner can skip.

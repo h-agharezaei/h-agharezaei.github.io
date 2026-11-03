@@ -3,13 +3,14 @@ date = '2026-12-02T10:00:00+03:30'
 draft = false
 title = 'Error handling with Result and Option in Rust'
 description = 'Rust error handling with Result and Option: unwrap vs expect, the ? operator, map and and_then, custom error types with From and main returning Result.'
+contentType = 'tutorial'
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "beginner", "errors", "result", "option"]
 cover = { image = "/images/covers/rust-error-handling-result.png", alt = "Error handling with Result and Option in Rust", hiddenInSingle = true }
 +++
 
-In the [previous post](/posts/rust-collections-strings/) we worked with `Vec`, `HashMap` and strings. Several of their methods returned an `Option`, and parsing a string returns a `Result`. This post is about those two types and how Rust code deals with failure. Like Go, Rust has no exceptions, but errors are not a second return value either: they are part of the type of the return value, so you cannot forget they exist.
+Like Go, Rust has no exceptions, but errors are not a second return value either: they are part of the type of the return value, so you cannot forget they exist. Several methods of `Vec`, `HashMap` and strings in the [previous post](/posts/rust-collections-strings/) returned an `Option`, and parsing a string returns a `Result`; this post is about those two types.
 
 > I compiled and ran everything below with Rust 1.90. Outputs and compiler messages are copied from those runs.
 
@@ -171,7 +172,7 @@ Checking "which error is it" is a `match` or `matches!` on the enum, instead of 
 
 Both languages treat errors as values and make you deal with them near the call. In Go the error is a separate return value that you can drop with `_`, and the compiler does not complain. In Rust the `Result` is the return value, so you must unpack it (or `?` it) to get at the data, and the `Err` side is a concrete type you can `match` exhaustively. `?` replaces the repeated `if err != nil { return err }` lines. The cost is that you write the error type and `From` impls yourself, which is more upfront code.
 
-## A few things to watch
+## Where error handling goes wrong
 
 - `unwrap` in library or server code turns bad input into a crash. Reserve it for cases that are truly impossible.
 - `?` converts errors with `From`. If there is no `From` impl for that pair of types, you get a compile error, not a runtime surprise.
@@ -187,4 +188,4 @@ Both languages treat errors as values and make you deal with them near the call.
 
 ## What's next
 
-In the next post we look at modules, crates and Cargo in Rust: how to split code across files, use external crates, and manage a project.
+Modules, crates and Cargo in Rust: once code grows, it has to be split across files and crates.

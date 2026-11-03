@@ -3,13 +3,14 @@ date = '2027-05-25T10:00:00+03:30'
 draft = false
 title = 'کاربر، sudo و capability'
 description = 'کاربر، sudo و capabilityهای Linux از روی man pageها: passwd و shadow، تله‌های sudoers، تکه‌تکه شدن root و یک رمزگشای ماسک capability با Go.'
+contentType = 'tutorial'
 categories = ["Linux"]
 series = ["Linux"]
 tags = ["linux", "sudo", "capabilities", "security", "users", "least-privilege", "go", "macos"]
 cover = { image = "/images/covers/linux-users-sudo-capabilities.fa.png", alt = "کاربر، sudo و capability", hiddenInSingle = true }
 +++
 
-این را روی یک مک نوشتم؛ هیچ‌چیز اینجا روی Linux اجرا نشده است. این یازدهمین پست سری Linux است، بعد از [SSH و کلیدها](/fa/posts/linux-ssh-keys/). آن ورود چه کارهایی می‌تواند بکند؟ واقعیت‌ها از man pageها و سورس Go است؛ نمونه‌ها با عبارت «ضبط‌نشده» علامت خورده‌اند. بیت‌های فایل در [فایل‌سیستم و دسترسی‌ها](/fa/posts/linux-filesystem-permissions/) آمده است.
+وقتی بتوانید وارد شوید، آن ورود چه کارهایی می‌تواند بکند؟ root همه یا هیچ است و واگذاری تکه‌هایش راحت خراب می‌شود. مثل [SSH و کلیدها](/fa/posts/linux-ssh-keys/)، این را روی یک مک نوشتم، نه Linux. واقعیت‌ها از man pageها و سورس Go است؛ نمونه‌ها با «ضبط‌نشده» علامت خورده‌اند. بیت‌های فایل: [فایل‌سیستم و دسترسی‌ها](/fa/posts/linux-filesystem-permissions/).
 
 ## کاربر و گروه
 
@@ -78,7 +79,7 @@ CAP_AUDIT_WRITE CAP_SETFCAP
 
 (خط‌های دیگر حذف شده است.) ماسک دوم را خودم به‌عنوان مجموعه‌ای کانتینرمانند ساخته‌ام. دستور `self` با `//go:build linux` فایل `/proc/self/status` را می‌خواند؛ اینجا «Linux only» چاپ کرد. نسخه‌ی Linux با `GOOS=linux GOARCH=arm64 go vet ./... && go build` ساخته شد و هرگز اجرا نشد.
 
-## چند نکته‌ی مهم
+## خطاهای رایج امتیازدهی
 
 - هرگز `NOPASSWD: ALL` ننویسید.
 - در فهرست دستورهای sudoers از wildcard و ویرایشگر پرهیز کنید.
@@ -92,4 +93,4 @@ CAP_AUDIT_WRITE CAP_SETFCAP
 
 ## قدم بعدی
 
-پست بعدی «لاگ‌ها و journalctl» است.
+بعدی «لاگ‌ها و journalctl» است: خطاهای سرویس کجا می‌روند.

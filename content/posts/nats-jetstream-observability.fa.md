@@ -3,13 +3,14 @@ date = '2027-01-01T10:00:00+03:30'
 draft = false
 title = 'Observability برای JetStream: متریک، لاگ و trace'
 description = 'به یک Worker جت‌استریم در Go متریک Prometheus، لاگ ساختاریافته‌ی slog و انتقال trace context از طریق هدرهای NATS اضافه می‌کنیم؛ با خروجی واقعی.'
+contentType = 'tutorial'
 categories = ["Go"]
 series = ["NATS JetStream"]
 tags = ["go", "nats", "jetstream", "observability", "metrics", "tracing", "prometheus", "slog", "opentelemetry"]
 cover = { image = "/images/covers/nats-jetstream-observability.fa.png", alt = "Observability برای JetStream: متریک، لاگ و trace", hiddenInSingle = true }
 +++
 
-در [مقاله‌ی قبل](/fa/posts/go-graceful-shutdown-workers/) Worker یاد گرفت تمیز خاموش شود، ولی وقتی چیزی خراب می‌شود هنوز بیشتر حدس می‌زنیم. صف این وضع را بدتر می‌کند: Publisher و Worker مستقیم با هم حرف نمی‌زنند، پس یک پیام کند یا ناموفق ردپای روشنی باقی نمی‌گذارد. در این مقاله سه سیگنال معمول را اضافه می‌کنیم: **متریک** (الان سالم است؟)، **لاگ** (برای این پیام چه اتفاقی افتاد؟) و **trace** (یک درخواست چطور از Publisher به Worker رسید؟).
+وقتی Workerی که از صف می‌خواند درست کار نمی‌کند، بیشتر حدس می‌زنیم، و خود صف این وضع را بدتر می‌کند: Publisher و Worker مستقیم با هم حرف نمی‌زنند، پس یک پیام کند یا ناموفق ردپای روشنی باقی نمی‌گذارد. Worker [مقاله‌ی قبل](/fa/posts/go-graceful-shutdown-workers/) حالا تمیز خاموش می‌شود، ولی همین به ما نمی‌گوید در حین کار چه می‌کند. پس سه سیگنال معمول را اضافه می‌کنیم: **متریک** (الان سالم است؟)، **لاگ** (برای این پیام چه اتفاقی افتاد؟) و **trace** (یک درخواست چطور از Publisher به Worker رسید؟).
 
 دمو یک برنامه‌ی Go محلی است: سرور `nats-server` نسخه‌ی v2.15.1 تعبیه‌شده با JetStream، `nats.go` نسخه‌ی v1.54.0، `prometheus/client_golang` نسخه‌ی v1.23.2 و OpenTelemetry نسخه‌ی v1.43.0 روی Go 1.26. یک Publisher حدود ۶۰ کار در ثانیه برای یک Worker سریال می‌فرستد و هر دهمین کار در تحویل اول fail می‌شود. درباره‌ی خود اعداد lag به [مقاله‌ی مقیاس‌پذیری](/fa/posts/nats-jetstream-scaling-lag/) و درباره‌ی `slog` به [مقاله‌ی کانفیگ، لاگ و خطا](/fa/posts/go-config-logging-errors/) نگاه کن.
 
@@ -102,7 +103,7 @@ process jobs.run  span 5c206277c8cc28eb  parent 3eb7ba61771c4eb6
 
 بدون اختراع عدد: روی `consumer_num_pending` که به‌جای آرام گرفتن مدام بالا می‌رود (Worker نمی‌رسد)، روی بالا رفتن سهم `failed` و `redelivered_ok`، و روی هر پیام داخل استریم dead-letter از [مقاله‌ی retry](/fa/posts/nats-jetstream-retry-dlq/) که عمق آن در حالت عادی باید صفر باشد. آستانه‌ها را از baseline خودت انتخاب کن.
 
-## چند نکته‌ی مهم
+## نقاط کور و هزینه‌ها
 
 - `ConsumerInfo` یک درخواست به سرور است؛ تقریباً هر ثانیه نمونه بگیر، نه برای هر پیام.
 - Gaugeها فقط به اندازه‌ی فاصله‌ی نمونه‌برداری تازه‌اند.
@@ -112,4 +113,4 @@ process jobs.run  span 5c206277c8cc28eb  parent 3eb7ba61771c4eb6
 
 ## قدم بعدی
 
-همه‌ی این‌ها روی سرور تعبیه‌شده اجرا شد و همین تست کردن را هم آسان می‌کند. مقاله‌ی بعد درباره‌ی تست سرویس‌های JetStream با nats-server تعبیه‌شده است.
+همه‌ی این‌ها روی سرور تعبیه‌شده اجرا شد و همین تست کردن را هم آسان می‌کند؛ «تست سرویس‌های JetStream با nats-server توکار» دقیقاً روی همین بنا شده است.

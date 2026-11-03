@@ -3,13 +3,14 @@ date = '2027-04-07T10:00:00+03:30'
 draft = false
 title = 'multiprocessing در Python'
 description = 'multiprocessing در Python روی macOS: spawn و guard، Pool و ProcessPoolExecutor، محدودیت pickle، Value و Manager، حافظه‌ی مشترک و خطاها.'
+contentType = 'tutorial'
 categories = ["Python"]
 series = ["Python"]
 tags = ["python", "multiprocessing", "concurrency", "processes", "pickle"]
 cover = { image = "/images/covers/py-multiprocessing.fa.png", alt = "multiprocessing در Python", hiddenInSingle = true }
 +++
 
-در [مقاله‌ی قبل](/fa/posts/py-gil-threading/) دیدیم GIL به thread‌ها اجازه می‌دهد برای انتظار کمک کنند، نه برای محاسبه. جواب استاندارد برای کار CPU، {{< term "process" "پروسه" >}} است: هر کدام interpreter و GIL خودش را دارد. این مقاله ماژول `multiprocessing` را روی macOS اجرا می‌کند و نشان می‌دهد کجا گیر می‌دهد. اگر Go بلدید ([شروع با Go](/fa/posts/go-getting-started/))، انتظار تشریفات بیشتری از `go f()` داشته باشید.
+لیستی با یک میلیون عدد را به یک worker بفرستید و حدود ۴٫۹ مگابایت در هر جهت جابه‌جا می‌شود. این بهای {{< term "process" "پروسه" >}} است، جواب استاندارد Python برای کار CPU: هر کدام interpreter و GIL خودش را دارد، و این مهم است چون [GIL](/fa/posts/py-gil-threading/) به thread‌ها فقط برای انتظار کمک می‌کند، نه برای محاسبه. این مقاله ماژول `multiprocessing` را روی macOS اجرا می‌کند و نشان می‌دهد کجا گیر می‌دهد. اگر Go بلدید ([شروع با Go](/fa/posts/go-getting-started/))، انتظار تشریفات بیشتری از `go f()` داشته باشید.
 
 > Python 3.14.0 روی macOS، دموها در یک پوشه‌ی محلی. ماشین شلوغ بود (load average بالای ۶)، پس **هیچ عدد سرعتی** منتشر نمی‌کنم، فقط تعداد و بایت. چیزی روی Linux اجرا نکردم.
 
@@ -104,7 +105,7 @@ executor هم `bad input 2` را به همین شکل raise کرد.
 
 thread‌ها حافظه را به اشتراک می‌گذارند اما یک GIL دارند؛ پروسه‌ها Python خالص را موازی می‌کنند اما هزینه‌ی شروع و pickle دارند. goroutine ارزان است و حافظه را به اشتراک می‌گذارد ([goroutine و channel](/fa/posts/go-goroutines-channels/)). `worker_threads` در Node تردهای جدا با event loop خودشان‌اند ([worker threads و cluster](/fa/posts/node-worker-threads-cluster/)); پروسه‌ی Python به یک interpreter کامل جدید نزدیک‌تر است.
 
-## چند نکته‌ی مهم
+## جایی که پروسه گران تمام می‌شود
 
 - همیشه guard یعنی `if __name__ == '__main__':` را بنویسید؛ start method پیش‌فرض در هر سیستم‌عامل فرق دارد.
 - تابع و آرگومان‌ها باید قابل pickle باشند؛ کارها را درشت نگه دارید.

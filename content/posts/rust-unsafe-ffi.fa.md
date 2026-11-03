@@ -3,13 +3,14 @@ date = '2027-02-18T10:00:00+03:30'
 draft = false
 title = 'Unsafe و FFI در Rust'
 description = 'unsafe در Rust: قابلیت‌هایی که باز می‌کند، پنهان کردن آن پشت API امن، صدا زدن C از Rust و ساختن کتاب‌خانه‌ی C ABI برای یک برنامه‌ی C.'
+contentType = 'tutorial'
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "unsafe", "ffi", "c", "intermediate"]
 cover = { image = "/images/covers/rust-unsafe-ffi.fa.png", alt = "Unsafe و FFI در Rust", hiddenInSingle = true }
 +++
 
-[مقاله‌ی قبل](/fa/posts/rust-macros/) درباره‌ی macroها بود. این مقاله درباره‌ی دریچه‌ی فرار است: `unsafe`. هر چه تا اینجا یاد گرفتیم ([ownership](/fa/posts/rust-ownership/) و [smart pointerها](/fa/posts/rust-smart-pointers/)) همان چیزی است که Rust امن برایتان تضمین می‌کند. `unsafe` یعنی «این تضمین‌ها را خودم رعایت می‌کنم»، آن هم جایی که کامپایلر نمی‌تواند چک کند، بیشتر برای حرف زدن با C. Go هم همین ایده را با پکیج `unsafe` و `unsafe.Pointer` دارد ([مقاله‌ی pointerها](/fa/posts/go-pointers-memory/)). اینجا یک کتاب‌خانه‌ی کوچک با **C ABI** می‌سازیم و یک برنامه‌ی C را به آن لینک می‌کنیم.
+در Rust، `unsafe` ‏borrow checker را خاموش نمی‌کند؛ فقط پنج قابلیت اضافه را باز می‌کند. پس از [ماکروها](/fa/posts/rust-macros/)، نوبت همین دریچه‌ی فرار است. هر چه تا اینجا یاد گرفتیم ([ownership](/fa/posts/rust-ownership/) و [smart pointerها](/fa/posts/rust-smart-pointers/)) همان چیزی است که Rust امن برایتان تضمین می‌کند. `unsafe` یعنی «این تضمین‌ها را خودم رعایت می‌کنم»، جایی که کامپایلر نمی‌تواند چک کند، بیشتر برای حرف زدن با C. Go هم همین ایده را با پکیج `unsafe` و `unsafe.Pointer` دارد ([مقاله‌ی pointerها](/fa/posts/go-pointers-memory/)). اینجا یک کتاب‌خانه‌ی کوچک با **C ABI** می‌سازیم و یک برنامه‌ی C را به آن لینک می‌کنیم.
 
 > همه‌ی کدهای زیر با Rust 1.90، edition 2024 و روی macOS کامپایل و اجرا شده‌اند. دمو در دو crate محلی است: `unsafe-demo` و `ffi-lib`.
 
@@ -56,7 +57,7 @@ zeroed = 0, 1.0f32 bits = 0x3f800000
 
 `*const T` و `*mut T` همان **raw pointer**ها هستند. ساختنشان امن است (من از آدرس `0x1234` یکی ساختم و `unsafe` لازم نشد)؛ فقط deref کردن امن نیست، چون کسی چک نکرده که به حافظه‌ی معتبر اشاره می‌کند. raw pointer نه lifetime دارد نه قانون borrow، و می‌تواند null باشد.
 
-نکته‌ی مهم: `unsafe` **borrow checker را خاموش نمی‌کند**. فقط همان پنج کار را باز می‌کند. reference‌های معمولی داخل بلوک `unsafe` هم همچنان چک می‌شوند:
+reference‌های معمولی داخل بلوک `unsafe` هم همچنان چک می‌شوند:
 
 ```rust
 let mut v = vec![1, 2, 3];
@@ -188,7 +189,7 @@ scaled = (6.0, 8.0)
 
 برای بررسی کد `unsafe` واقعی از Miri (مفسری که UB را پیدا می‌کند) و sanitizerها (مثل AddressSanitizer) استفاده کنید. هر دو toolchain از نوع nightly می‌خواهند، پس اینجا اجرایشان نکردم.
 
-## چند نکته‌ی مهم
+## قواعد مرز unsafe
 
 - `unsafe` borrow checker را خاموش نمی‌کند؛ مسئولیت پنج عملیات را به شما می‌دهد.
 - بلوک‌های `unsafe` را کوچک نگه دارید و روی هرکدام `// SAFETY:` بنویسید.
@@ -203,4 +204,4 @@ scaled = (6.0, 8.0)
 
 ## قدم بعدی
 
-مقاله‌ی بعد: بررسی کارایی و benchmark با Criterion در Rust.
+«پرفورمنس و benchmark با Criterion در Rust»: حالا که کار می‌کند، چقدر سریع است؟

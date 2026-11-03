@@ -3,15 +3,16 @@ date = '2026-11-13T18:00:00+03:30'
 draft = false
 title = 'Part one wrap-up: a small full node in Go'
 description = 'A small full node in Go: separate processes on loopback, blocks on disk re-validated at start, a JSON-RPC API, a wallet CLI and graceful shutdown.'
+contentType = 'tutorial'
 categories = ["Blockchain"]
 series = ["Blockchain"]
 tags = ["blockchain", "go", "full-node", "json-rpc", "bitcoin"]
 cover = { image = "/images/covers/bc-toy-node-go.png", alt = "Part one wrap-up: a small full node in Go", hiddenInSingle = true }
 +++
 
-The previous post, [Bitcoin Script: a tiny stack interpreter in Rust](/posts/bc-bitcoin-script-rust/), was a side trip. The Go code continues from [The mempool, fees and transaction selection](/posts/bc-mempool-fees/), where every node still lived inside one demo process and forgot everything on exit.
+Until now every node lived in one demo process and forgot everything on exit. The Go code continues from [the mempool post](/posts/bc-mempool-fees/); [the Script interpreter](/posts/bc-bitcoin-script-rust/) was a side trip.
 
-This post closes part one: a {{< term "full-node" "full node" >}} binary `toynode`, blocks on disk, an API and a wallet CLI. The pieces come from [Building a command-line tool in Go](/posts/go-cli-tool/), [Building an API with net/http in Go](/posts/go-http-api-stdlib/) and [Graceful shutdown for Go workers](/posts/go-graceful-shutdown-workers/).
+This post closes part one by fixing that: a {{< term "full-node" "full node" >}} binary `toynode`, blocks on disk, an API and a wallet CLI. The pieces come from [a CLI tool](/posts/go-cli-tool/), [an API with net/http](/posts/go-http-api-stdlib/) and [graceful shutdown](/posts/go-graceful-shutdown-workers/).
 
 > Go 1.27 on macOS (arm64). Local example code, loopback only. The keys are derived from words like "miner": public, demo only. Temp paths are shown as `<tmp>`.
 
@@ -140,7 +141,7 @@ Without claiming a complete list:
 - Coinbase maturity, median-time-past and future-timestamp rules.
 - A real database for the UTXO set, pruning, peer discovery, fee estimation.
 
-## A few things to watch
+## Operational lessons
 
 - Re-validate what you load; the disk is input too.
 - `fsync` before saying a block is stored, and cut torn records on start.
@@ -155,4 +156,4 @@ Without claiming a complete list:
 
 ## What's next
 
-Part two begins. Next post: **Inside the EVM: stack, memory, storage and gas with a tiny Rust interpreter**.
+Part two starts below Solidity: **Inside the EVM: stack, memory, storage and gas with a tiny Rust interpreter**.

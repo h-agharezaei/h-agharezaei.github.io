@@ -3,19 +3,20 @@ date = '2026-12-01T18:00:00+03:30'
 draft = false
 title = 'مبانی zero-knowledge proof با Rust'
 description = 'zero-knowledge proof با Rust: اثبات Schnorr روی secp256k1، اثبات‌کننده‌ی متقلب، Fiat-Shamir و باگ جعل آن، و لو رفتن راز با تکرار nonce.'
+contentType = 'tutorial'
 categories = ["Blockchain"]
 series = ["Blockchain"]
 tags = ["blockchain", "rust", "zero-knowledge", "schnorr", "cryptography", "secp256k1"]
 cover = { image = "/images/covers/bc-zero-knowledge-rust.fa.png", alt = "مبانی zero-knowledge proof با Rust", hiddenInSingle = true }
 +++
 
-پست قبلی، [Bridge و ارتباط بین زنجیره‌ها](/fa/posts/bc-bridges-cross-chain/)، درباره‌ی اعتماد به ادعای زنجیره‌ی دیگر بود. zero-knowledge proof جلوتر می‌رود: قانع کردن دیگری به درستی یک گزاره، بدون نشان دادن دلیلش. در [Merkle tree و اثبات عضویت](/fa/posts/bc-merkle-trees-proofs/) اثبات، برگ را نشان می‌داد و در [کلید، امضای ECDSA و آدرس روی secp256k1](/fa/posts/bc-keys-ecdsa-addresses/) تکرار nonce کلید خصوصی را لو داد. هر دو اینجا برمی‌گردند.
+می‌شود کسی را به درستی گزاره‌ای قانع کرد بی‌آن‌که دلیلش را نشان داد؟ {{< term "zero-knowledge-proof" "zero-knowledge proof" >}} همین کار را می‌کند، یک قدم جلوتر از [Bridge و ارتباط بین زنجیره‌ها](/fa/posts/bc-bridges-cross-chain/) که در آن زنجیره‌ای به ادعای زنجیره‌ی دیگر اعتماد می‌کرد. در [Merkle tree و اثبات عضویت](/fa/posts/bc-merkle-trees-proofs/) اثبات، برگ را نشان می‌داد و در [کلید، امضای ECDSA و آدرس روی secp256k1](/fa/posts/bc-keys-ecdsa-addresses/) تکرار nonce کلید خصوصی را لو داد. هر دو اینجا برمی‌گردند.
 
 > کد آموزشی است، نه برای production. رازها scalar تصادفی تازه‌اند و چاپ نمی‌شوند. Rust 1.90، `k256` 0.13.4 (فقط feature `arithmetic`)، `sha2` 0.10.9 و `rand_core` 0.6.4 روی macOS (arm64). دمو یک پروژه‌ی محلی Cargo است.
 
 ## یک اثبات چه قولی می‌دهد
 
-{{< term "zero-knowledge-proof" "zero-knowledge proof" >}} بین **prover** و **verifier** اجرا می‌شود و سه قول می‌دهد:
+zero-knowledge proof بین **prover** و **verifier** اجرا می‌شود و سه قول می‌دهد:
 
 - **Completeness**: prover صادقِ دارای راز همیشه قانع می‌کند.
 - **Soundness**: prover بدون راز شکست می‌خورد، جز با احتمالی ناچیز.
@@ -135,7 +136,7 @@ Schnorr یک گزاره‌ی ثابت را اثبات می‌کند. سیستم�
 
 سیستم‌های واقعی از کتاب‌خانه‌هایی مثل arkworks، halo2 یا RISC Zero استفاده می‌کنند؛ من سراغشان نرفتم.
 
-## چند نکته‌ی مهم
+## کجا اثبات‌ها می‌شکنند
 
 - همه چیز را hash کنید: برچسب دامنه، generator، کلید عمومی، تعهد و پیام.
 - nonce را تکرار نکنید و اریب نسازید؛ یک تکرار راز را لو می‌دهد.
@@ -150,4 +151,4 @@ Schnorr یک گزاره‌ی ثابت را اثبات می‌کند. سیستم�
 
 ## قدم بعدی
 
-پست بعد: **مهندسی صرافی: واریز، برداشت، confirmation و reorg**.
+**مهندسی صرافی: واریز، برداشت، confirmation و reorg**: از رمزنگاری برمی‌گردیم به کار بک‌اند.

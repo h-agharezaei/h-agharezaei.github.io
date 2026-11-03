@@ -3,13 +3,14 @@ date = '2027-01-21T10:00:00+03:30'
 draft = false
 title = 'Building an API with Axum in Rust'
 description = 'Build a JSON orders API with Rust Axum: routes, extractors, shared state, an error enum, tower-http layers, graceful shutdown on SIGTERM and oneshot tests.'
+contentType = 'tutorial'
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "axum", "http", "api", "tokio", "tower", "intermediate"]
 cover = { image = "/images/covers/rust-http-axum-api.png", alt = "Building an API with Axum in Rust", hiddenInSingle = true }
 +++
 
-In the [previous post](/posts/rust-serde-json/) we learned serde and JSON, and promised to use those types for request and response bodies. This is that post. On top of the Tokio runtime from [async Rust with Tokio](/posts/rust-async-tokio/) we build the same small orders API as in the Go counterpart, [Building an API with net/http in Go](/posts/go-http-api-stdlib/): create, get by id, list, a `422` for validation errors and a `404` for unknown orders. I use **Axum**, a thin web framework on top of Hyper and Tower.
+Broken JSON sent to an Axum handler gets a `400`, valid JSON of the wrong shape a `422`, a missing header a `415`, all as plain text rather than your API's error format, unless you decide otherwise. Here the types from [Serde and JSON in Rust](/posts/rust-serde-json/) become request and response bodies, and on top of the Tokio runtime from [async Rust with Tokio](/posts/rust-async-tokio/) we build the same small orders API as in the Go counterpart, [Building an API with net/http in Go](/posts/go-http-api-stdlib/): create, get by id, list, a `422` for validation errors and a `404` for unknown orders. I use **Axum**, a thin web framework on top of Hyper and Tower.
 
 > I ran everything with Rust 1.90, `axum` 0.8.9, `tokio` 1.54.1, `tower-http` 0.7.1 and `tower` 0.5.3, pinned in `Cargo.lock`. Outputs are copied from real runs of a local demo; headers like `date` are removed.
 
@@ -171,7 +172,7 @@ assert_eq!(res.status(), StatusCode::CREATED);
 
 `clone()` is cheap and shares the state, so a second `oneshot` can read the order back. A table of seven cases (validation, bad JSON, wrong type, 404, 405, 500, timeout) plus the request-id test gave `3 passed`.
 
-## A few things to watch
+## Where Axum surprises you
 
 - Extractor order matters: `Json` (or any body extractor) must be last.
 - Default rejections are plain text; decide whether your API needs JSON errors.
@@ -186,4 +187,4 @@ assert_eq!(res.status(), StatusCode::CREATED);
 
 ## What's next
 
-Next we replace the in-memory store with a real database: databases with SQLx in Rust.
+*Databases with SQLx in Rust* replaces this API's in-memory store with a real Postgres database.

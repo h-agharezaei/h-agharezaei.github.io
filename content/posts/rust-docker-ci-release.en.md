@@ -3,13 +3,14 @@ date = '2027-03-12T10:00:00+03:30'
 draft = false
 title = 'Docker, CI and releasing a Rust service'
 description = 'Ship a Rust axum service: release profile size tuning with real byte counts, a static musl binary, a multi-stage Dockerfile and GitHub Actions.'
+contentType = 'tutorial'
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "docker", "ci", "github-actions", "release", "backend"]
 cover = { image = "/images/covers/rust-docker-ci-release.png", alt = "Docker, CI and releasing a Rust service", hiddenInSingle = true }
 +++
 
-API design was the previous topic, in [typestate patterns](/posts/rust-typestate-patterns/). Now the service has to leave my laptop. This is the Rust twin of [Docker, CI and deploying a Go service](/posts/go-docker-ci-deploy/), and I use a small `orders` service in the style of [the Axum post](/posts/rust-http-axum-api/): `/orders`, `/healthz`, `/readyz`.
+`opt-level = "z"` alone made this service's release binary bigger, not smaller. After [typestate patterns](/posts/rust-typestate-patterns/), the service must leave my laptop. This is the Rust twin of [Docker, CI and deploying a Go service](/posts/go-docker-ci-deploy/), and I use a small `orders` service in the style of [the Axum post](/posts/rust-http-axum-api/): `/orders`, `/healthz`, `/readyz`.
 
 > **Honest disclaimer.** The Docker daemon is off on this machine and I left it off, so I never ran `docker build`. The Dockerfile below is written to be correct but the image was not built, and there are no image sizes or layer outputs here. What I did run, on Rust 1.90.0 (macOS arm64): the release builds and their sizes, a linux/arm64 musl cross build, the endpoints, SIGTERM, clippy, rustfmt and `actionlint`.
 
@@ -29,7 +30,7 @@ I built the service for `aarch64-unknown-linux-musl` with one profile setting ch
 | fat + cgu 1 + strip + abort | 895872 |
 | the same + `opt-level = "z"` | 787192 |
 
-Each setting alone helps modestly (`strip` and `lto = "fat"` the most), but together they cut 2.09 MB to 0.90 MB. `opt-level = "z"` alone made the binary bigger; I did not investigate why. `panic = "abort"` removes unwinding, so a panic kills the process; under an orchestrator that restarts it that is acceptable to me, but it is a behavior change. I chose fat + cgu 1 + strip + abort and kept the default `opt-level`, since speed matters more to me than the last 100 KB:
+Each setting alone helps modestly (`strip` and `lto = "fat"` the most), but together they cut 2.09 MB to 0.90 MB. I did not investigate why `opt-level = "z"` made it bigger. `panic = "abort"` removes unwinding, so a panic kills the process; under an orchestrator that restarts it that is acceptable to me, but it is a behavior change. I chose fat + cgu 1 + strip + abort and kept the default `opt-level`, since speed matters more to me than the last 100 KB:
 
 ```toml
 [profile.release]
@@ -140,11 +141,11 @@ I also broke the matrix on purpose (`matrix.targt`): actionlint reported `proper
 - Run `cargo audit` or `cargo deny` in CI (I did not run them here; I only mention them).
 - Pin the toolchain (`1.90.0`).
 
-## A few things to watch
+## Before you trust this setup
 
 - Run `docker build` yourself before trusting the Dockerfile.
 - `panic = "abort"` changes panic behavior; check that nothing relies on `catch_unwind`.
 
 ## What's next
 
-Next: Rust and WebAssembly, the same language compiled for a very different target.
+*Rust and WebAssembly*: the same language compiled for a very different target.

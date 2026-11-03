@@ -4,13 +4,14 @@ draft = false
 title = 'برنامه‌ریزی پویا ۱: ایده و memoization'
 seoTitle = 'برنامه‌ریزی پویا و memoization در Go'
 description = 'برنامه‌ریزی پویا در Go: memoization در برابر جدول روی Fibonacci، مسیر شبکه و coin change، با شمارش دقیق فراخوانی و تست در برابر brute force.'
+contentType = 'tutorial'
 categories = ["Algorithms"]
 series = ["Algorithms"]
 tags = ["algorithms", "dynamic-programming", "memoization", "recursion", "go"]
 cover = { image = "/images/covers/algo-dynamic-programming-1.fa.png", alt = "برنامه‌ریزی پویا ۱: ایده و memoization", hiddenInSingle = true }
 +++
 
-در مقاله‌ی قبلی، [topological sort و وابستگی‌ها](/fa/posts/algo-topological-sort/)، یک ترتیب روی گراف جلوی کار اضافه را می‌گرفت. بعضی مسئله‌ها به شکل دیگری کار تکراری دارند: بازگشت بارها همان سؤال را می‌پرسد. {{< term "dynamic-programming" "برنامه‌ریزی پویا" >}} (DP) این را درست می‌کند. روی بازگشت، [جدول هش](/fa/posts/algo-hash-tables/) و [آرایه‌های پویا](/fa/posts/algo-dynamic-arrays/) از مقاله‌های قبل و عادت شمردن در [Big-O](/fa/posts/algo-big-o-measured/) بنا شده است.
+`fib(35)` بازگشتیِ ساده برای جواب‌دادن به ۳۶ سؤال متفاوت ۲۹٬۸۶۰٬۷۰۳ بار فراخوانی می‌شود، چون بازگشت بارها همان سؤال را می‌پرسد. {{< term "dynamic-programming" "برنامه‌ریزی پویا" >}} (DP) این را درست می‌کند. در [topological sort و وابستگی‌ها](/fa/posts/algo-topological-sort/) یک ترتیب روی گراف جلوی کار اضافه را می‌گرفت؛ اینجا کار اضافه داخل خود بازگشت است. DP روی بازگشت، [جدول هش](/fa/posts/algo-hash-tables/) و [آرایه‌های پویا](/fa/posts/algo-dynamic-arrays/) از مقاله‌های قبل و عادت شمردن در [Big-O](/fa/posts/algo-big-o-measured/) بنا شده است.
 
 > Go 1.26، مثال محلی، تست با `go test -race`. بار ماشین بالا بود، پس شمارش و allocation منتشر می‌کنم، نه زمان.
 
@@ -30,7 +31,7 @@ func FibNaive(n int, calls *int) int {
 naive  fib(35) = 9227465 calls = 29860703
 ```
 
-نزدیک ۳۰ میلیون فراخوانی برای ۳۶ سؤال متفاوت. حالا {{< term "memoization" "memoize" >}} می‌کنیم: پیش از محاسبه در map نگاه کن، بعد از محاسبه ذخیره کن.
+حالا {{< term "memoization" "memoize" >}} می‌کنیم: پیش از محاسبه در map نگاه کن، بعد از محاسبه ذخیره کن.
 
 ```
 map    fib(35) = 9227465 calls = 69 subproblems = 34
@@ -113,7 +114,7 @@ bad memo, coins {1,2},     11 -> 2 (correct: 6)
 
 فراخوانی دوم ورودی کهنه‌ی فراخوانی اول را برگرداند. همین برای تابع‌هایی با اثر جانبی یا ورودی پنهان (زمان، متغیر سراسری) صادق است: نتیجه‌ی cache‌شده اثر جانبی را رد می‌کند. slice و map در Go نمی‌توانند کلید map باشند، پس state پیچیده را باید به کلیدی قابل‌مقایسه تبدیل کرد.
 
-## چند نکته‌ی مهم
+## پیش از memoize کردن
 
 - زیرمسئله‌ها را بشمارید: تعداد state ضرب‌در کار هر state پیچیدگی است، نه تعداد فراخوانی کد ساده.
 - وقتی stateهای کمی قابل‌دسترس‌اند بالا‌به‌پایین؛ وقتی همه‌شان لازم است یا سربار کمتر می‌خواهید پایین‌به‌بالا.
@@ -125,4 +126,4 @@ bad memo, coins {1,2},     11 -> 2 (correct: 6)
 
 ## قدم بعدی
 
-مقاله‌ی بعدی «برنامه‌ریزی پویا ۲: مسئله‌های کلاسیک» است، جایی که این دستور کار به دنباله‌ها، زیرمجموعه‌ها و edit distance می‌رسد.
+«برنامه‌ریزی پویا ۲: مسئله‌های کلاسیک» همین دستور کار را به دنباله‌ها، زیرمجموعه‌ها و edit distance می‌برد.

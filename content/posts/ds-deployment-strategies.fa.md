@@ -3,13 +3,14 @@ date = '2027-06-09T10:00:00+03:30'
 draft = false
 title = 'روش‌های استقرار: blue-green و canary'
 description = 'مقایسه‌ی روش‌های استقرار با اجرای Go روی loopback: big-bang، rolling، blue-green و canary با rollback خودکار، به‌همراه تغییر امن schema.'
+contentType = 'tutorial'
 categories = ["Distributed"]
 series = ["Distributed Systems"]
 tags = ["distributed-systems", "deployment", "canary", "blue-green", "go"]
 cover = { image = "/images/covers/ds-deployment-strategies.fa.png", alt = "روش‌های استقرار: blue-green و canary", hiddenInSingle = true }
 +++
 
-[مقاله‌ی قبل](/fa/posts/ds-modular-monolith-vs-microservices/) درباره‌ی تعداد قطعه‌های قابل استقرار بود. این یکی درباره‌ی این است که یک قطعه چطور به کاربر می‌رسد. هر deploy یک آزمایش روی production است؛ سؤال این است که پیش از فهمیدن، نسخه‌ی بد به چند کاربر آسیب می‌زند، یعنی {{< term "blast-radius" "blast radius" >}} آن. مرتبط: [طراحی pipeline](/fa/posts/eng-ci-cd-pipeline-design/) و [load balancer](/fa/posts/net-load-balancer-l4-l7/).
+همان باگ ۵٪ با استقرار big-bang به ۱۰٬۰۰۰ درخواست رسید و با rollout مرحله‌ای و تحلیل خودکار به ۱۳۰. هر deploy یک آزمایش روی production است؛ سؤال این است که پیش از فهمیدن، نسخه‌ی بد به چند کاربر آسیب می‌زند، یعنی {{< term "blast-radius" "blast radius" >}} آن. [مقاله‌ی قبل](/fa/posts/ds-modular-monolith-vs-microservices/) قطعه‌های قابل استقرار را شمرد. مرتبط: [طراحی pipeline](/fa/posts/eng-ci-cd-pipeline-design/) و [load balancer](/fa/posts/net-load-balancer-l4-l7/).
 
 > صادقانه: این Go 1.26 روی یک ماشین و فقط loopback است. backendها سرورهای HTTP واقعی‌اند پشت یک reverse proxy وزن‌دار کوچک که خودم نوشتم (`httputil.ReverseProxy`). «باگ» v2 قطعی است: حدود ۵٪ شناسه‌ی درخواست‌ها 500 می‌گیرند. شمارش نشان می‌دهم، نه زمان.
 
@@ -66,7 +67,7 @@ good v2
 step 5: weight=100% canary n=2000 err=0 -> PROMOTED
 ```
 
-نسخه‌ی بد در مرحله‌ی ۲ با blast radius برابر ۱۳۰ درخواست متوقف شد، نه ۱۰٬۰۰۰. مرحله‌ی ۱ نکته را نشان می‌دهد: آزمون با ۲۸ درخواست canary گفت «اشکالی نیست». این شاهد سلامت نیست، {{< term "statistical-power" "توان آماری" >}} پایین است. کد آن را حساب می‌کند: با ۲۰ درخواست canary از ۲۰۰۰، احتمال تشخیص نرخ خطای واقعی ۵٪ برابر ۰٫۲۶ است و یک خطا در ۲۰ فقط p = 0.01 می‌دهد، که کافی نیست. حدود ۵۹ درخواست canary توان ۸۰٪ می‌دهد. (مسیریابی با hash است، پس مرحله‌ی ۱ عدد ۲۸ گرفت نه ۲۰.) فرض‌ها: baseline هیچ‌وقت خطا ندارد؛ برای چندبار نگاه کردن تصحیحی نکردم؛ فقط بررسی نرخ خطا را ساختم، نه latency.
+نسخه‌ی بد در مرحله‌ی ۲ متوقف شد. مرحله‌ی ۱ نکته را نشان می‌دهد: آزمون با ۲۸ درخواست canary گفت «اشکالی نیست». این شاهد سلامت نیست، {{< term "statistical-power" "توان آماری" >}} پایین است. کد آن را حساب می‌کند: با ۲۰ درخواست canary از ۲۰۰۰، احتمال تشخیص نرخ خطای واقعی ۵٪ برابر ۰٫۲۶ است و یک خطا در ۲۰ فقط p = 0.01 می‌دهد، که کافی نیست. حدود ۵۹ درخواست canary توان ۸۰٪ می‌دهد. (مسیریابی با hash است، پس مرحله‌ی ۱ عدد ۲۸ گرفت نه ۲۰.) فرض‌ها: baseline هیچ‌وقت خطا ندارد؛ برای چندبار نگاه کردن تصحیحی نکردم؛ فقط بررسی نرخ خطا را ساختم، نه latency.
 
 ## ترافیک سایه و feature flag
 
@@ -94,7 +95,7 @@ RIGHT: expand, dual-write, backfill, switch reads, contract
 
 به تجربه‌ی من تا وقتی rollback ارزان و امن است، حرکت اول است؛ و {{< term "roll-forward" "roll-forward" >}} وقتی برنده می‌شود که v2 داده‌ای نوشته که v1 نمی‌خواند یا migration چیزی را حذف کرده. {{< term "sli" "SLIها" >}}ی [SLO](/fa/posts/eng-sli-slo-error-budgets/) را به تفکیک نسخه ببینید، وگرنه canary ۱٪ در نویز گم می‌شود. Argo Rollouts، Flagger، Spinnaker و استراتژی‌های Deployment در Kubernetes این کار را خودکار می‌کنند؛ آن‌ها را فقط از مستندات می‌شناسم.
 
-## چند نکته‌ی مهم
+## کجا rollout خودکار کور است
 
 - readiness دلیل درستی نیست؛ rollout به metric واقعی نیاز دارد.
 - canaryهای کوچک کورند: حجم نمونه‌ی لازم را حساب کنید.
@@ -107,4 +108,4 @@ RIGHT: expand, dual-write, backfill, switch reads, contract
 
 ## قدم بعدی
 
-مقاله‌ی بعد «برآورد ظرفیت» است.
+«برآورد ظرفیت»: تغییری که امن منتشر شد، روی چند ماشین اجرا می‌شود؟

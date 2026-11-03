@@ -3,13 +3,14 @@ date = '2026-12-18T10:00:00+03:30'
 draft = false
 title = 'Project layout and clean architecture in Go'
 description = 'A small orders API in a layered Go layout: domain, service, store and transport, wired by hand, with real import checks, a fake-store test and curl runs.'
+contentType = 'engineering'
 categories = ["Go"]
 series = ["Go Backend"]
 tags = ["go", "architecture", "clean-architecture", "backend"]
 cover = { image = "/images/covers/go-project-layout-clean-architecture.png", alt = "Project layout and clean architecture in Go", hiddenInSingle = true }
 +++
 
-This post starts the Go Backend series. The Go Fundamentals series ended with [packages and modules](/posts/go-packages-modules/) and the [URL shortener mini project](/posts/go-mini-project-url-shortener/), where everything fit in a handful of files. Once a service has a database, an HTTP layer and real business rules, the question becomes where things live and who is allowed to import whom. Here we build one small `orders` service in a layered layout and check the dependency rules with the toolchain instead of by eye.
+Once a service has a database, an HTTP layer and real business rules, the question becomes where things live and who is allowed to import whom; if SQL tags leak into the domain, testing without infrastructure gets hard. In [packages and modules](/posts/go-packages-modules/) and the [URL shortener mini project](/posts/go-mini-project-url-shortener/) everything fit in a handful of files. Here we build one small `orders` service in a layered layout and check the dependency rules with the toolchain instead of by eye.
 
 > Everything below was run with Go 1.26 on macOS (arm64). The module is `example.com/orders`, standard library only.
 
@@ -172,7 +173,7 @@ An invalid body returned `422` with `{"error":"invalid order: customer and posit
 
 Roughly. The famous circles map onto Go like this: entities are `domain`, use cases are `service`, interface adapters are `transport` and `store`, and frameworks and drivers are `main` plus third-party libraries. The Go-specific part is that interfaces are implicit and small, so you rarely need a dedicated "ports" package.
 
-## A few things to watch
+## When this layout is overkill
 
 - This is over-engineering for a 300-line tool or a CRUD service with no real rules. Start flat (`main.go`, `store.go`), and extract a package when a second implementation or a hard-to-test piece shows up.
 - Layers do not need an interface each. Add one where you want a seam: storage, clocks, external APIs. A service with a single implementation and no tests does not need it.
@@ -182,4 +183,4 @@ Roughly. The famous circles map onto Go like this: entities are `domain`, use ca
 
 ## What's next
 
-Next: config, structured logging and errors in Go, where we replace the hard-coded `:8080` and `log.Println` in this service.
+Next is "Config, structured logging and errors in Go", which replaces this service's hard-coded `:8080` and bare `log.Println`.

@@ -3,13 +3,14 @@ date = '2026-11-17T18:00:00+03:30'
 draft = false
 title = 'توکن‌ها: ERC-20 و ERC-721'
 description = 'ERC-20 و ERC-721 دست‌نویس با Solidity: موجودی به شکل mapping، allowance، انتقال امن NFT، تست با Foundry و خواندن رویدادهای Transfer با cast روی anvil.'
+contentType = 'tutorial'
 categories = ["Blockchain"]
 series = ["Blockchain"]
 tags = ["blockchain", "solidity", "erc20", "erc721", "foundry"]
 cover = { image = "/images/covers/bc-erc20-erc721.fa.png", alt = "توکن‌ها: ERC-20 و ERC-721", hiddenInSingle = true }
 +++
 
-در [تست، fuzz و invariant با Foundry](/fa/posts/bc-foundry-testing-fuzzing/) خزانه تست واحد، fuzz و invariant گرفت. این پست با همان پروژه و همان ابزار سراغ دو قراردادی می‌رود که بیشتر آدم‌ها از کلمه‌ی «توکن» منظورشان است: توکن تعویض‌پذیر {{< term "erc-20" "ERC-20" >}} و NFT از نوع {{< term "erc-721" "ERC-721" >}}.
+با فرستادن توکن چه چیزی جابه‌جا می‌شود و کیف‌پول گیرنده از کجا خبردار می‌شود؟ جواب در دو قراردادی است که بیشتر آدم‌ها از «توکن» منظورشان است: توکن تعویض‌پذیر {{< term "erc-20" "ERC-20" >}} و NFT {{< term "erc-721" "ERC-721" >}}، در همان پروژه‌ی [پست تست](/fa/posts/bc-foundry-testing-fuzzing/).
 
 هر دو را دستی نوشتم تا تک‌تک خط‌ها را ببینم. قرارداد آموزشی‌اند و audit نشده‌اند. در production انتخاب معمول یک کتاب‌خانه‌ی audit‌شده مثل OpenZeppelin است، نه کد یک پست وبلاگ.
 
@@ -186,7 +187,7 @@ $ cast logs --from-block 0 --address $N "Transfer(address indexed from,address i
 
 هر دو رویداد topic اول یکسانی دارند، `keccak256("Transfer(address,address,uint256)")`. رویداد ERC-20 سه topic دارد و مقدار در `data` است؛ ERC-721 شناسه‌ی توکن را هم index می‌کند، پس چهار topic و data خالی دارد. indexer باید از همین، یا از شناختن قرارداد، آن‌ها را از هم جدا کند.
 
-## چند نکته‌ی مهم
+## دام‌های کار با توکن
 
 - هرگز ۱۸ رقم اعشار را فرض نکنید. `decimals()` را بخوانید و مقدارها را از اول تا آخر عدد صحیح نگه دارید.
 - تا جایی که می‌دانم بعضی توکن‌های واقعی استاندارد را رعایت نمی‌کنند (بدون خروجی `bool`، کارمزد روی انتقال). کتاب‌خانه‌ها برای همین فراخوانی‌ها را wrap می‌کنند.
@@ -201,4 +202,4 @@ $ cast logs --from-block 0 --address $N "Transfer(address indexed from,address i
 
 ## قدم بعدی
 
-پست بعد: **کار با اتریوم از Go با go-ethereum**.
+پست بعد: **کار با اتریوم از Go با go-ethereum**؛ همین کارها با کد.

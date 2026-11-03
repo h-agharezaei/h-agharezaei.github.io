@@ -3,13 +3,14 @@ date = '2027-01-26T10:00:00+03:30'
 draft = false
 title = 'Project structure and config in Node.js'
 description = 'Node.js project structure and config: a layered layout, subpath imports, validated env config, --env-file, parseArgs, secret redaction and a node:test.'
+contentType = 'tutorial'
 categories = ["Node.js"]
 series = ["Node.js"]
 tags = ["nodejs", "config", "project-structure", "environment-variables", "parseargs"]
 cover = { image = "/images/covers/node-project-structure-config.png", alt = "Project structure and config in Node.js", hiddenInSingle = true }
 +++
 
-In the previous post, [Testing in Node.js with node:test](/posts/node-testing-builtin/), I tested small functions. Now I want a project shape that stays testable as it grows, and configuration that fails loudly. This is the Node counterpart of [Project layout and clean architecture in Go](/posts/go-project-layout-clean-architecture/) and [Config, structured logging and errors in Go](/posts/go-config-logging-errors/). It builds on the [HTTP server](/posts/node-http-server/) and [ESM modules](/posts/node-modules-esm-cjs/).
+`if (process.env.DEBUG)` is true when `DEBUG=false`, because every environment value is a string. Config bugs like this only fail loudly if the project is built to catch them. [Testing in Node.js with node:test](/posts/node-testing-builtin/) covered small functions; now I want a project shape that stays testable as it grows, and configuration that fails loudly. This is the Node counterpart of [Project layout and clean architecture in Go](/posts/go-project-layout-clean-architecture/) and [Config, structured logging and errors in Go](/posts/go-config-logging-errors/). It builds on the [HTTP server](/posts/node-http-server/) and [ESM modules](/posts/node-modules-esm-cjs/).
 
 > Node v20.13.1. The code is a local example (an ESM project, no dependencies); all outputs are copied from real runs on loopback. I took no timings because the machine was busy.
 
@@ -116,7 +117,7 @@ const cfg = loadConfig({ file: { port: 1111 }, env: { ...base, APP_PORT: '2222' 
 assert.equal(cfg.port, 3333);
 ```
 
-## A few things to watch
+## Config that is silently wrong
 
 - `NODE_ENV` only sets a string. Node itself does nothing with it; according to the docs, some libraries (Express, for example) change behavior. I printed `undefined` without it and `production` with it. Do not branch your own logic on it; use explicit settings.
 - Keep `.env` out of git and never commit real secrets.
@@ -129,4 +130,4 @@ Add `APP_TIMEOUT_MS` (integer, default 5000, must be above 0) and a `--timeout-m
 
 ## What's next
 
-The next post is Postgres from Node.js with pg: connecting this config's `dbUrl` to a real database.
+"Postgres from Node.js with pg": there this config's `dbUrl` connects to a real database.

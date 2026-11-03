@@ -3,13 +3,14 @@ date = '2027-02-14T10:00:00+03:30'
 draft = false
 title = 'Macros in Rust'
 description = 'Rust macros: write declarative macros with macro_rules! and a derive procedural macro with syn and quote, with hygiene, hand expansion and compiler errors.'
+contentType = 'tutorial'
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "macros", "proc-macro", "intermediate"]
 cover = { image = "/images/covers/rust-macros.png", alt = "Macros in Rust", hiddenInSingle = true }
 +++
 
-In the [previous post](/posts/rust-trait-objects-dyn/) traits were the topic. Now to the other tool for abstraction: **macros**. You already use them every day: `println!`, `vec!`, and the `#[derive(Serialize)]` from [Serde and JSON in Rust](/posts/rust-serde-json/). In this post we write both kinds ourselves, a declarative macro with `macro_rules!` and a derive macro in its own crate.
+`square!(3 + 1)` is 16 in Rust, not 7, because a macro works on tokens, not text. After traits in [Trait objects and dyn in Rust](/posts/rust-trait-objects-dyn/), **macros** are the other tool for abstraction, and you already use them every day: `println!`, `vec!`, and the `#[derive(Serialize)]` from [Serde and JSON in Rust](/posts/rust-serde-json/). Below we write both kinds ourselves, a declarative macro with `macro_rules!` and a derive macro in its own crate.
 
 > I ran everything with Rust 1.90, `syn` 2.0.119, `quote` 1.0.47 and `proc-macro2` 1.0.107. Outputs come from real runs of a local workspace.
 
@@ -44,7 +45,7 @@ max!(3, 9, 4) = 9
 max!(2.5, 1.5) = 2.5
 ```
 
-Note `square!(3 + 1)` is 16, not `3 + 1 * 3 + 1 = 7`. An `expr` fragment stays one expression node, so Rust does not have C's textual-substitution trap.
+`square!(3 + 1)` is 16, not `3 + 1 * 3 + 1 = 7`. An `expr` fragment stays one expression node, so Rust does not have C's textual-substitution trap.
 
 A literal for `HashMap`, using `$(...),*` and an optional trailing comma:
 
@@ -175,7 +176,7 @@ error: Describe can only be derived for structs
 
 That is what `serde` does conceptually: its derive reads your struct with `syn`, then generates `impl Serialize` code with `quote`, honoring attributes like `#[serde(rename)]`. There are two more kinds of procedural macros: attribute-like (`#[route(GET, "/")]`, which replaces the item it is attached to) and function-like (`sql!(...)`, called like `macro_rules!` but written in Rust code).
 
-## A few things to watch
+## Costs and good habits
 
 - Prefer a function or generics. Reach for a macro only for variable arguments, new syntax, or generating repetitive items.
 - Macros cost compile time (a proc-macro crate and `syn` must be built) and readability; error messages get worse.
@@ -190,4 +191,4 @@ That is what `serde` does conceptually: its derive reads your struct with `syn`,
 
 ## What's next
 
-Next is unsafe and FFI in Rust: what `unsafe` really allows, and how to call C code.
+*Unsafe and FFI in Rust*: what `unsafe` really allows, and how to call C code.

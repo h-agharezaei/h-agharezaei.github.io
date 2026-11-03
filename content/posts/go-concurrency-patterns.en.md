@@ -3,13 +3,14 @@ date = '2027-01-25T10:00:00+03:30'
 draft = false
 title = 'Concurrency patterns: worker pool and errgroup'
 description = 'Go concurrency patterns: bounded worker pools, errgroup with first-error cancellation, SetLimit, pipelines, goroutine leaks and weighted semaphores.'
+contentType = 'tutorial'
 categories = ["Go"]
 series = ["Go Backend"]
 tags = ["go", "backend", "concurrency", "errgroup", "worker-pool", "semaphore"]
 cover = { image = "/images/covers/go-concurrency-patterns.png", alt = "Concurrency patterns: worker pool and errgroup", hiddenInSingle = true }
 +++
 
-The [previous post](/posts/go-transactions-patterns/) was about transactions and the repository pattern. The examples here are plain Go and need no database. Backend code often has many independent pieces of work (HTTP calls, queries, files) that should run concurrently, but not unboundedly, and should stop when one fails. This post builds on [goroutines and channels](/posts/go-goroutines-channels/) and [sync, select and context](/posts/go-sync-select-context/) and shows the patterns I reach for most.
+Backend code is full of independent work (HTTP calls, queries, files) that should run concurrently but bounded, and stop when one piece fails; get the stopping wrong and 300 timed-out calls leak 300 goroutines. Unlike [transactions and the repository pattern](/posts/go-transactions-patterns/), the examples are plain Go; they build on [goroutines and channels](/posts/go-goroutines-channels/) and [sync, select and context](/posts/go-sync-select-context/).
 
 > Everything was run with Go 1.26 on macOS (arm64), `golang.org/x/sync` v0.24.0, load average about 1.4. I show no timings, only counts and ordering.
 
@@ -165,7 +166,7 @@ TryAcquire(11): false
 
 The peak never exceeded 10. A request bigger than the whole budget can never succeed: `Acquire` waits until its context ends, while `TryAcquire` returns false at once.
 
-## A few things to watch
+## Common mistakes in concurrent code
 
 - Always give `Go` functions a way out: watch `ctx.Done()` in loops and blocking calls, or cancellation does nothing.
 - Closing channels is the sender's job; with several senders, close from a goroutine that waits for all of them.
@@ -179,4 +180,4 @@ Write a function `MapOrdered(ctx, inputs, n, fn)` that applies `fn` to every inp
 
 ## What's next
 
-Concurrency gets harder when work crosses the database and a message broker. The next post is the outbox pattern with Postgres and NATS in Go.
+Next is "The outbox pattern with Postgres and NATS in Go", where a background loop has to keep a database and a message broker in step.

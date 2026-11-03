@@ -3,13 +3,14 @@ date = '2027-03-21T10:00:00+03:30'
 draft = false
 title = 'Shortest paths and Dijkstra'
 description = 'Dijkstra in Go with container/heap: lazy deletion vs heap.Fix, why negative edges break it, Bellman-Ford, Floyd-Warshall, and A* on a grid, with counts.'
+contentType = 'tutorial'
 categories = ["Algorithms"]
 series = ["Algorithms"]
 tags = ["algorithms", "graphs", "dijkstra", "shortest-path", "go"]
 cover = { image = "/images/covers/algo-shortest-paths-dijkstra.png", alt = "Shortest paths and Dijkstra", hiddenInSingle = true }
 +++
 
-In the previous post, [Graphs: BFS and DFS](/posts/algo-graphs-bfs-dfs/), {{< term "bfs" "BFS" >}} found shortest paths by counting edges. That works only when every edge costs the same. Roads, network links and prices have weights, and then the route with fewest edges is not the cheapest. The fix needs a [priority queue](/posts/algo-heaps-priority-queues/), the {{< term "binary-heap" "heap" >}} from earlier, to always take the closest unfinished vertex next.
+In the six-vertex example below, the direct edge `A-F` costs 14, while the two-edge route through C costs 11. {{< term "bfs" "BFS" >}} from [Graphs: BFS and DFS](/posts/algo-graphs-bfs-dfs/) counts edges and picks the direct one, right only when all edges cost the same. Roads, network links and prices have weights. The fix needs a [priority queue](/posts/algo-heaps-priority-queues/), the {{< term "binary-heap" "heap" >}} from earlier, to always take the closest unfinished vertex next.
 
 > Go 1.26, local example, tests with `go test -race`. The load average was above 3 when I ran it, so I publish only counts, no timings.
 
@@ -44,7 +45,7 @@ F dist=11 path=A>C>F
 lazy: {Pops:8 Stale:2 Checks:18 Relax:7 Fixes:0}
 ```
 
-Note that `A-F` costs 14 but the route through C costs 11. Each of the 9 edges is checked from both ends, hence 18 checks.
+Each of the 9 edges is checked from both ends, hence 18 checks.
 
 ## Lazy deletion or decrease-key
 
@@ -98,7 +99,7 @@ no wall in the way: dijkstra expanded 216 | A* cost 20 expanded 21
 
 With a clear straight line A* expanded 21 cells, Dijkstra 216. The wall shrank the gain, because the estimate does not see walls. The generic `Search[N comparable]` function is the same code for both; Dijkstra is A* with estimate 0. A test checks equal costs on 100 random grids.
 
-## A few things to watch
+## Where Dijkstra goes wrong
 
 - Dijkstra needs non-negative weights; otherwise use Bellman-Ford.
 - A zero weight is fine; a negative one is not.
@@ -112,4 +113,4 @@ Add a path-reconstruction check to `DijkstraFix`, then make a graph where all ed
 
 ## What's next
 
-Some graphs are about order, not distance: build steps, imports, tasks. The next post is "Topological sort and dependencies".
+"Topological sort and dependencies" follows because some graphs are about order, not distance: build steps, imports, tasks.

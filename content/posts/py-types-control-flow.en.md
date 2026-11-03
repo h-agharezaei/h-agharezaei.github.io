@@ -3,13 +3,14 @@ date = '2027-01-18T10:00:00+03:30'
 draft = false
 title = 'Types and control flow in Python'
 description = 'Python types and control flow for Go and Node.js developers: strong dynamic typing, int, float, str, references, for-else and match, all run on 3.14.'
+contentType = 'tutorial'
 categories = ["Python"]
 series = ["Python"]
 tags = ["python", "beginner", "types", "control-flow"]
 cover = { image = "/images/covers/py-types-control-flow.png", alt = "Types and control flow in Python", hiddenInSingle = true }
 +++
 
-In the [previous post](/posts/py-environment-uv-venv/) we set up the Python environment with venv and uv. Now we need the building blocks: types, names and control flow. If you came from Go like me, the biggest shift is that types live on values, not on variables. I compare with [Go's types and control flow](/posts/go-types-control-flow/) only where I am sure of the facts.
+In Python, `b = a` copies nothing: append to `b` and `a` changes too, because a name is a label on an object, not a box. If you came from Go like me, that is the biggest shift in the basics: types live on values, not on variables. With the environment from [the previous post](/posts/py-environment-uv-venv/) ready, here are types, names and control flow. I compare with [Go's types and control flow](/posts/go-types-control-flow/) only where I am sure of the facts.
 
 > Everything below ran with Python 3.14.0 on macOS (`python3 --version` prints `Python 3.14.0`). The demo files are local scripts, `basics.py` and `flow.py`. For syntax errors I show only the last line of the output.
 
@@ -194,7 +195,7 @@ Point(x=1, y=2) -> point 1,2
 
 Cases are tried top to bottom. The guard (`if n < 0`) is the `-5` case, `Point(x=0, y=0)` is a class pattern, and `case _` is the default.
 
-## A few things to watch
+## Common traps
 
 - I named a script `types.py` and every import broke with `cannot import name 'GenericAlias' from 'types'`. Never name your files like standard library modules.
 - `float` for money is a bug. Use `Decimal` built from strings.
@@ -210,4 +211,4 @@ Cases are tried top to bottom. The guard (`if n < 0`) is the `-5` case, `Point(x
 
 ## What's next
 
-The next post is "Functions, closures and generators in Python".
+Next is "Functions, closures and generators in Python": with values, names and control flow in place, the next building block is the function.

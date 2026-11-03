@@ -3,13 +3,14 @@ date = '2027-02-14T10:00:00+03:30'
 draft = false
 title = 'ماکروها در Rust'
 description = 'نوشتن ماکروی declarative با macro_rules! و ماکروی derive با syn و quote در Rust، همراه با خروجی واقعی، hygiene، باز کردن دستی ماکرو و خطاهای کامپایلر.'
+contentType = 'tutorial'
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "macros", "proc-macro", "intermediate"]
 cover = { image = "/images/covers/rust-macros.fa.png", alt = "ماکروها در Rust", hiddenInSingle = true }
 +++
 
-در [مقاله‌ی قبل](/fa/posts/rust-trait-objects-dyn/) موضوع traitها بود. حالا سراغ ابزار دیگرِ انتزاع می‌رویم: **ماکرو** (macro). هر روز از آن‌ها استفاده می‌کنید: `println!`، `vec!` و همان `#[derive(Serialize)]` که در [Serde و JSON در Rust](/fa/posts/rust-serde-json/) دیدیم. در این مقاله هر دو نوع را خودمان می‌نویسیم: ماکروی declarative با `macro_rules!` و ماکروی derive در یک crate جدا.
+در Rust، `square!(3 + 1)` برابر 16 است، نه 7؛ ماکرو روی token کار می‌کند، نه متن. بعد از traitها در [Trait Object و dyn در Rust](/fa/posts/rust-trait-objects-dyn/)، **ماکرو** ابزار دیگرِ انتزاع است و هر روز از آن استفاده می‌کنید: `println!`، `vec!` و `#[derive(Serialize)]` که در [Serde و JSON در Rust](/fa/posts/rust-serde-json/) دیدیم. در ادامه هر دو نوع را می‌نویسیم: ماکروی declarative با `macro_rules!` و ماکروی derive در یک crate جدا.
 
 > همه‌چیز را با Rust نسخه‌ی 1.90، `syn` نسخه‌ی 2.0.119، `quote` نسخه‌ی 1.0.47 و `proc-macro2` نسخه‌ی 1.0.107 اجرا کرده‌ام. خروجی‌ها از اجرای واقعی یک workspace محلی کپی شده‌اند.
 
@@ -44,7 +45,7 @@ max!(3, 9, 4) = 9
 max!(2.5, 1.5) = 2.5
 ```
 
-دقت کنید `square!(3 + 1)` برابر 16 است، نه `3 + 1 * 3 + 1 = 7`. یک fragment از نوع `expr` همچنان یک گره‌ی کامل expression می‌ماند، پس دام جایگزینی متنی در C اینجا وجود ندارد.
+`square!(3 + 1)` برابر 16 است، نه `3 + 1 * 3 + 1 = 7`. یک fragment از نوع `expr` همچنان یک گره‌ی کامل expression می‌ماند، پس دام جایگزینی متنی در C اینجا وجود ندارد.
 
 یک literal برای `HashMap` با `$(...),*` و کامای انتهایی اختیاری:
 
@@ -175,7 +176,7 @@ error: Describe can only be derived for structs
 
 `serde` هم از نظر مفهومی همین کار را می‌کند: derive آن struct شما را با `syn` می‌خواند، سپس با `quote` کد `impl Serialize` تولید می‌کند و attributeهایی مثل `#[serde(rename)]` را اعمال می‌کند. دو نوع دیگر از ماکروی procedural هم هست: attribute-like (مثل `#[route(GET, "/")]` که آیتمِ متصل‌شده را جایگزین می‌کند) و function-like (مثل `sql!(...)` که مثل `macro_rules!` صدا زده می‌شود اما با کد Rust نوشته شده است).
 
-## چند نکته که باید حواستان باشد
+## هزینه‌ها و عادت‌های خوب
 
 - تابع یا generics را ترجیح بدهید. فقط برای آرگومان متغیر، سینتکس جدید یا تولید itemهای تکراری سراغ ماکرو بروید.
 - ماکرو هزینه‌ی زمان کامپایل (باید crate ماکرو و `syn` ساخته شوند) و خوانایی دارد و پیام خطا بدتر می‌شود.
@@ -190,4 +191,4 @@ error: Describe can only be derived for structs
 
 ## قدم بعدی
 
-مقاله‌ی بعد درباره‌ی unsafe و FFI در Rust است: `unsafe` واقعاً چه اجازه‌ای می‌دهد و چطور کد C را صدا بزنیم.
+«Unsafe و FFI در Rust»: `unsafe` واقعاً چه اجازه‌ای می‌دهد و چطور کد C را صدا بزنیم.

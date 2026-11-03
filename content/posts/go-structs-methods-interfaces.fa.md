@@ -3,13 +3,14 @@ date = '2026-11-10T10:00:00+03:30'
 draft = false
 title = 'Struct، متد و Interface در Go'
 description = 'Go داده و رفتار را چطور مدل می‌کند: struct، embedding، receiver از نوع value و pointer، interface ضمنی، type switch و تله‌ی nil در interface.'
+contentType = 'tutorial'
 categories = ["Go"]
 series = ["Go Fundamentals"]
 tags = ["go", "beginner", "struct", "interface", "methods"]
 cover = { image = "/images/covers/go-structs-methods-interfaces.fa.png", alt = "Struct، متد و Interface در Go", hiddenInSingle = true }
 +++
 
-در [مقاله‌ی قبل](/fa/posts/go-slices-maps-strings/) با slice، map و string آشنا شدیم. حالا به راهی نیاز داریم که داده را گروه‌بندی کنیم و رفتار را به آن وصل کنیم. Go کلاس و وراثت ندارد. به‌جایش **struct** برای داده، **متد** برای رفتار و **interface** برای انتزاع دارد، و همین سه تکه‌ی کوچک بیشتر کاری را که با کلاس انجام می‌دادید پوشش می‌دهند.
+Go کلاس، وراثت و کلمه‌ی `implements` ندارد. به‌جایش **struct** برای داده، **متد** برای رفتار و **interface** برای انتزاع دارد و همین سه تکه بیشتر کار کلاس را پوشش می‌دهند؛ interface هم بی‌آنکه نوعی اسمش را ببرد برقرار می‌شود. بعد از [slice، map و string](/fa/posts/go-slices-maps-strings/) نوبت نوع‌های خودمان است.
 
 > همه‌ی مثال‌های این مقاله را با Go 1.26 اجرا کرده‌ام و خروجی‌ها از همان اجرای واقعی کپی شده‌اند.
 
@@ -81,7 +82,7 @@ after IncValue: 0
 after IncPointer: 1
 ```
 
-receiver از نوع value روی یک کپی کار می‌کند و تغییر از بین می‌رود. وقتی متد باید struct را تغییر دهد، یا struct بزرگ است، از pointer receiver استفاده کنید. برای یکدستی، اگر یکی از متدها pointer receiver لازم دارد، همه را pointer بگیرید. چرایی رفتار pointerها را در مقاله‌ی بعد می‌بینیم.
+receiver از نوع value روی یک کپی کار می‌کند و تغییر از بین می‌رود. وقتی متد باید struct را تغییر دهد، یا struct بزرگ است، از pointer receiver استفاده کنید. برای یکدستی، اگر یکی از متدها pointer receiver لازم دارد، همه را pointer بگیرید.
 
 ## Interface به‌صورت ضمنی برقرار می‌شود
 
@@ -202,7 +203,7 @@ good() == nil: true
 
 حروف بزرگ و کوچک همان سطح دسترسی است. `User`، `Name` و `Describe` با حرف بزرگ شروع می‌شوند و پکیج‌های دیگر می‌توانند از آن‌ها استفاده کنند. `user`، `name` یا `describe` فقط داخل همان پکیج دیده می‌شوند. کلمه‌ی `public` یا `private` وجود ندارد.
 
-## چند نکته که باید حواستان باشد
+## اشتباه‌های رایج با receiver و interface
 
 - مقدار از نوع value، متدهای pointer receiver را در interface ندارد. من `var i Incer = C{}` را امتحان کردم که `Inc` در آن pointer receiver است و کامپایلر گفت: `C does not implement Incer (method Inc has pointer receiver)`. از `&C{}` استفاده کنید.
 - هرگز یک pointer از نوع typed-nil را به‌عنوان `error` یا interface دیگر برنگردانید. مستقیم `nil` برگردانید.
@@ -218,4 +219,4 @@ good() == nil: true
 
 ## قدم بعدی
 
-تا اینجا مدام از «کپی» و «pointer» حرف زدم بی‌آنکه درست توضیحشان بدهم. در مقاله‌ی بعد، pointerها و مدل حافظه در Go، می‌بینیم واقعاً چه اتفاقی می‌افتد.
+«اشاره‌گرها و مدل حافظه در Go»: تا اینجا از «کپی» و «pointer» بی‌توضیح حرف زدم؛ آن پست نشان می‌دهد واقعاً چه اتفاقی می‌افتد.

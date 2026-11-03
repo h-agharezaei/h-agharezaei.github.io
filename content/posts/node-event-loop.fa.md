@@ -3,13 +3,14 @@ date = '2026-11-11T10:00:00+03:30'
 draft = false
 title = 'event loop در Node.js'
 description = 'event loop در Node.js با اجرای واقعی: فازها، ترتیب nextTick و promise و timer، بلاک شدن loop، گرسنگی microtask و thread pool کتابخانه‌ی libuv.'
+contentType = 'tutorial'
 categories = ["Node.js"]
 series = ["Node.js"]
 tags = ["nodejs", "event-loop", "javascript", "async", "libuv"]
 cover = { image = "/images/covers/node-event-loop.fa.png", alt = "event loop در Node.js", hiddenInSingle = true }
 +++
 
-این مقاله اولین مقاله‌ی سری Node.js است. اگر در پروداکشن Node.js می‌نویسید، مفیدترین مدل ذهنی همین **{{< term "event-loop" "event loop" >}}** است: کد JavaScript شما روی یک thread اجرا می‌شود و هرچیزی که منتظر می‌ماند (timer، socket، فایل) به سیستم سپرده می‌شود و به شکل callback برمی‌گردد. اگر از Go می‌آیید، آن را با [goroutine و channel](/fa/posts/go-goroutines-channels/) و [زمان‌بند runtime در Go](/fa/posts/go-scheduler-gc-internals/) مقایسه کنید: آنجا runtime کد شما را روی چند thread پخش می‌کند، اینجا JavaScript شما موازی اجرا نمی‌شود.
+در Node.js یک timer ده‌میلی‌ثانیه‌ای می‌تواند ۲۰۰ میلی‌ثانیه منتظر بماند، فقط چون یک حلقه‌ی همگام جلویش است. دلیلش را باید در **{{< term "event-loop" "event loop" >}}** پیدا کرد، مفیدترین مدل ذهنی برای کسی که Node.js را در پروداکشن می‌نویسد: کد JavaScript شما روی یک thread اجرا می‌شود و هرچیزی که منتظر می‌ماند (timer، socket، فایل) به سیستم سپرده می‌شود و به شکل callback برمی‌گردد. اگر از Go می‌آیید، آن را با [goroutine و channel](/fa/posts/go-goroutines-channels/) و [زمان‌بند runtime در Go](/fa/posts/go-scheduler-gc-internals/) مقایسه کنید: آنجا runtime کد شما را روی چند thread پخش می‌کند، اینجا JavaScript شما موازی اجرا نمی‌شود.
 
 > همه‌ی کدهای زیر با Node نسخه‌ی v20.13.1 اجرا شده‌اند. اسکریپت‌ها مثال‌های محلی هستند و خروجی‌ها از اجرای واقعی کپی شده‌اند.
 
@@ -134,7 +135,7 @@ min lag < 100ms: true
 
 مقدار مطلق به ماشین بستگی دارد، برای همین فقط مقایسه را نشان دادم. در پروداکشن p99 این histogram را به‌عنوان متریک export کنید.
 
-## چند نکته‌ی مهم
+## چه چیزی loop را گیر می‌اندازد
 
 - کار سنگین همگام (parse کردن JSON بزرگ، فراخوانی‌های `*Sync` از `fs`، حلقه‌های CPU) را داخل handler درخواست اجرا نکنید.
 - `process.nextTick` و microtaskهای بازگشتی می‌توانند I/O و timerها را گرسنه نگه دارند.
@@ -147,4 +148,4 @@ min lag < 100ms: true
 
 ## قدم بعدی
 
-مقاله‌ی بعدی «ماژول‌ها: ESM و CommonJS» است.
+«ماژول‌ها: ESM و CommonJS»: حالا که می‌دانیم کد چطور اجرا می‌شود، باید ببینیم Node چطور فایل‌ها را پیدا و بارگذاری می‌کند.

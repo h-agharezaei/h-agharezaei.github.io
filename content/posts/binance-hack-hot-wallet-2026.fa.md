@@ -1,57 +1,49 @@
 +++
 date = '2026-10-30T10:00:00+03:30'
 draft = false
-title = 'هک ۶٫۳ میلیارد دلاری بایننس از دید فنی: کلید لو نرفت، ولی برداشت امضا شد'
+title = 'هک ۶٫۳ میلیارد دلاری بایننس از دید فنی: نشانه‌ای از لو رفتن کلید نیست، ولی برداشت امضا شد'
 seoTitle = 'هک ۶٫۳ میلیارد دلاری بایننس از دید فنی'
-description = 'هک بایننس در اکتبر ۲۰۲۶ از دید فنی: لپ‌تاپ آلوده‌ی یک مهندس DevOps، برداشت‌هایی که بدون لو رفتن کلید امضا شدند و قاعده‌هایی که امضاکننده باید اعمال کند.'
+description = 'هک بایننس در اکتبر ۲۰۲۶ از دید فنی: بایننس چه گفت، TRM Labs و Chainalysis روی زنجیره چه دیدند و امضاکننده‌ی کیف‌پول داغ چه قاعده‌هایی باید اعمال کند.'
+contentType = 'analysis'
 categories = ["Security"]
 tags = ["security", "binance", "crypto", "hot-wallet", "incident"]
 keywords = ["هک بایننس", "بایننس هک شد", "بزرگ‌ترین هک کریپتو", "امنیت کیف پول داغ", "EIP-7702", "TraderTraitor", "Lazarus", "امنیت صرافی رمزارز", "امضای برداشت"]
-cover = { image = "/images/covers/binance-hack-hot-wallet-2026.fa.png", alt = "هک ۶٫۳ میلیارد دلاری بایننس از دید فنی: کلید لو نرفت، ولی برداشت امضا شد", hiddenInSingle = true }
+cover = { image = "/images/covers/binance-hack-hot-wallet-2026.fa.png", alt = "هک ۶٫۳ میلیارد دلاری بایننس از دید فنی: نشانه‌ای از لو رفتن کلید نیست، ولی برداشت امضا شد", hiddenInSingle = true }
 +++
 
-عصر ۲۹ اکتبر ۲۰۲۶ (۷ آبان ۱۴۰۵) حدود ۶٫۳ میلیارد دلار از کیف‌پول‌های بایننس خارج شد؛ بزرگ‌ترین سرقت تاریخ کریپتو. اینجا گزارش‌ها، ردپای حمله روی زنجیره و درسش برای سازنده‌ی سیستم‌های جابه‌جایی پول را مرور می‌کنم.
+عصر ۲۹ اکتبر ۲۰۲۶ (۷ آبان ۱۴۰۵) حدود ۶٫۳ میلیارد دلار از بایننس سرقت شد؛ بزرگ‌ترین سرقت ثبت‌شده‌ی کریپتو. گفته‌های بایننس، گزارش شرکت‌های تحلیل و برداشت خودم را جدا می‌آورم.
 
-> بر اساس گزارش‌های عمومی تا ۳۰ اکتبر؛ عددها هنوز تغییر می‌کنند و بایننس قول post-mortem فنی داده است. کد Go مثال محلی خودم است، نه طراحی بایننس.
+> بر اساس گزارش‌های عمومی تا ۳۰ اکتبر ۲۰۲۶؛ post-mortem بایننس هنوز منتشر نشده. کد Go مثال محلی خودم است، نه طراحی بایننس.
 
-## چه چیزهایی گزارش شده
+## بایننس چه گفته
 
-| | |
-|---|---|
-| زمان | از ۲۰:۰۵ UTC روز ۲۹ اکتبر، بیشترش در حدود ۲۰ دقیقه (TRM) |
-| خسارت | حدود ۶٫۳۶ میلیارد دلار روی ده بلاکچین (TRM)؛ برآورد بایننس حدود ۶٫۳ میلیارد |
-| بلوکه‌شده | حدود ۲٫۷ میلیارد دلار: تتر، سیرکل، Ripple، World Liberty Financial و شورای امنیتی Arbitrum (TRM) |
-| عامل | TRM: گروه TraderTraitor کره‌ی شمالی، «با اطمینان بالا»؛ بایننس کسی را معرفی نکرده |
-| واکنش | توقف برداشت روی چند شبکه؛ جبران خسارت از صندوق SAFU و دارایی خود شرکت |
+- **خسارت و واکنش.** برآورد بایننس حدود ۶٫۳ میلیارد دلار است؛ برداشت را بست و طبق [BleepingComputer](https://www.bleepingcomputer.com/news/security/binance-links-63-billion-crypto-theft-to-compromised-devops-laptop/) گفت خسارت را از صندوق SAFU و دارایی شرکت جبران می‌کند.
+- **توضیح اولیه، ۲۹ اکتبر.** به نقل از [CoinDesk](https://www.coindesk.com/business/2026/10/29/potential-multi-billion-binance-hack-hitting-crypto-markets):
 
-## جمله‌ای که مهم است
+> "initial investigation suggests that the security incident may involve a compromised DevOps engineer's laptop, which allowed an attacker to gain access to a service container and submit unauthorized withdrawal transactions. We have found no evidence of any wallet private key leak."
 
-بیانیه‌ی اولیه‌ی بایننس، به نقل از CoinDesk:
+- **به‌روزرسانی، ۳۰ اکتبر.** بایننس از «نقاط نفوذ دیگر» خبر داد و ریچارد تنگ، مدیرعامل مشترک، نوشت مهاجم «فقط از دسترسی‌های یک مهندس استفاده نکرد» ([The Next Web](https://thenextweb.com/news/binance-hack-6-3bn-north-korea-tradertraitor)).
 
-> "...may involve a compromised DevOps engineer's laptop, which allowed an attacker to gain access to a service container and submit unauthorized withdrawal transactions. We have found no evidence of any wallet private key leak."
+پس لپ‌تاپ توضیحی اولیه و ناقص است، نه علت ریشه‌ای قطعی. بایننس عاملی را معرفی نکرده.
 
-یعنی لپ‌تاپ آلوده‌ی یک مهندس DevOps مهاجم را به یک container سرویس رسانده و او برداشت غیرمجاز ثبت کرده، بی آنکه کلید خصوصی لو برود. مهاجم به کلید نیاز نداشت؛ به سرویسی رسید که *اجازه داشت* درخواست امضا بدهد.
+## گزارش شرکت‌های تحلیل بلاکچین
 
-## ردپای روی زنجیره: ۵۰ امضای از پیش آماده
+یافته‌های شخص ثالث، بیشتر از [گزارش TRM Labs](https://www.trmlabs.com/resources/blog/north-korea-steals-usd-6-36-billion-from-binance-in-the-largest-hack-in-history) در ۳۰ اکتبر:
 
-طبق TRM Labs، روی اتریوم مهاجم از {{< term "eip-7702" "EIP-7702" >}} استفاده کرد. این قابلیت به یک کیف‌پول معمولی اجازه می‌دهد با امضای یک authorization رفتارش را به یک قرارداد هوشمند بسپارد. ساعت ۲۰:۲۰ یک تراکنش با **۵۰ authorization** ارسال شد که همه را خود {{< term "hot-wallet" "کیف‌پول داغ" >}} بایننس امضا کرده بود و کیف‌پول را به یک قرارداد sweeper می‌سپرد که فقط از مهاجم دستور می‌گرفت.
+- از ۲۰:۰۵ UTC حدود ۶٫۳۶ میلیارد دلار روی ده بلاکچین خارج شد، بیشترش ظرف ۲۰ دقیقه. به نقل از CoinDesk، رقم اولیه‌ی Chainalysis حدود ۵٫۹ میلیارد بود.
+- روی اتریوم یک تراکنش **۵۰ authorization از نوع {{< term "eip-7702" "EIP-7702" >}}** داشت با امضای {{< term "hot-wallet" "کیف‌پول داغ" >}} بایننس که کیف‌پول را به قرارداد sweeper مهاجم می‌سپرد؛ ۱۶۷٬۴۶۴ ETH و ۱٫۶۱۵ میلیارد USDT خارج شد. جاروهای بعدی تا ۲۳:۵۶ ادامه داشت.
+- روی زنجیره‌های دیگر انتقال‌ها امضای معمولی داشتند؛ به نظر TRM یعنی زیرساخت امضا نفوذ خورده.
+- TRM حمله را «با اطمینان بالا» به گروه TraderTraitor کره‌ی شمالی نسبت می‌دهد و Chainalysis موافق است. طبق [Nextgov](https://www.nextgov.com/cybersecurity/2026/10/fbi-involved-response-63-billion-binance-hack-linked-north-korea/416946/)، FBI کسی را مسئول ندانسته.
+- به حساب TRM حدود ۲٫۷ میلیارد دلار را صادرکننده‌ها و شورای امنیتی Arbitrum بلوکه کردند؛ رقم بایننس حدود ۳ میلیارد است ([Al Jazeera](https://www.aljazeera.com/economy/2026/10/30/binance-says-2-54bn-in-crypto-funds-frozen-amid-potential-security-issue)). اولین بلوکه‌ی تتر، ۹۷۱ میلیون USDT، ۳۷ دقیقه بعد از جاروی اصلی بود.
+- حدود ۳۲۵ میلیون USDT با بیش از ۱۰٪ تخفیف در UniswapX فروخته شد؛ مهاجم هنوز حدود ۲٫۴ میلیارد دلار ETH و BTC غیرقابل‌بلوکه دارد.
 
-چرا ۵۰ تا؟ authorization فقط با nonce فعلی کیف‌پول معتبر است و کیف‌پول داغ مدام برداشت انجام می‌دهد، پس nonce اش جلو می‌رود. مهاجم برای ۵۰ nonce پشت سر هم امضا گرفته بود. سه دقیقه بعد کل موجودی رفت: ۱۶۷٬۴۶۴ ETH و ۱٫۶۱۵ میلیارد USDT. واگذاری باقی ماند و پول‌های تازه تا ۲۳:۵۶ چند بار دیگر جارو شدند.
+## برداشت من: امضاکننده هر چه خواستند امضا کرد
 
-نکته‌ی مهم‌تر: روی ۹ زنجیره‌ی دیگر، با کلیدها و روش‌های امضای متفاوت، انتقال‌ها امضای **معمولی** داشتند و همه ظرف حدود نیم ساعت. جمع‌بندی TRM این است که مهاجم توانسته سیستم امضای کیف‌پول داغ بایننس را وادار کند هر تراکنشی را که می‌خواهد امضا کند. این با بیانیه‌ی بایننس جور است: کلید لو نرفت، ولی امضاکننده هر چه خواستند امضا کرد. TRM همین الگو را در هک Bybit در ۲۰۲۵ هم دیده است.
+این بخش تحلیل خودم است، نه گزارش. اگر ادعای لو نرفتن کلید درست بماند، مهاجم به چیزی رسیده که *اجازه داشت* امضا بخواهد. عدد ۵۰ منطقی است: هر authorization فقط با nonce فعلی معتبر است و nonce کیف‌پول داغ مدام جلو می‌رود، پس با امضای یک بازه یکی می‌خورد. به نظرم امضاکننده‌ای که این‌ها و انتقال‌های ده زنجیره را امضا کرد، بررسی سیاست کنار کلید نداشت یا دور زده شد. منبعی ندیدم که بگوید {{< term "multisig" "multisig" >}} یا MPC در کار بوده یا نه.
 
-## چه چیزهایی هنوز معلوم نیست
+## امضاکننده چه باید اعمال کند
 
-- لپ‌تاپ چطور به container پروداکشن رسید. بایننس هنوز root cause منتشر نکرده.
-- چرا لایه‌ی امضا بی هیچ سقف یا تأییدی برای ده زنجیره امضا داد. به نظر TRM، دسته‌ی ۵۰تایی یعنی دسترسی احتمالاً زمان‌دار بوده یا امضا از طریق یک سیستم درخواست می‌شد. از {{< term "multisig" "multisig" >}} یا MPC در گزارش‌ها حرفی نیست.
-
-## مسیر پول‌شویی
-
-صادرکننده‌ها می‌توانند {{< term "stablecoin" "استیبل‌کوین" >}} را بلوکه کنند، پس مهاجم با عجله تبدیل کرد. طبق TRM، حدود ۳۲۵ میلیون USDT را با بیش از ۱۰٪ زیان از طریق UniswapX به market makerها فروخت و با ۶۰ میلیون USDT در Aave حدود ۱۹٬۷۶۰ ETH قرض گرفت. الان حدود ۲٫۴ میلیارد دلار ETH و BTC در دست دارد که کسی نمی‌تواند بلوکه‌اش کند.
-
-## امضاکننده باید چه چیزی را اعمال کند
-
-اگر سیستمی دارید که جابه‌جایی پول را امضا می‌کند، **امضاکننده نباید به فراخواننده‌اش اعتماد کند.** سیاست باید کنار کلید باشد، مستقل بررسی شود و در صورت شک بسته شود (fail closed). هسته‌ی یک مثال محلی در Go (تأییدها اینجا رشته‌اند؛ در سیستم واقعی امضاهایی‌اند که امضاکننده بررسی می‌کند):
+امضاکننده‌ی جابه‌جایی پول **نباید به فراخواننده‌اش اعتماد کند:** سیاست کنار کلید است، مستقل بررسی می‌شود و در شک بسته می‌ماند (fail closed). هسته‌ی یک مثال محلی در Go (تأییدها رشته‌اند، در عمل امضا):
 
 ```go
 func (s *Signer) Sign(w Withdrawal, now time.Time) error {
@@ -83,7 +75,7 @@ func (s *Signer) Sign(w Withdrawal, now time.Time) error {
 }
 ```
 
-مهاجمی را شبیه‌سازی کردم که سرویس ثبت برداشت را در دست دارد، با سقف ۵۰ میلیون دلار در ساعت. اجرای واقعی با Go 1.27:
+مهاجمی را شبیه‌سازی کردم که سرویس ثبت برداشت را دارد، با سقف ساعتی ۵۰ میلیون دلار. اجرای واقعی با Go 1.27:
 
 ```
 20:05 w0 $0           REJECTED: EIP-7702 authorization not expected, refusing to sign
@@ -95,18 +87,20 @@ func (s *Signer) Sign(w Withdrawal, now time.Time) error {
 20:11 w6 $1000        REJECTED: signer halted, manual review required
 ```
 
-`w0` درخواست authorization است و حتی با دو تأیید رد می‌شود. `w1` و `w2`: سرویس نمی‌تواند خودش را تأیید کند؛ `w3`: آدرس ناشناس. `w4` بدترین حالت است: مهاجم تأییدکننده‌ها و یک آدرس مجاز را هم دارد و یک برداشت رد می‌شود. `w5` به سقف می‌خورد و امضاکننده مثل یک {{< term "kill-switch" "کلید اضطراری" >}} همه‌چیز را متوقف می‌کند؛ `w6`، یک انتقال مشروع کوچک، منتظر انسان می‌ماند.
+`w0` (درخواست authorization) حتی با دو تأیید رد می‌شود. در `w1` و `w2` سرویس خودش را تأیید نمی‌تواند؛ `w3` آدرس ناشناس دارد. در `w4` مهاجم تأییدکننده‌ها و یک آدرس مجاز را دارد و برداشت عبور می‌کند. `w5` به سقف می‌خورد و امضاکننده مثل {{< term "kill-switch" "کلید اضطراری" >}} همه‌چیز را متوقف می‌کند؛ `w6`، انتقال مشروع کوچکی، منتظر انسان می‌ماند.
 
-## چند نکته‌ی مهم
+## کنترل‌های لازم برای کیف‌پول داغ
 
-- {{< term "least-privilege" "حداقل دسترسی" >}} برای لپ‌تاپ‌ها: سیستم روزمره‌ی یک مهندس نباید مسیر دائمی به سرویسی داشته باشد که می‌تواند امضا بگیرد.
-- توصیه‌ی TRM: authorization های EIP-7702 را رد کنید مگر منتظرشان باشید، درخواست چند authorization برای بازه‌ای از nonce ها را نشانه‌ی نفوذ بدانید و روی کیف‌پول‌های خزانه هر delegation را فوراً هشدار دهید.
-- زیرساخت امضا را بر اساس زنجیره و سطح کیف‌پول جدا کنید تا {{< term "blast-radius" "شعاع آسیب" >}} یک نفوذ ده زنجیره نباشد.
-- {{< term "incident-response" "واکنش به حادثه" >}} را از قبل با صادرکننده‌های استیبل‌کوین آماده کنید. تتر ۳۷ دقیقه بعد از جاروی اصلی، ۹۷۱ میلیون USDT را در کیف‌پول مقصد بلوکه کرد.
+- {{< term "least-privilege" "حداقل دسترسی" >}}: لپ‌تاپ روزمره‌ی مهندس نباید مسیر دائمی به سرویس امضاگیر داشته باشد.
+- توصیه‌ی TRM: authorizationهای غیرمنتظره‌ی EIP-7702 را رد کنید، چند authorization برای بازه‌ای از nonceها را نشانه‌ی نفوذ بدانید و برای هر delegation در کیف‌پول خزانه هشدار بدهید.
+- پیشنهاد خودم: امضا را بر اساس زنجیره و سطح کیف‌پول جدا کنید تا {{< term "blast-radius" "شعاع آسیب" >}} یک نفوذ ده زنجیره نباشد.
+- {{< term "incident-response" "واکنش به حادثه" >}} را از پیش با صادرکننده‌های {{< term "stablecoin" "استیبل‌کوین" >}} هماهنگ کنید.
 
 ## منابع
 
-- [TRM Labs: North Korea Steals USD 6.36 Billion From Binance](https://www.trmlabs.com/resources/blog/north-korea-steals-usd-6-36-billion-from-binance-in-the-largest-hack-in-history)
-- [CoinDesk: Binance loses over $6 billion in the largest crypto hack to date](https://www.coindesk.com/business/2026/10/29/potential-multi-billion-binance-hack-hitting-crypto-markets)
-- [Al Jazeera: Binance says $6.3bn stolen](https://www.aljazeera.com/economy/2026/10/30/binance-says-2-54bn-in-crypto-funds-frozen-amid-potential-security-issue)
-- [TechCrunch: Binance pauses withdrawals](https://techcrunch.com/2026/10/29/binance-pauses-withdrawals-as-hackers-suspected-of-stealing-billions-in-crypto/)
+- [گزارش TRM Labs](https://www.trmlabs.com/resources/blog/north-korea-steals-usd-6-36-billion-from-binance-in-the-largest-hack-in-history)، ۳۰ اکتبر
+- [CoinDesk](https://www.coindesk.com/business/2026/10/29/potential-multi-billion-binance-hack-hitting-crypto-markets)، ۲۹ و ۳۰ اکتبر
+- [The Next Web](https://thenextweb.com/news/binance-hack-6-3bn-north-korea-tradertraitor)، ۳۰ اکتبر
+- [BleepingComputer](https://www.bleepingcomputer.com/news/security/binance-links-63-billion-crypto-theft-to-compromised-devops-laptop/)، ۳۰ اکتبر
+- [Nextgov](https://www.nextgov.com/cybersecurity/2026/10/fbi-involved-response-63-billion-binance-hack-linked-north-korea/416946/)، ۳۰ اکتبر
+- [Al Jazeera](https://www.aljazeera.com/economy/2026/10/30/binance-says-2-54bn-in-crypto-funds-frozen-amid-potential-security-issue)، ۳۰ اکتبر

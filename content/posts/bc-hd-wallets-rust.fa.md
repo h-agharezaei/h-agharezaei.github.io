@@ -3,13 +3,14 @@ date = '2026-11-21T18:00:00+03:30'
 draft = false
 title = 'کیف‌پول HD: BIP-32، BIP-39 و BIP-44 با Rust'
 description = 'کیف‌پول HD با Rust: از کلمه‌های BIP-39 تا seed، BIP-32 سنجیده با test vector، آدرس اتریوم با BIP-44، سرور واریز با xpub و خطر لو رفتن xpub.'
+contentType = 'tutorial'
 categories = ["Blockchain"]
 series = ["Blockchain"]
 tags = ["blockchain", "rust", "hd-wallet", "bip32", "bip39", "ethereum"]
 cover = { image = "/images/covers/bc-hd-wallets-rust.fa.png", alt = "کیف‌پول HD: BIP-32، BIP-39 و BIP-44 با Rust", hiddenInSingle = true }
 +++
 
-پست قبلی، [Event و ساخت indexer با Go و Postgres](/fa/posts/bc-event-indexer-go/)، واریز به آدرس‌های شناخته‌شده را زیر نظر داشت. آدرس‌ها از کجا می‌آیند؟ در [کلید، امضای ECDSA و آدرس روی secp256k1](/fa/posts/bc-keys-ecdsa-addresses/) هر کلید تصادفی یک آدرس می‌داد. صرافی برای هر کاربر آدرس می‌خواهد؛ با یک کلید تصادفی برای هر آدرس، پشتیبان با هر ثبت‌نام بزرگ‌تر و سرور پر از کلید خصوصی می‌شود.
+صرافی برای هر کاربر یک آدرس واریز می‌خواهد، مثل آدرس‌هایی که [indexer](/fa/posts/bc-event-indexer-go/) می‌پایید. یک کلید تصادفی برای هر آدرس، مثل [پست کلیدها](/fa/posts/bc-keys-ecdsa-addresses/)، یعنی پشتیبانی که با هر ثبت‌نام بزرگ‌تر می‌شود و سروری پر از کلید خصوصی.
 
 {{< term "hd-wallet" "کیف‌پول HD" >}} هر دو را حل می‌کند: یک seed، درختی از کلیدهای محاسبه‌شده، و نیمه‌ای عمومی که بدون کلید خصوصی آدرس می‌سازد؛ و با تفکیک hot/cold در [پست هک بایننس](/fa/posts/binance-hack-hot-wallet-2026/) جور است.
 
@@ -111,7 +112,7 @@ m/44'/60'/0'/0/2  0x7375C7Ea6F22Dd15A36DAC44E906a83991a75701  same as xprv: true
 
 xpubی را که با فرزندهای معمولی‌اش آنلاین امضا هم می‌شود بیرون ندهید؛ این دو را با accountهای hardened جدا کنید.
 
-## چند نکته‌ی مهم
+## کلید چطور لو می‌رود یا گم می‌شود
 
 - mnemonic یعنی همه‌ی کلیدها با هم: نه لاگ، نه اسکرین‌شات، نه یادداشت ابری.
 - xpub همه‌ی آدرس‌ها را لو می‌دهد و با یک کلید فرزند لو رفته، کلید والد را.
@@ -127,4 +128,4 @@ xpubی را که با فرزندهای معمولی‌اش آنلاین امضا
 
 ## قدم بعدی
 
-پست بعد: **AMM و فرمول constant product**.
+پست بعد: **AMM و فرمول constant product**؛ سری وارد DeFi می‌شود.

@@ -3,19 +3,20 @@ date = '2027-04-17T10:00:00+03:30'
 draft = false
 title = 'CSRF, CORS and security headers'
 description = 'CSRF, CORS and security headers in Go on localhost: why CORS does not stop forged writes, allow-list CORS, token and Origin checks, tested headers.'
+contentType = 'tutorial'
 categories = ["Security"]
 series = ["Software Security"]
 tags = ["security", "csrf", "cors", "security-headers", "go"]
 cover = { image = "/images/covers/sec-csrf-cors-headers.png", alt = "CSRF, CORS and security headers", hiddenInSingle = true }
 +++
 
-The previous post, [Authorization: RBAC and IDOR](/posts/sec-authorization-rbac-idor/), asked what a caller may do. This one asks whether the request really came from the caller's own page. [Sessions or JWT?](/posts/sec-sessions-vs-jwt/) introduced {{< term "csrf" "CSRF" >}} and {{< term "samesite" "SameSite" >}}, and [Injection and XSS](/posts/sec-injection-xss/) introduced {{< term "content-security-policy" "CSP" >}} and `HttpOnly`; I go deeper here, on the server side. The API style is [net/http](/posts/go-http-api-stdlib/).
+Perfect {{< term "cors" "CORS" >}} still lets another origin spend Alice's balance, so knowing a caller's permissions ([Authorization: RBAC and IDOR](/posts/sec-authorization-rbac-idor/)) is not enough: the request must come from the caller's own page. [Sessions or JWT?](/posts/sec-sessions-vs-jwt/) introduced {{< term "csrf" "CSRF" >}} and {{< term "samesite" "SameSite" >}}, [Injection and XSS](/posts/sec-injection-xss/) {{< term "content-security-policy" "CSP" >}} and `HttpOnly`; here I take the server side. The API style is [net/http](/posts/go-http-api-stdlib/).
 
 > Defensive only. One Go 1.26 program on `127.0.0.1:9100`, in-memory data, a fixed session cookie `sid=s-alice`, and a `-mode vuln|fixed` flag. A "foreign origin" is just an `Origin` header I send with curl. **I did not test any browser behavior**; every claim about what a browser does is from the specs, hedged.
 
 ## CORS is enforced by browsers, not servers
 
-{{< term "cors" "CORS" >}} tells a browser whether a page from another origin may *read* a response. It does not stop the request being sent. A form-encoded POST is a "simple request": no preflight, cookies attached. In the vulnerable build:
+CORS tells a browser whether a page from another origin may *read* a response. It does not stop the request being sent. A form-encoded POST is a "simple request": no preflight, cookies attached. In the vulnerable build:
 
 ```
 $ curl -si -H 'Cookie: sid=s-alice' -H 'Origin: https://evil.test' -d amount=30 /transfer
@@ -25,7 +26,7 @@ Access-Control-Allow-Origin: https://evil.test
 {"balance":70}
 ```
 
-The balance went from 100 to 70 on the server. Even with perfect CORS, that write would have happened, so CORS is not a CSRF defense.
+The balance went from 100 to 70 on the server. CORS is not a CSRF defense.
 
 ## The preflight
 
@@ -99,7 +100,7 @@ HSTS is, per its spec, ignored when received over plain HTTP, so on my localhost
 
 A test keeps the headers from regressing: it calls every route plus an unknown path (404) and asserts all six are present. It passes with `go test`; the middleware wraps the whole mux, so error responses are covered too.
 
-## A few things to watch
+## Layers, not a single fix
 
 - CORS controls reading, not sending. Protect writes with tokens or origin checks.
 - Allow-list exact origins; add `Vary: Origin`; never reflect, never `null`.
@@ -113,4 +114,4 @@ Make `/transfer` accept a JSON body with `X-CSRF-Token` and add a test where a f
 
 ## What's next
 
-The next post is TLS and x509 certificates in practice.
+“TLS and x509 certificates in practice” hardens the connection underneath, where HSTS takes effect.

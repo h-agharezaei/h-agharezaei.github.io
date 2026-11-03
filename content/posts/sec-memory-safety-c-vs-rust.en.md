@@ -3,13 +3,14 @@ date = '2027-05-22T10:00:00+03:30'
 draft = false
 title = 'Memory safety: C versus Rust'
 description = 'Memory safety in C, Go and Rust: out-of-bounds, use-after-free, double free, overflow and data races, with real sanitizer and compiler output.'
+contentType = 'analysis'
 categories = ["Security"]
 series = ["Software Security"]
 tags = ["security", "memory-safety", "c", "rust", "sanitizers"]
 cover = { image = "/images/covers/sec-memory-safety-c-vs-rust.png", alt = "Memory safety: C versus Rust", hiddenInSingle = true }
 +++
 
-The previous post, [Common cryptography mistakes](/posts/sec-crypto-mistakes/), was about sound primitives used wrongly. This one is about a lower layer: code that reads or writes memory it does not own. {{< term "memory-safety" "Memory safety" >}} is the property that this cannot happen. The ideas behind Rust's side are in [Ownership in Rust](/posts/rust-ownership/), [Borrowing and references in Rust](/posts/rust-borrowing-references/) and [Unsafe and FFI in Rust](/posts/rust-unsafe-ffi/); Go's are in [Pointers and the memory model in Go](/posts/go-pointers-memory/).
+Free a pointer in C, read through it, and the plain build prints `4` instead of the 42 stored there, exits with code 0, and the compiler warns about nothing: wrong data, no crash. {{< term "memory-safety" "Memory safety" >}} is the property that code cannot read or write memory it does not own. [Common cryptography mistakes](/posts/sec-crypto-mistakes/) was about sound primitives used wrongly; this is a lower layer. The ideas behind Rust's side are in [Ownership in Rust](/posts/rust-ownership/), [Borrowing and references in Rust](/posts/rust-borrowing-references/) and [Unsafe and FFI in Rust](/posts/rust-unsafe-ffi/); Go's are in [Pointers and the memory model in Go](/posts/go-pointers-memory/).
 
 > Defensive only. These are tiny programs of my own, each triggering one bug class on purpose, run on macOS arm64 with Apple clang 21, rustc 1.90 and Go 1.26. No payloads, no exploitation. Demo sources are local.
 
@@ -90,17 +91,13 @@ Go bounds-checks at runtime: `panic: runtime error: index out of range [10] with
 
 Rust's `unsafe` blocks mark where the compiler stops checking, so reviewers know where to look. I did not run Miri or `cargo geiger`; I only name them as tools to check or count unsafe code. Other defences I did not run: CHERI hardware, Fil-C, and sanitizers in CI. I also did not verify any industry statistics, so I quote none.
 
-## A few things to watch
+## What the runs show
 
 - Warnings caught none of these four; sanitizers caught all.
 - A silent wrong answer (`4`) is worse than a crash.
 - Release builds in Rust wrap on overflow by default.
 - `unsafe` is a promise you make, not a switch that makes code fast.
 
-## Exercise
-
-Write a C function that copies a string into a small buffer, break it, and find it with ASan. Then port it to Rust and see which error you get.
-
 ## What's next
 
-The next post is Fuzzing to find security bugs.
+“Fuzzing to find security bugs” lets a machine search for the bad inputs that trigger bugs like these.

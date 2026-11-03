@@ -3,13 +3,14 @@ date = '2027-04-20T10:00:00+03:30'
 draft = false
 title = 'CAP and PACELC, correctly'
 description = 'CAP and PACELC explained with seeded Go simulations: CP rejects, AP diverges and merges, and sync versus async replication trades latency for freshness.'
+contentType = 'tutorial'
 categories = ["Distributed"]
 series = ["Distributed Systems"]
 tags = ["distributed-systems", "cap-theorem", "pacelc", "consistency", "go"]
 cover = { image = "/images/covers/ds-cap-pacelc.png", alt = "CAP and PACELC, correctly", hiddenInSingle = true }
 +++
 
-In [the previous post](/posts/ds-why-distributed-is-hard/) a timeout meant "unknown". CAP is what you get when that unknown lasts long enough that you must decide what to do about it. "Pick two of three" is the slogan everyone remembers, and in my opinion it misleads more than it teaches. State it properly first. Background: [replication](/posts/db-replication-streaming/) and [JetStream](/posts/nats-jetstream-production/).
+"Pick two of three" is the CAP slogan everyone remembers, and in my opinion it misleads more than it teaches. CAP starts where a timeout's "unknown", from [the previous post](/posts/ds-why-distributed-is-hard/), lasts long enough that you must decide what to do. Background: [replication](/posts/db-replication-streaming/) and [JetStream](/posts/nats-jetstream-production/).
 
 > Honest labelling: everything below is a **simulation** in one Go 1.26 program (seeded, deterministic). Time is counted in fake "ticks", the "network" is a boolean and a delay. It is not a real network and I show no timings.
 
@@ -23,7 +24,7 @@ In the formal result (Gilbert and Lynch; I hedge on details) the letters mean:
 - **A**: every non-failing node answers every request.
 - **P**: the system keeps working when the network drops messages between nodes.
 
-A real network does partition, so P is not a choice. The honest statement is: **during a partition, you give up C or A** for the operations that cannot complete. The theorem is the {{< term "cap-theorem" "CAP theorem" >}}.
+A real network does partition, so P is not a choice. The honest statement of the {{< term "cap-theorem" "CAP theorem" >}} is: **during a partition, you give up C or A** for the operations that cannot complete.
 
 ## 1. CP: refuse
 
@@ -37,7 +38,7 @@ CP : writes=50 rejected=20 | reads=100 rejected=40 stale=0 | diverged=false fina
 
 ## 2. AP: accept on both sides
 
-Now both sides accept. A client also writes to B (4 extra writes during the partition). Outside the partition A replicates to B asynchronously with a 2-tick delay.
+A client also writes to B (4 extra writes during the partition). Outside the partition A replicates to B asynchronously with a 2-tick delay.
 
 ```
 AP : writes accepted=49 (rejected=0, concurrent on B=4)
@@ -81,11 +82,11 @@ sync : writes=45 ack ticks mean=5.8 max=8 | follower reads=100 stale=0 max lag=0
 async: writes=45 ack ticks mean=0.0 max=0 | follower reads=100 stale=69 max lag=2 writes
 ```
 
-Ticks are simulated. Sync paid about 6 ticks per write and never returned a read older than an acknowledged write. Async acked instantly, but 69 follower reads were behind the newest acknowledged write. That is the "else" tradeoff, present even when healthy.
+Sync paid about 6 ticks per write and never returned a read older than an acknowledged write. Async acked instantly, but 69 follower reads were behind the newest acknowledged write. That is the "else" tradeoff, present even when healthy.
 
 According to my earlier post, PostgreSQL streaming replication is asynchronous by default and can be made synchronous. JetStream replicated streams are quorum-based according to its docs; I described that and did not run a cluster here.
 
-## A few things to watch
+## Mistakes to avoid with CAP
 
 - Say "during a partition, C or A", never "CA".
 - If you accept both sides, decide the merge rule before launch.
@@ -97,4 +98,4 @@ Change `PartFrom`/`PartTo` and the replication delay. Which counts grow with the
 
 ## What's next
 
-The next post is “Consistency models”.
+Next, “Consistency models”: the space between linearizable and stale.

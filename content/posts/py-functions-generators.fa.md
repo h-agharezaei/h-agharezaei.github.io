@@ -3,19 +3,20 @@ date = '2027-01-28T10:00:00+03:30'
 draft = false
 title = 'توابع، closure و generator در Python'
 description = 'توابع، closure، decorator و generator در Python برای برنامه‌نویس‌های Go و Node.js: انواع پارامتر، late binding، yield، itertools و lru_cache روی 3.14.'
+contentType = 'tutorial'
 categories = ["Python"]
 series = ["Python"]
 tags = ["python", "beginner", "functions", "closures", "generators"]
 cover = { image = "/images/covers/py-functions-generators.fa.png", alt = "توابع، closure و generator در Python", hiddenInSingle = true }
 +++
 
-در [مقاله‌ی قبل](/fa/posts/py-types-control-flow/) نوع‌ها و کنترل جریان را دیدیم. توابع جایی هستند که Python با Go حس متفاوتی پیدا می‌کند: تابع‌ها شیء معمولی‌اند، با {{< term "decorator" "decorator" >}} پوشانده می‌شوند و یک تابع می‌تواند وسط کار بایستد و بعداً ادامه بدهد. مقایسه با [توابع در Go](/fa/posts/go-functions-defer-errors/) را فقط جایی آورده‌ام که مطمئنم، و [event loop در Node.js](/fa/posts/node-event-loop/) پیش‌زمینه‌ی خوبی برای بخش closure است.
+توابع جایی هستند که Python، بیشتر از [نوع‌ها و کنترل جریان](/fa/posts/py-types-control-flow/)، با Go حس متفاوتی پیدا می‌کند: تابع‌ها شیء معمولی‌اند، با {{< term "decorator" "decorator" >}} پوشانده می‌شوند و یک تابع می‌تواند وسط کار بایستد و بعداً ادامه بدهد. مقایسه با [توابع در Go](/fa/posts/go-functions-defer-errors/) را فقط جایی آورده‌ام که مطمئنم، و [event loop در Node.js](/fa/posts/node-event-loop/) پیش‌زمینه‌ی خوبی برای بخش closure است.
 
 > همه‌چیز با Python 3.14.0 روی macOS اجرا شده است. فایل‌های دمو اسکریپت‌های محلی `params.py`، `closures.py` و `gens.py` هستند.
 
 ## پارامترها
 
-`/` پارامترهای فقط-موقعیتی (positional-only) را تمام می‌کند و `*` پارامترهای فقط-کلیدی (keyword-only) را شروع می‌کند:
+`/` پارامترهای positional-only را تمام می‌کند و `*` پارامترهای keyword-only را شروع می‌کند:
 
 ```python
 def f(a, b, /, c, *, d=0):
@@ -46,7 +47,7 @@ def add_item(x, bucket=[]):
 
 ## Closure
 
-تابع‌ها مقدارند و تابع داخلی متغیرهایی را که استفاده می‌کند نگه می‌دارد. به این می‌گویند {{< term "closure" "closure" >}}. برای مقداردهی دوباره‌ی متغیر بیرونی (نه فقط تغییر دادنش) به `nonlocal` نیاز دارید:
+تابع‌ها مقدارند و تابع داخلی متغیرهایی را که استفاده می‌کند نگه می‌دارد: یک {{< term "closure" "closure" >}}. برای مقداردهی دوباره‌ی متغیر بیرونی (نه فقط تغییر دادنش) به `nonlocal` نیاز دارید:
 
 ```python
 def make_counter():
@@ -152,7 +153,7 @@ list(chain([1, 2], "ab", (9,)))  [1, 2, 'a', 'b', 9]
 
 Go هم closure دارد و متغیرها را با reference می‌گیرد. معنای متغیر حلقه در Go را اینجا آزمایش نکردم. Go generator از نوع `yield` ندارد؛ برنامه‌ی کوچکی با `iter.Seq[int]` در Go 1.26 اجرا کردم، تابعی که callback به شکل `yield func(int) bool` می‌گیرد، و `for v := range Count(3)` مقدارهای `1 2 3` را چاپ کرد. این مدل push است، برخلاف `next()` در Python که pull است.
 
-## چند نکته‌ی مهم
+## خطاهای رایج با تابع و generator
 
 - هیچ‌وقت آرگومان پیش‌فرض mutable نگذارید؛ از `None` استفاده کنید.
 - closure متغیر را می‌گیرد، نه مقدار را: حلقه‌ها را با `i=i` درست کنید.
@@ -168,4 +169,4 @@ Go هم closure دارد و متغیرها را با reference می‌گیرد. 
 
 ## قدم بعدی
 
-مقاله‌ی بعدی «کلاس و dataclass در Python» است.
+قدم بعد: «کلاس و dataclass در Python»، جایی که داده و رفتار کنار هم می‌نشینند.

@@ -3,13 +3,14 @@ date = '2027-03-02T10:00:00+03:30'
 draft = false
 title = 'The Go scheduler and garbage collector'
 description = 'Go scheduler and garbage collector internals: the G-M-P model, schedtrace, preemption, gctrace, GOGC, GOMEMLIMIT and sync.Pool, shown with real runs.'
+contentType = 'tutorial'
 categories = ["Go"]
 series = ["Go Backend"]
 tags = ["go", "backend", "runtime", "scheduler", "gc", "performance"]
 cover = { image = "/images/covers/go-scheduler-gc-internals.png", alt = "The Go scheduler and garbage collector", hiddenInSingle = true }
 +++
 
-In the [previous post](/posts/go-docker-ci-deploy/) we shipped our service as a container. Now we look inside the runtime of that process: how goroutines get onto CPUs, and how memory gets cleaned up. It builds on [goroutines and channels](/posts/go-goroutines-channels/), on [profiling with pprof](/posts/go-profiling-pprof/) and on [escape analysis and the heap](/posts/go-pointers-memory/).
+Goroutines blocked on a channel cost no thread, yet 100 stuck in a raw blocking syscall created about 98 more. After [Docker, CI and deploying a Go service](/posts/go-docker-ci-deploy/), we find out why inside the runtime, building on [goroutines and channels](/posts/go-goroutines-channels/), [profiling with pprof](/posts/go-profiling-pprof/) and [escape analysis and the heap](/posts/go-pointers-memory/).
 
 > Go 1.26, macOS arm64, 8 CPUs. Load average was about 1.6, but I show **no timings**: only counts and approximate sizes.
 
@@ -115,7 +116,7 @@ BenchmarkPool-8     20000      0 B/op   0 allocs/op
 
 Fewer allocations means fewer GC cycles. The runtime may drop pooled items at any GC, so a pool is a cache, not storage.
 
-## A few things to watch
+## Runtime tuning traps
 
 - `NumGoroutine` and the thread count answer different questions; watch both in production.
 - Don't tune `GOGC` before profiling; first reduce allocations.
@@ -129,4 +130,4 @@ Fewer allocations means fewer GC cycles. The runtime may drop pooled items at an
 
 ## What's next
 
-This is the last post of the Go Backend series. Next on the calendar: observability in Rust with tracing. A year-end recap of the Go series comes later in March.
+This is the last post of the Go Backend series. Next on the calendar is "Observability in Rust with tracing", from runtime internals to traces and logs. A year-end recap of the Go series comes later in March.

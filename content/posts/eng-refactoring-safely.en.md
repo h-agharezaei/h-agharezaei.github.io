@@ -2,6 +2,7 @@
 date = '2027-03-03T10:00:00+03:30'
 draft = false
 title = 'Refactoring safely'
+contentType = 'tutorial'
 description = 'Refactoring safely in Go: pin legacy behavior with a golden-master test, refactor in small steps, catch a one-character slip, and change a signature.'
 categories = ["Engineering"]
 series = ["Software Engineering"]
@@ -9,7 +10,7 @@ tags = ["refactoring", "testing", "legacy-code", "software-engineering", "go"]
 cover = { image = "/images/covers/eng-refactoring-safely.png", alt = "Refactoring safely", hiddenInSingle = true }
 +++
 
-Last time, in [Property-based testing](/posts/eng-property-based-testing/), we described code by its rules. Today the code has no rules written down, only behavior. {{< term "refactoring" "Refactoring" >}} means changing structure while behavior stays identical, and you cannot promise that without a test that pins the behavior first. The {{< term "tdd" "TDD" >}} habit of small green steps applies; test basics are in [Testing in Go](/posts/go-testing-basics/). Judgment calls are marked **my opinion**; everything else was run.
+Change `>=` to `>` in an 89-line pricing function and a total moves from 111027 to 119954 cents, silently. Unlike [Property-based testing](/posts/eng-property-based-testing/), this code has no written rules, only behavior. {{< term "refactoring" "Refactoring" >}} means changing structure while behavior stays identical, and you cannot promise that without a test that pins the behavior first. The {{< term "tdd" "TDD" >}} habit of small green steps applies; test basics are in [Testing in Go](/posts/go-testing-basics/).
 
 > Go 1.26, `go test -race`, local example; the legacy function is invented.
 
@@ -46,14 +47,14 @@ All green. The quirks stayed, with a comment saying so.
 
 ## Did it get simpler?
 
-I could not run `gocyclo` here: fetching and running it was blocked in this environment, so I did not get its output. I wrote a small `go/ast` counter with the same rule ({{< term "cyclomatic-complexity" "cyclomatic complexity" >}} is 1 plus each `if`, `for`, non-default `case`, `&&` and `||`). These numbers come from that rule, not from gocyclo:
+`gocyclo` was blocked in this environment, so I wrote a small `go/ast` counter with the same rule ({{< term "cyclomatic-complexity" "cyclomatic complexity" >}} is 1 plus each `if`, `for`, non-default `case`, `&&` and `||`). These numbers come from that rule, not from gocyclo:
 
 ```text
 before: PriceOrder 26
 after:  Price 7, discountPercent 7, couponOff 6, taxFor 5, shipping 5, percentOf 1
 ```
 
-The worst function dropped from 26 to 7; the logic is the same, split into readable pieces.
+The worst function dropped from 26 to 7: same logic, in readable pieces.
 
 ## The safety net catches a slip
 
@@ -86,7 +87,7 @@ Then migrate callers one at a time (`CartTotal`, then the other two), and finall
 
 **My opinion:** prefer refactoring. The evidence is the golden file: its 3000 lines are the old code's exact behavior, including quirks someone may depend on. A rewrite starts from the spec in people's heads and loses all of that.
 
-## A few things to watch
+## Where refactors go wrong
 
 - Keep refactor commits and behavior-change commits separate (**my advice**). A reviewer can then check "nothing changed" mechanically.
 - A golden file is only as good as its inputs. 100% statement coverage says little about boundaries; {{< term "mutation-testing" "mutation testing" >}} checks that better (I did not run it here).
@@ -100,4 +101,4 @@ Take a function from your own codebase that nobody wants to touch. Record 500 se
 
 ## What's next
 
-The next post is "Effective code review".
+“Effective code review”, the reviewer's side of those separate commits.

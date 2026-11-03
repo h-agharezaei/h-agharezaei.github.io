@@ -3,13 +3,14 @@ date = '2027-04-09T10:00:00+03:30'
 draft = false
 title = 'Authorization: RBAC and IDOR'
 description = 'Authorization in Go on localhost: RBAC permissions, IDOR fixed with ownership checks and 404s, role escalation by mass assignment, and a route test.'
+contentType = 'tutorial'
 categories = ["Security"]
 series = ["Software Security"]
 tags = ["security", "authorization", "rbac", "idor", "go"]
 cover = { image = "/images/covers/sec-authorization-rbac-idor.png", alt = "Authorization: RBAC and IDOR", hiddenInSingle = true }
 +++
 
-The previous post, [OAuth2 and OIDC](/posts/sec-oauth2-oidc/), ended with a token that says who the caller is and what scopes it has. That is {{< term "authorization" "authorization" >}}'s input, not its answer: the server still decides, per function and per object, what this caller may do. I showed {{< term "idor" "IDOR" >}} briefly in [The OWASP Top 10 in real code](/posts/sec-owasp-top10-in-code/); here I go deeper, with roles, a mass-assignment bug and a test that guards every route. The API style is [net/http from earlier](/posts/go-http-api-stdlib/).
+In this post's vulnerable build, Alice, a viewer, sends `"role":"admin"` to `PATCH /users/me` and comes back an admin; she can also read and delete Bob's document. Her token, the kind [OAuth2 and OIDC](/posts/sec-oauth2-oidc/) ended with, says who she is and what scopes she has. That is {{< term "authorization" "authorization" >}}'s input, not its answer: the server still decides, per function and per object, what this caller may do. I showed {{< term "idor" "IDOR" >}} briefly in [The OWASP Top 10 in real code](/posts/sec-owasp-top10-in-code/); here I go deeper, with roles, a mass-assignment bug and a test that guards every route. The API style is [net/http from earlier](/posts/go-http-api-stdlib/).
 
 > Defensive only. One small Go 1.26 program on `127.0.0.1`, in-memory data, my own code. Authentication is simplified to fixed tokens (`tok-alice`, `tok-bob`, `tok-carol`) so the focus stays on authorization. A `-mode vuln|fixed` flag builds each version. Users: alice (viewer), bob (editor, another tenant), carol (admin). Documents: 1 is alice's, 2 is bob's.
 
@@ -112,7 +113,7 @@ I removed the route and the suite passes again (`TestViewerCannotDelete` checks 
 
 RBAC gets awkward when rules depend on attributes (owner, tenant, time) or on relationships (a member of a folder's team). Attribute-based (ABAC) and relationship-based (ReBAC) models cover those. I only mention them; I did not run either.
 
-## A few things to watch
+## A checklist for every route
 
 - Check authorization on the server, for every function and every object. Hiding a button is not a check.
 - Take the identity from the verified token, never from an ID in the body or URL.
@@ -126,4 +127,4 @@ Add an `editor` rule: editors may update documents of their own tenant. Add a se
 
 ## What's next
 
-The next post is CSRF, CORS and security headers.
+“CSRF, CORS and security headers” asks the next question: whether a request really came from the caller's own page.

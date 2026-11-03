@@ -3,13 +3,14 @@ date = '2027-01-16T10:00:00+03:30'
 draft = false
 title = 'تست در Node.js با node:test'
 description = 'تست در Node.js با node:test روی v20.13.1: describe/it، hook، mock، تایمر mock، reporter، coverage، کد خروج و چیزهایی که این نسخه ندارد.'
+contentType = 'tutorial'
 categories = ["Node.js"]
 series = ["Node.js"]
 tags = ["nodejs", "testing", "node-test", "mocking", "coverage"]
 cover = { image = "/images/covers/node-testing-builtin.fa.png", alt = "تست در Node.js با node:test", hiddenInSingle = true }
 +++
 
-در مقاله‌ی قبل، [ساخت API با Fastify](/fa/posts/node-fastify-api/)، یک API راه انداختیم. حالا می‌خواهم مطمئن باشم که کار کردنش ادامه پیدا می‌کند. Node یک {{< term "test-runner" "test runner" >}} داخل کتابخانه‌ی استاندارد دارد، پس برای شروع به Jest یا Mocha نیازی نیست. این معادل Node برای [تست در Go](/fa/posts/go-testing-basics/) است و از [async/await](/fa/posts/node-promises-async-await/) و [سرور HTTP](/fa/posts/node-http-server/) قبلی استفاده می‌کند.
+در اجرای من، `before()` سطح بالا پیش از تست‌های سطح بالای کنارش اجرا نشد و همه‌ی fetchها با `undefined/health` شکست خوردند. همین غافلگیری‌های کوچک دلیل این است که پیش از اعتماد به نتیجه‌ی سبز، ابزارتان را بشناسید. [ساخت API با Fastify](/fa/posts/node-fastify-api/) یک API راه انداخت؛ حالا می‌خواهم مطمئن باشم کار کردنش ادامه پیدا می‌کند. Node یک {{< term "test-runner" "test runner" >}} داخل کتابخانه‌ی استاندارد دارد، پس برای شروع به Jest یا Mocha نیازی نیست. این معادل Node برای [تست در Go](/fa/posts/go-testing-basics/) است و از [async/await](/fa/posts/node-promises-async-await/) و [سرور HTTP](/fa/posts/node-http-server/) قبلی استفاده می‌کند.
 
 > Node نسخه‌ی v20.13.1 (خروجی `node --version`). دمو یک مثال محلی است: `price.js`، `app.js` و دو فایل در `test/`. همه‌ی خروجی‌ها واقعی‌اند. زمان‌ها را منتشر نمی‌کنم: ماشین شلوغ بود (load average بالای ۱۰) و مدت اجرا را از خروجی‌ها حذف کرده‌ام.
 
@@ -96,7 +97,7 @@ test/price.test.js   | 100.00 |   100.00 |   96.67 |
 
 تست snapshot: بررسی کردم و روی v20.13.1 مقدار `t.assert` برابر `undefined` است و `--test-update-snapshots` با `bad option` شکست می‌خورد. پس اینجا در دسترس نیست؛ نسخه‌های جدیدتر را آزمایش نکردم.
 
-## چند نکته‌ی مهم
+## جایی که node:test غافلگیر می‌کند
 
 - در اجرای من، `before()` سطح بالا کنار `test()`های سطح بالا اول اجرا نشد: `base` مقدار `undefined` داشت و fetch با `Failed to parse URL from undefined/health` شکست خورد. گذاشتن همه‌چیز در `describe` درستش کرد.
 - پیدا شدن فایل‌ها بر اساس نام و پوشه است؛ اگر شک دارید مسیر بدهید.
@@ -110,4 +111,4 @@ test/price.test.js   | 100.00 |   100.00 |   96.67 |
 
 ## قدم بعدی
 
-بعدی: ساختار پروژه و کانفیگ در Node.js.
+«ساختار پروژه و کانفیگ در Node.js»: تست‌پذیری به ساختار پروژه برمی‌گردد، به اینکه وابستگی‌ها و کانفیگ کجا ساخته و تزریق می‌شوند.

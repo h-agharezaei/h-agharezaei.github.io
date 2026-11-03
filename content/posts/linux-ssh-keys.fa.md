@@ -3,13 +3,14 @@ date = '2027-05-20T10:00:00+03:30'
 draft = false
 title = 'SSH و کلیدها'
 description = 'SSH و کلیدها در یک پوشه‌ی موقت: ed25519 و RSA، اثرانگشت، قانون 0600، authorized_keys، known_hosts، ssh_config، agent و گواهی‌ها.'
+contentType = 'tutorial'
 categories = ["Linux"]
 series = ["Linux"]
 tags = ["linux", "ssh", "openssh", "keys", "security", "sshd", "macos"]
 cover = { image = "/images/covers/linux-ssh-keys.fa.png", alt = "SSH و کلیدها", hiddenInSingle = true }
 +++
 
-این دهمین پست سری Linux است، بعد از [شبکه در Linux: ip، ss و nftables](/fa/posts/linux-networking-ip-ss-nftables/) که در آن هشدار دادم یک قانون غلط فایروال روی SSH شما را بیرون می‌اندازد. همه‌چیز اینجا روی یک مک با OpenSSH 10.3 اجرا شده (`ssh -V` می‌گوید `OpenSSH_10.3p1, LibreSSL 3.3.6`)، نه روی Linux. فقط در یک پوشه‌ی موقت به نام `<tmp>` کار کردم، با مسیرهای صریح و `-F /dev/null -o IdentityAgent=none`، و هرگز به کلیدهای واقعی‌ام یا هیچ ماشین دوری دست نزدم. جاهایی که Linux ممکن است فرق داشته باشد با عبارت «طبق man page» گفته‌ام. کلید خصوصی یک راز است؛ [مدیریت رازها و کلیدها](/fa/posts/sec-secrets-management/) را ببینید.
+SSH کلید خصوصی‌ای را که دیگران بتوانند بخوانند قبول نمی‌کند، و عوض شدن کلید میزبان روی سروری آشنا یعنی نصب دوباره یا حمله. [شبکه در Linux: ip، ss و nftables](/fa/posts/linux-networking-ip-ss-nftables/) هم هشدار داد که یک قانون غلط فایروال روی SSH شما را بیرون می‌اندازد. همه‌چیز اینجا روی یک مک با OpenSSH 10.3 اجرا شده (`ssh -V` می‌گوید `OpenSSH_10.3p1, LibreSSL 3.3.6`)، نه روی Linux. فقط در یک پوشه‌ی موقت به نام `<tmp>` کار کردم، با مسیرهای صریح و `-F /dev/null -o IdentityAgent=none`، و هرگز به کلیدهای واقعی‌ام یا هیچ ماشین دوری دست نزدم. جاهایی که Linux ممکن است فرق داشته باشد با عبارت «طبق man page» گفته‌ام. کلید خصوصی یک راز است؛ [مدیریت رازها و کلیدها](/fa/posts/sec-secrets-management/) را ببینید.
 
 ## جفت‌کلید
 
@@ -106,7 +107,7 @@ proxyjump jump
 
 از man page OpenSSH روی مک، اجرا‌نشده روی Linux: `PasswordAuthentication no` (پیش‌فرض yes)، `PermitRootLogin no` (پیش‌فرض `prohibit-password`)، `MaxAuthTries` (پیش‌فرض 6)، `LoginGraceTime` (پیش‌فرض 120 ثانیه)، به‌علاوه‌ی `KbdInteractiveAuthentication no` و `AllowUsers`/`AllowGroups`. fail2ban برای بستن تلاش‌های ناموفق تکراری وجود دارد؛ امتحانش نکردم. port knocking را توصیه نمی‌کنم، پنهان‌کاری است.
 
-## چند نکته‌ی مهم
+## مراقبت از کلیدها
 
 - کلید خصوصی را هرگز در چت، تیکت یا git نگذارید.
 - passphrase بگذارید و کلید کسانی را که می‌روند بچرخانید.
@@ -120,4 +121,4 @@ proxyjump jump
 
 ## قدم بعدی
 
-پست بعدی «کاربر، sudo و capability» است.
+بعدی «کاربر، sudo و capability» است: اینکه بعد از ورود، کاربر چه کارهایی می‌تواند بکند.

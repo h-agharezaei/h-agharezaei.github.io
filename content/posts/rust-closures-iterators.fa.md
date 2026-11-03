@@ -3,13 +3,14 @@ date = '2026-12-24T10:00:00+03:30'
 draft = false
 title = 'Closure و Iterator در Rust'
 description = 'Closure و iterator در Rust در عمل: حالت‌های capture و move، تفاوت Fn و FnMut و FnOnce، برگرداندن closure، adapterها و consumerها، تنبلی و Iterator سفارشی.'
+contentType = 'tutorial'
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "closures", "iterators", "intermediate"]
 cover = { image = "/images/covers/rust-closures-iterators.fa.png", alt = "Closure و Iterator در Rust", hiddenInSingle = true }
 +++
 
-در [مقاله‌ی قبل](/fa/posts/rust-lifetimes/) دیدیم کامپایلر چطور طول عمر referenceها را دنبال می‌کند. Closure و iterator جایی است که این دانش به کار می‌آید: closure یک تابع کوچک است که متغیرهای اطرافش را capture می‌کند، پس باید از همان قانون‌های borrowing پیروی کند. Iteratorها نیمه‌ی دیگرند و با هم جای بیشترِ حلقه‌های اندیس‌دار را می‌گیرند.
+closureای را که از متغیر محلی استفاده می‌کند برگردانید؛ کامپایلر بدون `move` قبول نمی‌کند: closure بیشتر از چیزی که قرض گرفته عمر می‌کند. اینجا طول عمر referenceها از [مقاله‌ی قبل](/fa/posts/rust-lifetimes/) به کار می‌آید: closure یک تابع کوچک است که متغیرهای اطرافش را capture می‌کند، پس باید از همان قانون‌های borrowing پیروی کند. Iteratorها نیمه‌ی دیگرند و با هم جای بیشترِ حلقه‌های اندیس‌دار را می‌گیرند.
 
 > همه‌ی کدهای زیر با Rust نسخه‌ی 1.90 کامپایل و اجرا شده‌اند و خروجی‌ها و پیام‌های کامپایلر از همان اجراها کپی شده‌اند.
 
@@ -206,7 +207,7 @@ let counts = text
 
 روی متن `"the cat and The dog and a bird saw the cat"` هر دو نسخه نتیجه‌ی یکسان می‌دهند که با `[("the", 3), ("and", 2), ("cat", 2)]` شروع می‌شود. وقتی واژگان را بلد باشید، زنجیره برای من خواناتر است، ولی حلقه هم کاملاً درست است و هیچ‌کدام را benchmark نکردم.
 
-## چند نکته که باید حواستان باشد
+## دام‌های capture و تنبلی
 
 - `iter()` reference می‌دهد، برای همین در `filter` اغلب `&&i32` می‌بینید و الگوهایی مثل `|&&n|` پیدا می‌شوند.
 - `into_iter()` روی `Vec` آن را مصرف می‌کند. اگر بعداً داده را لازم دارید از `iter()` استفاده کنید.
@@ -222,4 +223,4 @@ let counts = text
 
 ## قدم بعدی
 
-در مقاله‌ی بعد سراغ smart pointerها در Rust می‌رویم: `Box`، `Rc` و `RefCell` و اینکه کی به آن‌ها نیاز پیدا می‌کنیم.
+«Smart Pointerها: Box، Rc و RefCell در Rust»: `Box<dyn Fn>` همین‌جا ظاهر شد و آن مقاله توضیحش می‌دهد.

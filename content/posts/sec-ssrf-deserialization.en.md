@@ -3,13 +3,14 @@ date = '2027-05-12T10:00:00+03:30'
 draft = false
 title = 'SSRF and unsafe deserialization'
 description = 'SSRF and unsafe deserialization with real runs: blocklists that fail, redirects, DNS rebinding, a safe Go fetcher, and pickle and YAML pitfalls.'
+contentType = 'tutorial'
 categories = ["Security"]
 series = ["Software Security"]
 tags = ["security", "ssrf", "deserialization", "go", "python", "pickle"]
 cover = { image = "/images/covers/sec-ssrf-deserialization.png", alt = "SSRF and unsafe deserialization", hiddenInSingle = true }
 +++
 
-The previous post, [The supply chain and vulnerable dependencies](/posts/sec-supply-chain-vulns/), was about code you did not write. This one is about input you did not write: a URL, or a blob of bytes. In [The OWASP Top 10 in real code](/posts/sec-owasp-top10-in-code/) I showed a one-line {{< term "ssrf" "SSRF" >}} and a one-host fix, and admitted I had not tested redirects or DNS. Here I test them. The service style is the one from [Building an API with net/http in Go](/posts/go-http-api-stdlib/); [Rate limiting and caching in Go](/posts/go-rate-limiting-caching/) is a good companion.
+`127.1` and `0x7f000001` walked past my `127.0.0.1` blocklist to an internal secret. After code you did not write ([The supply chain and vulnerable dependencies](/posts/sec-supply-chain-vulns/)), this is input you did not write: a URL, or a blob of bytes. In [The OWASP Top 10 in real code](/posts/sec-owasp-top10-in-code/) I showed a one-line {{< term "ssrf" "SSRF" >}} and a one-host fix, and admitted I had not tested redirects or DNS; here I do. The service style follows [Building an API with net/http in Go](/posts/go-http-api-stdlib/); [Rate limiting and caching in Go](/posts/go-rate-limiting-caching/) is a good companion.
 
 > Defensive only. Everything ran in my own demo on `127.0.0.1` (a {{< term "loopback" "loopback" >}} address) or on documentation addresses. Nothing contacted a third-party host. Go 1.26, macOS.
 
@@ -111,7 +112,7 @@ Use `safe_load`. Better, parse into plain data and validate against a schema, as
 
 Go: `json.Unmarshal` into `any` gave `map[string]interface {}` and ran nothing. `encoding/gob` refused an unregistered type (`gob: type not registered for interface: main.Cmd`). Neither format names a function to call. Your own `UnmarshalJSON` methods do run, so keep them free of side effects. Java, PHP and Node serializers have had gadget-chain problems; I only name that and did not test them.
 
-## A few things to watch
+## Rules for any URL fetcher
 
 - Block-lists lose; allow-list schemes, ports and, when you can, hosts.
 - Validate the address you actually connect to, on every hop.
@@ -124,4 +125,4 @@ Add a `/preview` endpoint to one of your services. Write the table test of bypas
 
 ## What's next
 
-The next post is “Common cryptography mistakes”.
+“Common cryptography mistakes” shows the same failure: working code, broken design.

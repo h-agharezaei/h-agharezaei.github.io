@@ -3,13 +3,14 @@ date = '2026-11-23T10:00:00+03:30'
 draft = false
 title = 'Schema design and normalization'
 description = 'Schema design and normalization in PostgreSQL: see update, insert and delete anomalies on a flat table, then fix them with keys, constraints and types.'
+contentType = 'tutorial'
 categories = ["Databases"]
 series = ["Databases"]
 tags = ["databases", "postgresql", "schema-design", "normalization"]
 cover = { image = "/images/covers/db-schema-design-normalization.png", alt = "Schema design and normalization", hiddenInSingle = true }
 +++
 
-In the [previous post](/posts/db-relational-sql-essentials/) we learned the relational model and the SQL to query it. Now the question that comes before every query: how should the tables look? A bad schema hurts for years. Here I start from a bad table on purpose, watch it break, and fix it step by step.
+Sara changes her email, only one of her three rows gets updated, and the database no longer knows which email is true: a schema bug, not a query bug, and bad schemas hurt for years. After [The relational model and essential SQL](/posts/db-relational-sql-essentials/), the question is how tables should look; I start from a bad one on purpose and fix it.
 
 > Everything ran on a real PostgreSQL 18.3, using the shop schema of this series.
 
@@ -106,10 +107,10 @@ America/New_York:  a = 2026-11-23 10:00:00   b = 2026-11-23 05:00:00-05
 
 Enum or lookup table? An enum type is compact but changing it is awkward. A lookup table plus a foreign key is easy to extend and can carry extra columns. The shop uses `CHECK (status IN (...))`, which is simple but needs a migration to change. I pick a lookup table once values change often.
 
-## A few things to watch
+## When to denormalize, and other traps
 
 - Denormalize only after measuring. Justified cases in my experience: a stored `total_cents` on `orders` that you keep in sync, reporting tables, and history snapshots such as the price at purchase time (`order_items.price_cents`).
-- Foreign keys do not create an index on the referencing column; that is a topic for the next post.
+- Foreign keys do not create an index on the referencing column; the next post covers it.
 - `CASCADE` can delete far more than you expect.
 
 ## Exercise
@@ -118,4 +119,4 @@ Create `orders_flat` yourself with a `shipping_address` column. Normalize it int
 
 ## What's next
 
-The next post is "B-tree indexes and EXPLAIN ANALYZE": how PostgreSQL finds rows fast, and how to read its plans.
+B-tree indexes and EXPLAIN ANALYZE: once data grows, the next question is how PostgreSQL finds rows fast.

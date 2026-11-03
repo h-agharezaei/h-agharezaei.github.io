@@ -2,6 +2,7 @@
 date = '2027-05-28T10:00:00+03:30'
 draft = false
 title = 'مبانی DDD'
+contentType = 'tutorial'
 description = 'مبانی DDD با Go: value object، aggregate که invariantهایش را نگه می‌دارد، رویداد دامنه، bounded context و تستی که وابستگی‌های لایه‌ها را می‌سنجد.'
 categories = ["Engineering"]
 series = ["Software Engineering"]
@@ -9,7 +10,7 @@ tags = ["ddd", "domain-driven-design", "software-engineering", "go", "architectu
 cover = { image = "/images/covers/eng-ddd-basics.fa.png", alt = "مبانی DDD", hiddenInSingle = true }
 +++
 
-پست قبل، [کار با کد legacy](/fa/posts/eng-legacy-code/)، به مرز میان مدل قدیم و جدید رسید. {{< term "domain-driven-design" "طراحی دامنه‌محور" >}} (DDD) بیشترِ حرفش درباره‌ی همین مرز است. ایده‌ها از کتاب «Domain-Driven Design» نوشته‌ی Eric Evans می‌آیند و کتاب «Implementing Domain-Driven Design» از Vaughn Vernon ادامه‌ی عملی آن است. مرتبط: [ساختار پروژه و clean architecture در Go](/fa/posts/go-project-layout-clean-architecture/) و [تست در Go](/fa/posts/go-testing-basics/). نظرها مشخص شده‌اند؛ بقیه اجرا شده است.
+در Sales، `Customer` ایمیل و سقف اعتبار دارد؛ در Shipping، نام و نشانی. مرز میان این دو مدل، مثل مرز مدل قدیم و جدید در [کار با کد legacy](/fa/posts/eng-legacy-code/)، بیشترِ حرف {{< term "domain-driven-design" "طراحی دامنه‌محور" >}} (DDD) است. ایده‌ها از کتاب «Domain-Driven Design» نوشته‌ی Eric Evans می‌آیند و کتاب «Implementing Domain-Driven Design» از Vaughn Vernon ادامه‌ی عملی آن است. مرتبط: [ساختار پروژه و clean architecture در Go](/fa/posts/go-project-layout-clean-architecture/) و [تست در Go](/fa/posts/go-testing-basics/). نظرها مشخص شده‌اند؛ بقیه اجرا شده است.
 
 > Go 1.26 و `go test -race`. دمو نمونه‌ی محلی و ساختگی است: سفارش در Sales و گیرنده در Shipping.
 
@@ -65,7 +66,7 @@ FAIL
 
 ## bounded context
 
-در Sales، `Customer` ایمیل و سقف اعتبار دارد. در Shipping، `Customer` نام و نشانی دارد. این دو نوع در دو بسته‌اند و یک مترجم وصلشان می‌کند:
+این دو نوع `Customer` در دو بسته‌اند و یک مترجم وصلشان می‌کند:
 
 ```go
 func FromSales(c sales.Customer, name, address string) shipping.Customer
@@ -86,7 +87,7 @@ func FromSales(c sales.Customer, name, address string) shipping.Customer
 
 خروجی واقعی چند زیربسته‌ی `net/http/...` را هم فهرست کرد؛ حذفشان کردم. بعد از برگرداندن تغییر، دوباره می‌گذرد.
 
-## چند نکته‌ی مهم
+## جایی که DDD به‌صرفه نیست
 
 - DDD برای CRUD زیادی است. جدولی با یک فرم aggregate نمی‌خواهد.
 - aggregateهای بزرگ رقابت قفل می‌سازند؛ کوچکشان نگه دارید.
@@ -98,4 +99,4 @@ func FromSales(c sales.Customer, name, address string) shipping.Customer
 
 ## قدم بعدی
 
-پست بعدی «monorepo یا polyrepo؟» است.
+«monorepo یا polyrepo؟»: بسته‌های این contextها کجا باید زندگی کنند.

@@ -3,13 +3,14 @@ date = '2026-12-02T18:00:00+03:30'
 draft = false
 title = 'مهندسی صرافی: واریز، برداشت، confirmation و reorg'
 description = 'واریز و برداشت صرافی با Go و Postgres: ماشین حالت واریز، دفتر دوطرفه، یک reorg واقعی روی anvil، کلید idempotency و جایگزینی تراکنش گیرکرده.'
+contentType = 'engineering'
 categories = ["Blockchain"]
 series = ["Blockchain"]
 tags = ["blockchain", "go", "ethereum", "postgres", "exchange"]
 cover = { image = "/images/covers/bc-exchange-deposits-withdrawals.fa.png", alt = "مهندسی صرافی: واریز، برداشت، confirmation و reorg", hiddenInSingle = true }
 +++
 
-پست قبلی، [مبانی zero-knowledge proof با Rust](/fa/posts/bc-zero-knowledge-rust/)، رمزنگاری بود. این یکی کار بک‌اند است: تبدیل رویداد زنجیره به موجودی و موجودی به تراکنش.
+یک واریز می‌تواند در بلاکی بیاید و پیش از به حساب رفتن با یک {{< term "chain-reorganization" "reorg" >}} ناپدید شود؛ یک درخواست برداشت می‌تواند هم‌زمان دو بار برسد؛ برداشت امضاشده می‌تواند گیر کند. بعد از رمزنگاری [مبانی zero-knowledge proof با Rust](/fa/posts/bc-zero-knowledge-rust/)، این پست کار بک‌اند است: تبدیل رویداد زنجیره به موجودی و موجودی به تراکنش.
 
 ماژول [Event و ساخت indexer با Go و Postgres](/fa/posts/bc-event-indexer-go/) را کپی کردم، indexerش را اسکنر واریز کردم و دفتر حساب و برداشت افزودم. آدرس‌ها از [کیف‌پول HD: BIP-32، BIP-39 و BIP-44 با Rust](/fa/posts/bc-hd-wallets-rust/) می‌آیند و امضا و nonce از [کار با اتریوم از Go با go-ethereum](/fa/posts/bc-go-ethereum-client/). این یک طراحی آموزشی است، نه یک صرافی کامل، و چیزی درباره‌ی ساختار داخلی هیچ صرافی واقعی نمی‌گوید.
 
@@ -25,7 +26,7 @@ Topics: [][]common.Hash{{transferTopic}, nil, topicTo}, // Transfer(any, ours)
 
 ## وضعیت واریز و دفتر حساب
 
-هر واریز یک {{< term "state-machine" "ماشین حالت" >}} کوچک است: `seen` وقتی log اولین بار دیده می‌شود، `pending` تا وقتی کمتر از N {{< term "confirmation" "confirmation" >}} دارد، `credited` در N، و `orphaned` اگر یک {{< term "chain-reorganization" "reorg" >}} زودتر حذفش کند:
+هر واریز یک {{< term "state-machine" "ماشین حالت" >}} کوچک است: `seen` وقتی log اولین بار دیده می‌شود، `pending` تا وقتی کمتر از N {{< term "confirmation" "confirmation" >}} دارد، `credited` در N، و `orphaned` اگر یک reorg زودتر حذفش کند:
 
 ```go
 var allowed = map[string][]string{
@@ -164,19 +165,13 @@ $ cast nonce $HOT
 
 این بخش کد ندارد. {{< term "sweeping" "sweep" >}} واریزها را از آدرس‌های زیاد به کیف‌پول‌های صرافی جمع می‌کند؛ برای ERC-20 هر آدرس واریز اول ETH برای gas لازم دارد. کیف‌پول داغ فقط پولِ برداشت‌های نزدیک را دارد؛ بقیه در {{< term "cold-wallet" "کیف‌پول سرد" >}} می‌ماند و با انتقال‌های تأییدشده‌ی دستی کیف‌پول داغ را شارژ می‌کند. [پست هک بایننس](/fa/posts/binance-hack-hot-wallet-2026/) نشان می‌دهد چرا هر چیزی که از کیف‌پول داغ امضا می‌خواهد به اندازه‌ی کلیدش مهم است.
 
-## چند نکته‌ی مهم
+## قاعده‌هایی که دفتر را درست نگه می‌دارند
 
 - فقط در N به حساب بگذارید و برای reorg عمیق‌تر از N هشدار داشته باشید؛ پولِ به حساب رفته را خودکار برنگردانید.
 - nonceهای یک کیف‌پول داغ مال یک پروسه است. یک `cast send` دستی با همان کلید شمارنده را خراب می‌کند.
 - تراکنش امضاشده را پیش از ارسال ذخیره کنید؛ تلاش دوباره همان را می‌فرستد، نه امضای تازه.
 - جمع کل دفتر باید صفر باشد؛ با موجودی روی زنجیره هم تطبیقش دهید.
 
-## تمرین
-
-۱. یک فرمان تطبیق اضافه کنید: موجودی کیف‌پول داغ و آدرس‌های واریز روی زنجیره در برابر `user:*` به‌علاوه‌ی `withdrawals:pending`.
-۲. مسیر شکست را اجرا کنید: برداشتی را روی زنجیره revert کنید و آزادشدن مبلغ رزروشده را نشان دهید.
-۳. برای واریزهای بزرگ N بزرگ‌تری بگذارید.
-
 ## قدم بعدی
 
-پست بعد: **پروژه‌ی پایانی بلاکچین با Go و Rust**.
+**پروژه‌ی پایانی بلاکچین با Go و Rust**: کلید امضای این بک‌اند را به یک signer جدا می‌برد.

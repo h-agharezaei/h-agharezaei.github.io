@@ -3,13 +3,14 @@ date = '2027-02-12T10:00:00+03:30'
 draft = false
 title = 'Rate limiting and caching in Go'
 description = 'Go rate limiting and caching: a per-client token bucket with 429 responses, then a TTL cache, singleflight against stampedes and an LRU bound for GetOrder.'
+contentType = 'engineering'
 categories = ["Go"]
 series = ["Go Backend"]
 tags = ["go", "backend", "rate-limiting", "caching", "singleflight", "middleware"]
 cover = { image = "/images/covers/go-rate-limiting-caching.png", alt = "Rate limiting and caching in Go", hiddenInSingle = true }
 +++
 
-The [previous post](/posts/go-grpc-service/) gave `orders` a gRPC front door. A service that is reachable also has to survive its callers: one noisy client should not starve the others, and the same hot order should not hit the database a thousand times a second. This post adds both defences to the REST version from [the net/http post](/posts/go-http-api-stdlib/): a rate-limit middleware in its chain, and a cache in front of `GetOrder`. The code copies that demo and adds a `Pay` method, an update we need for invalidation.
+A reachable service also has to survive its callers: one noisy client should not starve the others, and the same hot order should not hit the database a thousand times a second. I add both defences to the REST version from [the net/http post](/posts/go-http-api-stdlib/), not the [gRPC front door](/posts/go-grpc-service/): a rate-limit middleware and a cache in front of `GetOrder`. The code adds a `Pay` method for invalidation.
 
 > Go 1.26, macOS arm64, `golang.org/x/time` v0.16.0, `golang.org/x/sync` v0.24.0, `golang-lru/v2` v2.0.7.
 
@@ -125,7 +126,7 @@ keys oldest to newest: [a d e] len: 3
 
 `a` survived because reading it made it recent.
 
-## A few things to watch
+## Where these defences break
 
 - Caching is a freshness trade-off. A longer TTL means fewer loads and more stale data; invalidate on writes you control, and accept the TTL as the worst case for changes you do not.
 - An invalidation can race with a slow load that started earlier: it may write the old value back after your `Delete`. I did not reproduce this; keep the TTL short as a safety net.
@@ -134,4 +135,4 @@ keys oldest to newest: [a d e] len: 3
 
 ## What's next
 
-Next: profiling Go with pprof, to find out where the time and memory really go instead of guessing.
+Next is "Profiling Go with pprof", to see where time and memory really go instead of guessing.

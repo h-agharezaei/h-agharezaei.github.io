@@ -3,13 +3,14 @@ date = '2026-11-04T18:00:00+03:30'
 draft = false
 title = 'Merkle tree و اثبات عضویت'
 description = 'Merkle tree با Go: root درخت در header بلاک، تعداد فرد برگ‌ها، پیشوند برگ و گره در برابر second preimage، و اثبات عضویت با اندازه‌ی واقعی.'
+contentType = 'tutorial'
 categories = ["Blockchain"]
 series = ["Blockchain"]
 tags = ["blockchain", "go", "merkle-tree", "hashing", "data-structures"]
 cover = { image = "/images/covers/bc-merkle-trees-proofs.fa.png", alt = "Merkle tree و اثبات عضویت", hiddenInSingle = true }
 +++
 
-در [مقاله‌ی قبل](/fa/posts/bc-hashes-blocks-chain/) header بلاک با یک `DataHash` تکی به payload متعهد بود. برای اینکه بفهمید یک پرداخت در بلاک هست، کل بلاک را لازم داشتید. {{< term "merkle-tree" "Merkle tree" >}} این را حل می‌کند: header هنوز ۳۲ بایت نگه می‌دارد، ولی هر کسی با چند hash می‌تواند ثابت کند یک تراکنش در بلاک هست. در [replication و quorum](/fa/posts/ds-replication-quorum/) از آن برای مقایسه‌ی replicaها استفاده کردیم؛ درخت‌ها به‌طور کلی در [درخت جست‌وجو و B-tree](/fa/posts/algo-trees-bst-btree/) آمده‌اند.
+وقتی header مثل [مقاله‌ی قبل](/fa/posts/bc-hashes-blocks-chain/) با یک `DataHash` تکی به payload متعهد است، برای فهمیدن اینکه پرداختی در بلاک هست کل بلاک را لازم دارید. {{< term "merkle-tree" "Merkle tree" >}} این را حل می‌کند: header هنوز ۳۲ بایت نگه می‌دارد، ولی هر کسی با چند hash می‌تواند ثابت کند یک تراکنش در بلاک هست. در [replication و quorum](/fa/posts/ds-replication-quorum/) از آن برای مقایسه‌ی replicaها استفاده کردیم؛ درخت‌ها به‌طور کلی در [درخت جست‌وجو و B-tree](/fa/posts/algo-trees-bst-btree/) آمده‌اند.
 
 ماژول `toychain` مقاله‌ی قبل را کپی کردم و گسترش دادم: `Header.DataHash` شد `MerkleRoot` و `Block.Data` شد `Txs [][]byte`. تراکنش‌ها هنوز payload خام بایتی‌اند؛ تراکنش امضاشده در دو مقاله‌ی بعد می‌آید.
 
@@ -136,7 +137,7 @@ edit one tx: block 1: merkle root does not match transactions
 
 root بلاک ۲ با sibling 0 بالا برابر است: root درخت تک‌تراکنشی همان hash برگ آن تراکنش است.
 
-## چند نکته‌ی مهم
+## حدود یک اثبات
 
 - اثبات فقط به اندازه‌ی root معتبر است. root را از headerی بگیرید که خودتان اعتبارسنجی کرده‌اید، نه از اثبات‌کننده.
 - قاعده‌ی تعداد فرد را مستند کنید؛ بالا بردن و تکرار root متفاوت می‌دهند.

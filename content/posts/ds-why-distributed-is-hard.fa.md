@@ -3,13 +3,14 @@ date = '2027-04-15T10:00:00+03:30'
 draft = false
 title = 'چرا سیستم توزیع‌شده سخت است'
 description = 'چرا سیستم توزیع‌شده سخت است: خرابی جزئی، retry، اختلاف ساعت و گره‌ی کند، با شبیه‌سازی‌های Go با seed ثابت و یک دموی واقعی روی loopback.'
+contentType = 'tutorial'
 categories = ["Distributed"]
 series = ["Distributed Systems"]
 tags = ["distributed-systems", "go", "partial-failure", "clocks", "failure-detection"]
 cover = { image = "/images/covers/ds-why-distributed-is-hard.fa.png", alt = "چرا سیستم توزیع‌شده سخت است", hiddenInSingle = true }
 +++
 
-این اولین مقاله‌ی یک سری تازه درباره‌ی سیستم‌های توزیع‌شده است. سال‌هاست با queue، replica و RPC کار می‌کنم و بدترین باگ‌هایم از چند واقعیت تکراری آمده‌اند، پس بهتر است از نام‌گذاری همین‌ها شروع کنم. مقاله‌های قبلی از یک سو به این موضوع‌ها رسیده‌اند: [idempotency در JetStream](/fa/posts/nats-jetstream-idempotency/)، [الگوی outbox](/fa/posts/go-outbox-pattern-nats/) و [replication](/fa/posts/db-replication-streaming/). اینجا نقشه‌ی کلی است.
+کلاینت `Withdraw(10)` را صدا می‌زند و timeout می‌گیرد. پول جابه‌جا شد یا نه؟ کلاینت راهی برای فهمیدنش ندارد. سال‌هاست با queue، replica و RPC کار می‌کنم و بدترین باگ‌هایم از چند واقعیت مثل همین آمده‌اند، پس این سری را با نام‌گذاری همین‌ها شروع می‌کنم. مقاله‌های قبلی از یک سو به این موضوع‌ها رسیده‌اند: [idempotency در JetStream](/fa/posts/nats-jetstream-idempotency/)، [الگوی outbox](/fa/posts/go-outbox-pattern-nats/) و [replication](/fa/posts/db-replication-streaming/). اینجا نقشه‌ی کلی است.
 
 > صادقانه: بخش‌های ۱، ۲، ۴ و ۶ **شبیه‌سازی** هستند، در یک process و با تصادف seed‌دار (Go 1.26). شبکه‌ی شبیه‌سازی‌شده شبکه‌ی واقعی نیست؛ عددها شکل مسئله را نشان می‌دهند، نه نرخ‌های production. بخش ۵ process و TCP واقعی دارد ولی فقط روی loopback. فقط تعداد نشان می‌دهم، نه زمان.
 
@@ -109,7 +110,7 @@ requests with a 100 ms deadline that time out: healthy 2.1%, slow(5x) 52.5%
 
 timeout کوتاه گره‌ی سالم را مشکوک می‌کند و بلند دیر مرگ را می‌فهمد. بدتر: در ۵۰۰ms گره‌ی کند هیچ‌وقت مشکوک نمی‌شود، ولی بیش از نیمی از درخواست‌هایش از deadline ۱۰۰ms رد می‌شوند. این {{< term "gray-failure" "خرابی خاکستری" >}} (gray failure) است؛ طبق تجربه‌ی من از crash تمیز سخت‌تر است.
 
-## چند نکته‌ی مهم
+## جایی که شهود فریب می‌دهد
 
 - timeout یعنی «نامعلوم»، نه «شکست».
 - retry بدون idempotency آسیب را چند برابر می‌کند.
@@ -123,4 +124,4 @@ seed و نرخ‌های گم‌شدن را در `pickFate` عوض کنید. آی
 
 ## قدم بعدی
 
-مقاله‌ی بعدی «CAP و PACELC درست» است.
+«CAP و PACELC درست» بعد از این می‌آید: وقتی شبکه دوپاره شود، نشان می‌دهد چه چیزی را از دست می‌دهید.

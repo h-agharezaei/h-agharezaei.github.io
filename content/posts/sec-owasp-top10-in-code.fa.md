@@ -3,13 +3,14 @@ date = '2027-02-21T10:00:00+03:30'
 draft = false
 title = 'OWASP Top 10 در کد واقعی'
 description = 'OWASP Top 10 در کد واقعی: دسته‌های نسخه‌ی ۲۰۲۵ روی Go، با دموی محلی IDOR، pprof بازمانده، تزریق در لاگ و SSRF و راه‌حل هرکدام.'
+contentType = 'tutorial'
 categories = ["Security"]
 series = ["Software Security"]
 tags = ["security", "owasp", "appsec", "go", "idor", "ssrf"]
 cover = { image = "/images/covers/sec-owasp-top10-in-code.fa.png", alt = "OWASP Top 10 در کد واقعی", hiddenInSingle = true }
 +++
 
-در [مدل‌سازی تهدید با STRIDE](/fa/posts/sec-threat-modeling-stride/) فهرستی رتبه‌بندی‌شده از تهدیدها ساختیم. {{< term "owasp-top-10" "OWASP Top 10" >}} واژگان رایج برای همین تهدیدهاست؛ پس اینجا آن را به کد نگاشت می‌کنم: ایده‌ی سرویس `orders` از [ساخت API با net/http در Go](/fa/posts/go-http-api-stdlib/)، در قالب برنامه‌های خیلی کوچک.
+اگر handler سفارش را فقط با شناسه پیدا کند، آلیس با درخواست شناسه‌ی ۲ سفارش باب را می‌خواند. {{< term "owasp-top-10" "OWASP Top 10" >}} واژگان رایج برای چنین باگ‌هایی است و تهدیدهایی هم که در [مدل‌سازی تهدید با STRIDE](/fa/posts/sec-threat-modeling-stride/) رتبه‌بندی کردیم با همین واژگان نام می‌گیرند. اینجا آن را به کد نگاشت می‌کنم: ایده‌ی سرویس `orders` از [ساخت API با net/http در Go](/fa/posts/go-http-api-stdlib/)، در قالب برنامه‌های خیلی کوچک.
 
 در تاریخ ۲۰۲۶-۱۰-۲۷ نشانی https://owasp.org/Top10/ را خواندم؛ به **OWASP Top 10:2025** منتقل شد و نام دسته‌ها در زیر از همان صفحه کپی شده است.
 
@@ -111,7 +112,7 @@ hash برابر یعنی رمز برابر، و hash سریع برای حدس‌
 
 می‌خواستم `govulncheck` را روی ماژولی با `golang.org/x/text` قدیمی اجرا کنم. درخواست به پایگاه آسیب‌پذیری (`vuln.go.dev`) اینجا `403 Forbidden` برگرداند؛ پس یافته‌ی واقعی ندارم و چیزی نشان نمی‌دهم. `govulncheck ./...` را در CI خودتان اجرا کنید.
 
-## چند نکته‌ی مهم
+## قاعده‌های سرانگشتی از دموها
 
 - دسترسی را در سرور و برای هر شیء بررسی کنید، نه فقط در UI.
 - قابلیت‌های دیباگ جایشان listener جدا و غیرعمومی است.
@@ -125,4 +126,4 @@ hash برابر یعنی رمز برابر، و hash سریع برای حدس‌
 
 ## قدم بعدی
 
-مقاله‌ی بعد «تزریق و XSS» است.
+«تزریق و XSS» دسته‌ی Injection همین جدول را باز می‌کند و عمیق‌تر سراغش می‌رود: SQL، shell، فایل‌سیستم و مرورگر.

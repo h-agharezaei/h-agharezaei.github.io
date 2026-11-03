@@ -3,13 +3,14 @@ date = '2026-10-30T10:00:00+03:30'
 draft = false
 title = "The index and staging: Git's three areas"
 description = 'The Git index and staging explained with real runs: working tree, index and HEAD, status codes, diff variants, git add -p, restore, .gitignore and stash.'
+contentType = 'tutorial'
 categories = ["Git"]
 series = ["Git"]
 tags = ["git", "beginner", "staging", "index"]
 cover = { image = "/images/covers/git-index-staging.png", alt = "The index and staging: Git's three areas", hiddenInSingle = true }
 +++
 
-In the [previous post](/posts/git-how-git-thinks/) we saw that Git stores snapshots as objects named by their hash. This post is about the step before a commit exists, the one that confuses most newcomers: why do you `git add` and then `git commit`? The answer is that Git has three areas, not two.
+Right after `git add`, plain `git diff` shows nothing, and one file can show `MM` in `git status -s`, meaning two different versions at once. Both come from the question that confuses most newcomers: why do you `git add` and then `git commit`? Because Git has three areas, not two, sitting on top of the objects named by their hash that the [previous post](/posts/git-how-git-thinks/) showed.
 
 > Everything below was run with Git 2.39.2 in throwaway repositories, and the outputs are copied from those runs.
 
@@ -115,7 +116,7 @@ $ git stash pop
 
 Plain {{< term "stash" "stash" >}} took the modified `main.go` but left the untracked `scratch.txt` behind. `git stash -u` took both and the tree became clean; `git stash list` showed one entry, and `pop` restored everything.
 
-## A few things to watch
+## Staging surprises
 
 - `git commit -a` skips staging for tracked files only; new files still need `git add`.
 - `git add -p` does not offer untracked files; add those normally.
@@ -131,4 +132,4 @@ Plain {{< term "stash" "stash" >}} took the modified `main.go` but left the untr
 
 ## What's next
 
-Next: Branches, HEAD and refs: just pointers.
+Next is "Branches, HEAD and refs: just pointers", about the names that point at those commits.

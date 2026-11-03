@@ -3,13 +3,14 @@ date = '2027-01-20T10:00:00+03:30'
 draft = false
 title = 'مرتب‌سازی: quick، merge و heap'
 description = 'مرتب‌سازی در Go: quicksort، merge sort و heap sort با شمارش دقیق مقایسه‌ها، بدترین حالت O(n^2)، پایداری و انتخاب در عمل.'
+contentType = 'tutorial'
 categories = ["Algorithms"]
 series = ["Algorithms"]
 tags = ["algorithms", "sorting", "go", "quicksort", "merge-sort", "heap-sort"]
 cover = { image = "/images/covers/algo-sorting.fa.png", alt = "مرتب‌سازی: quick، merge و heap", hiddenInSingle = true }
 +++
 
-در مقاله‌ی قبلی، [جست‌وجوی دودویی و invariant](/fa/posts/algo-binary-search-invariants/)، داده از قبل مرتب بود. حالا خودمان آن ترتیب را می‌سازیم. سه الگوریتم کلاسیک به O(n log n) می‌رسند ({{< term "big-o" "Big-O" >}}، مثل [تحلیل Big-O با اندازه‌گیری واقعی](/fa/posts/algo-big-o-measured/)): {{< term "quicksort" "quicksort" >}}، {{< term "merge-sort" "merge sort" >}} و {{< term "heap-sort" "heap sort" >}}. آخری همان heap مقاله‌ی [heap و priority queue](/fa/posts/algo-heaps-priority-queues/) را به کار می‌برد. فرقشان در بدترین حالت، حافظه و یک ویژگی است که خیلی‌ها را غافلگیر می‌کند: {{< term "stable-sort" "پایداری (stability)" >}}.
+به ساده‌ترین {{< term "quicksort" "quicksort" >}} ده هزار عنصرِ از قبل مرتب بدهید: حدود n^2/2 مقایسه می‌کند و عمق بازگشتش به اندازه‌ی خود ورودی می‌شود؛ همین کد روی ورودی تصادفی ۱۵۶٬۲۷۵ مقایسه و عمق ۳۱ لازم دارد. در [جست‌وجوی دودویی و invariant](/fa/posts/algo-binary-search-invariants/) داده از قبل مرتب بود؛ اینجا خودمان آن ترتیب را می‌سازیم. سه الگوریتم کلاسیک به O(n log n) می‌رسند ({{< term "big-o" "Big-O" >}}، مثل [تحلیل Big-O با اندازه‌گیری واقعی](/fa/posts/algo-big-o-measured/)): quicksort، {{< term "merge-sort" "merge sort" >}} و {{< term "heap-sort" "heap sort" >}}. آخری همان heap مقاله‌ی [heap و priority queue](/fa/posts/algo-heaps-priority-queues/) را به کار می‌برد. فرقشان در بدترین حالت، حافظه و یک ویژگی است که خیلی‌ها را غافلگیر می‌کند: {{< term "stable-sort" "پایداری (stability)" >}}.
 
 > Go 1.26، مثال محلی. وقتی خواستم زمان بگیرم، load average یک‌دقیقه‌ای این ماشین ۱۰٫۶۱ بود، خیلی بالاتر از سقف ۲٫۰ من؛ پس هیچ نانوثانیه‌ای منتشر نمی‌کنم. هرچه پایین می‌بینید قطعی است: تعداد فراخوانی `less` و تعداد allocation.
 
@@ -59,7 +60,7 @@ n         quick        merge        heap         n*log2(n)
 1000000   21623445     18674250     36795744     19931569
 ```
 
-هر سه مثل n log n رشد می‌کنند. merge sort زیر n log2 n می‌ماند، quicksort ۵ تا ۹ درصد بالاتر است و heap sort تقریباً دو برابر merge sort مقایسه می‌خواهد؛ هم‌خوان با نتیجه‌ی مقاله‌ی قبل. اما شمارش مقایسه زمان نیست: الگوی دسترسی به حافظه را نمی‌بیند، پس درباره‌ی سریع‌ترین ادعایی نمی‌کنم.
+هر سه مثل n log n رشد می‌کنند. merge sort زیر n log2 n می‌ماند، quicksort ۵ تا ۹ درصد بالاتر است و heap sort تقریباً دو برابر merge sort مقایسه می‌خواهد؛ هم‌خوان با نتیجه‌ی مقاله‌ی heap. اما شمارش مقایسه زمان نیست: الگوی دسترسی به حافظه را نمی‌بیند، پس درباره‌ی سریع‌ترین ادعایی نمی‌کنم.
 
 allocationها با `testing.AllocsPerRun` برای n = 10000 (هر اجرا یک allocation برای clone ورودی دارد): quicksort ۱ و heap sort ۱، یعنی اضافه‌ای ندارند؛ merge sort ۲، یعنی همان بافر.
 
@@ -73,7 +74,7 @@ random  comparisons=156275  n^2/2=50000000  max recursion depth=31
 median-of-three quick on the same sorted input: comparisons=107963
 ```
 
-ورودی مرتب حدود n^2/2 مقایسه و بازگشتی به عمق خود ورودی می‌دهد؛ همان کد روی ورودی تصادفی ۱۵۶٬۲۷۵ مقایسه و عمق ۳۱ دارد. median-of-three حالت مرتب را با ۱۰۷٬۹۶۳ مقایسه سر می‌کند. اما مصون نیست: برای هر قاعده‌ی ثابت انتخاب pivot ورودی بد ساخته می‌شود، و یکی از دلیل‌های fallback در کتابخانه‌هاست.
+median-of-three حالت مرتب را با ۱۰۷٬۹۶۳ مقایسه سر می‌کند. اما مصون نیست: برای هر قاعده‌ی ثابت انتخاب pivot ورودی بد ساخته می‌شود، و یکی از دلیل‌های fallback در کتابخانه‌هاست.
 
 ## پایداری
 
@@ -95,7 +96,7 @@ slices.SortFunc                    equal-key pairs out of original order: 102
 
 طبق مستندات و کد Go، `sort.Slice` و `slices.Sort` از Go 1.19 یک pattern-defeating quicksort به کار می‌برند. `sort.Slice` را روی ۱۰۰٬۰۰۰ عدد تصادفی شمردم: ۱٬۷۳۹٬۸۹۲ فراخوانی `less`، نزدیک ۱٬۷۹۲٬۱۱۰ مقایسه‌ی quicksort من.
 
-## چند نکته‌ی مهم
+## انتخاب مرتب‌سازی بدون غافلگیری
 
 - مگر دلیل داشته باشید `slices.Sort` یا `slices.SortFunc` را بزنید؛ وقتی کلیدهای برابر باید ترتیب بمانند، مثلاً مرتب‌سازی با کلید دوم بعد از اولی، `slices.SortStableFunc` را.
 - تابع مقایسه‌ی شما باید ترتیب سازگار باشد. `less`ای که نیست، مثلاً با `<=`، می‌تواند نتیجه را خراب کند.
@@ -109,4 +110,4 @@ merge sort را یک کار کمتر کنید: اگر `!less(a[m], a[m-1])` بو
 
 ## قدم بعدی
 
-درخت جست‌وجو و B-tree.
+درخت جست‌وجو و B-tree: مرتب نگه‌داشتن داده در حین تغییر، به‌جای یک بار مرتب‌کردن.

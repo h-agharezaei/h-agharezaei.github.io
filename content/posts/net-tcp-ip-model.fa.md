@@ -3,13 +3,14 @@ date = '2026-12-19T10:00:00+03:30'
 draft = false
 title = 'مدل TCP/IP و مسیر یک بسته'
 description = 'مدل TCP/IP با کد واقعی: ساخت دستی header‌های IPv4 و TCP، راستی‌آزمایی checksum و دیدن یک اتصال loopback و جریان بایتی TCP.'
+contentType = 'tutorial'
 categories = ["Networking"]
 series = ["Networking"]
 tags = ["networking", "tcp-ip", "tcp", "ip", "sockets", "http"]
 cover = { image = "/images/covers/net-tcp-ip-model.fa.png", alt = "مدل TCP/IP و مسیر یک بسته", hiddenInSingle = true }
 +++
 
-هر سرویسی که در این وبلاگ نوشتم، مثل [API با net/http](/fa/posts/go-http-api-stdlib/) یا [سرویس gRPC](/fa/posts/go-grpc-service/)، آخرش به یک فراخوانی می‌رسد: «این بایت‌ها را به آن آدرس بفرست». این سری نگاهی است به آنچه زیر آن فراخوانی اتفاق می‌افتد. با نقشه شروع می‌کنیم: لایه‌ها و اینکه یک درخواست HTTP چطور بسته می‌شود.
+هر سرویسی که در این وبلاگ نوشتم، مثل [API با net/http](/fa/posts/go-http-api-stdlib/) یا [سرویس gRPC](/fa/posts/go-grpc-service/)، آخرش به یک فراخوانی می‌رسد: «این بایت‌ها را به آن آدرس بفرست». زیر آن فراخوانی چه می‌گذرد؟ با نقشه شروع می‌کنیم: لایه‌ها و اینکه یک درخواست HTTP چطور بسته می‌شود.
 
 > همه‌چیز روی macOS (arm64) با Python 3.14، `curl`، `nc` و `lsof` اجرا شده است. اینجا دسترسی root ندارم، پس packet capture در کار نیست؛ به‌جایش header‌ها را دستی می‌سازیم و socket‌ها را می‌بینیم. همه‌ی آدرس‌ها loopback یا نمونه‌ی مستندات هستند (`192.0.2.10` و `198.51.100.20`) و دمو از یک port تصادفی محلی استفاده می‌کند.
 
@@ -65,7 +66,7 @@ sum of header words incl. checksum: 0xffff
 
 ## loopback و MTU
 
-خروجی `ifconfig lo0` که فقط به خطوط loopback کاهش داده‌ام (خروجی واقعی بقیه‌ی interface‌های من را هم دارد که حذف شدند):
+خروجی `ifconfig lo0`، کاهش‌یافته به خطوط loopback (بقیه‌ی interfaceهای من حذف شده‌اند):
 
 ```
 lo0: flags=8049<UP,LOOPBACK,RUNNING,MULTICAST> mtu 16384
@@ -100,7 +101,7 @@ nc         3u  IPv4  TCP 127.0.0.1:58632->127.0.0.1:PORT (ESTABLISHED)
 
 ## TCP یک جریان است
 
-۱۰۰٬۰۰۰ بایت را در ده write جدا از ۱۰٬۰۰۰ بایت می‌فرستم و می‌بینم گیرنده با `recv()` چه می‌گیرد. دو بار اجرا کردم:
+۱۰۰٬۰۰۰ بایت را در ده write ده‌هزاربایتی فرستادم و آنچه `recv()` برگرداند را دو بار چاپ کردم:
 
 ```
 sent: 10 writes of 10000 bytes = 100000
@@ -110,7 +111,7 @@ recv() sizes: [65536, 4464, 30000] total 100000
 
 مجموع همیشه درست است، ولی اندازه‌ی تکه‌ها از writeهای من پیروی نمی‌کند و بین اجراها فرق دارد. TCP جریانی مرتب از بایت‌ها تحویل می‌دهد و مرز پیام ندارد. به همین دلیل HTTP هدر `Content-Length` و chunked encoding دارد و gRPC قبل از هر پیام طول آن را می‌گذارد.
 
-## چند نکته‌ی مهم
+## اشتباه‌های رایج درباره‌ی لایه‌ها
 
 - load balancer «لایه‌ی ۷» و «لایه‌ی ۴» در این فرق دارند که کدام header را می‌خوانند: اولی HTTP می‌فهمد و دومی فقط IP و port.
 - هرگز فرض نکنید یک `Write` برابر یک `Read` است؛ پیام‌هایتان را خودتان frame کنید.
@@ -124,4 +125,4 @@ recv() sizes: [65536, 4464, 30000] total 100000
 
 ## قدم بعدی
 
-مقاله‌ی بعدی «آدرس‌دهی IP و subnet» است.
+بعدی «آدرس‌دهی IP و subnet» است، چون از طرز کار آدرس‌های همین بسته‌ها رد شدم.

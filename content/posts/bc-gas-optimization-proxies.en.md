@@ -3,13 +3,14 @@ date = '2026-11-26T18:00:00+03:30'
 draft = false
 title = 'Gas optimization and upgradeable proxies'
 description = 'Gas optimization and upgradeable proxies in Solidity: measured savings from storage packing and calldata, then an EIP-1967 proxy and a storage collision.'
+contentType = 'tutorial'
 categories = ["Blockchain"]
 series = ["Blockchain"]
 tags = ["blockchain", "solidity", "gas", "proxy", "foundry", "evm"]
 cover = { image = "/images/covers/bc-gas-optimization-proxies.png", alt = "Gas optimization and upgradeable proxies", hiddenInSingle = true }
 +++
 
-[Contract security: reentrancy, access control and real incidents](/posts/bc-contract-security/) made my contracts safer. This post makes them cheaper, then deals with the fact that deployed code cannot change. Both rest on [Inside the EVM](/posts/bc-evm-internals-rust/): storage is the expensive part of {{< term "gas" "gas" >}}.
+Storage is the expensive part of {{< term "gas" "gas" >}} ([Inside the EVM](/posts/bc-evm-internals-rust/)), yet my pool used seven slots where five would do, and deployed code cannot change. [Contract security: reentrancy, access control and real incidents](/posts/bc-contract-security/) made my contracts safer; this post makes them cheaper and upgradeable.
 
 > Foundry 1.8.7, solc 0.8.38, macOS (arm64), on a copy of the previous post's project. Gas is deterministic for the same code and compiler settings. Teaching code, not audited.
 
@@ -136,7 +137,7 @@ A proxy never runs the implementation's constructor, so state is set by `initial
 
 Where upgrade logic lives is the UUPS versus transparent split, as I understand OpenZeppelin's docs. A transparent proxy keeps it in the proxy and never forwards the admin's calls, avoiding clashes; my `upgradeTo` shadows any implementation function with the same {{< term "function-selector" "selector" >}}. UUPS puts it in the implementation: a cheaper proxy, but a version without it ends all upgrades.
 
-## A few things to watch
+## Optimization and upgrade traps
 
 - Measure with `forge snapshot --diff`, not folklore.
 - Pack only hot variables, and check every narrowing cast.
@@ -150,4 +151,4 @@ Where upgrade logic lives is the UUPS versus transparent split, as I understand 
 
 ## What's next
 
-Next post: **MEV and transaction ordering**.
+**MEV and transaction ordering**: from what a transaction costs to when it runs.

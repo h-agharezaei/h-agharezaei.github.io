@@ -4,13 +4,14 @@ draft = false
 title = 'امنیت قرارداد: reentrancy، access control و نمونه‌های واقعی'
 seoTitle = 'امنیت قرارداد: reentrancy و access control'
 description = 'امنیت قرارداد در Solidity: reentrancy، callback توکن‌ها، initializer باز، tx.origin و transfer چک‌نشده، با حمله در تست محلی و رفع هر کدام.'
+contentType = 'tutorial'
 categories = ["Blockchain"]
 series = ["Blockchain"]
 tags = ["blockchain", "solidity", "security", "reentrancy", "foundry", "defi"]
 cover = { image = "/images/covers/bc-contract-security.fa.png", alt = "امنیت قرارداد: reentrancy، access control و نمونه‌های واقعی", hiddenInSingle = true }
 +++
 
-[Oracle و دستکاری قیمت](/fa/posts/bc-oracles/) بازار وام را بی‌هیچ باگی در کد شکست. این پست درباره‌ی خود باگ‌هاست، هر کدام حمله‌شده در تست محلی Foundry روی کد خودم و بعد رفع‌شده. این‌جا معلوم می‌شود چرا `withdraw` در [اولین قرارداد با Solidity و Foundry](/fa/posts/bc-solidity-first-contract/) قبل از فرستادن ETH حافظه را به‌روز می‌کند. [مجوزدهی: RBAC و IDOR](/fa/posts/sec-authorization-rbac-idor/) نسخه‌ی وبِ بخش access control است.
+چرا `withdraw` در [اولین قرارداد با Solidity و Foundry](/fa/posts/bc-solidity-first-contract/) قبل از فرستادن ETH حافظه را به‌روز می‌کند؟ فرستادن ETH کد گیرنده را اجرا می‌کند و آن کد می‌تواند پیش از صفر شدن موجودی دوباره `withdraw` را صدا بزند. [Oracle و دستکاری قیمت](/fa/posts/bc-oracles/) بازار وام را بی‌هیچ باگی شکست؛ این پست درباره‌ی خود باگ‌هاست، هر کدام حمله‌شده در تست محلی Foundry روی کد خودم و بعد رفع‌شده. [مجوزدهی: RBAC و IDOR](/fa/posts/sec-authorization-rbac-idor/) نسخه‌ی وبِ بخش access control است.
 
 > اجرا با Foundry 1.8.7 و solc 0.8.38 روی macOS (arm64). پروژه‌ی پست قبل را کپی کردم. قراردادهای عمداً آسیب‌پذیر در `test/vulnerable/` و مهاجم‌ها در `test/helpers/` هستند. کد آموزشی است و audit نشده.
 
@@ -25,7 +26,7 @@ function withdraw() external {
 }
 ```
 
-فرستادن ETH تابع `receive()` گیرنده را اجرا می‌کند و آن، پیش از صفر شدن موجودی، دوباره `withdraw()` را صدا می‌زند. این {{< term "reentrancy" "reentrancy" >}} است. Alice و Bob هر کدام ۵ ETH واریز می‌کنند و مهاجم ۱:
+`receive()` گیرنده پیش از صفر شدن موجودی دوباره `withdraw()` را صدا می‌زند. این {{< term "reentrancy" "reentrancy" >}} است. Alice و Bob هر کدام ۵ ETH واریز می‌کنند و مهاجم ۱:
 
 ```
 $ forge test --mt test_VulnerableVaultIsDrained -vv
@@ -141,9 +142,7 @@ $ forge lint src | grep -E '^(warning|note|error)\[' | sort | uniq -c
 - **دستکاری oracle**: حمله‌ی پست قبل، که در گزارش‌های عمومی پروتکل‌های وام آمده.
 - **لو رفتن کلید**: تا جایی که می‌فهمم چند ضرر بزرگ bridge از دزدی کلید validatorها بوده، نه باگ قرارداد؛ [هک بایننس](/fa/posts/binance-hack-hot-wallet-2026/) را هم ببینید.
 
-## چند نکته‌ی مهم
-
-چک‌لیست من قبل از دیپلوی:
+## چک‌لیست پیش از دیپلوی
 
 - در هر تابع اول checks، بعد effects، بعد interactions، و بعد قفل.
 - هر فراخوانی بیرونی، حتی transfer توکن، ممکن است شما را دوباره صدا بزند.
@@ -158,4 +157,4 @@ $ forge lint src | grep -E '^(warning|note|error)\[' | sort | uniq -c
 
 ## قدم بعدی
 
-پست بعد: **بهینه‌سازی gas و قرارداد قابل ارتقا با proxy**.
+**بهینه‌سازی gas و قرارداد قابل ارتقا با proxy**: کد امن هم gas می‌خورد و کد دیپلوی‌شده وصله‌پذیر نیست.

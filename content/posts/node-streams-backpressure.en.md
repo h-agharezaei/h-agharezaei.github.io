@@ -3,13 +3,14 @@ date = '2026-12-17T10:00:00+03:30'
 draft = false
 title = 'Streams and backpressure in Node.js'
 description = 'Node.js streams and backpressure with real runs: memory of readFileSync vs a stream, pipeline with gzip, write() returning false, drain and error handling.'
+contentType = 'tutorial'
 categories = ["Node.js"]
 series = ["Node.js"]
 tags = ["nodejs", "streams", "backpressure", "pipeline", "javascript"]
 cover = { image = "/images/covers/node-streams-backpressure.png", alt = "Streams and backpressure in Node.js", hiddenInSingle = true }
 +++
 
-In the previous post, [Errors and unhandled rejections in Node.js](/posts/node-errors-unhandled-rejections/), we made failures visible. Now a different kind of problem: data that is bigger than you want to hold in memory. The answer is the {{< term "stream" "stream" >}}. It builds on [the event loop](/posts/node-event-loop/) and on [promises and async/await](/posts/node-promises-async-await/). If you come from Go, [Files, io.Reader/Writer and JSON in Go](/posts/go-file-io-json/) is the counterpart.
+Reading a 50 MB file with `readFileSync` grew the process by about 50 MB; reading it as a {{< term "stream" "stream" >}} grew it by about half that. Data bigger than you want to hold in memory is a different kind of problem from the failures in [Errors and unhandled rejections in Node.js](/posts/node-errors-unhandled-rejections/), and streams are Node's answer. It builds on [the event loop](/posts/node-event-loop/) and on [promises and async/await](/posts/node-promises-async-await/). If you come from Go, [Files, io.Reader/Writer and JSON in Go](/posts/go-file-io-json/) is the counterpart.
 
 > Everything was run with Node v20.13.1 on one machine. The scripts are local examples; outputs are copied from real runs.
 
@@ -111,7 +112,7 @@ readable destroyed: false writable destroyed: false writable ended: false
 
 Only the failing stream closed. The source and the destination were left open: a leak, and the writable never ends. `.pipe()` does not forward errors.
 
-## A few things to watch
+## Where buffers grow silently
 
 - Prefer `pipeline` over `.pipe()`; always handle its rejection.
 - When you call `write()` yourself, check the return value and wait for `'drain'`.
@@ -125,4 +126,4 @@ Write a script that reads `big.txt` line by line, keeps only lines containing `f
 
 ## What's next
 
-The next post is An HTTP server with node:http, where requests and responses are themselves streams.
+"An HTTP server with node:http": there requests and responses are themselves streams, so every rule here applies directly.

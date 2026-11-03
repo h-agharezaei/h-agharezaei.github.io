@@ -3,13 +3,14 @@ date = '2026-11-09T10:00:00+03:30'
 draft = false
 title = 'Finding a bug with git bisect'
 description = 'git bisect finds the commit that broke your code with a binary search, by hand or fully automatic with git bisect run, with real runs on a 30-commit repo.'
+contentType = 'tutorial'
 categories = ["Git"]
 series = ["Git"]
 tags = ["git", "bisect", "debugging", "beginner"]
 cover = { image = "/images/covers/git-bisect.png", alt = "Finding a bug with git bisect", hiddenInSingle = true }
 +++
 
-In the [previous post](/posts/git-undo-reflog-revert/) we learned how to undo work. Now a harder question: something that worked last month is broken today, and 30 commits sit in between. Which one did it? That is a {{< term "regression" "regression" >}}, and `git bisect` is the tool for it.
+Something that worked last month is broken today, and 30 commits sit in between. Which one did it? That is a {{< term "regression" "regression" >}}, and `git bisect` answers it in about five tests instead of up to 29 diffs read by hand. [Undoing work](/posts/git-undo-reflog-revert/) is easy once you know which commit to revert; bisect is how you find it.
 
 > Everything below was run with Git 2.39 in a local demo repo. The commit hashes are real output from that run.
 
@@ -99,7 +100,7 @@ Exit code 125 is special for `git bisect run`: it means "skip this commit". The 
 
 `git bisect visualize` shows the remaining suspect commits in a graphical viewer. I did not run it here because it needs a UI.
 
-## A few things to watch
+## Where bisect misleads
 
 - Exit codes: 0 is good, 1 to 127 except 125 is bad, 125 is skip, and 128 or more aborts the bisect. Anything crashing with a high code will stop the run.
 - Your test script must exist at every commit Git checks out. Mine is committed in commit 1; an untracked file outside the history also works.

@@ -3,13 +3,14 @@ date = '2026-12-13T10:00:00+03:30'
 draft = false
 title = 'تراکنش و ACID'
 description = 'تراکنش و ACID در PostgreSQL با اجرای واقعی: BEGIN، ROLLBACK، savepoint، قیدها، DDL تراکنشی، WAL و synchronous_commit.'
+contentType = 'tutorial'
 categories = ["Databases"]
 series = ["Databases"]
 tags = ["databases", "postgresql", "transactions", "acid", "wal"]
 cover = { image = "/images/covers/db-transactions-acid.fa.png", alt = "تراکنش و ACID", hiddenInSingle = true }
 +++
 
-انتقال پول دو update است: از اینجا کم کن، آنجا اضافه کن. اگر پردازه بین این دو بمیرد، پول گم می‌شود. {{< term "transaction" "تراکنش" >}} جواب دیتابیس است: گروهی از دستورها که یا همه اتفاق می‌افتند یا هیچ‌کدام. در [پست قبلی](/fa/posts/db-planner-statistics/) دیدیم planner چطور داده را می‌خواند؛ حالا می‌بینیم نوشتن چطور درست می‌ماند. سمت اپلیکیشن این ماجرا در [تراکنش و الگوی Repository در Go](/fa/posts/go-transactions-patterns/) آمده است.
+انتقال پول دو update است: از اینجا کم کن، آنجا اضافه کن. اگر پردازه بین این دو بمیرد، پول گم می‌شود. {{< term "transaction" "تراکنش" >}} جواب دیتابیس است: گروهی از دستورها که یا همه اتفاق می‌افتند یا هیچ‌کدام. [پست قبلی](/fa/posts/db-planner-statistics/) درباره‌ی خواندن بود؛ این یکی درباره‌ی درست ماندن نوشتن است. سمت اپلیکیشن این ماجرا در [تراکنش و الگوی Repository در Go](/fa/posts/go-transactions-patterns/) آمده است.
 
 > همه‌چیز روی یک PostgreSQL 18.3 واقعی اجرا شده. یک جدول کوچک `accounts` داشتم (alice با ۱۰۰۰۰ سنت، bob با ۵۰۰۰) با `CHECK (balance_cents >= 0)` و جدول `transfers` با کلید خارجی. مجموع این تضمین‌ها {{< term "acid" "ACID" >}} نام دارد.
 
@@ -78,7 +79,7 @@ A: COMMIT
   B sees: alice=6200, transfers=1
 ```
 
-B کار commit نشده را نمی‌بیند. اینکه در حالت‌های پیچیده‌تر B دقیقاً چه چیزی ببیند به سطح isolation بستگی دارد که موضوع پست بعدی است.
+B کار commit نشده را نمی‌بیند. اینکه در حالت‌های پیچیده‌تر B دقیقاً چه چیزی ببیند به سطح isolation بستگی دارد.
 
 ## Durability، ‏WAL و synchronous_commit
 
@@ -99,7 +100,7 @@ BEGIN; UPDATE; ROLLBACK:             112 bytes
 
 دو درس: تراکنش خالی هزینه‌ای ندارد و تراکنش rollback‌شده هم WAL نوشته است. (تلاش اول من با `pg_current_wal_lsn()` برای rollback عدد ۰ نشان داد چون آن داده هنوز نوشته نشده بود؛ موقعیت insert معیار درست است.) اولین update بعد از راه‌اندازی ۴۵۶۸ بایت نوشت. دلیلش را بعداً با `pg_walinspect` سنجیدم: update درست بعد از `CHECKPOINT` یک full-page image ثبت می‌کند (رکورد `FPI_FOR_HINT` با برچسب `FPW`) و update بعدی روی همان page فقط ۱۱۲ بایت نوشت. اندازه‌ی آن image به پر بودن page بستگی دارد. **durability را crash-test نکردم**، مثلاً با `kill -9`؛ پس این بخش به تنظیم‌ها و مستندات تکیه دارد.
 
-## چند نکته‌ی مهم
+## دام‌های تراکنش
 
 - تراکنش را کوتاه نگه دارید. تراکنش طولانی lock و نسخه‌های قدیمی ردیف را نگه می‌دارد و جلوی پاکسازی را می‌گیرد؛ پست MVCC و VACUUM توضیحش می‌دهد.
 - داخل تراکنش منتظر کاربر یا یک فراخوانی HTTP نمانید.
@@ -113,4 +114,4 @@ BEGIN; UPDATE; ROLLBACK:             112 bytes
 
 ## قدم بعدی
 
-در پست بعدی این سری: سطح‌های ایزولاسیون و ناهنجاری‌ها.
+«سطح‌های ایزولاسیون و ناهنجاری‌ها»: اینکه B در حالت‌های پیچیده‌تر چه می‌بیند به سطح ایزولاسیون بستگی دارد.

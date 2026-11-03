@@ -3,15 +3,16 @@ date = '2026-11-20T18:00:00+03:30'
 draft = false
 title = 'Event و ساخت indexer با Go و Postgres'
 description = 'ساخت indexer رویداد با Go و Postgres: topic و data، bloom در header، eth_getLogs دسته‌ای، درج idempotent، تعداد confirmation و یک reorg واقعی روی anvil.'
+contentType = 'tutorial'
 categories = ["Blockchain"]
 series = ["Blockchain"]
 tags = ["blockchain", "go", "ethereum", "postgres", "indexer"]
 cover = { image = "/images/covers/bc-event-indexer-go.fa.png", alt = "Event و ساخت indexer با Go و Postgres", hiddenInSingle = true }
 +++
 
-در [کار با اتریوم از Rust با alloy](/fa/posts/bc-rust-alloy-client/) کلاینت Rust بود. این پست به Go برمی‌گردد: ماژول [کار با اتریوم از Go با go-ethereum](/fa/posts/bc-go-ethereum-client/) را همراه کد ساخته‌شده با abigen کپی کردم و یک {{< term "indexer" "indexer" >}} ساختم.
+نود به «در بلاک ۵ چه هست» خوب جواب می‌دهد و به «همه‌ی انتقال‌های DEMO این آدرس» بد؛ صرافی دومی را لازم دارد، سریع و از دیتابیس خودش. این کار یک {{< term "indexer" "indexer" >}} است. بعد از [پست alloy](/fa/posts/bc-rust-alloy-client/) به Go برگشتم، ماژول [پست go-ethereum](/fa/posts/bc-go-ethereum-client/) را همراه کد abigen کپی کردم و یکی ساختم.
 
-نود به «در بلاک ۵ چه هست» خوب جواب می‌دهد و به «همه‌ی انتقال‌های DEMO این آدرس» بد؛ صرافی دومی را لازم دارد، سریع و از دیتابیس خودش. تکه‌ها از پست‌های قبل می‌آیند: Postgres از [Postgres با pgx و sqlc در Go](/fa/posts/go-postgres-pgx-sqlc/)، bloom از [Bloom filter و consistent hashing](/fa/posts/algo-bloom-filter-consistent-hashing/) و reorg از [Fork، reorg و قاعده‌ی زنجیره‌ی سنگین‌تر](/fa/posts/bc-forks-reorgs/).
+تکه‌ها از پست‌های قبل می‌آیند: Postgres از [Postgres با pgx و sqlc در Go](/fa/posts/go-postgres-pgx-sqlc/)، bloom از [Bloom filter و consistent hashing](/fa/posts/algo-bloom-filter-consistent-hashing/) و reorg از [Fork، reorg و قاعده‌ی زنجیره‌ی سنگین‌تر](/fa/posts/bc-forks-reorgs/).
 
 > اجرا با Go 1.27 روی macOS (arm64)، go-ethereum v1.17.10، pgx v5.11.0 و PostgreSQL 18.3 از ماژول `embedded-postgres` روی یک پورت آزاد loopback. یک anvil تازه روی `127.0.0.1:8545` با اسکریپت دیپلوی پست توکن‌ها؛ آدرس‌ها حساب‌های تست عمومی anvil هستند. مسیرهای موقت `<tmp>` نوشته شده‌اند.
 
@@ -140,7 +141,7 @@ $ go run ./cmd/indexer -pgdir <tmp>/pg -balances
 
 حساب‌های ۲ و ۳ از هر دو طرف حذف شده‌اند: DEMOشان فقط روی شاخه‌ی کنارگذاشته وجود داشت.
 
-## چند نکته‌ی مهم
+## جاهایی که indexer خطا می‌کند
 
 - `eth_getLogs` با شماره‌ی بلاک ممکن است با reorg مسابقه بدهد؛ hash بلاک هر log را با headerی که ذخیره کرده‌اید مقایسه کنید.
 - تا جایی که می‌دانم سرویس‌دهنده‌های RPC بازه‌ی بلاک یا تعداد نتیجه‌ی `eth_getLogs` را محدود می‌کنند، هر کدام به شکلی؛ دسته‌ای بخوانید و با خطا دسته را کوچک کنید.
@@ -155,4 +156,4 @@ $ go run ./cmd/indexer -pgdir <tmp>/pg -balances
 
 ## قدم بعدی
 
-پست بعد: **کیف‌پول HD: BIP-32، BIP-39 و BIP-44 با Rust**.
+پست بعد: **کیف‌پول HD: BIP-32، BIP-39 و BIP-44 با Rust**؛ آدرس‌هایی که این indexer می‌پاید از کجا می‌آیند.

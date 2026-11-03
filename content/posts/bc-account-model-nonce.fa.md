@@ -3,13 +3,14 @@ date = '2026-11-07T18:00:00+03:30'
 draft = false
 title = 'مدل حساب، nonce و جلوگیری از replay'
 description = 'مدل حساب در Go: موجودی و nonce برای هر آدرس، رد تراکنش تکراری و خارج از ترتیب، chain ID در برابر replay بین زنجیره‌ها و مقایسه با UTXO.'
+contentType = 'tutorial'
 categories = ["Blockchain"]
 series = ["Blockchain"]
 tags = ["blockchain", "go", "ethereum", "nonce", "replay-protection"]
 cover = { image = "/images/covers/bc-account-model-nonce.fa.png", alt = "مدل حساب، nonce و جلوگیری از replay", hiddenInSingle = true }
 +++
 
-در [پست قبلی](/fa/posts/bc-transactions-utxo/)، در مدل {{< term "utxo" "UTXO" >}}، هر پرداخت خروجی‌های کامل را مصرف می‌کرد. فرستادن دوباره‌ی تراکنش خودبه‌خود شکست می‌خورد: ورودی‌اش دیگر نبود. اتریوم به‌جایش برای هر آدرس یک موجودی نگه می‌دارد، و یک «۳۰ سکه به Bob بده»ی امضاشده بعد از اجرا هم معتبر می‌ماند. بدون state اضافه، هر کسی می‌تواند تکرارش کند. این {{< term "replay-attack" "حمله‌ی replay" >}} است، همان مسئله‌ی پیام تکراری در [Idempotency و معنای exactly-once در JetStream](/fa/posts/nats-jetstream-idempotency/)، فقط با پول.
+در اتریوم یک «۳۰ سکه به Bob بده»ی امضاشده بعد از اجرا هم معتبر می‌ماند؛ بدون state اضافه، هر کسی می‌تواند تکرارش کند. این {{< term "replay-attack" "حمله‌ی replay" >}} است، همان مسئله‌ی پیام تکراری در [Idempotency و معنای exactly-once در JetStream](/fa/posts/nats-jetstream-idempotency/)، فقط با پول. مدل {{< term "utxo" "UTXO" >}} [پست قبلی](/fa/posts/bc-transactions-utxo/) خودبه‌خود در امان بود: هر پرداخت خروجی‌های کامل را مصرف می‌کرد، پس تراکنش تکراری دیگر ورودی نداشت. اتریوم به‌جایش موجودی هر آدرس را نگه می‌دارد.
 
 ماژول `toychain` پست قبل را کپی کردم و پکیج `account` را اضافه کردم. بلاک‌ها هنوز تراکنش UTXO دارند و در پست‌های بعدی هم همین می‌ماند: مدل حساب یک state جدا برای مقایسه است که به بلاک‌ها وصلش نکردم.
 
@@ -105,7 +106,7 @@ UTXO ده خروجی Bob، باقی‌مانده‌ی Alice و coinbase ماین
 
 در UTXO هر {{< term "double-spend" "double spend" >}} از خود ورودی‌ها پیداست، پس تراکنش‌های مستقل جدا چک می‌شوند. در مدل حساب دو تراکنش روی یک موجودی باید به ترتیب اجرا شوند. مدل حساب برای کیف‌پول ساده‌تر است و قراردادهای اتریوم روی آن ساخته شده‌اند.
 
-## چند نکته‌ی مهم
+## دام‌های nonce
 
 - chain ID و nonce را داخل بایت‌های امضاشده بگذارید؛ فیلدی که بیرون sighash باشد از چیزی محافظت نمی‌کند.
 - شکاف nonce را رد کنید یا در صف بگذارید، ولی هرگز خارج از ترتیب اجرا نکنید.

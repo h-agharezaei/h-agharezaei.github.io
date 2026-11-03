@@ -3,13 +3,14 @@ date = '2026-11-12T18:00:00+03:30'
 draft = false
 title = 'Bitcoin Script: a tiny stack interpreter in Rust'
 description = 'Bitcoin Script in Rust: a small stack interpreter running a P2PKH unlock with HASH160 and OP_CHECKSIG, plus wrong keys, tampered signatures and OP_RETURN.'
+contentType = 'tutorial'
 categories = ["Blockchain"]
 series = ["Blockchain"]
 tags = ["blockchain", "rust", "bitcoin", "bitcoin-script", "interpreter"]
 cover = { image = "/images/covers/bc-bitcoin-script-rust.png", alt = "Bitcoin Script: a tiny stack interpreter in Rust", hiddenInSingle = true }
 +++
 
-The previous post, [The mempool, fees and transaction selection](/posts/bc-mempool-fees/), was about which transactions get into a block. This one asks what "owned by Alice" means for a single output.
+What does "owned by Alice" mean for a single output? The previous post, [The mempool, fees and transaction selection](/posts/bc-mempool-fees/), chose which transactions enter a block; this one asks who may spend one coin.
 
 In [Transactions and the UTXO model](/posts/bc-transactions-utxo/) our toy chain answered with a hardcoded rule: a {{< term "utxo" "UTXO" >}} stores an address, and the node checks that the input's public key hashes to it and the signature verifies. In Bitcoin, each output carries a small program, the locking script (`scriptPubKey`), and the spender supplies an unlocking script (`scriptSig`, or a witness in SegWit outputs). If running both ends in true, the coin moves. The language is {{< term "bitcoin-script" "Bitcoin Script" >}}.
 
@@ -114,7 +115,7 @@ test p2pkh_spends_and_rejects_other_sighash ... ok
 test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
 ```
 
-## A few things to watch
+## Script subtleties
 
 - A bad signature is a value (false), not an error. Check the final stack, not just "no error".
 - No loops means a node knows the worst-case cost before running a script.
@@ -128,4 +129,4 @@ test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; fini
 
 ## What's next
 
-Next post: **Part one wrap-up: a small full node in Go**.
+Next post: **Part one wrap-up: a small full node in Go**. It moves our nodes out of a demo process and onto disk.

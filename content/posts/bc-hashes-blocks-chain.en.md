@@ -4,13 +4,14 @@ draft = false
 title = 'Hashes, blocks and the chain: a first blockchain in Go'
 seoTitle = 'Hashes, blocks and the chain: a blockchain in Go'
 description = 'A first blockchain in Go: SHA-256 properties, a block header with a canonical encoding, genesis, append, validation and tamper detection with real output.'
+contentType = 'tutorial'
 categories = ["Blockchain"]
 series = ["Blockchain"]
 tags = ["blockchain", "go", "sha-256", "hashing", "serialization"]
 cover = { image = "/images/covers/bc-hashes-blocks-chain.png", alt = "Hashes, blocks and the chain: a first blockchain in Go", hiddenInSingle = true }
 +++
 
-In the [previous post](/posts/bc-blockchain-for-programmers/) we saw the idea: records linked by hashes, so changing one breaks every link after it. Now we turn that into code. This post starts a small Go module that the rest of part one keeps extending. Today: what {{< term "sha-256" "SHA-256" >}} promises, what a block is, why the bytes we hash must be defined exactly, and how a chain checks itself. No proof of work yet.
+One payment hashes one way through `json.Marshal` and another way through an `Encoder` with `SetEscapeHTML(false)`; for nodes that must agree on one chain, that is a bug. This post turns the hash-linked records of the [previous post](/posts/bc-blockchain-for-programmers/) into a small Go module that part one keeps extending: what {{< term "sha-256" "SHA-256" >}} promises, what a block is, how to define the bytes you hash, and how a chain checks itself. No proof of work yet.
 
 The same linking trick appeared in [Logging, auditing and incident response](/posts/sec-logging-audit-incident-response/), and Git names its objects by hash too ([How Git thinks: objects and hashes](/posts/git-how-git-thinks/)).
 
@@ -139,7 +140,7 @@ tip before: 5be1abf7508b tip after: a571aac4dcd0
 
 Editing the data is caught at block 1. Fixing block 1's hashes moves the break to block 2. Rebuilding every later block makes the copy valid again, but with a different tip hash. Validation alone cannot tell the two histories apart; what protects the real one is that others already hold its tip hash, and later, that rebuilding costs work. `go test ./...` repeats these cases as a table test.
 
-## A few things to watch
+## Encoding and validation traps
 
 - Hash a canonical encoding you control, never `fmt.Sprintf("%v")` or a JSON library's default output.
 - Give every variable-length field a length prefix or a fixed width; concatenation alone is ambiguous.

@@ -4,13 +4,14 @@ draft = false
 title = 'Multiple workers on one consumer and monitoring lag in JetStream'
 seoTitle = 'Scaling Workers and Monitoring JetStream Lag'
 description = 'Scale processing by running several workers on one durable JetStream consumer, see what happens when one crashes, and monitor lag with ConsumerInfo.'
+contentType = 'tutorial'
 categories = ["Go"]
 series = ["NATS JetStream"]
 tags = ["go", "nats", "jetstream", "messaging", "scaling", "monitoring"]
 cover = { image = "/images/covers/nats-jetstream-scaling-lag.png", alt = "Multiple workers on one consumer and monitoring lag in JetStream", hiddenInSingle = true }
 +++
 
-At the end of the [previous post](/posts/nats-jetstream-retry-dlq/) I promised two topics: running more than one worker, and watching how far behind the workers are. One worker is fine until messages arrive faster than it can process them. This post answers two questions: how do I add workers without processing anything twice, and how do I know the queue is backing up?
+One worker is fine until messages arrive faster than it can process them. Then two questions come up: how do I add workers without processing anything twice, and how do I know the queue is backing up? Both were left open at the end of the [previous post](/posts/nats-jetstream-retry-dlq/).
 
 > Everything below ran against an embedded `nats-server` (JetStream enabled, temp store dir) and `nats.go` v1.54.0, on Go 1.26. The outputs are from those runs.
 
@@ -42,7 +43,7 @@ deliveries=30 unique=30 pending=0 ackPending=0 redelivered=0
 
 ## A worker dies mid-job
 
-Now the interesting part. I set `AckWait` to 2 seconds, published 10 jobs, and made `w2` "crash" on its second message: it stops without acking.
+I set `AckWait` to 2 seconds, published 10 jobs, and made `w2` "crash" on its second message: it stops without acking.
 
 ```
   0.1s w2 got job-06 (stream seq 6, delivery #1)
@@ -54,7 +55,7 @@ deliveries=11 unique=10 pending=0 ackPending=0 redelivered=0
 
 The server waited for `AckWait`, then redelivered `job-06` to a worker that was still alive (`w1`). That is the whole safety net: no ack means the message is not lost. Two consequences:
 
-- **Delivery is at-least-once.** The crashed worker may have done half the work or all of it, so processing must be safe to repeat. That is the topic of the next post.
+- **Delivery is at-least-once.** The crashed worker may have done half the work or all of it, so processing must be safe to repeat.
 - **Ordering across workers is not guaranteed.** `job-06` was processed long after `job-10`. If you need strict order per key, one consumer with one worker, or partitioning by subject, is a different design.
 
 ## Reading lag with ConsumerInfo
@@ -100,7 +101,7 @@ Pending jumps to 38 when the burst arrives and drains at about 4 per second with
 
 If the server runs with an HTTP monitoring port, you can read the same numbers without a client. With the embedded server started with `HTTPPort: 8222` and 5 unconsumed messages in the stream, I ran `curl 'localhost:8222/jsz?consumers=true'`. In the JSON, the consumer under stream `JOBS` showed `num_pending` 5, `num_ack_pending` 0 and `num_redelivered` 0. That is handy for Prometheus-style scraping or a quick check from the shell.
 
-## A few things to watch
+## Reading the numbers right
 
 - Alert on `NumPending` growing over time, not on a single high value. Bursts are normal, a steadily rising line is the problem.
 - A growing `NumAckPending` with a flat `AckFloor` means workers are stuck or crashing, even if pending looks fine.
@@ -110,4 +111,4 @@ If the server runs with an HTTP monitoring port, you can read the same numbers w
 
 ## What's next
 
-Redelivery means a job can run twice, so the next post covers idempotency and what "exactly-once" really means in JetStream: `Nats-Msg-Id`, the duplicate window, and idempotent consumers.
+Redelivery means a job can run twice. Idempotency and the meaning of exactly-once in JetStream deals with exactly that: `Nats-Msg-Id`, the duplicate window, and idempotent consumers.

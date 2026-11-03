@@ -3,13 +3,14 @@ date = '2026-12-22T10:00:00+03:30'
 draft = false
 title = 'Lifetimes in Rust'
 description = "Rust lifetimes with runnable code: the longest function, real E0106 and E0597 errors, elision rules, structs holding references and what T: 'static means."
+contentType = 'tutorial'
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "lifetimes", "intermediate", "borrowing"]
 cover = { image = "/images/covers/rust-lifetimes.png", alt = "Lifetimes in Rust", hiddenInSingle = true }
 +++
 
-In the [previous post](/posts/rust-generics-traits/) we wrote code that works over many types. Now we come back to references, the topic of [Borrowing and References in Rust](/posts/rust-borrowing-references/), which you should read first. There we saw that a reference must never outlive its value, and that the compiler sometimes asks for a "{{< term "lifetime" "lifetime" >}} specifier". This post explains what that means and when you have to write one.
+`longest`, which returns one of two input references, does not compile: the compiler cannot tell whether the result comes from `x` or `y` and asks for a "{{< term "lifetime" "lifetime" >}} specifier". This post explains what that means and when you have to write one. After the generics of the [previous post](/posts/rust-generics-traits/), we return to [Borrowing and References in Rust](/posts/rust-borrowing-references/) (read it first): a reference must never outlive its value.
 
 > All code below was compiled and run with Rust 1.90, and the outputs and errors are copied from those runs.
 
@@ -191,7 +192,7 @@ struct Excerpt {
 
 I ran this version with the same inner-scope trick that broke the borrowing version, and it prints `Call me Ishmael`. The cost is one allocation. Reaching for references with lifetimes is an optimization; do it when you have a reason.
 
-## A few things to watch
+## Common lifetime mistakes
 
 - Lifetime annotations describe relationships; they never extend how long a value lives.
 - Don't annotate when elision works. Only add `'a` when the compiler asks.
@@ -207,4 +208,4 @@ I ran this version with the same inner-scope trick that broke the borrowing vers
 
 ## What's next
 
-The next post covers closures and iterators in Rust: functions that capture their environment and the iterator chains that replace most loops.
+Closures and iterators in Rust: a closure captures its environment, so it has to obey these same rules.

@@ -3,13 +3,14 @@ date = '2027-01-31T10:00:00+03:30'
 draft = false
 title = 'The outbox pattern with Postgres and NATS in Go'
 description = 'Solve the dual-write problem in Go: an outbox table written in the same transaction, a relay with SKIP LOCKED publishing to JetStream, and real crash runs.'
+contentType = 'engineering'
 categories = ["Go"]
 series = ["Go Backend"]
 tags = ["go", "backend", "outbox", "postgres", "nats", "jetstream", "transactions"]
 cover = { image = "/images/covers/go-outbox-pattern-nats.png", alt = "The outbox pattern with Postgres and NATS in Go", hiddenInSingle = true }
 +++
 
-After [concurrency patterns in Go](/posts/go-concurrency-patterns/) we have the tools to run background loops. Here is a classic job for one: telling the rest of the system that something happened. When an order is saved, other services want an `order.created` event. Saving to Postgres and publishing to NATS are two systems, and no transaction spans both. This is the **dual-write problem**, and the **{{< term "outbox-pattern" "outbox" >}} pattern** is the standard answer. I build on the orders table from [Postgres with pgx and sqlc](/posts/go-postgres-pgx-sqlc/), use the transaction idea from [transaction patterns in Go](/posts/go-transactions-patterns/), and publish with the dedup from [idempotency in JetStream](/posts/nats-jetstream-idempotency/).
+When an order is saved, other services want an `order.created` event. Saving to Postgres and publishing to NATS are two systems, and no transaction spans both; if the process dies between them, the order exists and the event does not. This is the **dual-write problem**, and the **{{< term "outbox-pattern" "outbox" >}} pattern** is the standard answer; its relay is a background loop of the kind from [concurrency patterns in Go](/posts/go-concurrency-patterns/). I build on the orders table from [Postgres with pgx and sqlc](/posts/go-postgres-pgx-sqlc/), use the transaction idea from [transaction patterns in Go](/posts/go-transactions-patterns/), and publish with the dedup from [idempotency in JetStream](/posts/nats-jetstream-idempotency/).
 
 > Everything ran on Go 1.26 against a real PostgreSQL 18.3 (embedded-postgres v1.34.0, pgx v5.11.0) and an embedded nats-server v2.15.1 with nats.go v1.54.0. Each step is a separate process, so a crash is a real `os.Exit(1)`. The machine was busy (load average around 4 to 10), so I make no timing claims.
 
@@ -123,7 +124,7 @@ I seeded 200 orders and started two relay processes together:
 
 Published rows are dead weight. A periodic `DELETE FROM outbox WHERE published_at < now() - interval '7 days'` removes them; I backdated some rows and it deleted 99. Keep them for a few days if you want to debug or replay.
 
-## A few things to watch
+## Hidden costs of the outbox
 
 - **Ordering.** Two relays can publish events of the same aggregate out of order, because they take different batches. Even one relay only follows `id` order, and a bigserial `id` is not commit order when transactions overlap. If order matters, run one relay per shard of `aggregate_id`, or make consumers tolerate it by carrying a version in the payload.
 - The relay holds a transaction (and row locks) while it talks to NATS. Keep batches small and put a timeout on publishing.
@@ -134,4 +135,4 @@ Published rows are dead weight. A periodic `DELETE FROM outbox WHERE published_a
 
 ## What's next
 
-Next I will build a gRPC service in Go.
+Next is "A gRPC service in Go": now that events leave the service reliably, the same `orders` service gets a second front door for synchronous calls.

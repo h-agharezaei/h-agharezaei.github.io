@@ -3,13 +3,14 @@ date = '2027-02-17T10:00:00+03:30'
 draft = false
 title = 'Tries and union-find'
 description = 'Tries and union-find in Go: prefix sharing on a real word list, autocomplete, parent-hop counts for path compression, and Kruskal on a small graph.'
+contentType = 'tutorial'
 categories = ["Algorithms"]
 series = ["Algorithms"]
 tags = ["algorithms", "trie", "union-find", "disjoint-set", "kruskal", "go"]
 cover = { image = "/images/covers/algo-tries-union-find.png", alt = "Tries and union-find", hiddenInSingle = true }
 +++
 
-In the previous post, [Search trees and the B-tree](/posts/algo-trees-bst-btree/), keys were compared with each other. Two structures break that habit. A {{< term "trie" "trie" >}} walks the characters of a key, so its cost depends on the key length, not on how many keys exist. {{< term "union-find" "Union-find" >}} answers one question, "are these two things in the same group?", in almost constant time. Both are close relatives of the ideas in [A hash table from scratch](/posts/algo-hash-tables/) and [Big-O analysis with real measurements](/posts/algo-big-o-measured/).
+The macOS word list has 2,039,158 characters, yet a {{< term "trie" "trie" >}} of all its words needs only 696,834 nodes: words share prefixes. Unlike the [search trees and B-tree](/posts/algo-trees-bst-btree/) of the previous post, a trie never compares whole keys; it walks characters, so its cost depends on key length, not key count. {{< term "union-find" "Union-find" >}} answers one question, "are these two things in the same group?", in almost constant time. Both connect to [A hash table from scratch](/posts/algo-hash-tables/) and [Big-O analysis with real measurements](/posts/algo-big-o-measured/).
 
 > Go 1.26, local example, tests with `go test -race`. The load on this machine was above 4 when I ran it, so there are no timings: only counts and bytes.
 
@@ -33,7 +34,7 @@ Autocomplete("algo", 5): [algocyan algodoncillo algodonite algoesthesiometer alg
 Autocomplete("trie", 10): [tried triedly trielaidin triene triennial trienniality triennially triennium triens triental]
 ```
 
-The words have 2,039,158 characters in total, but the trie needs only 696,834 nodes: words share their prefixes, so about two thirds of the characters cost nothing. (`Search("trie")` is false because this list does not contain "trie" as a word, while "tri" is there.) A test compares the trie against a map and a sorted scan on random words, including Persian text, so runes work.
+So about two thirds of the characters cost nothing. (`Search("trie")` is false because this list does not contain "trie" as a word, while "tri" is there.) A test compares the trie against a map and a sorted scan on random words, including Persian text, so runes work.
 
 ## Map nodes or array nodes
 
@@ -85,7 +86,7 @@ All four use the same `UF`, and tests cover each. Components of 8 nodes with edg
 
 A test checks this weight against brute force over all 4,096 edge subsets. For a grid, union each `#` with its left and top `#`; on a 4x5 grid the number of islands printed is 4 (the test first expected 3, my mistake in counting by eye, and the code was right).
 
-## A few things to watch
+## Where they fall short
 
 - A trie trades memory for prefix queries; for exact lookups only, a map is simpler.
 - Compare node layouts by bytes per node, not by guesses.
@@ -99,4 +100,4 @@ Add `Delete` to the trie (remove nodes that no longer lead to a word) and test t
 
 ## What's next
 
-Graphs: BFS and DFS.
+"Graphs: BFS and DFS": union-find only says two things are connected; a traversal also finds the route and its length.

@@ -2,6 +2,7 @@
 date = '2027-04-27T10:00:00+03:30'
 draft = false
 title = 'Feature flags and trunk-based development'
+contentType = 'engineering'
 description = 'Feature flags in Go: stable percentage rollout, kill switch, atomic reload, the cost of flags, and how they enable trunk-based development.'
 categories = ["Engineering"]
 series = ["Software Engineering"]
@@ -9,7 +10,7 @@ tags = ["feature-flags", "trunk-based-development", "software-engineering", "go"
 cover = { image = "/images/covers/eng-feature-flags-trunk-based.png", alt = "Feature flags and trunk-based development", hiddenInSingle = true }
 +++
 
-The previous post, [ADRs and documenting decisions](/posts/eng-adr-documentation/), recorded why we choose things. This one is about a choice that changes how you ship: separating deploy from release. A {{< term "feature-flag" "feature flag" >}} lets unfinished code live in `main` while users cannot see it, and that is what makes {{< term "trunk-based-development" "trunk-based development" >}} workable. Flags also create {{< term "technical-debt" "debt" >}} ([Technical debt](/posts/eng-technical-debt/)), so I count that cost too. Related: [Testing in Go](/posts/go-testing-basics/), [Refactoring safely](/posts/eng-refactoring-safely/). Opinions are marked; the rest was run.
+Twenty independent boolean {{< term "feature-flag" "feature flags" >}} give 1048576 configurations, and nobody tests them all. What flags buy is the separation of deploy from release, a choice worth recording as in [ADRs and documenting decisions](/posts/eng-adr-documentation/) because it changes how you ship. A feature flag lets unfinished code live in `main` while users cannot see it, and that is what makes {{< term "trunk-based-development" "trunk-based development" >}} workable. Flags also create {{< term "technical-debt" "debt" >}} ([Technical debt](/posts/eng-technical-debt/)), so I count that cost too. Related: [Testing in Go](/posts/go-testing-basics/), [Refactoring safely](/posts/eng-refactoring-safely/). Opinions are marked; the rest was run.
 
 > Go 1.26, `go test -race`. The demo is a local example I wrote for this post: a flag package of about 80 lines, no vendor SDK.
 
@@ -96,19 +97,15 @@ Short-lived branches, merged to `main` at least daily, with unfinished work behi
 | Unfinished work | sits on a branch | merged behind a flag |
 | Needs | merge discipline | fast CI, tests, flags |
 
-**In my opinion** trunk-based fits a service deployed often; GitFlow suits software with versioned releases. Rollback becomes flipping the flag, then reverting at leisure. The pipeline that runs on every merge is the next post.
+**In my opinion** trunk-based fits a service deployed often; GitFlow suits software with versioned releases. Rollback becomes flipping the flag, then reverting at leisure.
 
-## A few things to watch
+## Where flags bite
 
 - Flags are not access control: do not decide authorization with them.
 - Test the flag-off path too, because it is your rollback.
 - Every flag needs an owner and a removal date.
 - I did not run OpenFeature. As far as I know it is a vendor-neutral standard API for flag evaluation; check its docs before relying on that.
 
-## Exercise
-
-Add a flag to a function you own, merge it off, write both tests, ramp it in a test, then delete it using the checklist.
-
 ## What's next
 
-The next post is "Designing a CI/CD pipeline".
+“Designing a CI/CD pipeline”: trunk-based only works with fast CI, and that pipeline runs on every merge.

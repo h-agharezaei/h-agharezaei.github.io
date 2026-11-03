@@ -3,13 +3,14 @@ date = '2027-02-02T10:00:00+03:30'
 draft = false
 title = 'An async NATS JetStream client in Rust'
 description = 'A JetStream publisher and pull-consumer worker in Rust with async-nats and tokio: PubAck, dedup, Nak, Term, MaxDeliver, graceful shutdown, and Go interop.'
+contentType = 'tutorial'
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "nats", "jetstream", "async", "tokio"]
 cover = { image = "/images/covers/rust-nats-async-client.png", alt = "An async NATS JetStream client in Rust", hiddenInSingle = true }
 +++
 
-In the [previous post](/posts/rust-thiserror-anyhow/) we used typed errors with `thiserror` and `anyhow` at the application level. Now I put them to work on something I already know from Go: a JetStream publisher and a worker with retry and a maximum number of deliveries. The Go versions are in [the first JetStream post](/posts/nats-jetstream-go/) and [the retry and dead-letter post](/posts/nats-jetstream-retry-dlq/). This is the Rust counterpart, built on `async-nats` and the Tokio setup from [the async post](/posts/rust-async-tokio/). The best part comes at the end: the Rust worker consumes messages published by a Go program.
+In Rust, a JetStream publish takes two `await`s, and only the second confirms the message is stored. Here the typed errors from [Errors in real apps](/posts/rust-thiserror-anyhow/) meet something I know from Go: a JetStream publisher and a worker with retry and a delivery cap. It is the Rust twin of [the first JetStream post](/posts/nats-jetstream-go/) and [the retry and dead-letter post](/posts/nats-jetstream-retry-dlq/), on `async-nats` and the Tokio setup from [the async post](/posts/rust-async-tokio/). At the end, the Rust worker consumes messages from a Go program.
 
 > I ran everything below with Rust 1.90, `async-nats` 0.50.0, `tokio` 1.54.1, and an embedded nats-server 2.15.1 started from a tiny Go program as a separate process. The machine was heavily loaded (load average around 11), so I show no timing claims.
 
@@ -52,7 +53,7 @@ let ack = js
     .await?;  // 2nd await: wait for the server's PubAck
 ```
 
-The first `await` sends the message and returns a `PublishAckFuture`. The second waits for the server's **PubAck**, the proof that the message is stored. Splitting them lets you publish many messages and collect the acks later, but if you forget the second await you have not confirmed anything. I publish four messages, then the first id again:
+The first `await` sends the message and returns a `PublishAckFuture`. The second waits for the server's **PubAck**, the proof that the message is stored. Splitting them lets you publish many messages and collect the acks later. I publish four messages, then the first id again:
 
 ```
 rust pub: id=rust-0 ok          seq=1 dup=false
@@ -156,7 +157,7 @@ Nothing special was needed: the stream, headers and acks are protocol-level, so 
 
 Facts I am sure of: `nats.go` `js.Publish` blocks and returns the `PubAck`, while it also has `PublishAsync`; in `async-nats` that split is visible in the types (the double await). The Go post used the older `JetStream()` API, and `nats.go` also ships a newer `jetstream` package with consumers much like the Rust ones. The real difference is in handling: Rust makes me decide, in types, which errors are `Transient` and which are `Poison`.
 
-## A few things to watch
+## Retry and redelivery traps
 
 - Delivery timers start at delivery, not when you begin processing. In my first run the first backoff was 300 ms and handling took 300 ms, and messages I had already acked were delivered again. Keep the first backoff and `ack_wait` well above queue wait plus handling time.
 - Forgetting the second `await` on publish means no confirmation.
@@ -171,4 +172,4 @@ Facts I am sure of: `nats.go` `js.Publish` blocks and returns the `PubAck`, whil
 
 ## What's next
 
-Next: trait objects and `dyn` in Rust.
+*Trait objects and dyn in Rust*: how Rust gets the runtime polymorphism Go interfaces give for free.

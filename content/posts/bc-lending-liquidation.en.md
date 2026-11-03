@@ -3,13 +3,14 @@ date = '2026-11-23T18:00:00+03:30'
 draft = false
 title = 'Lending, collateral and liquidation'
 description = 'An overcollateralized lending market in Solidity: borrow limits, a per-second interest index, health factor and liquidation with a bonus, in Foundry.'
+contentType = 'tutorial'
 categories = ["Blockchain"]
 series = ["Blockchain"]
 tags = ["blockchain", "solidity", "defi", "lending", "foundry"]
 cover = { image = "/images/covers/bc-lending-liquidation.png", alt = "Lending, collateral and liquidation", hiddenInSingle = true }
 +++
 
-In [AMMs and the constant-product formula](/posts/bc-amm-constant-product/) a contract replaced the order book. This post replaces the loan officer. A contract cannot check identity, call a court or send a letter. All it can do is hold something worth more than the loan, and sell it before the loan is worth more than the collateral.
+A contract cannot check identity, call a court or send a letter. All it can do is hold something worth more than the loan, and sell it before the loan is worth more than the collateral. After [the AMM](/posts/bc-amm-constant-product/) replaced the order book, this post replaces the loan officer.
 
 That is {{< term "overcollateralization" "overcollateralization" >}}. I build a minimal market in the same Foundry project: deposit DEMO, borrow USDX (both [DemoTokens](/posts/bc-erc20-erc721/)), pay interest, get liquidated. Tests use `vm.warp` and fuzzing from [the Foundry testing post](/posts/bc-foundry-testing-fuzzing/).
 
@@ -136,7 +137,7 @@ The first fuzz test tries random collateral and borrow amounts: a borrow over th
 
 Everything above trusts the {{< term "oracle" "oracle" >}}, `oracle.price()`. In this post it comes from `PriceFeed`, a contract where the owner types the number in. That is fine for tests and wrong for real money: whoever controls the price controls every liquidation and every borrow limit. The next post replaces it, and first shows what goes wrong with the obvious replacement.
 
-## A few things to watch
+## Design rules
 
 - Keep a gap between the borrow limit and the liquidation threshold.
 - Round debt up and collateral value down. Rounding must favour the protocol, never the borrower.

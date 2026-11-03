@@ -3,13 +3,14 @@ date = '2026-11-06T18:00:00+03:30'
 draft = false
 title = 'Transactions and the UTXO model'
 description = 'UTXO transactions in Go: inputs, outputs, sighash, txid, coinbase and fees, with a double spend, a forged signature and an overspend rejected.'
+contentType = 'tutorial'
 categories = ["Blockchain"]
 series = ["Blockchain"]
 tags = ["blockchain", "go", "utxo", "transactions", "bitcoin"]
 cover = { image = "/images/covers/bc-transactions-utxo.png", alt = "Transactions and the UTXO model", hiddenInSingle = true }
 +++
 
-In the [previous post](/posts/bc-keys-ecdsa-addresses/) we built a `wallet` package that signs a 32-byte hash. Our blocks from [Merkle trees and inclusion proofs](/posts/bc-merkle-trees-proofs/) still carry plain byte strings like `"alice -> bob: 10"`, which anyone could write. This post replaces them with real transactions: who owns a coin, who may spend it, and what a node checks. This is Bitcoin's model, the {{< term "utxo" "UTXO" >}} model. Database transactions from [Transactions and ACID](/posts/db-transactions-acid/) are a different thing that shares the name.
+Our blocks from [Merkle trees and inclusion proofs](/posts/bc-merkle-trees-proofs/) still carry plain byte strings like `"alice -> bob: 10"`, which anyone could write. The `wallet` package from the [previous post](/posts/bc-keys-ecdsa-addresses/) signs a 32-byte hash, so this post replaces those strings with real transactions: who owns a coin, who may spend it, and what a node checks. This is Bitcoin's model, the {{< term "utxo" "UTXO" >}} model. Database transactions from [Transactions and ACID](/posts/db-transactions-acid/) are a different thing that shares the name.
 
 I copied the `toychain` module from the Merkle post and copied the `wallet` package into it as `wallet/`, so it is one module now. I added one helper to `wallet`: `AddressBytes`, the raw 20-byte address.
 
@@ -138,7 +139,7 @@ ok  	toychain/chain	0.413s
 ok  	toychain/wallet	(cached)
 ```
 
-## A few things to watch
+## Validation traps
 
 - Sign everything that matters. Anything outside the sighash can be changed by anyone.
 - Compute fees as inputs minus outputs, and check for overflow.

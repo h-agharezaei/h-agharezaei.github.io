@@ -2,6 +2,7 @@
 date = '2027-03-17T10:00:00+03:30'
 draft = false
 title = 'Effective code review'
+contentType = 'tutorial'
 description = 'Effective code review in Go: let gofmt, vet, the race detector and staticcheck go first, then see what only a human catches and how to say it kindly.'
 categories = ["Engineering"]
 series = ["Software Engineering"]
@@ -9,7 +10,7 @@ tags = ["code-review", "software-engineering", "testing", "go", "collaboration"]
 cover = { image = "/images/covers/eng-code-review.png", alt = "Effective code review", hiddenInSingle = true }
 +++
 
-In [Refactoring safely](/posts/eng-refactoring-safely/) the safety net was a test. A {{< term "code-review" "code review" >}} is the other net, made of people, and it is expensive: a reviewer's attention is the scarcest thing on a team. So the rule I follow is that machines go first and humans review what machines cannot see. Test basics are in [Testing in Go](/posts/go-testing-basics/), layering in [Project layout and clean architecture](/posts/go-project-layout-clean-architecture/). Opinions are marked **in my experience**; the findings below were run.
+I planted seven problems in a small Go PR; `gofmt`, `go vet`, the race detector and staticcheck together caught three. An unclosed body, leaked goroutines and an off-by-one passed them all. {{< term "code-review" "Code review" >}} is the net for those: made of people, unlike the test in [Refactoring safely](/posts/eng-refactoring-safely/), and expensive, because a reviewer's attention is the scarcest thing on a team. My rule: machines first; humans review what machines cannot see. Test basics are in [Testing in Go](/posts/go-testing-basics/), layering in [Project layout and clean architecture](/posts/go-project-layout-clean-architecture/). Opinions are marked **in my experience**; findings were run.
 
 > Go 1.26, a local git repo with two commits and a branch; the code is invented and flawed on purpose.
 
@@ -104,11 +105,11 @@ Move from taste to evidence: a failing test, a measurement, the project's own st
 
 A {{< term "codeowners" "CODEOWNERS" >}} file asks the owners of a path to review, and {{< term "branch-protection" "branch protection" >}} can require approvals and green checks before merge. Both live on the hosting platform; I did not set either up here.
 
-## A few things to watch
+## Where reviews waste attention
 
 - Do not review style by hand; automate it.
 - Review the tests first: if they would not fail on a bug, the code under them is unreviewed.
-- Review in short sessions; **in my experience** attention drops sharply after about an hour (my experience, not a measurement).
+- Review in short sessions; **in my experience** attention drops sharply after about an hour (not a measurement).
 - Approve with comments when nothing blocks.
 
 ## Exercise
@@ -117,4 +118,4 @@ Take your last merged PR. Run `gofmt -l`, `go vet`, `go test -race` and staticch
 
 ## What's next
 
-The next post is "API design: versioning and pagination".
+“API design: versioning and pagination”: there a single change has to work for many clients.

@@ -3,13 +3,14 @@ date = '2027-01-29T10:00:00+03:30'
 draft = false
 title = 'KV و Object Store در NATS'
 description = 'KV و Object Store در NATS JetStream با Go: revision، compare-and-swap، watch، TTL، یک قفل ساده و ذخیره‌ی object‌های بزرگ، همراه با خروجی واقعی.'
+contentType = 'tutorial'
 categories = ["Go"]
 series = ["NATS JetStream"]
 tags = ["go", "nats", "jetstream", "kv", "object-store", "messaging"]
 cover = { image = "/images/covers/nats-kv-object-store.fa.png", alt = "KV و Object Store در NATS", hiddenInSingle = true }
 +++
 
-در [مقاله‌ی قبل](/fa/posts/nats-jetstream-testing/) سرویس‌های JetStream را با یک سرور توکار تست کردیم. این مقاله از همان ترفند برای چیز تازه‌ای استفاده می‌کند: JetStream می‌تواند **key-value store** (KV) و **blob store** (Object Store) هم باشد. هر دو روی streamها ساخته شده‌اند و چیز اضافه‌ای برای اجرا لازم نیست. برای وضعیت کوچکِ مشترک عالی‌اند: feature flag، قفل‌های کوتاه‌مدت، [کلیدهای dedup](/fa/posts/nats-jetstream-idempotency/) یا فایلی که چند سرویس لازم دارند.
+اگر سرویس‌هایتان از JetStream استفاده می‌کنند، برای وضعیت کوچکِ مشترک شاید به store جدایی نیاز نداشته باشید: JetStream می‌تواند **key-value store** (KV) و **blob store** (Object Store) هم باشد. هر دو روی streamها ساخته شده‌اند، پس چیز اضافه‌ای برای اجرا لازم نیست و همان سرور توکار [مقاله‌ی قبل](/fa/posts/nats-jetstream-testing/) کافی است. نمونه‌هایش: feature flag، قفل‌های کوتاه‌مدت، [کلیدهای dedup](/fa/posts/nats-jetstream-idempotency/) یا فایلی که چند سرویس لازم دارند.
 
 > Go 1.26، `nats-server` نسخه‌ی v2.15.1 و `nats.go` نسخه‌ی v1.54.0، با پکیج جدیدتر `jetstream` (KV و Object Store را دارد). برنامه‌ی نمونه یک سرور توکار دارد. ماشین شلوغ بود، پس فقط زمان‌های تقریبی را می‌آورم.
 
@@ -136,7 +137,7 @@ status: bucket=Files size=671 sealed=false storage=File replicas=1
 
 Delete، chunkها را پاک می‌کند و یک نشانگر در متادیتا می‌گذارد.
 
-## چند نکته‌ی مهم
+## کجا KV و Object Store کم می‌آورند
 
 - این پایگاه‌داده نیست: query ندارد، تراکنش بین چند کلید ندارد، فقط revision برای هر کلید. آن را وضعیت کوچکِ مشترک بدانید.
 - TTL اینجا تنظیم کل bucket است، پس برای هر طول عمر یک bucket بسازید (قفل‌ها، sessionها، config).
@@ -146,4 +147,4 @@ Delete، chunkها را پاک می‌کند و یک نشانگر در متاد�
 
 ## قدم بعدی
 
-مقاله‌ی بعد: JetStream در production، شامل clustering، retention و امنیت.
+همه‌ی این‌ها روی یک سرور توکار اجرا شد. «JetStream در پروداکشن: cluster، retention و امنیت» درباره‌ی چیزهایی است که با رفتن به سه سرور و محیط واقعی تغییر می‌کنند.

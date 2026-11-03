@@ -3,13 +3,14 @@ date = '2027-05-25T10:00:00+03:30'
 draft = false
 title = 'Users, sudo and capabilities'
 description = 'Linux users, sudo and capabilities from the man pages: passwd and shadow, sudoers pitfalls, splitting root into capabilities, and a Go mask decoder.'
+contentType = 'tutorial'
 categories = ["Linux"]
 series = ["Linux"]
 tags = ["linux", "sudo", "capabilities", "security", "users", "least-privilege", "go", "macos"]
 cover = { image = "/images/covers/linux-users-sudo-capabilities.png", alt = "Users, sudo and capabilities", hiddenInSingle = true }
 +++
 
-I wrote this on a Mac; nothing here ran on Linux. This is the eleventh post of the Linux series, after [SSH and keys](/posts/linux-ssh-keys/). Once you can log in, what may that login do? Facts come from man pages and the Go source; samples are labelled "not captured". File bits are in [The filesystem and permissions](/posts/linux-filesystem-permissions/).
+Once you can log in, what may that login do? Root is all or nothing; handing out pieces of it is easy to get wrong. As with [SSH and keys](/posts/linux-ssh-keys/), I wrote this on a Mac, not Linux. Facts come from man pages and the Go source; samples are labelled "not captured". File bits: [The filesystem and permissions](/posts/linux-filesystem-permissions/).
 
 ## Users and groups
 
@@ -78,7 +79,7 @@ CAP_AUDIT_WRITE CAP_SETFCAP
 
 (Other lines trimmed, output wrapped.) The second mask is my invention of a container-like set. The `self` command reads `/proc/self/status` under `//go:build linux`; here it printed "Linux only". The Linux build passed `GOOS=linux GOARCH=arm64 go vet ./... && go build` and was never run.
 
-## A few things to watch
+## Common privilege mistakes
 
 - Never put `NOPASSWD: ALL` in a rule.
 - Avoid wildcards and editors in sudoers command lists.
@@ -92,4 +93,4 @@ On a throwaway VM, run `grep Cap /proc/self/status` as a normal user and as root
 
 ## What's next
 
-The next post is “Logs and journalctl”.
+Next: “Logs and journalctl”, where a service's errors end up.

@@ -3,19 +3,20 @@ date = '2027-04-28T10:00:00+03:30'
 draft = false
 title = 'الگوریتم‌های رشته: KMP و Rabin–Karp'
 description = 'جست‌وجوی رشته در Go: KMP و Rabin–Karp با شمارش واقعی مقایسه‌ها، برخورد هش، آفست بایتی UTF-8 و تست در برابر strings.Index.'
+contentType = 'tutorial'
 categories = ["Algorithms"]
 series = ["Algorithms"]
 tags = ["algorithms", "strings", "kmp", "rabin-karp", "hashing", "go"]
 cover = { image = "/images/covers/algo-string-algorithms.fa.png", alt = "الگوریتم‌های رشته: KMP و Rabin–Karp", hiddenInSingle = true }
 +++
 
-بعد از [greedy و backtracking](/fa/posts/algo-greedy-backtracking/) از انتخاب‌ها فاصله می‌گیریم و سراغ متن می‌رویم. پیدا کردن یک الگو در یک متن ساده به نظر می‌رسد، ولی روش ساده می‌تواند چهار برابر کار لازم انجام بدهد. دو راه‌حل کلاسیک {{< term "kmp-algorithm" "الگوریتم KMP" >}} و {{< term "rabin-karp" "Rabin–Karp" >}} هستند. هزینه‌ها مثل [Big-O با اندازه‌گیری](/fa/posts/algo-big-o-measured/) شمرده شده‌اند؛ Rabin–Karp به ایده‌هایی از [جدول هش](/fa/posts/algo-hash-tables/) مثل {{< term "hash-collision" "برخورد" >}} تکیه دارد.
+جست‌وجوی `aaab` در ۱۰٬۰۰۰ تا a و یک b، با روش ساده ۳۹٬۹۹۲ مقایسه‌ی بایت هزینه دارد، حدود چهار برابر طول متن. دو راه‌حل کلاسیک {{< term "kmp-algorithm" "الگوریتم KMP" >}} و {{< term "rabin-karp" "Rabin–Karp" >}} هستند. [greedy و backtracking](/fa/posts/algo-greedy-backtracking/) در انتخاب‌ها جست‌وجو می‌کرد؛ اینجا در متن. هزینه‌ها مثل [Big-O با اندازه‌گیری](/fa/posts/algo-big-o-measured/) شمرده شده‌اند؛ Rabin–Karp به ایده‌هایی از [جدول هش](/fa/posts/algo-hash-tables/) مثل {{< term "hash-collision" "برخورد" >}} تکیه دارد.
 
 > Go 1.26، مثال محلی، تست با `go test -race`. بار ماشین کم نبود، پس شمارش منتشر می‌کنم، نه زمان.
 
 ## جست‌وجوی ساده
 
-الگو را روی متن می‌لغزانیم و بایت به بایت مقایسه می‌کنیم. در نسخه‌ی من هر مقایسه‌ی بایت یک شمارنده را زیاد می‌کند. بدترین حالت O(n·m) است: متن `aaaa…ab` (۱۰۰۰۰ تا a و یک b) و الگوی `aaab`.
+الگو را روی متن می‌لغزانیم و بایت به بایت مقایسه می‌کنیم. بدترین حالت O(n·m) است، مثل متن بالا.
 
 ## KMP: در متن هرگز عقب نرو
 
@@ -37,7 +38,7 @@ if text[i] == pat[k] { k++ }
 if k == len(pat) { /* match at i-k+1 */ k = fail[k-1] }
 ```
 
-ساختن جدول O(m) و جست‌وجو O(n) است. شمارش مقایسه‌ها از اجرای من (`cmp` هر مقایسه‌ی بایت را می‌شمارد):
+شمارش مقایسه‌ها از اجرای من (`cmp` هر مقایسه‌ی بایت را می‌شمارد):
 
 ```
 adversarial  n=10001 matches=1 naive=39992 kmp=19998
@@ -93,7 +94,7 @@ bytes: [0 20] len bytes 33 runes 18
 
 ابزارهای دیگر که فقط نامشان را می‌آورم: الگوریتم Z (همان ایده‌ی تابع شکست با محاسبه‌ای دیگر) و suffix array (متن را یک بار ایندکس کن، بعد به پرسش‌های الگوی زیاد جواب بده).
 
-## چند نکته‌ی مهم
+## جست‌وجوی رشته کجا گیر می‌اندازد
 
 - ببینید زبانتان رشته را با بایت، واحد UTF-16 یا نقطه‌ی کد اندیس می‌کند.
 - برخورد هش فقط یک اشاره است؛ همیشه تأیید کنید.
@@ -105,4 +106,4 @@ bytes: [0 20] len bytes 33 runes 18
 
 ## قدم بعدی
 
-بعدی: «Bloom filter و consistent hashing».
+«Bloom filter و consistent hashing» مجموعه را با دو ایده‌ی دیگر که روی hash ساخته شده‌اند تمام می‌کند.

@@ -2,6 +2,7 @@
 date = '2027-05-03T10:00:00+03:30'
 draft = false
 title = 'Designing a CI/CD pipeline'
+contentType = 'engineering'
 description = 'CI/CD pipeline design in Go: ordered stages, a coverage gate, reproducible builds, blue/green deploy with rollback, and a linted Actions workflow.'
 categories = ["Engineering"]
 series = ["Software Engineering"]
@@ -9,7 +10,7 @@ tags = ["ci-cd", "pipeline", "github-actions", "software-engineering", "go", "de
 cover = { image = "/images/covers/eng-ci-cd-pipeline-design.png", alt = "Designing a CI/CD pipeline", hiddenInSingle = true }
 +++
 
-The previous post, [Feature flags and trunk-based development](/posts/eng-feature-flags-trunk-based/), ended with "the pipeline that runs on every merge". This is that pipeline. {{< term "ci" "CI" >}} merges and checks every change; continuous delivery keeps `main` always releasable; continuous deployment also ships it without a human. Related: [Testing in Go](/posts/go-testing-basics/), [The test pyramid and TDD](/posts/eng-testing-pyramid-tdd/), [Docker, CI and deploying a Go service](/posts/go-docker-ci-deploy/). Opinions are marked; the rest was run.
+One deploy below uses a deliberately broken listen address: the health check fails, `current` stays on the old release, and the pipeline goes red. A pipeline should make that the boring outcome, and the trunk-based workflow from [Feature flags and trunk-based development](/posts/eng-feature-flags-trunk-based/) depends on one running on every merge. {{< term "ci" "CI" >}} merges and checks every change; continuous delivery keeps `main` always releasable; continuous deployment also ships it without a human. Related: [Testing in Go](/posts/go-testing-basics/), [The test pyramid and TDD](/posts/eng-testing-pyramid-tdd/), [Docker, CI and deploying a Go service](/posts/go-docker-ci-deploy/). Opinions are marked; the rest was run.
 
 > Go 1.26. The demo is a local example: a tiny service, `scripts/ci.sh` and `scripts/deploy.sh`, in a git repo with a fake author. The GitHub Actions workflow was **not** run on GitHub.
 
@@ -86,17 +87,13 @@ Strictly this is "never switched" rather than a restored state, and the script e
 
 `ci.yml` has a `test` job with a Go version matrix and `actions/setup-go@v5` caching, `permissions: contents: read`, a `concurrency` group that cancels old runs, and a `deploy` job with `needs: test` in an `environment: production` (where required reviewers can be configured) using `secrets.DEPLOY_TOKEN`. `actionlint` v1.7.7 passed it; changing `needs` to a typo made it report `job "deploy" needs job "tset" which does not exist`. The deploy job is a sketch: it would also need to pass the built binary between jobs. According to GitHub's security advice, pin third-party actions to a full commit SHA; I used major tags here for readability.
 
-## A few things to watch
+## What a pipeline must not skip
 
 - Secrets belong in the CI secret store, never in the repo or logs.
 - Keep the deploy step idempotent so a re-run is safe.
 - Do not skip the {{< term "smoke-test" "smoke test" >}}; green unit tests can still ship a binary that does not start.
 - Pipeline definitions are code: review them.
 
-## Exercise
-
-Add a stage that fails if `gofmt -l` lists a file, then break it on purpose and watch the pipeline stop.
-
 ## What's next
 
-The next post is "SLIs, SLOs and error budgets".
+“SLIs, SLOs and error budgets”: a green pipeline says a release started; the next question is whether users are actually served well.

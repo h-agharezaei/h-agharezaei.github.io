@@ -3,13 +3,14 @@ date = '2027-05-17T10:00:00+03:30'
 draft = false
 title = 'Common cryptography mistakes'
 description = 'Common cryptography mistakes in Go: ECB, nonce reuse, no authentication, math/rand, hash misuse, fixed IVs, XOR ciphers and weak keys, with real output.'
+contentType = 'tutorial'
 categories = ["Security"]
 series = ["Software Security"]
 tags = ["security", "cryptography", "encryption", "go", "hmac"]
 cover = { image = "/images/covers/sec-crypto-mistakes.png", alt = "Common cryptography mistakes", hiddenInSingle = true }
 +++
 
-The previous post, [SSRF and unsafe deserialization](/posts/sec-ssrf-deserialization/), was about trusting input too much. Cryptography fails the same way: the code works, the tests pass, and the design is still broken. [Managing secrets and keys](/posts/sec-secrets-management/) covered AES-GCM, nonces and envelope encryption, so I will not repeat them. This is the "what goes wrong" catalogue. Password storage is in [Storing passwords safely](/posts/sec-password-hashing/) and certificates in [TLS and x509 certificates in practice](/posts/sec-tls-x509-certificates/).
+Encrypt 64 bytes of `A` block by block with `cipher.Block` and all four ciphertext blocks come out identical. The code works, the tests pass, and the design is still broken; that is how cryptography fails, much like trusting input too much in [SSRF and unsafe deserialization](/posts/sec-ssrf-deserialization/). [Managing secrets and keys](/posts/sec-secrets-management/) covered AES-GCM, nonces and envelope encryption, so I will not repeat them. This is the "what goes wrong" catalogue. Password storage is in [Storing passwords safely](/posts/sec-password-hashing/) and certificates in [TLS and x509 certificates in practice](/posts/sec-tls-x509-certificates/).
 
 > Defensive only. Every key and sentence is an obvious FAKE and everything ran locally with Go 1.26 and `golang.org/x/crypto` v0.31.0. I did not try to find hash collisions or attack anything real. The demo is one small `main.go` plus a test, run with `go test -race`, which passed.
 
@@ -124,7 +125,7 @@ tampered message verify: false
 
 This is my opinion backed by the docs. Better still, use a high-level library (age, NaCl `secretbox`, Tink; I only name them) and get a review.
 
-## A few things to watch
+## Four short rules
 
 - Never build your own scheme from primitives.
 - Authenticate everything you encrypt.
@@ -137,4 +138,4 @@ Write a test that encrypts 1000 messages with GCM and asserts that no two nonces
 
 ## What's next
 
-The next post is Memory safety: C versus Rust.
+“Memory safety: C versus Rust” goes one layer lower, to code that reads or writes memory it does not own.

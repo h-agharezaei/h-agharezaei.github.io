@@ -3,13 +3,14 @@ date = '2026-11-01T10:00:00+03:30'
 draft = false
 title = 'Branches, HEAD and refs: just pointers'
 description = 'Git branches explained: a branch is a 41-byte file, HEAD is a pointer, tags and remote-tracking branches are refs. Real runs, detached HEAD and recovery.'
+contentType = 'tutorial'
 categories = ["Git"]
 series = ["Git"]
 tags = ["git", "beginner", "branches", "refs", "head"]
 cover = { image = "/images/covers/git-branches-head-refs.png", alt = "Branches, HEAD and refs: just pointers", hiddenInSingle = true }
 +++
 
-In the [previous post](/posts/git-index-staging/) we followed a change through the working tree, the index and the repository. Now the question is where all those {{< term "commit" "commits" >}} hang from. Branches feel heavy because we say "switch to a branch" and "copy a branch", but in Git a {{< term "git-branch" "branch" >}} is only a name that points at one commit.
+Open `.git/refs/heads/main` and you find the whole branch: 40 hex characters plus a newline. Branches feel heavy because we say "switch to a branch" and "copy a branch", but in Git a {{< term "git-branch" "branch" >}} is only a name that points at one {{< term "commit" "commit" >}}. That is why creating one is free and why a deleted branch can usually be brought back. The [previous post](/posts/git-index-staging/) followed a change through the working tree and the index into the repository; this one asks where those commits hang from.
 
 > Everything below was run with Git 2.39.2 in a throwaway directory. The commit ids are from that run and will differ on your machine.
 
@@ -167,7 +168,7 @@ Deleted branch wip (was 75edf86).
 
 `-d` refuses because deleting the pointer would orphan the commit. `-D` forces it, and the id it prints is your way back (`git branch wip 75edf86`).
 
-## A few things to watch
+## Pointer pitfalls
 
 - Deleting a branch deletes a pointer, not commits, but unreachable commits do not live forever.
 - Do not commit in detached HEAD without giving the work a branch name.

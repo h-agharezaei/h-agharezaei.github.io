@@ -3,13 +3,14 @@ date = '2027-04-24T10:00:00+03:30'
 draft = false
 title = 'TLS و گواهی x509 در عمل'
 description = 'TLS و گواهی x509 در Go روی loopback: خطاهای verify، زنجیره، چرخش با GetCertificate، mutual TLS، بررسی انقضا و pinning با خروجی واقعی.'
+contentType = 'tutorial'
 categories = ["Security"]
 series = ["Software Security"]
 tags = ["security", "tls", "x509", "certificates", "mtls", "go"]
 cover = { image = "/images/covers/sec-tls-x509-certificates.fa.png", alt = "TLS و گواهی x509 در عمل", hiddenInSingle = true }
 +++
 
-مقاله‌ی قبلی، [CSRF، CORS و هدرهای امنیتی](/fa/posts/sec-csrf-cors-headers/)، رفتار مرورگر را محکم می‌کرد. اینجا خود لوله را محکم می‌کنیم. [TLS و گواهی‌ها با openssl](/fa/posts/net-tls-openssl/) سمت خط فرمان `openssl` بود؛ این مقاله سمت Go و عملیات است: داخل یک {{< term "x509-certificate" "گواهی x509" >}} چیست، چرا verify شکست می‌خورد، و چطور گواهی را بچرخانیم و مانیتور کنیم. سرور از همان جنس API در [ساخت API با net/http در Go](/fa/posts/go-http-api-stdlib/) است.
+اگر leaf را بدون intermediate سرو کنید، کلاینت Go با `certificate signed by unknown authority` شکست می‌خورد؛ همان خطایی که صادرکننده‌ای کاملاً ناشناس می‌دهد، و همین در production گیج‌کننده است. [CSRF، CORS و هدرهای امنیتی](/fa/posts/sec-csrf-cors-headers/) رفتار مرورگر را محکم می‌کرد؛ اینجا خود لوله را محکم می‌کنیم. [TLS و گواهی‌ها با openssl](/fa/posts/net-tls-openssl/) سمت خط فرمان `openssl` بود؛ این مقاله سمت Go و عملیات است: داخل یک {{< term "x509-certificate" "گواهی x509" >}} چیست، چرا verify شکست می‌خورد، و چطور گواهی را بچرخانیم و مانیتور کنیم. سرور از همان جنس API در [ساخت API با net/http در Go](/fa/posts/go-http-api-stdlib/) است.
 
 > فقط دفاعی. همه‌چیز روی `127.0.0.1` در یک برنامه‌ی Go 1.26 فقط با کتابخانه‌ی استاندارد اجرا شد. {{< term "certificate-authority" "CA" >}} یک‌بارمصرف را خودم در کد ساختم (ECDSA P-256)؛ هیچ CA عمومی در کار نیست. کلید خصوصی هرگز روی دیسک نیامد. ACME، OCSP و CT فقط توضیح داده شده‌اند و اجرا نشده‌اند. ساعت‌ها در خروجی ساعت محلی من است.
 
@@ -121,7 +122,7 @@ RootCAs, right name   -> hello <nil>
 
 {{< term "acme" "ACME" >}} صدور و تمدید را خودکار می‌کند و برای همین عمر کوتاه عملی می‌شود. {{< term "ocsp" "OCSP" >}} از CA می‌پرسد گواهی ابطال شده یا نه؛ Certificate Transparency هم صدور عمومی را ثبت می‌کند. هیچ‌کدام را اجرا نکردم و تا جایی که می‌دانم کلاینت Go ابطال را خودش بررسی نمی‌کند.
 
-## چند نکته‌ی مهم
+## عادت‌های عملیاتی
 
 - زنجیره‌ی کامل را به‌جز root بفرستید.
 - نام و کاربرد را verify کنید و هرگز verify را رد نکنید.
@@ -135,4 +136,4 @@ RootCAs, right name   -> hello <nil>
 
 ## قدم بعدی
 
-مقاله‌ی بعدی «مدیریت راز و کلید» است.
+«مدیریت راز و کلید» از آخرین عادت بالا ادامه می‌دهد: رازها و کلیدها با این حال چطور نشت می‌کنند و چطور باید امن بارگذاری‌شان کرد.

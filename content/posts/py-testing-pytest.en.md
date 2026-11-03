@@ -3,13 +3,14 @@ date = '2027-03-24T10:00:00+03:30'
 draft = false
 title = 'Testing in Python with pytest'
 description = 'Testing in Python with pytest: assertion rewriting, fixtures, parametrize, monkeypatch, mock and coverage, all run with pytest 9.1.1 on Python 3.14.'
+contentType = 'tutorial'
 categories = ["Python"]
 series = ["Python"]
 tags = ["python", "pytest", "testing", "fixtures", "coverage"]
 cover = { image = "/images/covers/py-testing-pytest.png", alt = "Testing in Python with pytest", hiddenInSingle = true }
 +++
 
-In the [previous post](/posts/py-type-hints-mypy/) we added type hints and mypy; types catch one class of bugs, tests catch the rest. Python ships `unittest`, but almost everyone uses pytest. It is a {{< term "test-runner" "test runner" >}} that finds `test_*` functions and lets you write plain `assert`. If you know [Go's table-driven tests](/posts/go-testing-basics/) the ideas will feel familiar, and I wrote about the test mindset in [The test pyramid and TDD](/posts/eng-testing-pyramid-tdd/).
+A test that patches the function under test to return 999 and then asserts 999 passes, and proves nothing. [Type hints and mypy](/posts/py-type-hints-mypy/) catch one class of bugs; tests catch the rest. Python ships `unittest`, but almost everyone uses pytest. It is a {{< term "test-runner" "test runner" >}} that finds `test_*` functions and lets you write plain `assert`. If you know [Go's table-driven tests](/posts/go-testing-basics/) the ideas will feel familiar, and I wrote about the test mindset in [The test pyramid and TDD](/posts/eng-testing-pyramid-tdd/).
 
 > Everything ran with Python 3.14.0, pytest 9.1.1 and pytest-cov 7.1.0 (`pytest --version`) in a throwaway venv, now deleted. The demo is a tiny local `app/` package with a `tests/` folder; home paths are redacted.
 
@@ -28,7 +29,7 @@ E         {'b': 2} != {'b': 3}
 
 The tool pointed at the differing index and key. `-v` or `-vv` shows more.
 
-One gotcha I hit for real: my tests did `from app import pricing` and collection failed with `ModuleNotFoundError: No module named 'app'`. Adding `pythonpath = .` to `pytest.ini` fixed it.
+A gotcha I hit: my tests did `from app import pricing` and collection failed with `ModuleNotFoundError: No module named 'app'`. Adding `pythonpath = .` to `pytest.ini` fixed it.
 
 ## Fixtures
 
@@ -105,11 +106,11 @@ with mock.patch("app.service.fetch_user", return_value={"name": "Ana"}) as m:
 m.assert_called_once_with(7)
 ```
 
-It passed. Patch where the name is *looked up* (`app.service.fetch_user`), not where it is defined. A mock is a {{< term "test-double" "test double" >}}, and over-mocking is the trap: I patched `apply_discount` itself to return 999 and asserted 999. It passed, and tested nothing. Also, a typo like `m.assert_called_once_wiht(1)` is not silently ignored: it raised `AttributeError ... Did you mean: 'assert_called_once_with'?`. Mock only the edges (network, clock), never the logic you want to test.
+It passed. Patch where the name is *looked up* (`app.service.fetch_user`), not where it is defined. A mock is a {{< term "test-double" "test double" >}}, and over-mocking is the trap, as in the 999 test from the intro, which patched `apply_discount` itself. Also, a typo like `m.assert_called_once_wiht(1)` is not silently ignored: it raised `AttributeError ... Did you mean: 'assert_called_once_with'?`. Mock only the edges (network, clock), never the logic you want to test.
 
 ## Property-based testing
 
-Instead of examples, {{< term "property-based-testing" "property-based testing" >}} states a rule and generates inputs; see [Property-based testing](/posts/eng-property-based-testing/). The usual pytest tool is Hypothesis. I did not install or run it for this post, so I show no output.
+Instead of examples, {{< term "property-based-testing" "property-based testing" >}} states a rule and generates inputs; see [Property-based testing](/posts/eng-property-based-testing/). The usual pytest tool is Hypothesis. I did not install or run it, so there is no output.
 
 ## Coverage
 
@@ -122,7 +123,7 @@ TOTAL                23      4    83%
 
 From `pytest --cov=app --cov-report=term-missing`. Lines 20-22 of `pricing.py` are `unused_branch`, which no test calls; line 5 of `service.py` is the real `fetch_user` that I always patched. {{< term "code-coverage" "Coverage" >}} says what ran, not whether the asserts are good.
 
-## A few things to watch
+## Common testing traps
 
 - Tests need `pythonpath` or an installed package, or imports fail.
 - Patch the name where it is used.
@@ -138,4 +139,4 @@ From `pytest --cov=app --cov-report=term-missing`. Lines 20-22 of `pricing.py` a
 
 ## What's next
 
-The next post is "The GIL and threading".
+Next: "The GIL and threading", where tested code becomes concurrent.

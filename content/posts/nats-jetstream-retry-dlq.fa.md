@@ -3,15 +3,16 @@ date = '2026-10-18T14:00:00+03:30'
 draft = false
 title = 'Retry و Dead-Letter Queue در NATS JetStream با Go'
 description = 'ادامه‌ی مقاله‌ی قبل: چطور پیام‌های ناموفق را با MaxDeliver و BackOff دوباره امتحان کنیم و در نهایت به یک صف dead-letter بفرستیم.'
+contentType = 'tutorial'
 categories = ["Go"]
 series = ["NATS JetStream"]
 tags = ["go", "nats", "jetstream", "messaging", "retry"]
 cover = { image = "/images/covers/nats-jetstream-retry-dlq.fa.png", alt = "Retry و Dead-Letter Queue در NATS JetStream با Go", hiddenInSingle = true }
 +++
 
-در [مقاله‌ی قبل](/fa/posts/nats-jetstream-go/) یک Publisher و Worker ساده روی JetStream ساختیم. اما Workerِ آن مقاله فرض می‌کرد پردازش همیشه موفق است. در عمل پیام‌هایی هستند که هر بار fail می‌شوند. اگر کاری نکنیم، یا بی‌نهایت تکرار می‌شوند یا گم می‌شوند.
+بعضی پیام‌ها هر بار fail می‌شوند. اگر Worker برایشان کاری نکند، یا بی‌نهایت تکرار می‌شوند یا گم می‌شوند. Workerِ ساده‌ی [مقاله‌ی قبل](/fa/posts/nats-jetstream-go/) همین را نادیده می‌گرفت و فرض می‌کرد پردازش همیشه موفق است.
 
-در این مقاله سه چیز را اضافه می‌کنیم:
+برای حلش سه چیز لازم است:
 
 1. محدود کردن تعداد تلاش‌ها با `MaxDeliver`
 2. فاصله‌ی بین تلاش‌ها با `BackOff` و `NakWithDelay`
@@ -111,7 +112,7 @@ nc.Subscribe("$JS.EVENT.ADVISORY.CONSUMER.MAX_DELIVERIES.EVENTS.worker-consumer"
 
 در آزمایش من، سه پیام فرستادم: `good-1`، `poison` و `good-2`. دو پیام سالم یک‌بار تحویل و ack شدند، پیام `poison` سه بار تحویل شد و بعد در Stream به نام `DLQ` دقیقاً **یک** پیام ثبت شد. Consumer هم در پایان هیچ پیام pending یا ack-pending نداشت.
 
-## چند نکته‌ی مهم
+## محدودیت‌های این DLQ
 
 - **Advisoryها پیام‌های core NATS هستند، نه JetStream.** اگر سرویس DLQ در لحظه‌ی انتشار advisory پایین باشد، آن را از دست می‌دهد. برای سیستم‌های حساس باید راه جبرانی داشته باشی، مثلاً بازبینی دوره‌ای Consumer با `ConsumerInfo` یا ذخیره‌ی advisoryها در یک Stream.
 - پیام اصلی بعد از رسیدن به `MaxDeliver` از Stream حذف نمی‌شود. مدت نگهداری‌اش به سیاست retention همان Stream بستگی دارد.
@@ -120,4 +121,4 @@ nc.Subscribe("$JS.EVENT.ADVISORY.CONSUMER.MAX_DELIVERIES.EVENTS.worker-consumer"
 
 ## قدم بعدی
 
-دو موضوع می‌ماند که می‌خواهم در مقاله‌ی بعد بنویسم: اجرای چند Worker روی یک Consumer، و مانیتورینگ تأخیر پردازش. کد کامل نمونه‌ی پایه در [go-nats-demo](https://github.com/h-agharezaei/go-nats-demo) است.
+دو موضوع باقی‌مانده، یعنی اجرای چند Worker و تأخیر پردازش، موضوع «چند Worker روی یک Consumer و مانیتورینگ lag در JetStream» است: DLQ پیام‌های ناموفق را جمع می‌کند، اما برای صفی که سریع‌تر از توان یک Worker پر می‌شود کاری نمی‌کند. کد کامل نمونه‌ی پایه در [go-nats-demo](https://github.com/h-agharezaei/go-nats-demo) است.

@@ -3,13 +3,14 @@ date = '2027-05-02T10:00:00+03:30'
 draft = false
 title = 'حافظه، page cache و OOM killer'
 description = 'حافظه در Linux از روی man pageها: free و available، page cache، overcommit، امتیاز OOM و سقف cgroup، همراه با برنامه‌ی Go که روی مک اجرا شد.'
+contentType = 'tutorial'
 categories = ["Linux"]
 series = ["Linux"]
 tags = ["linux", "memory", "page-cache", "oom-killer", "go", "macos"]
 cover = { image = "/images/covers/linux-memory-page-cache-oom.fa.png", alt = "حافظه، page cache و OOM killer", hiddenInSingle = true }
 +++
 
-این را روی یک مک نوشتم؛ هیچ‌چیز اینجا روی Linux اجرا نشده است. این هفتمین پست سری Linux است، بعد از [cgroup و namespace: پایه‌ی کانتینر](/fa/posts/linux-cgroups-namespaces/). پرسش این است که چرا `free` تقریباً هیچ حافظه‌ی آزادی نشان نمی‌دهد و چرا یک سرویس با کد خروج ۱۳۷ مُرد. واقعیت‌ها از man pageها و مستندات کرنل است؛ متن Linux‌مانند با عبارت «نمونه‌ی تصویری، ضبط‌نشده» علامت خورده است.
+چرا `free` تقریباً هیچ حافظه‌ی آزادی نشان نمی‌دهد و چرا یک سرویس با کد خروج ۱۳۷ مُرد؟ فقط دومی مشکل واقعی است. مثل [cgroup و namespace: پایه‌ی کانتینر](/fa/posts/linux-cgroups-namespaces/)، این را روی یک مک نوشتم، نه Linux. واقعیت‌ها از man pageها و مستندات کرنل است؛ متن Linux‌مانند با «نمونه‌ی تصویری، ضبط‌نشده» علامت خورده است.
 
 ## خواندن free و /proc/meminfo
 
@@ -76,7 +77,7 @@ heap فوراً ۲۵۶ مگابایت رشد کرد ولی RSS تا نوشتن �
 Memory cgroup out of memory: Killed process 4242 (app)
 ```
 
-## چند نکته‌ی مهم
+## اشتباه‌های رایج در خواندن حافظه
 
 - `free` کم عادی است؛ `available` کم نه.
 - با سقف‌ها RSS را مقایسه کنید، نه VSZ.
@@ -89,4 +90,4 @@ Memory cgroup out of memory: Killed process 4242 (app)
 
 ## قدم بعدی
 
-پست بعدی «I/O و epoll» است.
+بعدی «I/O و epoll» است: یک thread چطور هزاران اتصال را سرویس می‌دهد.

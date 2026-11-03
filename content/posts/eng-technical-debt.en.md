@@ -2,6 +2,7 @@
 date = '2027-04-11T10:00:00+03:30'
 draft = false
 title = 'Technical debt'
+contentType = 'engineering'
 description = 'Technical debt in a Go repo: measure churn, complexity, TODOs, coverage and dependency age with real tools, then write a debt register and decide.'
 categories = ["Engineering"]
 series = ["Software Engineering"]
@@ -9,7 +10,7 @@ tags = ["technical-debt", "software-engineering", "go", "refactoring", "metrics"
 cover = { image = "/images/covers/eng-technical-debt.png", alt = "Technical debt", hiddenInSingle = true }
 +++
 
-The previous post, [OpenAPI and API contracts](/posts/eng-openapi-contracts/), was about a promise you make to other people. {{< term "technical-debt" "Technical debt" >}} is the promise you make to yourself: "we will clean this up later". The metaphor is useful only when you can say what the interest is and what the repayment costs. So here I measure instead of complaining. Tools I lean on: [Refactoring safely](/posts/eng-refactoring-safely/), [Testing in Go](/posts/go-testing-basics/). Opinions are marked **in my experience**; the numbers were run.
+In a small repo, `pricing.go` changed in 25 of 31 commits while the {{< term "cyclomatic-complexity" "cyclomatic complexity" >}} of its `Price` function grew from 3 to 65, one rule at a time. That is {{< term "technical-debt" "technical debt" >}}: the promise you make to yourself, "we will clean this up later", where an API contract, as in [OpenAPI and API contracts](/posts/eng-openapi-contracts/), is a promise to other people. The metaphor is useful only when you can say what the interest is and what the repayment costs. So here I measure instead of complaining. Tools I lean on: [Refactoring safely](/posts/eng-refactoring-safely/), [Testing in Go](/posts/go-testing-basics/). Opinions are marked **in my experience**; the numbers were run.
 
 > Go 1.26. The repo is invented: 31 commits created by a script with fixed dates and a fake author. It is a small shop with `pricing`, `orders` and `notify` packages. The numbers describe this toy repo, not any real project.
 
@@ -23,7 +24,7 @@ $ git log --format= --name-only | sort | uniq -c | sort -rn | grep -v '^ *1 '
    7 orders/orders.go
 ```
 
-`notify.go` changed once. `pricing.go` changed 25 times out of 31 commits. Churn alone only says people work there. Combine it with {{< term "cyclomatic-complexity" "cyclomatic complexity" >}}. I could not run `gocyclo` in this environment, so I used a small `go/ast` counter with the same rule (1 plus each `if`, `for`, non-default `case`, `&&`, `||`):
+`notify.go` changed once. `pricing.go` changed 25 times out of 31 commits. Churn alone only says people work there. Combine it with cyclomatic complexity. I could not run `gocyclo` in this environment, so I used a small `go/ast` counter with the same rule (1 plus each `if`, `for`, non-default `case`, `&&`, `||`):
 
 ```text
 65	pricing/pricing.go	Price
@@ -68,17 +69,13 @@ The last row matters: debt in code that never changes costs nothing. Fowler's we
 - With non-engineers I do not say "the code is ugly". I say "each pricing change now takes longer and breaks things more often", and only if the team's own numbers (lead time, incidents) support it.
 - When not to pay: code about to be deleted, code that never changes, and a prototype whose idea is still unproven.
 
-## A few things to watch
+## How debt tracking goes wrong
 
 - Do not turn metrics into targets. A team ordered to raise coverage will write assertion-free tests.
 - Churn needs history; a squashed or new repo hides it.
 - A register that nobody reads is another TODO. Review it with planning.
 - Mixing cleanup into a feature commit makes review and `git bisect` harder.
 
-## Exercise
-
-Run the churn command on a real repo and the complexity counter on its top file. Write three rows of a register with an honest "cost of delay" for each, and decide one to leave alone.
-
 ## What's next
 
-The next post is "ADRs and documenting decisions".
+“ADRs and documenting decisions”: an ADR is where the answer to "did we write it down?" lives.

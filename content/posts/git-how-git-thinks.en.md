@@ -3,13 +3,14 @@ date = '2026-10-28T10:00:00+03:30'
 draft = false
 title = 'How Git thinks: objects and hashes'
 description = 'How Git stores data: blobs, trees and commits, content hashes, zlib-compressed loose objects, and a commit built by hand with plumbing commands.'
+contentType = 'tutorial'
 categories = ["Git"]
 series = ["Git"]
 tags = ["git", "beginner", "objects", "internals"]
 cover = { image = "/images/covers/git-how-git-thinks.png", alt = "How Git thinks: objects and hashes", hiddenInSingle = true }
 +++
 
-Most of us learn Git as a list of commands and then get scared the first time a rebase goes wrong. This opens a ten-post Git series, and it starts at the bottom: how Git stores things. Once you know that, `commit`, `branch` and `rebase` stop being magic. The blog already has other series (Go, Rust, NATS JetStream), but this one is about the tool we all use every day.
+Most of us learn Git as a list of commands and then get scared the first time a rebase goes wrong. Underneath those commands sits a simple key-value store: the same content always gets the same hash, and no commit ever changes once it is made. Once you see that, `commit`, `branch` and `rebase` stop being magic, so this ten-post Git series starts here.
 
 > Everything below was run with git 2.39.2 in a throwaway repository. The outputs are copied from those runs. The author and date were pinned with environment variables so the hashes are reproducible.
 
@@ -141,7 +142,7 @@ By default Git uses SHA-1 (40 hex characters). My git supports `git init --objec
 
 According to the Git docs, SHA-256 repositories are not interoperable with SHA-1 ones, so I would not rely on them for normal work yet. I did not test pushing or hosting.
 
-## A few things to watch
+## What the model implies
 
 - The hash covers the header and content, so the same bytes always mean the same object, on any machine.
 - A commit stores a snapshot (a tree), not a diff. Diffs are computed when you ask.

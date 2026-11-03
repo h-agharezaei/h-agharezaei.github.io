@@ -3,17 +3,18 @@ date = '2027-03-06T10:00:00+03:30'
 draft = false
 title = 'الگوی Type-State و طراحی API در Rust'
 description = 'طراحی API در Rust برای ناممکن کردن حالت نامعتبر: newtype، builder از نوع type-state، sealed trait، non_exhaustive و must_use با خطاهای واقعی کامپایلر.'
+contentType = 'tutorial'
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "typestate", "api-design", "advanced"]
 cover = { image = "/images/covers/rust-typestate-patterns.fa.png", alt = "الگوی Type-State و طراحی API در Rust", hiddenInSingle = true }
 +++
 
-موضوع قبلی tracing بود. این مقاله درباره‌ی چیزی است که پیش از هر خط log اتفاق می‌افتد: طراحی API طوری که اصلاً نشود باگ را نوشت. اسم این ایده «حالت نامعتبر را غیرقابل بیان کن» است (**make invalid states unrepresentable**). ابزارهایش را داریم: [struct و enum](/fa/posts/rust-structs-enums-pattern-matching/)، [جنریک‌ها و trait‌ها](/fa/posts/rust-generics-traits/) و مهم‌تر از همه [ownership](/fa/posts/rust-ownership/)، چون متدی که `self` را مصرف می‌کند یک move است و همین move است که type-state را ممکن می‌کند. همه‌چیز با Rust 1.90 (edition 2024) در یک workspace کوچک اجرا شد: یک کتاب‌خانه‌ی `api`، یک برنامه‌ی `app` و یک crate به اسم `fails` که برای هر خطای کامپایل یک برنامه‌ی کوچک دارد تا همه‌ی خطاها قابل تکرار باشند.
+برای کامپایلر، user id و order id از نوع `u64` یک نوع‌اند. این مقاله درباره‌ی چیزی است که پیش از [هر خط log](/fa/posts/rust-tracing-observability/) اتفاق می‌افتد: طراحی API طوری که اصلاً نشود باگ را نوشت. اسم این ایده «حالت نامعتبر را غیرقابل بیان کن» است (**make invalid states unrepresentable**). ابزارهایش را داریم: [struct و enum](/fa/posts/rust-structs-enums-pattern-matching/)، [جنریک‌ها و trait‌ها](/fa/posts/rust-generics-traits/) و مهم‌تر از همه [ownership](/fa/posts/rust-ownership/)، چون متدی که `self` را مصرف می‌کند یک move است و همین type-state را ممکن می‌کند. همه‌چیز با Rust 1.90 (edition 2024) در یک workspace کوچک اجرا شد: یک کتاب‌خانه‌ی `api`، یک برنامه‌ی `app` و یک crate به اسم `fails` که برای هر خطای کامپایل یک برنامه‌ی کوچک دارد تا همه‌ی خطاها قابل تکرار باشند.
 
 ## Newtype و constructor اعتبارسنج
 
-برای کامپایلر، شناسه‌ی کاربر و شناسه‌ی سفارش هر دو `u64` هستند. **newtype** یک tuple struct تک‌فیلدی است که این را درست می‌کند:
+**newtype**، یعنی یک tuple struct تک‌فیلدی، این مشکل را حل می‌کند:
 
 ```rust
 pub struct UserId(pub u64);
@@ -150,7 +151,7 @@ error[E0639]: cannot create non-exhaustive struct using struct expression
 
 دو عادت کوچک‌تر. آرگومان را `impl Into<String>` یا `impl AsRef<str>` بگیرید تا `&str` و `String` هر دو برسند (`greet("a")` و `greet(String::from("b"))` هر دو کار کردند). و `Default` را پیاده کنید و از struct update syntax استفاده کنید: `Options { retries: 5, ..Default::default() }` مقدار `Options { timeout_ms: 1000, retries: 5, verbose: false }` چاپ کرد.
 
-## چند نکته‌ی مهم
+## حدود type-state
 
 - type-state فقط از کسی محافظت می‌کند که از API تایپ‌دار استفاده می‌کند؛ فیلد `pub` یا constructor عمومی می‌تواند آن را دور بزند.
 - فیلد marker را خصوصی و نوع‌های marker را unit struct نگه دارید.
@@ -169,4 +170,4 @@ Go در عمل type-state ندارد. ابزار معمول constructor‌های
 
 ## قدم بعدی
 
-مقاله‌ی بعد: Docker، CI و release یک سرویس Rust.
+«Docker، CI و release سرویس Rust»: سرویسی که خوب طراحی شده هنوز باید از لپ‌تاپ بیرون برود.

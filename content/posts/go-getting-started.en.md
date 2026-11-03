@@ -3,13 +3,14 @@ date = '2026-10-27T10:00:00+03:30'
 draft = false
 title = 'Getting started with Go: install, modules, tooling'
 description = 'Install Go, create your first module with go mod init, and learn the everyday commands: run, build, fmt, vet, test and mod tidy.'
+contentType = 'tutorial'
 categories = ["Go"]
 series = ["Go Fundamentals"]
 tags = ["go", "beginner", "tooling", "modules"]
 cover = { image = "/images/covers/go-getting-started.png", alt = "Getting started with Go: install, modules, tooling", hiddenInSingle = true }
 +++
 
-This is the first post of a beginner series, **Go Fundamentals**. The plan is to cover the language basics here, and then move on to a second, backend-oriented series: HTTP services, databases, concurrency in real systems. I already used Go in an earlier post on [NATS JetStream](/posts/nats-jetstream-go/), but that one assumed you could read Go. This series starts from zero.
+Go is strict from the first program: an unused import or local variable is a compile error, not a warning, and `go fmt`, not team taste, decides how code is formatted. The beginner series **Go Fundamentals** starts from zero right here: the language basics first, then a second, backend-oriented series: HTTP services, databases, concurrency in real systems. I already used Go in an earlier post on [NATS JetStream](/posts/nats-jetstream-go/), but that one assumed you could read Go.
 
 Today we install Go, create a module, and learn the handful of commands you will type every day. Everything below was run with Go 1.26.0 on macOS (arm64).
 
@@ -166,7 +167,7 @@ go env GOPATH GOMODCACHE
 
 The paths depend on your OS and username (for example `/Users/you/go` on macOS). `GOMODCACHE` is where downloaded dependencies are stored, shared by all your projects. By default it lives under `GOPATH`. You do not need to put your own code there.
 
-## A few things to watch
+## First-day mistakes
 
 - `go run main.go` compiles only that file. Prefer `go run .` so the whole package is built once you have more than one file.
 - Run commands from inside the module (where `go.mod` is), or you get a "no go.mod" error.
@@ -182,4 +183,4 @@ The paths depend on your OS and username (for example `/Users/you/go` on macOS).
 
 ## What's next
 
-In the next post, `go-types-control-flow`, we look at types, variables and control flow: the building blocks you need to write real programs.
+"Types, variables and control flow in Go": this post used variables and `if` without explaining them, and that one covers them properly.

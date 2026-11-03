@@ -3,13 +3,14 @@ date = '2026-11-29T18:00:00+03:30'
 draft = false
 title = 'Layer 2 و rollupها: optimistic و ZK'
 description = 'rollup با Go و Solidity: یک optimistic rollup کوچک با state root از نوع Merkle، fraud proof برای جریمه‌ی sequencer دروغگو و gas اندازه‌گیری‌شده.'
+contentType = 'tutorial'
 categories = ["Blockchain"]
 series = ["Blockchain"]
 tags = ["blockchain", "go", "solidity", "layer-2", "rollup", "foundry"]
 cover = { image = "/images/covers/bc-layer2-rollups.fa.png", alt = "Layer 2 و rollupها: optimistic و ZK", hiddenInSingle = true }
 +++
 
-پست قبلی، [Proof of Stake، BFT و finality](/fa/posts/bc-proof-of-stake-bft/)، بلاک‌ها را قطعی کرد، نه بزرگ‌تر. هر نود همه‌ی تراکنش‌ها را دوباره اجرا می‌کند و بلاک سقف gas دارد، پس ظرفیت L1 ای مثل اتریوم محدود است.
+هر نود همه‌ی تراکنش‌ها را دوباره اجرا می‌کند و بلاک سقف gas دارد، پس ظرفیت L1 ای مثل اتریوم محدود است. [Proof of Stake، BFT و finality](/fa/posts/bc-proof-of-stake-bft/) بلاک‌ها را قطعی کرد، نه بزرگ‌تر.
 
 {{< term "layer-2" "Layer 2" >}} اجرا را به جای دیگری می‌برد و L1 را داور نگه می‌دارد. طرح رایجش {{< term "rollup" "rollup" >}} است: اجرای تراکنش‌ها بیرون از زنجیره، و ثبت داده‌ی آن‌ها و تعهد به state حاصل در قراردادی روی L1. یک نمونه‌ی کوچک با تکه‌های قبلی ساختم: درخت از [Merkle tree و اثبات عضویت](/fa/posts/bc-merkle-trees-proofs/)، توکن از [توکن‌ها: ERC-20 و ERC-721](/fa/posts/bc-erc20-erc721/) و خواندن لاگ مثل [Event و ساخت indexer](/fa/posts/bc-event-indexer-go/).
 
@@ -94,7 +95,7 @@ Go و Solidity روی درخت توافق دارند، وگرنه `WrongPreState
 
 خروج از rollup یعنی اثبات موجودی L2 روی L1 در برابر یک root. در optimistic rollup آن root اول باید از پنجره‌ی اعتراض عبور کند؛ تا جایی که می‌دانم، rollupهای بزرگ حدود هفت روز در نظر می‌گیرند. در ZK rollup باید منتظر اثبات بررسی‌شده‌ی بعدی بمانید.
 
-## چند نکته‌ی مهم
+## کجا این مدل آموزشی می‌شکند
 
 - تراکنش‌های من امضا ندارند، پس اجرای دوباره جلوی sequencerی را که انتقال جعل کند نمی‌گیرد. rollupهای واقعی امضای کاربر را هنگام اجرا بررسی می‌کنند.
 - امنیت optimistic به دست‌کم یک verifier صادق و آنلاین در هر پنجره نیاز دارد.
@@ -107,4 +108,4 @@ Go و Solidity روی درخت توافق دارند، وگرنه `WrongPreState
 
 ## قدم بعدی
 
-پست بعدی: **Bridge و ارتباط بین زنجیره‌ها**.
+**Bridge و ارتباط بین زنجیره‌ها**: L1 می‌تواند rollup را داوری کند چون داده را دارد؛ دو زنجیره‌ی مستقل نمی‌توانند.

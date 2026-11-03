@@ -3,13 +3,14 @@ date = '2026-11-17T10:00:00+03:30'
 draft = false
 title = 'workflowهای تیمی و درون packfile'
 description = 'workflowهای Git و packfile: مقایسه‌ی trunk-based، GitHub flow و Gitflow، سپس git gc، verify-pack و clone کم‌عمق، جزئی و sparse با اجرای واقعی.'
+contentType = 'tutorial'
 categories = ["Git"]
 series = ["Git"]
 tags = ["git", "beginner", "workflows", "packfiles"]
 cover = { image = "/images/covers/git-workflows-packfiles.fa.png", alt = "workflowهای تیمی و درون packfile", hiddenInSingle = true }
 +++
 
-این آخرین مقاله از سری Git است. در [مقاله‌ی قبل](/fa/posts/git-submodule-subtree-worktree/) با submodule، subtree و worktree آشنا شدیم. اینجا می‌بینیم تیم‌ها چطور branchها را سازمان می‌دهند و Git چه می‌کند تا repository کوچک بماند.
+فایلی ۲۰۰۰ خطی با ۴۰ ویرایش در حالت loose ۳۳۸۴ کیلوبایت بود و بعد از `git gc` ۲۶۸ کیلوبایت؛ همین فاصله گزینه‌های clone را توضیح می‌دهد. آخرین مقاله‌ی سری، بعد از [submodule، subtree و worktree](/fa/posts/git-submodule-subtree-worktree/)، به همین و workflowهای تیمی می‌پردازد.
 
 > دموها با Git نسخه‌ی 2.39.2 روی macOS و در پوشه‌های موقت اجرا شده‌اند و عددها از همان اجراها کپی شده‌اند. سرویس hosting اجرا نکردم، پس branch protection فقط در حد مفهوم آمده است.
 
@@ -117,7 +118,7 @@ clone با `--sparse` با ۰ blob شروع شد؛ بعد از `set app` یک bl
 
 `git maintenance` می‌تواند کارهای نگهداری شبیه `gc` را در پس‌زمینه انجام دهد؛ آن را اجرا نکردم.
 
-## چند نکته‌ی مهم
+## بهای میان‌برها
 
 - clone کم‌عمق تاریخچه ندارد، پس `git log` و `git blame` چیز کمی می‌بینند.
 - clone جزئی بعداً به remote نیاز دارد؛ آفلاین، نبودنِ blob خطاست.
@@ -144,4 +145,4 @@ repositoryای با یک فایل ۱۰۰۰ خطی و ۲۰ commit بسازید ک
 
 ## قدم بعدی
 
-این آخرین مقاله‌ی Git بود. مقاله‌ی بعدی تقویم، سری Databases را شروع می‌کند: مدل رابطه‌ای و SQL ضروری.
+مطلب بعدی تقویم «مدل رابطه‌ای و SQL ضروری»، شروع سری Databases است.

@@ -3,15 +3,16 @@ date = '2026-11-28T18:00:00+03:30'
 draft = false
 title = 'Proof of stake, BFT and finality'
 description = 'Proof of stake and BFT finality in Go: stake-weighted proposers, signed prevotes and precommits, a 2/3 quorum, and slashing for double-signing.'
+contentType = 'tutorial'
 categories = ["Blockchain"]
 series = ["Blockchain"]
 tags = ["blockchain", "go", "proof-of-stake", "bft", "finality"]
 cover = { image = "/images/covers/bc-proof-of-stake-bft.png", alt = "Proof of stake, BFT and finality", hiddenInSingle = true }
 +++
 
-The previous post, [MEV and transaction ordering](/posts/bc-mev-ordering/), asked who orders transactions in a block. This one asks who produces it, and when it becomes final.
+In [Proof of work, difficulty and mining](/posts/bc-proof-of-work-mining/) a vote cost electricity, and [Forks, reorgs and the heaviest-chain rule](/posts/bc-forks-reorgs/) showed the price: a block is never final. So who produces a block, and when does it become final? [MEV and transaction ordering](/posts/bc-mev-ordering/) only asked who orders the transactions inside it.
 
-In [Proof of work, difficulty and mining](/posts/bc-proof-of-work-mining/) a vote cost electricity. [Forks, reorgs and the heaviest-chain rule](/posts/bc-forks-reorgs/) showed the price: a block is never final. {{< term "proof-of-stake" "Proof of stake" >}} replaces burned energy with locked money. A {{< term "validator" "validator" >}} deposits stake, its vote weighs as much as its stake, and provable cheating destroys part of the deposit.
+{{< term "proof-of-stake" "Proof of stake" >}} replaces burned energy with locked money. A {{< term "validator" "validator" >}} deposits stake, its vote weighs as much as its stake, and provable cheating destroys part of the deposit.
 
 The voting is {{< term "byzantine-fault" "Byzantine fault" >}} tolerant consensus. In [Consensus and Raft](/posts/ds-consensus-raft/) nodes could crash but never lie; here some lie on purpose.
 
@@ -111,7 +112,7 @@ runs=972 conflicting(byz<1/3)=0 conflicting(byz>=1/3)=68 commits with >=1/3 offl
 
 According to the Ethereum docs, as I understand them, it combines both: a {{< term "fork-choice-rule" "fork-choice rule" >}} (LMD-GHOST) picks the head, and Casper FFG finalizes epoch checkpoints once 2/3 of the stake votes for them. I ran no Ethereum client here.
 
-## A few things to watch
+## What safety rests on
 
 - The quorum is more than 2/3 of stake, not of nodes.
 - Safety assumes Byzantine stake under 1/3; above it, evidence still names the cheaters, but after the fact.
@@ -124,4 +125,4 @@ Add a second round with locking: whoever precommitted A prevotes only A later, u
 
 ## What's next
 
-Next post: **Layer 2 and rollups: optimistic and ZK**.
+**Layer 2 and rollups: optimistic and ZK**: a final block is not a bigger block.

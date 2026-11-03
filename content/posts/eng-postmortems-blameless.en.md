@@ -2,6 +2,7 @@
 date = '2027-05-16T10:00:00+03:30'
 draft = false
 title = 'Blameless postmortems'
+contentType = 'tutorial'
 description = 'Blameless postmortems from a staged Go incident: timeline from logs, TTD/TTM/TTR, contributing factors, action items and a runnable document lint.'
 categories = ["Engineering"]
 series = ["Software Engineering"]
@@ -9,7 +10,7 @@ tags = ["postmortem", "incident", "blameless", "software-engineering", "go", "sl
 cover = { image = "/images/covers/eng-postmortems-blameless.png", alt = "Blameless postmortems", hiddenInSingle = true }
 +++
 
-The previous post, [SLIs, SLOs and error budgets](/posts/eng-sli-slo-error-budgets/), said how much failure an {{< term "slo" "SLO" >}} accepts. This one is about what to do after an incident spends some of the {{< term "error-budget" "error budget" >}}. **This incident is staged on my machine**: no real users, no real people, invented names and roles. The logs, numbers and lint output are real runs of a small Go demo. Judgments are marked as my opinion.
+After an incident, the question is what would have stopped it, not who caused it. Incidents spend the {{< term "error-budget" "error budget" >}} an {{< term "slo" "SLO" >}} allows ([SLIs, SLOs and error budgets](/posts/eng-sli-slo-error-budgets/)); the write-up answers it. **This incident is staged on my machine**: no real users or people, invented names and roles; logs, numbers and lint output are real runs of a small Go demo.
 
 A {{< term "postmortem" "postmortem" >}} is a written review made from evidence. Related: [Config, structured logging and errors in Go](/posts/go-config-logging-errors/), [Connection pooling and its failure modes](/posts/db-connection-pooling/), [Designing a CI/CD pipeline](/posts/eng-ci-cd-pipeline-design/).
 
@@ -50,7 +51,7 @@ TTD is time to detect, TTM time to mitigate, TTR time to recover, all from the s
 
 ## Contributing factors, not "the root cause"
 
-**My opinion:** a single "root cause" hides the rest. Here, the slow dependency alone would not fail a pool of 10 (the model says so: with a healthy pool size the test `TestHealthyConfigHasNoErrors` sees zero failures), and the bad pool size alone would not fail either (a second test with a fast dependency shows zero failures: 2 slots at 100 ms is about 20 per second). Four things lined up: no validation of the pool size, a rollout to everything at once, no alert on dependency latency, and an alert that only watches errors. A {{< term "circuit-breaker" "circuit breaker" >}} ([Circuit breakers and bulkheads](/posts/ds-circuit-breaker-bulkhead/)) limits the damage of a slow dependency. Each is a {{< term "contributing-factor" "contributing factor" >}} with its own fix.
+**My opinion:** a single "root cause" hides the rest. Here, the slow dependency alone would not fail a pool of 10 (with a healthy pool size `TestHealthyConfigHasNoErrors` sees zero failures), and the bad pool size alone would not fail either (a second test with a fast dependency shows zero failures: 2 slots at 100 ms is about 20 per second). Four things lined up: no validation of the pool size, a rollout to everything at once, no alert on dependency latency, and an alert that only watches errors. A {{< term "circuit-breaker" "circuit breaker" >}} ([Circuit breakers and bulkheads](/posts/ds-circuit-breaker-bulkhead/)) limits the damage of a slow dependency. Each is a {{< term "contributing-factor" "contributing factor" >}} with its own fix.
 
 The {{< term "five-whys" "5 whys" >}} follows one chain and stops where the answerer stops, often at a person ("why? someone forgot to check"). I prefer a small causal diagram that allows branches:
 
@@ -91,7 +92,7 @@ blamey.md
 
 Write it within days. Review it in a meeting where the question is "what would have stopped this", and publish it where every team can read it. Track action items like any other work, or the postmortem is theater; unfinished ones are {{< term "technical-debt" "technical debt" >}} with a date on it ([Technical debt](/posts/eng-technical-debt/)).
 
-## A few things to watch
+## Habits that keep it blameless
 
 - Timeline from logs, not memory; keep clocks in one timezone.
 - Count what went well and where you were lucky: luck is a risk.
@@ -104,4 +105,4 @@ Add a "dependency latency above 250 ms" alert to the model and recompute TTD. Do
 
 ## What's next
 
-The next post is "Working with legacy code".
+“Working with legacy code”: action items help only if their code can be changed safely.

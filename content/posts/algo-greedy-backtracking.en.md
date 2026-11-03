@@ -3,13 +3,14 @@ date = '2027-04-21T10:00:00+03:30'
 draft = false
 title = 'Greedy algorithms and backtracking'
 description = 'Greedy algorithms and backtracking in Go: interval scheduling, coin change, Huffman, N-Queens and Sudoku with real node counts and tests.'
+contentType = 'tutorial'
 categories = ["Algorithms"]
 series = ["Algorithms"]
 tags = ["algorithms", "greedy", "backtracking", "huffman", "n-queens", "go"]
 cover = { image = "/images/covers/algo-greedy-backtracking.png", alt = "Greedy algorithms and backtracking", hiddenInSingle = true }
 +++
 
-In [Dynamic programming 2: classic problems](/posts/algo-dynamic-programming-2/) we checked every option through a table. Two other strategies exist: take one local choice and never look back, or try choices and undo them. The first is a {{< term "greedy-algorithm" "greedy algorithm" >}}, the second is {{< term "backtracking" "backtracking" >}}. Costs are counted as in [Big-O measured](/posts/algo-big-o-measured/).
+With coins {1,3,4} and amount 6, always taking the biggest coin gives 4+1+1, while the optimum is 3+3: a choice that looks best locally can be wrong. [Dynamic programming 2: classic problems](/posts/algo-dynamic-programming-2/) avoided that by checking every option through a table. Two other strategies exist: take one local choice and never look back, or try choices and undo them. The first is a {{< term "greedy-algorithm" "greedy algorithm" >}}, the second is {{< term "backtracking" "backtracking" >}}. Costs are counted as in [Big-O measured](/posts/algo-big-o-measured/).
 
 > Go 1.26, local example, tests with `go test -race`. Machine load was not low, so I publish counts, not timings.
 
@@ -99,7 +100,7 @@ Both give the same grid. 51 is exactly the number of empty cells here, so this p
 
 Pruning and ordering shrink the tree but not its worst case: N-Queens, Sudoku and subset problems stay exponential in general. If the sub-problems overlap, use DP; if not, backtracking is the honest tool.
 
-## A few things to watch
+## Before you trust a greedy rule
 
 - Greedy needs a proof or a brute-force test; a plausible rule is not enough.
 - Always compare against brute force on small random inputs.
@@ -112,4 +113,4 @@ Rewrite N-Queens with bitmasks instead of three boolean arrays and check that th
 
 ## What's next
 
-Everything so far searched structures of numbers and choices. Next up: "String algorithms: KMP and Rabin–Karp".
+Everything so far searched structures of numbers and choices; "String algorithms: KMP and Rabin–Karp" turns to searching text.

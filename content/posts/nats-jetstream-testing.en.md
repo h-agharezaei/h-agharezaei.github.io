@@ -4,13 +4,14 @@ draft = false
 title = 'Testing JetStream services with an embedded nats-server'
 seoTitle = 'Testing JetStream with an Embedded nats-server'
 description = 'Test JetStream consumers in plain go test: an embedded nats-server per test, no sleeps, short BackOff, covering retry, DLQ and idempotency.'
+contentType = 'tutorial'
 categories = ["Go"]
 series = ["NATS JetStream"]
 tags = ["go", "nats", "jetstream", "testing", "messaging"]
 cover = { image = "/images/covers/nats-jetstream-testing.png", alt = "Testing JetStream services with an embedded nats-server", hiddenInSingle = true }
 +++
 
-In the [previous post](/posts/nats-jetstream-observability/) we looked at how to see what a JetStream service is doing in production. This post is about seeing it before production. Over the last posts we described behaviors: [retry and dead-letter queues](/posts/nats-jetstream-retry-dlq/) and [idempotency](/posts/nats-jetstream-idempotency/). Each of them was verified by a throwaway program that I read by eye. Here we turn those checks into real tests with [`go test`](/posts/go-testing-basics/), no Docker and no external server, that fail loudly when someone breaks the behavior.
+Each JetStream behavior in this series, from [retry and dead-letter queues](/posts/nats-jetstream-retry-dlq/) to [idempotency](/posts/nats-jetstream-idempotency/), was verified by a throwaway program whose output I read by eye. That only shows it worked once. The [previous post](/posts/nats-jetstream-observability/) was about seeing what a service does in production; here we turn those checks into real tests with [`go test`](/posts/go-testing-basics/), no Docker and no external server, that fail loudly when someone breaks the behavior.
 
 > Everything ran on Go 1.26 with `nats-server` v2.15.1 and `nats.go` v1.54.0. The outputs are from my machine.
 
@@ -142,7 +143,7 @@ FAIL	jstest/worker	1.083s
 
 That is the double-apply bug from the idempotency post, now caught in about a second.
 
-## A few things to watch
+## Traps in JetStream tests
 
 - Always call `nc.Flush()` after subscribing to the advisory, as `RunDLQ` does; otherwise the test can publish before the server knows the subscription.
 - `ReadyForConnections` must come before connecting, and `Cleanup` order matters: stop the worker before closing the connection and server.
@@ -152,4 +153,4 @@ That is the double-apply bug from the idempotency post, now caught in about a se
 
 ## What's next
 
-Next: KV and Object Store in NATS, where JetStream becomes a key-value store and a blob store.
+KV and Object Store in NATS keeps the same embedded server and shows that JetStream can also be a key-value store and a blob store.

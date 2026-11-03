@@ -3,13 +3,14 @@ date = '2026-11-09T18:00:00+03:30'
 draft = false
 title = 'P2P networking and gossip between nodes'
 description = 'P2P gossip in Go: a length-prefixed TCP protocol on loopback, a seen-set against loops, a late node syncing blocks and an invalid block rejected.'
+contentType = 'tutorial'
 categories = ["Blockchain"]
 series = ["Blockchain"]
 tags = ["blockchain", "go", "p2p", "gossip", "tcp"]
 cover = { image = "/images/covers/bc-p2p-gossip.png", alt = "P2P networking and gossip between nodes", hiddenInSingle = true }
 +++
 
-In the [previous post](/posts/bc-proof-of-work-mining/) blocks got expensive to make, but they only lived in one process. A blockchain is many nodes with no server in the middle, each checking everything it hears. This post connects `toychain` nodes over TCP.
+A blockchain is many nodes with no server in the middle, each checking everything it hears. Our blocks got expensive to make in the [previous post](/posts/bc-proof-of-work-mining/), but they still live in one process. This post connects `toychain` nodes over TCP.
 
 The socket side is the same as in [A TCP server and client from scratch](/posts/net-sockets-tcp-from-scratch/). The difference from [Service discovery and load balancing](/posts/ds-service-discovery-load-balancing/) is trust: here no peer is trusted, and every message is validated before it is passed on.
 
@@ -122,7 +123,7 @@ The second block cost real hashes and still failed: proof of work does not make 
 
 I did not implement discovery: my nodes get addresses by hand. As far as I know, a new Bitcoin node finds its first peers through DNS seeds, hostnames that resolve to addresses of active nodes, and then learns more addresses from peers. Ethereum clients use a Kademlia-style discovery protocol over UDP, described in the devp2p specs (discv4, discv5). Bitcoin also announces with `inv` (just hashes) and sends data on `getdata`, and syncs headers first; my nodes push whole blocks. {{< term "peer-discovery" "Peer discovery" >}} is also where eclipse attacks live: a node whose every peer is the attacker sees only the attacker's chain.
 
-## A few things to watch
+## Where a gossip node breaks
 
 - Cap every length from the network before allocating, and limit what one request may return.
 - Validate before you relay; otherwise you amplify garbage for the attacker.

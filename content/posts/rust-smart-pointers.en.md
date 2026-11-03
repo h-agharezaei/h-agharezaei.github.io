@@ -3,13 +3,14 @@ date = '2026-12-30T10:00:00+03:30'
 draft = false
 title = 'Smart pointers: Box, Rc and RefCell in Rust'
 description = 'Rust smart pointers: Box for heap data and recursive types, Deref and Drop, Rc shared ownership, RefCell interior mutability and Weak to break cycles.'
+contentType = 'tutorial'
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "smart-pointers", "box", "rc", "refcell", "intermediate"]
 cover = { image = "/images/covers/rust-smart-pointers.png", alt = "Smart pointers: Box, Rc and RefCell in Rust", hiddenInSingle = true }
 +++
 
-In the [previous post](/posts/rust-closures-iterators/) I returned a `Box<dyn Fn>` and promised to explain it. A **smart pointer** is a struct that acts like a pointer but also owns the data and runs code when it goes away. You already know one: `String` and `Vec` own heap memory. This post covers the three you will meet most: `Box`, `Rc` and `RefCell`. It builds on [ownership](/posts/rust-ownership/): each of these exists for a case where plain ownership and borrowing are not enough.
+A recursive type such as a cons list does not compile without `Box`: the compiler must know its size. I returned a `Box<dyn Fn>` in the [previous post](/posts/rust-closures-iterators/) too. A **smart pointer** acts like a pointer but owns the data and runs code when it goes away, as `String` and `Vec` do. `Box`, `Rc` and `RefCell` each exist for cases where plain [ownership](/posts/rust-ownership/) and borrowing are not enough.
 
 > Everything below was compiled and run with Rust 1.90. Output and compiler messages are copied from those runs.
 
@@ -168,7 +169,7 @@ drop leaf
 
 When `root` leaves its scope it is dropped even though `leaf` still points to it, because only a `Weak` does. Afterwards `upgrade()` gives `None`.
 
-## A few things to watch
+## When not to reach for them
 
 - Prefer plain ownership and borrowing first. These types are for cases the borrow checker cannot prove, not a way around it.
 - `RefCell` moves errors from compile time to runtime. Keep `borrow_mut` guards short-lived, or use `try_borrow_mut`.
@@ -184,4 +185,4 @@ When `root` leaves its scope it is dropped even though `leaf` still points to it
 
 ## What's next
 
-Next we cover testing and documentation in Rust.
+Testing and documentation in Rust: the core language is covered, so the code needs tests and docs.

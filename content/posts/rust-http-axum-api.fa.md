@@ -3,13 +3,14 @@ date = '2027-01-21T10:00:00+03:30'
 draft = false
 title = 'ساخت API با Axum در Rust'
 description = 'ساخت یک API کوچک سفارش‌ها با Axum: route، extractor، state مشترک، enum خطا، لایه‌های tower-http، graceful shutdown با SIGTERM و تست با oneshot.'
+contentType = 'tutorial'
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "axum", "http", "api", "tokio", "tower", "intermediate"]
 cover = { image = "/images/covers/rust-http-axum-api.fa.png", alt = "ساخت API با Axum در Rust", hiddenInSingle = true }
 +++
 
-در [مقاله‌ی قبل](/fa/posts/rust-serde-json/) با serde و JSON آشنا شدیم و قول دادیم همان تایپ‌ها را برای بدنه‌ی درخواست و پاسخ به کار ببریم. این مقاله همان است. روی runtime مقاله‌ی [async در Rust با Tokio](/fa/posts/rust-async-tokio/) همان API کوچک سفارش‌های نسخه‌ی Go، یعنی [ساخت API با net/http در Go](/fa/posts/go-http-api-stdlib/)، را می‌سازیم: ساخت، گرفتن با id، فهرست، `422` برای خطای اعتبارسنجی و `404` برای سفارش ناموجود. از **Axum** استفاده می‌کنم، یک فریم‌ورک وب سبک روی Hyper و Tower.
+JSON خراب به یک handler در Axum جواب `400` می‌گیرد، JSON سالم با شکل اشتباه `422` و نبودن یک هدر `415`، همه با متن ساده و نه قالب خطای API شما، مگر خودتان چیز دیگری بخواهید. اینجا تایپ‌های [Serde و JSON در Rust](/fa/posts/rust-serde-json/) بدنه‌ی درخواست و پاسخ می‌شوند و روی runtime مقاله‌ی [async در Rust با Tokio](/fa/posts/rust-async-tokio/) همان API کوچک سفارش‌های نسخه‌ی Go، یعنی [ساخت API با net/http در Go](/fa/posts/go-http-api-stdlib/)، را می‌سازیم: ساخت، گرفتن با id، فهرست، `422` برای خطای اعتبارسنجی و `404` برای سفارش ناموجود. از **Axum** استفاده می‌کنم، یک فریم‌ورک وب سبک روی Hyper و Tower.
 
 > همه‌چیز را با Rust نسخه‌ی 1.90، `axum` نسخه‌ی 0.8.9، `tokio` نسخه‌ی 1.54.1، `tower-http` نسخه‌ی 0.7.1 و `tower` نسخه‌ی 0.5.3 اجرا کرده‌ام که در `Cargo.lock` قفل شده‌اند. خروجی‌ها از اجرای واقعی یک نمونه‌ی محلی کپی شده‌اند و هدرهایی مثل `date` حذف شده‌اند.
 
@@ -171,7 +172,7 @@ assert_eq!(res.status(), StatusCode::CREATED);
 
 `clone()` ارزان است و state را به اشتراک می‌گذارد، پس `oneshot` دوم می‌تواند سفارش را بخواند. جدولی از هفت حالت (اعتبارسنجی، JSON خراب، نوع غلط، 404، 405، 500، timeout) به‌اضافه‌ی تست request-id نتیجه‌ی `3 passed` داد.
 
-## چند نکته
+## کجا Axum غافلگیرتان می‌کند
 
 - ترتیب extractor مهم است: `Json` (یا هر extractor بدنه) باید آخر باشد.
 - rejectionهای پیش‌فرض متن ساده‌اند؛ تصمیم بگیرید API شما خطای JSON لازم دارد یا نه.
@@ -186,4 +187,4 @@ assert_eq!(res.status(), StatusCode::CREATED);
 
 ## قدم بعدی
 
-در مقاله‌ی بعد انبار درون‌حافظه را با یک پایگاه‌داده‌ی واقعی عوض می‌کنیم: پایگاه‌داده با SQLx در Rust.
+«دیتابیس با SQLx در Rust» انبار درون‌حافظه‌ی همین API را با Postgres واقعی عوض می‌کند.

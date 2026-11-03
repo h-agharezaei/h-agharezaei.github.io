@@ -3,13 +3,14 @@ date = '2027-03-08T10:00:00+03:30'
 draft = false
 title = 'Capstone: an event pipeline with Go, Rust and NATS'
 description = 'A Go and Rust event pipeline on NATS: Postgres, the outbox pattern, JetStream, a Rust worker and a KV read model, then kill pieces to check correctness.'
+contentType = 'engineering'
 categories = ["Go", "Rust"]
 series = ["Go + Rust"]
 tags = ["go", "rust", "nats", "jetstream", "outbox", "capstone", "postgres"]
 cover = { image = "/images/covers/go-rust-event-pipeline-capstone.png", alt = "Capstone: an event pipeline with Go, Rust and NATS", hiddenInSingle = true }
 +++
 
-[The previous post](/posts/go-calls-rust-ffi/) put Rust inside a Go process. This last post of the series puts the pieces from the whole year side by side: Go services for the edges, a Rust worker for the business rule, and NATS in the middle. Nothing here is new technology. The point is how the parts fit, and what happens when one of them dies. I run it with one `run.sh`, then break it on purpose.
+What if a worker dies after publishing its result but before the ack? The message comes back; the question is whether the effect lands twice. After [putting Rust inside a Go process](/posts/go-calls-rust-ffi/), this last post of the series puts the pieces from the whole year side by side: Go services for the edges, a Rust worker for the business rule, and NATS in the middle. Nothing here is new technology. The point is how the parts fit, and what happens when one of them dies. I run it with one `run.sh`, then break it on purpose.
 
 > Go 1.26, Rust 1.90, Postgres 18.3 (embedded launcher), nats-server 2.15 embedded, macOS arm64. Everything below was run locally. It is a demo: one node, no auth, no TLS. [JetStream in production](/posts/nats-jetstream-production/) lists what a real deployment needs.
 
@@ -155,7 +156,7 @@ report: orders=5 outbox=5 (unpublished=0) ORDERS msgs=5 RESULTS msgs=5 KV keys=5
 
 A new `o-6` then flowed through all stages as usual.
 
-## A few things to watch
+## Limits of this design
 
 - The "already processed" check is check-then-act. With several workers on one order, two could both pass it. The 5-minute dedup window on the `Nats-Msg-Id` covers that, but a real fix is a unique key in your own store.
 - Everything is at-least-once; correctness comes from idempotent steps, not from "exactly once".
@@ -165,4 +166,4 @@ A new `o-6` then flowed through all stages as usual.
 
 ## What's next
 
-Next on the calendar: Docker, CI and releasing a Rust service.
+Next on the calendar: Docker, CI and releasing a Rust service, which ships a Rust service beyond a local run like this one.

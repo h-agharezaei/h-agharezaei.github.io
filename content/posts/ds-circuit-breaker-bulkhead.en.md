@@ -3,13 +3,14 @@ date = '2027-05-08T10:00:00+03:30'
 draft = false
 title = 'Circuit breakers and bulkheads'
 description = 'A Go circuit breaker built from scratch with an injected clock, plus bulkheads and load shedding, shown with seeded simulations and real counts.'
+contentType = 'engineering'
 categories = ["Distributed"]
 series = ["Distributed Systems"]
 tags = ["distributed-systems", "circuit-breaker", "bulkhead", "resilience", "go"]
 cover = { image = "/images/covers/ds-circuit-breaker-bulkhead.png", alt = "Circuit breakers and bulkheads", hiddenInSingle = true }
 +++
 
-[The previous post](/posts/ds-timeouts-retries-backoff/) ended with retries that wait politely. Politeness does not help when the dependency stays sick: callers pile up behind it until they are sick too, which is a {{< term "cascading-failure" "cascading failure" >}}. A {{< term "circuit-breaker" "circuit breaker" >}} stops calling for a while, and a {{< term "bulkhead" "bulkhead" >}} limits how much of your capacity one dependency can take. See also [concurrency patterns](/posts/go-concurrency-patterns/).
+A dependency that stays sick drags its callers down: they pile up behind it until they are sick too, which is a {{< term "cascading-failure" "cascading failure" >}}. The polite, jittered retries of [the previous post](/posts/ds-timeouts-retries-backoff/) do not change that. A {{< term "circuit-breaker" "circuit breaker" >}} stops calling for a while, and a {{< term "bulkhead" "bulkhead" >}} limits how much of your capacity one dependency can take. See also [concurrency patterns](/posts/go-concurrency-patterns/).
 
 > Honest labelling: all of this is Go 1.26 on one machine. Time is fake "ticks" from an injected clock, randomness is seeded, and I show counts only, no timings. It is a simulation, not a real network.
 
@@ -81,17 +82,13 @@ Metrics: state (a gauge), trips, rejections and fallbacks served. In my experien
 
 In production I would use a library. According to its README, `sony/gobreaker` has closed, open and half-open states, a `MaxRequests` for half-open, an open `Timeout`, a `ReadyToTrip` function and an `OnStateChange` hook. I read the README and did not run it. Hystrix and Resilience4j are, as far as I know, where the pattern became popular in the Java world.
 
-## A few things to watch
+## Getting a breaker wrong
 
 - Always give the breaker a fallback or a clear error, or users just see a faster failure.
 - A client timeout is still needed; the breaker opens only after failures are seen.
 - Count only real dependency failures, not your own validation errors.
 - Pool sizes and thresholds need load tests; mine are made up.
 
-## Exercise
-
-Add a failure-rate rule over a sliding window and compare it with the consecutive rule on the flaky scenario.
-
 ## What's next
 
-The next post is “Replication and quorums”.
+Next, “Replication and quorums”: instead of guarding against one sick copy, keep several and decide how many must agree.

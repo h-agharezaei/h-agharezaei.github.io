@@ -3,13 +3,14 @@ date = '2026-11-27T10:00:00+03:30'
 draft = false
 title = 'npm، package.json و قفل وابستگی'
 description = 'npm و package.json با اجرای واقعی: انواع وابستگی، بازه‌های semver، package-lock.json، خطای npm ci، npm audit و آنچه npm pack منتشر می‌کند.'
+contentType = 'tutorial'
 categories = ["Node.js"]
 series = ["Node.js"]
 tags = ["nodejs", "npm", "package-json", "semver", "lockfile"]
 cover = { image = "/images/covers/node-npm-package-json.fa.png", alt = "npm، package.json و قفل وابستگی", hiddenInSingle = true }
 +++
 
-هر پروژه‌ی Node.js با **{{< term "npm" "npm" >}}** و یک `package.json` شروع می‌شود و بیشتر شگفتی‌های پروداکشن («روی سیستم من کار می‌کرد») از نفهمیدن همین دو می‌آید. این سومین مقاله‌ی سری Node.js است. در مقاله‌ی قبل، [ماژول‌ها: ESM و CommonJS](/fa/posts/node-modules-esm-cjs/)، دیدیم Node کد را چطور بارگذاری می‌کند؛ اینجا می‌بینیم کدِ دیگران چطور به دیسک شما می‌رسد. مقاله‌ی [event loop در Node.js](/fa/posts/node-event-loop/) پایه‌ی این سری است.
+نسخه‌ای را در `package.json` عوض کنید و **{{< term "lockfile" "lockfile" >}}** را نه، و `npm ci` چیزی نصب نمی‌کند. این شکست عمدی است؛ بیشتر شگفتی‌های پروداکشن از نفهمیدن **{{< term "npm" "npm" >}}** و `package.json` می‌آید. [ماژول‌ها: ESM و CommonJS](/fa/posts/node-modules-esm-cjs/) بارگذاری کد را نشان داد؛ اینجا می‌بینیم کدِ دیگران چطور به دیسک می‌رسد. پایه‌ی سری [event loop در Node.js](/fa/posts/node-event-loop/) است.
 
 > همه‌چیز با Node v20.13.1 و npm 10.5.2 در یک پوشه‌ی دموی تازه و روی رجیستری واقعی اجرا شده است. خروجی‌ها از اجرای واقعی کپی شده‌اند و نتایج رجیستری مربوط به روز اجرا هستند.
 
@@ -67,7 +68,7 @@ for (const r of ranges) console.log(r.padEnd(7), vers.filter(v => semver.satisfi
 
 ## فایل قفل
 
-بازه می‌گوید چه چیزی مجاز است؛ **{{< term "lockfile" "lockfile" >}}** ثبت می‌کند چه چیزی انتخاب شد. این ورودی `semver` در `package-lock.json` است:
+بازه می‌گوید چه چیزی مجاز است؛ lockfile ثبت می‌کند چه چیزی انتخاب شد. این ورودی `semver` در `package-lock.json` است:
 
 ```json
 "node_modules/semver": {
@@ -111,7 +112,7 @@ semver      7.6.0   7.8.5   7.8.5
 
 در پوشه‌ای دیگر `lib/index.js`، `test/t.js`، `.env` و `NOTES.md` داشتم و `"files": ["lib"]` را گذاشتم. `npm pack --dry-run` فقط `lib/index.js` و `package.json` را فهرست کرد. بدون `files`، npm به قواعدی مثل `.npmignore` برمی‌گردد، پس قبل از انتشار حتماً با dry run بررسی کنید. ابزارهای دیگر (pnpm و yarn) و فایل `.npmrc` برای تنظیمات رجیستری هم هستند؛ اینجا استفاده‌شان نکردم.
 
-## چند نکته‌ی مهم
+## کجا وابستگی‌ها غافلگیرتان می‌کنند
 
 - `package-lock.json` را commit کنید و با دست ویرایشش نکنید.
 - در CI و ساخت Docker از `npm ci` استفاده کنید.
@@ -125,4 +126,4 @@ semver      7.6.0   7.8.5   7.8.5
 
 ## قدم بعدی
 
-در مقاله‌ی بعد سراغ «Promise و async/await در Node.js» می‌رویم.
+«Promise و async/await در Node.js»: با جا افتادن پکیج‌ها، سری به خود کد async برمی‌گردد.

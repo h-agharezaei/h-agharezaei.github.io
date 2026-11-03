@@ -3,13 +3,14 @@ date = '2027-03-22T10:00:00+03:30'
 draft = false
 title = 'Storing passwords safely: argon2 and bcrypt'
 description = 'Password hashing in Go with bcrypt and argon2id: salts, cost, the 72-byte limit, the PHC format, constant-time compare and rehash on login, with output.'
+contentType = 'tutorial'
 categories = ["Security"]
 series = ["Software Security"]
 tags = ["security", "passwords", "argon2", "bcrypt", "hashing", "go"]
 cover = { image = "/images/covers/sec-password-hashing.png", alt = "Storing passwords safely: argon2 and bcrypt", hiddenInSingle = true }
 +++
 
-The previous post, [Injection and XSS](/posts/sec-injection-xss/), was about attackers getting in through input. This one assumes the worst case after that: someone reads your `users` table. If it holds plain passwords, every account is gone, and since people reuse passwords, accounts on other sites too. The goal of {{< term "password-hashing" "password hashing" >}} is that a leaked table is still expensive to use. The context is the login of the orders-style API from [Building an API with net/http in Go](/posts/go-http-api-stdlib/); errors and logs follow [Config, structured logging and errors in Go](/posts/go-config-logging-errors/).
+Suppose someone reads your `users` table, for example through a bug like those in [Injection and XSS](/posts/sec-injection-xss/). If it holds plain passwords, every account is gone, and since people reuse passwords, accounts on other sites too. The goal of {{< term "password-hashing" "password hashing" >}} is that a leaked table is still expensive to use. The context is the login of the orders-style API from [Building an API with net/http in Go](/posts/go-http-api-stdlib/); errors and logs follow [Config, structured logging and errors in Go](/posts/go-config-logging-errors/).
 
 > Defensive only. This is a small Go 1.26 program with `golang.org/x/crypto` v0.31.0, run locally. I did not crack anything and did not use any real leaked data. It is a separate demo, not a continuation of an earlier one.
 
@@ -98,7 +99,7 @@ The caller hashes again with the new parameters and saves. The tests use tiny pa
 
 They check that a wrong password never triggers a rehash.
 
-## A few things to watch
+## Beyond the hash function
 
 - A {{< term "pepper" "pepper" >}} (a secret key outside the database, mixed in with HMAC) helps if only the database leaks. It adds key management; I describe it, I did not build it.
 - Never log passwords or request bodies of login; check your logger and your error messages.
@@ -112,4 +113,4 @@ Add a bcrypt-to-argon2id migration: on login, if the stored hash starts with `$2
 
 ## What's next
 
-The next post is Sessions or JWT?.
+“Sessions or JWT?” starts where a successful login ends: how the server remembers you on the next request.

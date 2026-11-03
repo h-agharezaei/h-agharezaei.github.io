@@ -3,13 +3,14 @@ date = '2027-02-21T10:00:00+03:30'
 draft = false
 title = 'The OWASP Top 10 in real code'
 description = 'The OWASP Top 10 in real code: the 2025 categories mapped to Go, with local demos of IDOR, exposed pprof, log injection and SSRF, each with a fix.'
+contentType = 'tutorial'
 categories = ["Security"]
 series = ["Software Security"]
 tags = ["security", "owasp", "appsec", "go", "idor", "ssrf"]
 cover = { image = "/images/covers/sec-owasp-top10-in-code.png", alt = "The OWASP Top 10 in real code", hiddenInSingle = true }
 +++
 
-[Threat modeling with STRIDE](/posts/sec-threat-modeling-stride/) gave us a ranked list of threats. The {{< term "owasp-top-10" "OWASP Top 10" >}} is the usual vocabulary for them, so here I map it to code: the `orders` idea from [Building an API with net/http in Go](/posts/go-http-api-stdlib/), reduced to tiny programs.
+If a handler looks an order up by ID alone, Alice reads Bob's order by asking for ID 2. The {{< term "owasp-top-10" "OWASP Top 10" >}} is the usual vocabulary for bugs like this, and for the threats ranked in [Threat modeling with STRIDE](/posts/sec-threat-modeling-stride/). Here I map it to code: the `orders` idea from [Building an API with net/http in Go](/posts/go-http-api-stdlib/), reduced to tiny programs.
 
 I read https://owasp.org/Top10/ on 2026-10-27; it redirected to **OWASP Top 10:2025**, and the names below are copied from that page.
 
@@ -111,7 +112,7 @@ Equal hashes reveal equal passwords, and a fast hash is cheap to guess against. 
 
 I planned to run `govulncheck` on a module pinning an old `golang.org/x/text`. The vulnerability database request (`vuln.go.dev`) returned `403 Forbidden` here, so I have no real finding and show none. Run `govulncheck ./...` in your own CI.
 
-## A few things to watch
+## Rules of thumb from the demos
 
 - Check access on the server for every object, not just in the UI.
 - Debug features belong on a separate, non-public listener.
@@ -125,4 +126,4 @@ Add `DELETE /orders/{id}` to demo 1. Does your ownership check cover it? Write a
 
 ## What's next
 
-The next post is “Injection and XSS”.
+“Injection and XSS” takes the Injection category from the table and goes deep on it: SQL, shell, filesystem and browser.

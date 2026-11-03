@@ -3,13 +3,14 @@ date = '2027-05-27T10:00:00+03:30'
 draft = false
 title = 'Fuzzing to find security bugs'
 description = 'Fuzzing in Go: find three deliberate parser bugs (bounds, int32 overflow, hang) with go test -fuzz, replay the saved inputs and fix them.'
+contentType = 'tutorial'
 categories = ["Security"]
 series = ["Software Security"]
 tags = ["security", "fuzzing", "go", "testing", "parser"]
 cover = { image = "/images/covers/sec-fuzzing.png", alt = "Fuzzing to find security bugs", hiddenInSingle = true }
 +++
 
-The previous post, [Memory safety: C versus Rust](/posts/sec-memory-safety-c-vs-rust/), showed what a bad index can do. Today I let a machine look for such bad inputs. A parser reads bytes that someone else controls, so it is where a missing check becomes a {{< term "denial-of-service" "denial of service" >}} or worse. {{< term "fuzzing" "Fuzzing" >}} feeds it mutated inputs until something breaks. It complements [Property-based testing](/posts/eng-property-based-testing/).
+`go test -fuzz` needed about 250 executions to crash my small parser with `slice bounds out of range`, because it trusted a length field. [Memory safety: C versus Rust](/posts/sec-memory-safety-c-vs-rust/) showed what a bad index can do; here a machine looks for the inputs that cause one. A parser reads bytes that someone else controls, so it is where a missing check becomes a {{< term "denial-of-service" "denial of service" >}} or worse. {{< term "fuzzing" "Fuzzing" >}} feeds it mutated inputs until something breaks. It complements [Property-based testing](/posts/eng-property-based-testing/).
 
 > Defensive only. I fuzzed my own 60-line parser, in my own test, with Go 1.26. Nothing third-party was touched. The three bugs are deliberate. The demo is a local example.
 
@@ -99,7 +100,7 @@ A fuzzer needs an oracle. A panic is a free one. A better one is a property. `Fu
 - Pair the fuzzer with a sanitizer such as {{< term "addresssanitizer" "AddressSanitizer" >}} for C. Go and Rust give you {{< term "memory-safety" "memory safety" >}} but still panic and hang.
 - Dictionaries of keywords and structure-aware fuzzing help with formats that have checksums or grammars.
 
-## A few things to watch
+## Making fuzzing pay off
 
 - Commit the files under `testdata/fuzz`.
 - Seeds from real samples beat empty seeds.
@@ -113,4 +114,4 @@ Add a type 4 record whose 4-byte length is used directly in `make([]byte, n)`. L
 
 ## What's next
 
-The next post is Logging, auditing and incident response.
+“Logging, auditing and incident response” covers the bugs that get through anyway: then what matters is whether you can tell what happened.

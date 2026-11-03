@@ -2,6 +2,7 @@
 date = '2027-04-04T10:00:00+03:30'
 draft = false
 title = 'OpenAPI و قرارداد API'
+contentType = 'tutorial'
 description = 'OpenAPI و قرارداد API در Go: نوشتن spec، lint، سنجیدن پاسخ‌های واقعی با kin-openapi و دیدن شکست تست روی یک تغییر ناسازگار، با اجرای واقعی.'
 categories = ["Engineering"]
 series = ["Software Engineering"]
@@ -9,7 +10,7 @@ tags = ["openapi", "api-contract", "software-engineering", "testing", "go"]
 cover = { image = "/images/covers/eng-openapi-contracts.fa.png", alt = "OpenAPI و قرارداد API", hiddenInSingle = true }
 +++
 
-در [طراحی API: نسخه‌بندی و pagination](/fa/posts/eng-api-design-versioning-pagination/) تصمیم گرفتیم API چه شکلی داشته باشد. {{< term "api-contract" "قرارداد API" >}} همان تصمیم است به شکل مکتوب و قابل بررسی. بدون آن، عوض شدن نام یک فیلد client را می‌شکند و تا production کسی نمی‌فهمد. خود server از [ساخت API با net/http در Go](/fa/posts/go-http-api-stdlib/) می‌آید و مبانی تست از [تست در Go](/fa/posts/go-testing-basics/). نظرها با **به نظر من** مشخص شده‌اند و بقیه اجرا شده است.
+اگر `currency` در request اجباری شود، هر clientی که هنوز `{"item":"pen","qty":3}` می‌فرستد ناگهان اشتباه است. بدون قرارداد مکتوب، چنین تغییری یا عوض شدن نام یک فیلد client را می‌شکند و تا production کسی نمی‌فهمد. {{< term "api-contract" "قرارداد API" >}} شکل مکتوب و قابل بررسی تصمیم‌های [طراحی API: نسخه‌بندی و pagination](/fa/posts/eng-api-design-versioning-pagination/) است. خود server از [ساخت API با net/http در Go](/fa/posts/go-http-api-stdlib/) می‌آید و مبانی تست از [تست در Go](/fa/posts/go-testing-basics/). نظرها با **به نظر من** مشخص شده‌اند و بقیه اجرا شده است.
 
 > Go 1.26، Node 20.13.1، یک demo محلی از خودم. یک API کوچک سفارش‌هاست، نه demo پست قبلی: روی آن یکی بنا نکردم.
 
@@ -93,7 +94,7 @@ openapi.v2.yaml: err=request body has an error: ... Error at "/currency": proper
 - تولید stub سرور یا client (مثلاً با `oapi-codegen`): اجرا نکردم.
 - {{< term "consumer-driven-contract" "قرارداد مبتنی بر مصرف‌کننده" >}} با Pact: client‌ها می‌نویسند چه چیزی را استفاده می‌کنند و server راستی‌آزمایی می‌کند. فقط اسمش را می‌آورم.
 
-## چند نکته‌ی مهم
+## قرارداد چطور از کد جدا می‌افتد
 
 - spec‌ای که تستی آن را نمی‌سنجد، مستنداتی است که کم‌کم از کد جدا می‌شود.
 - lint را در {{< term "ci" "CI" >}} بگذارید و نسخه‌ی linter را ثابت کنید.
@@ -106,4 +107,4 @@ openapi.v2.yaml: err=request body has an error: ... Error at "/currency": proper
 
 ## قدم بعدی
 
-پست بعدی «بدهی فنی» است.
+«بدهی فنی»: از صادق نگه داشتن یک قرارداد به اندازه‌گیری این‌که هزینه کجای یک repo جمع می‌شود.

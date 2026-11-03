@@ -3,6 +3,7 @@ date = '2026-10-18T12:00:00+03:30'
 draft = false
 title = 'یک Publisher و Worker ساده با NATS JetStream در Go'
 description = 'ساخت Publisher و Worker با NATS JetStream در Go و Docker Compose: ساخت stream، انتشار پیام و پردازش آن با pull consumer از نوع durable.'
+contentType = 'tutorial'
 categories = ["Go"]
 series = ["NATS JetStream"]
 tags = ["go", "nats", "jetstream", "messaging"]
@@ -108,4 +109,4 @@ docker compose up --build
 
 ## قدم بعدی
 
-این نمونه عمداً ساده است. چیزهایی که برای کار واقعی لازم می‌شوند و می‌خواهم سراغشان بروم: سیاست retry و `MaxDeliver`، dead-letter، چند Worker روی یک Consumer، و مانیتورینگ تأخیر پردازش.
+این نمونه عمداً ساده است. کار واقعی بیشتر از این لازم دارد: سیاست retry و `MaxDeliver`، dead-letter، چند Worker روی یک Consumer، و مانیتورینگ تأخیر پردازش. دو مورد اول موضوع «Retry و Dead-Letter Queue در NATS JetStream با Go» است، چون این Worker هر پیامی را ack می‌کند و برای پیامی که مدام fail می‌شود برنامه‌ای ندارد.

@@ -3,13 +3,14 @@ date = '2027-05-01T10:00:00+03:30'
 draft = false
 title = 'SQLAlchemy و Postgres'
 description = 'SQLAlchemy 2.1 با Postgres: text() در Core، Session در ORM، شمارش واقعی N+1، محدودیت pool، IntegrityError، isolation، Alembic و async، همه اجرا شده.'
+contentType = 'tutorial'
 categories = ["Python"]
 series = ["Python"]
 tags = ["python", "sqlalchemy", "postgres", "alembic", "orm"]
 cover = { image = "/images/covers/py-sqlalchemy-postgres.fa.png", alt = "SQLAlchemy و Postgres", hiddenInSingle = true }
 +++
 
-در [مقاله‌ی قبل](/fa/posts/py-fastapi-pydantic/) API ما پایگاه داده نداشت؛ اینجا یکی اضافه می‌کنیم. SQLAlchemy دو لایه دارد: Core (SQL به شکل Python، با پارامتر bind‌شده) و {{< term "orm" "ORM" >}} روی آن. اگر در Node از `pg` ([Postgres از Node.js](/fa/posts/node-postgres-pg/)) یا در Go از pgx ([Postgres با pgx و sqlc](/fa/posts/go-postgres-pgx-sqlc/)) استفاده کرده‌اید، Core را مثل driver و ORM را یک افزونه‌ی اختیاری ببینید.
+بارگذاری ۴ مشتری و سفارش‌هایشان با {{< term "orm" "ORM" >}} به‌طور پیش‌فرض ۵ query زد، یکی برای مشتری‌ها و یکی برای هر مشتری، و هیچ‌جای کد Python این را نشان نمی‌دهد. API [پست قبل](/fa/posts/py-fastapi-pydantic/) پایگاه داده نداشت، پس پیش از اضافه کردنش بهتر است ببینیم SQLAlchemy زیر کار چه می‌کند. دو لایه دارد: Core (SQL به شکل Python، با پارامتر bind‌شده) و ORM روی آن. اگر در Node از `pg` ([Postgres از Node.js](/fa/posts/node-postgres-pg/)) یا در Go از pgx ([Postgres با pgx و sqlc](/fa/posts/go-postgres-pgx-sqlc/)) استفاده کرده‌اید، Core را مثل driver و ORM را یک افزونه‌ی اختیاری ببینید.
 
 > Python 3.14.0، SQLAlchemy 2.1.6، psycopg 3.3.6 (با `[binary]` و libpq همراه نسخه‌ی 18.0.6)، Alembic 1.20.1، greenlet 3.5.6، PostgreSQL 18.3 واقعی روی `127.0.0.1`، در venv موقت. port‌ها با `<port>` جایگزین شده‌اند. تعداد منتشر می‌کنم، نه زمان.
 
@@ -119,7 +120,7 @@ INSERT INTO alembic_version (version_num) VALUES ('15ffbe55f27f') ...;
 
 در sqlc شما SQL می‌نویسید و تابع Go تولیدشده و type-checked می‌گیرید؛ ORM برعکس است و از شیء، SQL می‌سازد. در هر دو حالت زیرش یک connection pool و bind پارامتر وجود دارد.
 
-## چند نکته‌ی مهم
+## چه چیزی را بشمارید و بازبینی کنید
 
 - query‌ها را در تست بشمارید؛ lazy loading، N+1 را پنهان می‌کند.
 - بعد از خطا، پیش از استفاده‌ی دوباره از session، rollback کنید.
@@ -132,4 +133,4 @@ INSERT INTO alembic_version (version_num) VALUES ('15ffbe55f27f') ...;
 
 ## قدم بعدی
 
-مقاله‌ی بعد «بسته‌بندی و انتشار پروژه‌ی Python» است.
+قدم بعد: «بسته‌بندی و انتشار پروژه‌ی Python»، چون کد وقتی برای دیگران مفید می‌شود که نصب‌شدنی باشد.

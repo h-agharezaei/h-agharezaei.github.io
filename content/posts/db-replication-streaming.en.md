@@ -3,13 +3,14 @@ date = '2027-02-13T10:00:00+03:30'
 draft = false
 title = 'Replication with two real instances'
 description = 'PostgreSQL streaming replication with two real instances: setup, lag in bytes, synchronous commit blocking, promotion, and why a replica is no backup.'
+contentType = 'tutorial'
 categories = ["Databases"]
 series = ["Databases"]
 tags = ["databases", "postgresql", "replication", "wal", "high-availability"]
 cover = { image = "/images/covers/db-replication-streaming.png", alt = "Replication with two real instances", hiddenInSingle = true }
 +++
 
-In the [previous post](/posts/db-partitioning/) we split one big table inside one server. This post is about the other direction: keeping a second copy of the whole server. {{< term "replication" "Replication" >}} gives you read capacity and a standby you can promote when the primary dies. It builds directly on the {{< term "wal" "WAL" >}} from [transactions and ACID](/posts/db-transactions-acid/) and on the dead rows from [MVCC and VACUUM](/posts/db-mvcc-vacuum/).
+I deleted ten rows on the primary, and on the first poll the replica had lost them too. A replica is a second copy of the whole server, not a backup, and that difference is worth knowing before you rely on it. [Table partitioning](/posts/db-partitioning/) split one big table inside one server; this post goes the other direction. {{< term "replication" "Replication" >}} gives you read capacity and a standby you can promote when the primary dies. It builds directly on the {{< term "wal" "WAL" >}} from [transactions and ACID](/posts/db-transactions-acid/) and on the dead rows from [MVCC and VACUUM](/posts/db-mvcc-vacuum/).
 
 > Everything ran on two real PostgreSQL 18.3 instances on one machine (ports 55713 and 55714, loopback only, no Docker). There are no timings, only bytes and states. The embedded binaries had no `pg_basebackup`, and the only one on this machine is version 17.5, which refuses to talk to a 18.3 server. So I made the copy by hand: I stopped the primary, copied its data directory and wrote the two things `pg_basebackup -R` would write. On a live system use `pg_basebackup -D replica -R -X stream`; I did not run it.
 
@@ -101,7 +102,7 @@ That is {{< term "split-brain" "split-brain" >}}: two servers, both writable, wi
 
 On the primary I deleted 10 rows from `products`. The replica showed 0 rows on the first poll. The DELETE is just another WAL record, so a bad `UPDATE`, `DELETE` or `DROP TABLE` replicates faithfully. The dead versions that [VACUUM](/posts/db-mvcc-vacuum/) would still need are not an undo log you can use. For recovery you need real backups.
 
-## A few things to watch
+## What replication does not solve
 
 - Async replicas lag. Do not read your own write from them without checking the LSN or using the primary.
 - One synchronous standby turns its failure into a write outage; use several candidates or accept async.

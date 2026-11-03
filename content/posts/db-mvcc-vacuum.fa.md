@@ -3,13 +3,14 @@ date = '2026-12-29T10:00:00+03:30'
 draft = false
 title = 'MVCC و VACUUM'
 description = 'MVCC و VACUUM در PostgreSQL با اجرای واقعی: xmin، xmax و ctid، نسخه‌ی مرده، bloat، VACUUM FULL و تراکنش طولانی که پاک‌سازی را متوقف می‌کند.'
+contentType = 'tutorial'
 categories = ["Databases"]
 series = ["Databases"]
 tags = ["databases", "postgresql", "mvcc", "vacuum", "bloat"]
 cover = { image = "/images/covers/db-mvcc-vacuum.fa.png", alt = "MVCC و VACUUM", hiddenInSingle = true }
 +++
 
-در [پست قبلی](/fa/posts/db-isolation-levels-anomalies/) دیدیم هر سطح ایزولاسیون چه قولی می‌دهد. این پست نشان می‌دهد PostgreSQL چطور بدون اینکه خواننده‌ها منتظر نویسنده‌ها بمانند به آن قول عمل می‌کند: {{< term "mvcc" "MVCC" >}}، و هزینه‌ای که باقی می‌گذارد و {{< term "vacuum" "VACUUM" >}} آن را می‌پردازد. همچنین توضیح می‌دهد چرا جدولی با ۲۰۰ هزار ردیف می‌تواند دو برابر لازم دیسک بگیرد؛ مشکلی که از سمت Go ([تراکنش در Go](/fa/posts/go-transactions-patterns/)) ممکن است ببینید و علتش را ندانید.
+جدولی با ۲۰۰ هزار ردیف بعد از یک update روی همه‌ی ردیف‌ها از ۱۳ به ۲۶ مگابایت رسید و `VACUUM` ساده هم کوچکش نکرد؛ مشکلی که از سمت Go ([تراکنش در Go](/fa/posts/go-transactions-patterns/)) ممکن است ببینید و علتش را ندانید. علتش {{< term "mvcc" "MVCC" >}} است: راهی که PostgreSQL بدون منتظر ماندن خواننده‌ها برای نویسنده‌ها به قول‌های [سطح‌های ایزولاسیون و ناهنجاری‌ها](/fa/posts/db-isolation-levels-anomalies/) عمل می‌کند، و هزینه‌ای که باقی می‌گذارد و {{< term "vacuum" "VACUUM" >}} آن را می‌پردازد.
 
 > همه‌چیز روی یک PostgreSQL 18.3 واقعی با schema مشترک `shop` اجرا شده. روی جدول‌های کوچک دمو autovacuum را خاموش کردم تا چیزی پشت سرم پاک نشود. زمان‌سنجی نیست. مرحله‌های دو session با یک برنامه‌ی کوچک Go اجرا شد، پس ترتیب ثابت است.
 
@@ -104,7 +105,7 @@ VACUUM را کم‌تر دستی می‌زنید: {{< term "autovacuum" "autovac
 
 VACUUM همچنین {{< term "visibility-map" "visibility map" >}} را پر می‌کند (اجرای دوم بالا: «109 pages set all-visible»)، و همین باعث می‌شود {{< term "index-only-scan" "index-only scan" >}} بتواند از heap رد شود، مثل [ایندکس پوششی](/fa/posts/db-composite-partial-covering-indexes/).
 
-## چند نکته‌ی مهم
+## هزینه‌های پنهان MVCC
 
 - هر update یک نسخه باقی می‌گذارد؛ جدول پر‌update به VACUUM نیاز دارد تا عقب نماند.
 - فقط چیزی را update کنید که تغییر کرده؛ دست زدن به ستون ایندکس‌شده HOT را ممکن نمی‌کند.
@@ -117,4 +118,4 @@ VACUUM همچنین {{< term "visibility-map" "visibility map" >}} را پر م�
 
 ## قدم بعدی
 
-پست بعدی این سری: قفل و deadlock در دیتابیس.
+«قفل و deadlock در دیتابیس»: MVCC به خواننده‌ها کمک می‌کند، ولی دو نویسنده روی یک ردیف باز هم منتظر هم می‌مانند.

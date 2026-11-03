@@ -3,13 +3,14 @@ date = '2026-11-30T18:00:00+03:30'
 draft = false
 title = 'Bridge و ارتباط بین زنجیره‌ها'
 description = 'bridge بین زنجیره‌ها با Go و Solidity: lock-and-mint بین دو anvil، امضای ۲ از ۳ با ecrecover، رد replay، کلیدهای دزدیده‌شده و سقف ضرب.'
+contentType = 'tutorial'
 categories = ["Blockchain"]
 series = ["Blockchain"]
 tags = ["blockchain", "go", "solidity", "bridge", "foundry", "security"]
 cover = { image = "/images/covers/bc-bridges-cross-chain.fa.png", alt = "Bridge و ارتباط بین زنجیره‌ها", hiddenInSingle = true }
 +++
 
-در [Layer 2 و rollupها: optimistic و ZK](/fa/posts/bc-layer2-rollups/) قرارداد L1 خودش می‌توانست rollup را بررسی کند، چون داده روی L1 بود. دو زنجیره‌ی مستقل این امکان را ندارند. زنجیره‌ی B از اتفاق‌های A خبر ندارد مگر کسی بگوید، و {{< term "bridge" "bridge" >}} بیشتر از هر چیز همین سؤال است: B حرف چه کسی را باور کند؟
+زنجیره‌ی B از اتفاق‌های A خبر ندارد مگر کسی بگوید، و {{< term "bridge" "bridge" >}} بیشتر از هر چیز همین سؤال است: B حرف چه کسی را باور کند؟ در [Layer 2 و rollupها: optimistic و ZK](/fa/posts/bc-layer2-rollups/) قرارداد L1 خودش می‌توانست rollup را بررسی کند، چون داده روی L1 بود. دو زنجیره‌ی مستقل این امکان را ندارند.
 
 ساده‌ترین طرح رایج، {{< term "lock-and-mint" "lock-and-mint" >}}، را بین دو زنجیره‌ی محلی ساختم. جلوگیری از replay از [مدل حساب، nonce و جلوگیری از replay](/fa/posts/bc-account-model-nonce/)، امضا از [کلید، امضای ECDSA و آدرس روی secp256k1](/fa/posts/bc-keys-ecdsa-addresses/) و confirmation از [Event و ساخت indexer](/fa/posts/bc-event-indexer-go/) می‌آید.
 
@@ -113,7 +114,7 @@ Logs:
 
 مدل قوی‌تر امضاکننده‌ی مورد اعتماد را حذف می‌کند: B یک {{< term "light-client" "light client" >}} از A اجرا می‌کند و consensus زنجیره‌ی A و Merkle proof واریز را بررسی می‌کند، یا یک اثبات ZK از همین را. هیچ‌کدام را نساختم؛ تا جایی که فهمیده‌ام هزینه‌اش gas و پیچیدگی است و امنیتش به finality زنجیره‌ی مبدأ بند است.
 
-## چند نکته‌ی مهم
+## دام‌های رایج bridge
 
 - روی chain id و قرارداد مبدأ و مقصد و یک nonce امضا کنید. آدرس قرارداد به‌تنهایی بین زنجیره‌ها یکتا نیست.
 - پیش از امضا منتظر confirmation بمانید؛ واریزی که reorg شود یعنی توکن ضرب‌شده بدون قفل.
@@ -127,4 +128,4 @@ Logs:
 
 ## قدم بعدی
 
-پست بعدی: **مبانی zero-knowledge proof با Rust**.
+**مبانی zero-knowledge proof با Rust**: طرح‌های قوی‌تر با اثبات، امضاکننده‌ی مورد اعتماد را حذف می‌کنند.

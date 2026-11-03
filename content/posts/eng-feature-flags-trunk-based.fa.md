@@ -2,6 +2,7 @@
 date = '2027-04-27T10:00:00+03:30'
 draft = false
 title = 'feature flag و trunk-based development'
+contentType = 'engineering'
 description = 'feature flag در Go: rollout درصدی پایدار، کلید اضطراری، reload اتمی، هزینه‌ی پرچم‌ها و نقش آن‌ها در trunk-based development.'
 categories = ["Engineering"]
 series = ["Software Engineering"]
@@ -9,7 +10,7 @@ tags = ["feature-flags", "trunk-based-development", "software-engineering", "go"
 cover = { image = "/images/covers/eng-feature-flags-trunk-based.fa.png", alt = "feature flag و trunk-based development", hiddenInSingle = true }
 +++
 
-پست قبل، [ADR و مستندسازی تصمیم‌ها](/fa/posts/eng-adr-documentation/)، ثبت می‌کرد که چرا چیزی را انتخاب می‌کنیم. این پست درباره‌ی انتخابی است که شیوه‌ی انتشار را عوض می‌کند: جدا کردن deploy از release. {{< term "feature-flag" "feature flag" >}} اجازه می‌دهد کد نیمه‌تمام در `main` باشد و کاربر آن را نبیند، و همین {{< term "trunk-based-development" "trunk-based development" >}} را شدنی می‌کند. پرچم‌ها {{< term "technical-debt" "بدهی" >}} هم می‌سازند ([بدهی فنی](/fa/posts/eng-technical-debt/))، پس هزینه‌اش را هم می‌شمارم. مرتبط: [تست در Go](/fa/posts/go-testing-basics/) و [refactor امن](/fa/posts/eng-refactoring-safely/). نظرها مشخص شده‌اند؛ بقیه اجرا شده است.
+بیست {{< term "feature-flag" "feature flag" >}} boolean مستقل 1048576 حالت می‌سازند و هیچ‌کس همه را تست نمی‌کند. چیزی که پرچم‌ها در ازای آن می‌دهند جدا شدن deploy از release است، انتخابی که شیوه‌ی انتشار را عوض می‌کند و ارزش ثبت‌شدن در یک [ADR](/fa/posts/eng-adr-documentation/) را دارد. feature flag اجازه می‌دهد کد نیمه‌تمام در `main` باشد و کاربر آن را نبیند، و همین {{< term "trunk-based-development" "trunk-based development" >}} را شدنی می‌کند. پرچم‌ها {{< term "technical-debt" "بدهی" >}} هم می‌سازند ([بدهی فنی](/fa/posts/eng-technical-debt/))، پس هزینه‌اش را هم می‌شمارم. مرتبط: [تست در Go](/fa/posts/go-testing-basics/) و [refactor امن](/fa/posts/eng-refactoring-safely/). نظرها مشخص شده‌اند؛ بقیه اجرا شده است.
 
 > Go 1.26 و `go test -race`. دمو نمونه‌ی محلی است: بسته‌ی پرچمی حدود ۸۰ خط، بدون SDK بیرونی.
 
@@ -96,19 +97,15 @@ new-pricing    refs=2 first_added=2026-04-20
 | کار نیمه‌تمام | روی شاخه می‌ماند | پشت پرچم merge می‌شود |
 | نیاز دارد | انضباط merge | CI سریع، تست، پرچم |
 
-**به نظر من** trunk-based به سرویسی می‌خورد که زیاد deploy می‌شود؛ GitFlow برای نرم‌افزار با نسخه‌های مشخص مناسب‌تر است. rollback یعنی برگرداندن پرچم و بعد با فرصت revert کردن. pipeline‌ای که با هر merge اجرا می‌شود موضوع پست بعدی است.
+**به نظر من** trunk-based به سرویسی می‌خورد که زیاد deploy می‌شود؛ GitFlow برای نرم‌افزار با نسخه‌های مشخص مناسب‌تر است. rollback یعنی برگرداندن پرچم و بعد با فرصت revert کردن.
 
-## چند نکته‌ی مهم
+## پرچم‌ها کجا گاز می‌گیرند
 
 - پرچم کنترل دسترسی نیست: authorization را با آن تصمیم نگیرید.
 - مسیر پرچم‌خاموش را هم تست کنید، چون rollback شماست.
 - هر پرچم صاحب و تاریخ حذف می‌خواهد.
 - OpenFeature را اجرا نکردم. تا جایی که می‌دانم یک API استاندارد و مستقل از فروشنده برای ارزیابی پرچم است؛ پیش از تکیه بر آن مستنداتش را ببینید.
 
-## تمرین
-
-به تابعی که مال شماست یک پرچم اضافه کنید، خاموش merge کنید، هر دو تست را بنویسید، در یک تست درصد را بالا ببرید و بعد با چک‌لیست حذفش کنید.
-
 ## قدم بعدی
 
-پست بعدی «طراحی pipeline برای CI/CD» است.
+«طراحی pipeline برای CI/CD»: trunk-based بدون CI سریع کار نمی‌کند و همان pipeline با هر merge اجرا می‌شود.

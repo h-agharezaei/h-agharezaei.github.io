@@ -3,13 +3,14 @@ date = '2027-04-08T10:00:00+03:30'
 draft = false
 title = 'Layer 4 and layer 7 load balancers'
 description = 'Layer 4 vs layer 7 load balancers in Go on loopback: per-connection vs per-request balancing, routing, hashing, health checks, least connections.'
+contentType = 'tutorial'
 categories = ["Networking"]
 series = ["Networking"]
 tags = ["networking", "load-balancer", "reverse-proxy", "http", "go", "health-check"]
 cover = { image = "/images/covers/net-load-balancer-l4-l7.png", alt = "Layer 4 and layer 7 load balancers", hiddenInSingle = true }
 +++
 
-In [the previous post](/posts/net-grpc-over-http2/) one HTTP/2 connection carried 71 calls. That is great for efficiency and awkward for a {{< term "load-balancer" "load balancer" >}}: if the balancer only sees connections, all 71 calls go to one server. Here I build both kinds in Go, a layer 4 proxy and a layer 7 one, and count where requests land. See also [the TCP/IP model](/posts/net-tcp-ip-model/).
+One HTTP/2 connection carried 71 calls in [the previous post](/posts/net-grpc-over-http2/). That is great for efficiency and awkward for a {{< term "load-balancer" "load balancer" >}}: if the balancer only sees connections, all 71 calls go to one server. Here I build both kinds in Go, a layer 4 proxy and a layer 7 one, and count where requests land. See also [the TCP/IP model](/posts/net-tcp-ip-model/).
 
 > Everything ran on `127.0.0.1` with random ports (not printed), Go 1.26, macOS, standard library only. The machine was busy, so I publish counts, not timings. I did not run nginx, HAProxy, Envoy or any cloud load balancer; this is about the ideas.
 
@@ -90,7 +91,7 @@ Least connections picks the backend with the fewest in-flight requests, so the s
 
 L7 can route by path or header, edit headers, retry, spread HTTP/2 requests and terminate {{< term "tls" "TLS" >}}. It pays for that: it must buffer and parse, it holds the private key, and it is one more thing that understands your protocol. L4 is simpler and protocol-agnostic. With TLS passthrough an L4 balancer forwards encrypted bytes and cannot see paths; with termination an L7 balancer decrypts and often re-encrypts to the backend. I only describe this here; certificates are in [TLS and certificates with openssl](/posts/net-tls-openssl/).
 
-## A few things to watch
+## Load balancing traps
 
 - With L4, a long-lived connection (HTTP/2, gRPC, WebSocket) sticks to one backend; use L7 balancing for those.
 - Trust `X-Forwarded-For` only from your own proxies.
@@ -103,4 +104,4 @@ Add `lc` mode with a backend that is slow only for `/report`. Does connection co
 
 ## What's next
 
-The next post is "Network troubleshooting with curl, dig and traceroute".
+Next is "Network troubleshooting with curl, dig and traceroute": finding which layer broke.

@@ -3,13 +3,14 @@ date = '2027-01-08T10:00:00+03:30'
 draft = false
 title = 'محیط Python: venv و uv'
 description = 'محیط مجازی Python با venv و uv: نصب با pip، requirements.txt، pyproject.toml، uv.lock و uv sync، همه با اجرای واقعی.'
+contentType = 'tutorial'
 categories = ["Python"]
 series = ["Python"]
 tags = ["python", "venv", "uv", "pip", "beginner"]
 cover = { image = "/images/covers/py-environment-uv-venv.fa.png", alt = "محیط Python: venv و uv", hiddenInSingle = true }
 +++
 
-این اولین پست از سری **Python** است، برای مهندس‌های بک‌اندی که قبلاً Go و Node.js نوشته‌اند. قبل از سینتکس، باید سراغ چیزی برویم که اول از همه تازه‌کارها را زمین می‌زند: Python کجای ماشین شما نشسته و وابستگی‌ها کجا نصب می‌شوند. اگر [شروع کار با Go](/fa/posts/go-getting-started/) و [npm، package.json و قفل وابستگی](/fa/posts/node-npm-package-json/) را خوانده باشید، ایده‌ها آشنا است و فقط اسم‌ها فرق می‌کند.
+اولین تلاشم برای نشان دادن جداسازی venv شکست خورد: `requests` بیرون از آن هم import شد، چون Python پایه‌ی pyenv من از قبل داشتش. چنین نشتی، مهندس بک‌اندِ آمده از Go و Node.js را قبل از هر سینتکسی زمین می‌زند؛ پس سری **Python** از این‌جا شروع می‌شود: Python کجای ماشین شما نشسته و وابستگی‌ها کجا نصب می‌شوند. اگر [شروع کار با Go](/fa/posts/go-getting-started/) و [npm، package.json و قفل وابستگی](/fa/posts/node-npm-package-json/) را خوانده باشید، ایده‌ها آشنا است و فقط اسم‌ها فرق می‌کند.
 
 همه‌چیز با Python 3.14.0 و uv 0.10.9 روی macOS (معماری arm64) و در پوشه‌های موقتی اجرا شده که بعدش پاک کردم. مسیر خانه را به شکل `<home>` نوشته‌ام.
 
@@ -76,7 +77,7 @@ urllib3==2.8.0
 ModuleNotFoundError: No module named 'cowsay'
 ```
 
-(اول برای همین آزمایش `requests` را امتحان کردم، ولی معلوم شد Python پایه‌ی pyenv من از قبل آن را دارد. دقیقاً همان نشتی‌ای که venv جلویش را می‌گیرد.)
+(اول `requests` را امتحان کردم که روی Python پایه از قبل نصب بود.)
 
 ## uv
 
@@ -160,7 +161,7 @@ Installed 1 package in 2ms
 
 برای سمت Go به [پکیج‌ها و ماژول‌ها در Go](/fa/posts/go-packages-modules/) نگاه کنید.
 
-## چند نکته‌ی مهم
+## دام‌های محیط و venv
 
 - `.venv` را commit نکنید؛ `pyproject.toml`، `uv.lock` و `.python-version` را commit کنید.
 - داخل venv مسیرهای مطلق هست، پس جابه‌جا یا تغییر نام پوشه آن را خراب می‌کند. به‌جایش دوباره بسازیدش.

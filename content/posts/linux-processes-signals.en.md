@@ -3,13 +3,14 @@ date = '2027-04-03T10:00:00+03:30'
 draft = false
 title = 'Processes and signals'
 description = 'Linux processes and signals with real runs: exit codes 128+N, trap and cleanup, SIGKILL, zombies, process groups, SIGPIPE and Go graceful shutdown.'
+contentType = 'tutorial'
 categories = ["Linux"]
 series = ["Linux"]
 tags = ["linux", "processes", "signals", "trap", "shell", "graceful-shutdown"]
 cover = { image = "/images/covers/linux-processes-signals.png", alt = "Processes and signals", hiddenInSingle = true }
 +++
 
-A server cut off mid-request, or a script that leaves temp files behind, usually has a signal problem. This is the third post of the Linux series, after [the filesystem and permissions](/posts/linux-filesystem-permissions/) and [the practical shell](/posts/linux-shell-practical/). Here we meet processes and their signals.
+A server cut off mid-request, or a script that leaves temp files behind, usually has a signal problem. After [the filesystem and permissions](/posts/linux-filesystem-permissions/) and [the practical shell](/posts/linux-shell-practical/), this post covers processes and signals.
 
 > Honest disclaimer: everything ran on **macOS** (Darwin, bash 3.2, Python 3.14, Go 1.26), not on Linux. I did not run `/proc`, `strace`, cgroups or systemd, and signal lists may differ on Linux. Pids are not shown (I print relationships instead).
 
@@ -112,7 +113,7 @@ exit=0
 
 Job 2 finished, no job 3 started, exit 0. With `kill -KILL` the same program stopped after `job 2 start` and exited `137`. Real services also need a timeout; see [graceful shutdown for Go workers](/posts/go-graceful-shutdown-workers/) and [JetStream from Node.js](/posts/node-nats-jetstream/). Container runtimes and systemd send TERM then KILL. I did not run either.
 
-## A few things to watch
+## Where shutdowns go wrong
 
 - Send TERM first and KILL only as a last resort.
 - Put cleanup in `trap ... EXIT`.
@@ -126,4 +127,4 @@ Write a script that makes a temp file, traps EXIT, INT and TERM, and loops. Send
 
 ## What's next
 
-The next post is “/proc and observing the system”.
+Next: “/proc and observing the system”, to look inside running processes.

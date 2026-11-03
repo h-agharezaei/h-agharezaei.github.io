@@ -3,13 +3,14 @@ date = '2027-02-05T10:00:00+03:30'
 draft = false
 title = 'هرم تست و TDD'
 description = 'هرم تست و TDD در Go: red-green-refactor روی یک مثال واقعی، mockهای بیش‌ازحد دقیق، test double، تست flaky و این‌که چرا coverage هدف نیست.'
+contentType = 'tutorial'
 categories = ["Engineering"]
 series = ["Software Engineering"]
 tags = ["testing", "tdd", "software-engineering", "go"]
 cover = { image = "/images/covers/eng-testing-pyramid-tdd.fa.png", alt = "هرم تست و TDD", hiddenInSingle = true }
 +++
 
-این مقاله شروع سری Software Engineering است. بخش بزرگی از این سری قضاوت است، نه سینتکس؛ پس نظرهای شخصی را با **نظر من** مشخص می‌کنم و هر ادعا درباره‌ی رفتار کد را با اجرای واقعی نشان می‌دهم. امروز درباره‌ی {{< term "test-pyramid" "هرم تست" >}} و حس {{< term "tdd" "TDD" >}} در عمل می‌گوییم، و چهار راهی که تست‌ها خراب می‌شوند.
+یک تست mock می‌تواند بعد از refactorی که هیچ رفتاری را عوض نکرده بشکند، و باگ قیمت‌گذاری با {{< term "code-coverage" "coverage" >}} صددرصد هم زنده بماند: یکی refactor را گران می‌کند و دیگری باگ منتشر می‌کند. سری Software Engineering با {{< term "test-pyramid" "هرم تست" >}}، {{< term "tdd" "TDD" >}} و چهار راه خراب‌شدن تست‌ها شروع می‌شود. نظرهای شخصی با **نظر من** مشخص شده‌اند.
 
 مکانیک `go test` در [تست در Go](/fa/posts/go-testing-basics/) آمده و ساختار سرویسی که پایین استفاده می‌کنم از [ساختار پروژه و Clean Architecture در Go](/fa/posts/go-project-layout-clean-architecture/) است. همین ایده‌ها در [node:test](/fa/posts/node-testing-builtin/) و [تست در Rust](/fa/posts/rust-testing-docs/) هم هست.
 
@@ -17,7 +18,7 @@ cover = { image = "/images/covers/eng-testing-pyramid-tdd.fa.png", alt = "هرم
 
 ## هرم تست یک مدل هزینه است
 
-تست واحد زیاد، {{< term "integration-test" "تست یکپارچگی" >}} کمتر، و تست سرتاسری (end-to-end) خیلی کم. دلیلش هزینه است: هرچه تست بالاتر باشد کندتر است، آماده‌سازی بیشتری می‌خواهد و بیشتر بی‌دلیل می‌شکند. در دامنه‌ی سفارش‌ها سه سطح داریم:
+تست واحد زیاد، {{< term "integration-test" "تست یکپارچگی" >}} کمتر، و تست سرتاسری (end-to-end) خیلی کم. دلیلش هزینه است: هرچه تست بالاتر باشد کندتر است، آماده‌سازی بیشتری می‌خواهد و بیشتر بی‌دلیل می‌شکند. در دامنه‌ی سفارش‌ها:
 
 - واحد: `cart.Total`، یک تابع خالص بدون I/O؛
 - یکپارچگی: `orders.Service` با یک repository ساختگی (fake)، که پایین می‌آید؛
@@ -118,13 +119,12 @@ func BulkPrice(unit, qty int) int {
 price_test.go:12: BulkPrice(100, 10) = 100, want 900
 ```
 
-{{< term "code-coverage" "Coverage" >}} می‌گوید چه چیزی هرگز اجرا نشده؛ نمی‌گوید چه چیزی راستی‌آزمایی شده.
+Coverage می‌گوید چه چیزی هرگز اجرا نشده؛ نمی‌گوید چه چیزی راستی‌آزمایی شده.
 
-## چند نکته‌ی مهم
+## دام‌های تست‌نویسی
 
 - مگر خودِ تعامل الزام باشد، به‌جای mock از fake و stub استفاده کنید.
-- تست flaky را باگ بدانید، نه نویز. زمان و تصادف را با تزریق حذف کنید.
-- درصد coverage را هدف نکنید.
+- تست flaky را باگ بدانید، نه نویز.
 - TDD ابزار است؛ refactor زیر تست‌های سبز بخشی است که حتی اگر بقیه را کنار بگذارم نگهش می‌دارم.
 
 ## تمرین
@@ -133,4 +133,4 @@ price_test.go:12: BulkPrice(100, 10) = 100, want 900
 
 ## قدم بعدی
 
-مقاله‌ی بعدی «تست خاصیت‌محور» است؛ جایی که خود کامپیوتر ورودی‌های تست را می‌سازد.
+«تست خاصیت‌محور»: ورودی‌های این مقاله را دستی انتخاب کردم؛ آنجا خود کامپیوتر می‌سازدشان.

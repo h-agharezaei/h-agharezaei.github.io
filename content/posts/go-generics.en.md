@@ -3,13 +3,14 @@ date = '2026-11-30T10:00:00+03:30'
 draft = false
 title = 'Generics in Go'
 description = 'Go generics explained: type parameters, constraints, generic functions and types, type inference and the slices, maps and cmp packages.'
+contentType = 'tutorial'
 categories = ["Go"]
 series = ["Go Fundamentals"]
 tags = ["go", "beginner", "generics", "slices", "maps"]
 cover = { image = "/images/covers/go-generics.png", alt = "Generics in Go", hiddenInSingle = true }
 +++
 
-In the [previous post](/posts/go-sync-select-context/) we worked with goroutines, channels and context. This post is about **generics**, which arrived in Go 1.18. They let you write one function or type that works for many types while the compiler still checks everything. We will look at the problem they solve, the constraint syntax, a few generic helpers and containers, the standard library packages built on them, and when you should not reach for them.
+Without generics, `Min` for int and `Min` for float are two copies of the same logic, and `any` with type assertions throws away type safety. **Generics**, which arrived in Go 1.18, fix that: one function or type that works for many types while the compiler still checks everything. After [sync, select and context](/posts/go-sync-select-context/), we look at the constraint syntax, a few generic helpers and containers, the standard library packages built on them, and when you should not reach for them.
 
 > Everything below was run with Go 1.26 on macOS (arm64).
 
@@ -170,7 +171,7 @@ badconstraint/main.go:18:17: User does not satisfy cmp.Ordered (User missing in 
 
 The error is at compile time, which is the whole point.
 
-## A few things to watch
+## When not to reach for generics
 
 - Start with concrete code. Write the function for one type first; make it generic when a second real use appears.
 - If all you need is behavior, an interface is usually simpler. `io.Reader` does not need a type parameter.
@@ -186,4 +187,4 @@ The error is at compile time, which is the whole point.
 
 ## What's next
 
-In the next post we cover testing in Go: table-driven tests with the `testing` package, subtests and benchmarks.
+"Testing in Go: table-driven tests and benchmarks": the generic helpers we wrote need tests, and that post shows table-driven tests, subtests and benchmarks with the `testing` package.

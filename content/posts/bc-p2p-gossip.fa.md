@@ -3,13 +3,14 @@ date = '2026-11-09T18:00:00+03:30'
 draft = false
 title = 'شبکه‌ی P2P و gossip بین نودها'
 description = 'gossip در P2P با Go: پروتکل TCP با پیشوند طول روی loopback، مجموعه‌ی seen در برابر حلقه، همگام‌سازی نود تازه و رد بلاک نامعتبر یک peer.'
+contentType = 'tutorial'
 categories = ["Blockchain"]
 series = ["Blockchain"]
 tags = ["blockchain", "go", "p2p", "gossip", "tcp"]
 cover = { image = "/images/covers/bc-p2p-gossip.fa.png", alt = "شبکه‌ی P2P و gossip بین نودها", hiddenInSingle = true }
 +++
 
-در [پست قبلی](/fa/posts/bc-proof-of-work-mining/) ساختن بلاک گران شد، ولی فقط در یک پروسه. بلاکچین یعنی نودهای زیاد بدون سرور مرکزی که هر کدام هر چه می‌شنود خودش چک می‌کند. این پست نودهای `toychain` را روی TCP به هم وصل می‌کند.
+بلاکچین یعنی نودهای زیاد بدون سرور مرکزی که هر کدام هر چه می‌شنود خودش چک می‌کند. ساختن بلاک در [پست قبلی](/fa/posts/bc-proof-of-work-mining/) گران شد، ولی هنوز فقط در یک پروسه. این پست نودهای `toychain` را روی TCP به هم وصل می‌کند.
 
 بخش socket همان [سرور و کلاینت TCP از صفر](/fa/posts/net-sockets-tcp-from-scratch/) است. تفاوتش با [service discovery و load balancing](/fa/posts/ds-service-discovery-load-balancing/) اعتماد است: به هیچ peerی اعتماد نداریم و هر پیام قبل از رد شدن چک می‌شود.
 
@@ -122,7 +123,7 @@ D: height 3, tx in 0, block in 3, duplicates 0, relayed 0, rejected 0
 
 discovery را پیاده نکردم: آدرس‌ها دستی داده می‌شوند. تا جایی که می‌دانم، نود تازه‌ی بیت‌کوین اولین peerها را از DNS seedها پیدا می‌کند، یعنی hostnameهایی که به آدرس نودهای فعال resolve می‌شوند، و بعد آدرس‌های بیشتر را از peerها یاد می‌گیرد. کلاینت‌های اتریوم یک پروتکل discovery شبیه Kademlia روی UDP دارند که در مشخصات devp2p آمده (discv4 و discv5). بیت‌کوین اول با `inv` فقط hash را اعلام می‌کند، داده را با `getdata` می‌فرستد و اول headerها را همگام می‌کند؛ نودهای من کل بلاک را می‌فرستند. {{< term "peer-discovery" "peer discovery" >}} جای حمله‌ی eclipse هم هست: نودی که همه‌ی peerهایش مهاجم باشند فقط زنجیره‌ی مهاجم را می‌بیند.
 
-## چند نکته‌ی مهم
+## یک نود gossip کجا می‌شکند
 
 - هر طول ورودی از شبکه را قبل از گرفتن حافظه محدود کنید، و اندازه‌ی جواب هر درخواست را هم.
 - قبل از relay چک کنید؛ وگرنه زباله‌ی مهاجم را پخش می‌کنید.

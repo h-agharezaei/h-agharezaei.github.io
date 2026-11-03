@@ -4,13 +4,14 @@ draft = false
 title = 'Dynamic programming 1: the idea and memoization'
 seoTitle = 'Dynamic programming and memoization in Go'
 description = 'Dynamic programming in Go: memoization vs a table on Fibonacci, grid paths and coin change, with exact call counts and a brute-force test.'
+contentType = 'tutorial'
 categories = ["Algorithms"]
 series = ["Algorithms"]
 tags = ["algorithms", "dynamic-programming", "memoization", "recursion", "go"]
 cover = { image = "/images/covers/algo-dynamic-programming-1.png", alt = "Dynamic programming 1: the idea and memoization", hiddenInSingle = true }
 +++
 
-In the previous post, [Topological sort and dependencies](/posts/algo-topological-sort/), an order on a graph let us avoid redundant work. Some problems repeat work in a different way: the recursion asks the same question again and again. {{< term "dynamic-programming" "Dynamic programming" >}} (DP) fixes that. It builds on recursion, the [hash tables](/posts/algo-hash-tables/) and [dynamic arrays](/posts/algo-dynamic-arrays/) from earlier posts, and on the [Big-O](/posts/algo-big-o-measured/) habit of counting.
+A naive recursive `fib(35)` makes 29,860,703 calls to answer 36 distinct questions: the recursion asks the same question again and again. {{< term "dynamic-programming" "Dynamic programming" >}} (DP) fixes that. In [Topological sort and dependencies](/posts/algo-topological-sort/) an order on a graph avoided redundant work; here the waste hides inside the recursion. DP builds on recursion, the [hash tables](/posts/algo-hash-tables/) and [dynamic arrays](/posts/algo-dynamic-arrays/) from earlier posts, and on the [Big-O](/posts/algo-big-o-measured/) habit of counting.
 
 > Go 1.26, local example, tests with `go test -race`. The load average was high, so I publish counts and allocations, no timings.
 
@@ -30,7 +31,7 @@ func FibNaive(n int, calls *int) int {
 naive  fib(35) = 9227465 calls = 29860703
 ```
 
-Almost 30 million calls for 36 distinct questions. Now {{< term "memoization" "memoize" >}}: before computing, look in a map; after computing, store.
+Now {{< term "memoization" "memoize" >}}: before computing, look in a map; after computing, store.
 
 ```
 map    fib(35) = 9227465 calls = 69 subproblems = 34
@@ -113,7 +114,7 @@ bad memo, coins {1,2},     11 -> 2 (correct: 6)
 
 The second call returned the stale entry from the first. The same applies to functions with side effects or hidden inputs (time, globals): a cached result skips the side effect. Slices and maps cannot be Go map keys, so complex state must be encoded into a comparable key.
 
-## A few things to watch
+## Before you memoize
 
 - Count subproblems: states x work per state is the complexity, not the call count of naive code.
 - Pick top-down when few states are reachable, bottom-up when you need all of them or want less overhead.
@@ -125,4 +126,4 @@ Change `Coins` to count the number of distinct ways to make an amount (order doe
 
 ## What's next
 
-Next is "Dynamic programming 2: classic problems", where the recipe meets sequences, subsets and edit distance.
+"Dynamic programming 2: classic problems" takes the recipe to sequences, subsets and edit distance.

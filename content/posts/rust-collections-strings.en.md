@@ -3,13 +3,14 @@ date = '2026-11-28T10:00:00+03:30'
 draft = false
 title = 'Collections and strings in Rust'
 description = 'Rust collections and strings: Vec, HashMap, HashSet, BTreeMap, String and &str, bounds panics, borrow errors, UTF-8 byte vs char counts and a word counter.'
+contentType = 'tutorial'
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "beginner", "collections", "vec", "hashmap", "string"]
 cover = { image = "/images/covers/rust-collections-strings.png", alt = "Collections and strings in Rust", hiddenInSingle = true }
 +++
 
-In the [previous post](/posts/rust-structs-enums-pattern-matching/) we modeled our own types with structs and enums. Now the standard library types that hold many values: **Vec**, **HashMap** and friends, and the two string types. They are where ownership and borrowing stop being theory, because the compiler will refuse code that looks perfectly reasonable in Go or Node.js. We will run code and read the actual messages.
+Take a reference to the first element of a `Vec`, push another value, then use the reference: in Go or Node.js that looks perfectly reasonable, and the Rust compiler refuses it. The standard library types that hold many values, **Vec**, **HashMap** and friends, and the two string types, are where ownership and borrowing stop being theory. They also hold the structs and enums from the [previous post](/posts/rust-structs-enums-pattern-matching/). We will run code and read the actual messages.
 
 > Everything below was compiled and run with Rust 1.90 as a local example.
 
@@ -218,7 +219,7 @@ quick  1
 
 As in Go, the map order is unspecified, so we collect the entries into a `Vec` and sort by count descending, then alphabetically. The `entry` API replaces Go's `counts[w]++`, which works there because a missing key reads as zero. In Rust a missing key is explicit.
 
-## A few things to watch
+## Bytes, order and other surprises
 
 - `v[i]` panics when out of bounds; use `get` for input you do not control.
 - You cannot hold a reference into a `Vec` across a `push`; the compiler enforces this.
@@ -235,4 +236,4 @@ As in Go, the map order is unspecified, so we collect the entries into a `Vec` a
 
 ## What's next
 
-Many of the operations here returned `Option`, and real programs also fail in other ways. Next is error handling with `Result` and `Option` in Rust.
+Many of the operations here returned `Option`, and real programs also fail in other ways, which is why Error handling with Result and Option in Rust comes next.

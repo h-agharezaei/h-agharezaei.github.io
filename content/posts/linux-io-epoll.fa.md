@@ -3,13 +3,14 @@ date = '2027-05-09T10:00:00+03:30'
 draft = false
 title = 'I/O و epoll'
 description = 'I/O و epoll در Linux از روی man pageها: blocking و non-blocking، select و poll و epoll، level و edge، همراه با دموهای واقعی kqueue و goroutine روی مک.'
+contentType = 'tutorial'
 categories = ["Linux"]
 series = ["Linux"]
 tags = ["linux", "epoll", "kqueue", "io", "go", "macos"]
 cover = { image = "/images/covers/linux-io-epoll.fa.png", alt = "I/O و epoll", hiddenInSingle = true }
 +++
 
-این را روی یک مک نوشتم، جایی که معادل کار {{< term "kqueue" "kqueue" >}} است؛ خود epoll اینجا اجرا نشد. این هشتمین پست سری Linux است، بعد از [حافظه، page cache و OOM killer](/fa/posts/linux-memory-page-cache-oom/). پرسش: یک thread چطور هزاران اتصال را سرویس می‌دهد؟ واقعیت‌های epoll از man pageها (epoll(7) و select(2)) است؛ هر چیزی که «اجرا شد» دارد روی macOS با Go و Python و فقط روی loopback اجرا شده است.
+یک thread چطور هزاران اتصال را سرویس می‌دهد؟ پرسش پشت netpoller در Go و هر حلقه‌ی رویداد همین است. مثل [حافظه، page cache و OOM killer](/fa/posts/linux-memory-page-cache-oom/)، این را روی یک مک نوشتم، جایی که معادل کار {{< term "kqueue" "kqueue" >}} است؛ خود epoll اینجا اجرا نشد. واقعیت‌های epoll از man pageها (epoll(7) و select(2)) است؛ هر چیزی که «اجرا شد» دارد روی macOS با Go و Python و فقط روی loopback اجرا شده است.
 
 ## blocking و non-blocking
 
@@ -74,7 +75,7 @@ kqueue     connections=1000 goroutines=1 os_threads_created=5
 
 اگر چند پروسه روی یک listening socket منتظر باشند، یک اتصال ممکن است همه را بیدار کند و فقط یکی ببرد: {{< term "thundering-herd" "thundering herd" >}}. صفحه‌ی epoll(7) برای این `EPOLLEXCLUSIVE` و برای غیرفعال کردن descriptor بعد از یک رویداد `EPOLLONESHOT` را نام می‌برد؛ هیچ‌کدام را آزمایش نکردم.
 
-## چند نکته‌ی مهم
+## جاهایی که حلقه‌ی رویداد می‌شکند
 
 - نتیجه‌ی Linux نیست: همه‌ی خروجی‌ها kqueue است.
 - API آمادگی می‌گوید تلاش کنید، نه اینکه موفق می‌شود؛ `EAGAIN` را مدیریت کنید.
@@ -87,4 +88,4 @@ kqueue     connections=1000 goroutines=1 os_threads_created=5
 
 ## قدم بعدی
 
-پست بعدی «شبکه در Linux: ip، ss و nftables» است.
+بعدی «شبکه در Linux: ip، ss و nftables» است: دیدن و فیلتر کردن همین سوکت‌ها.

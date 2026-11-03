@@ -3,13 +3,14 @@ date = '2026-11-27T18:00:00+03:30'
 draft = false
 title = 'MEV و ترتیب تراکنش‌ها'
 description = 'MEV روی anvil محلی: یک searcher با Go یک swap در انتظار را sandwich می‌کند، بعد minAmountOut واقعی و deadline جلویش را می‌گیرند؛ و ترتیب anvil.'
+contentType = 'tutorial'
 categories = ["Blockchain"]
 series = ["Blockchain"]
 tags = ["blockchain", "go", "ethereum", "mev", "defi", "go-ethereum"]
 cover = { image = "/images/covers/bc-mev-ordering.fa.png", alt = "MEV و ترتیب تراکنش‌ها", hiddenInSingle = true }
 +++
 
-[بهینه‌سازی gas و قرارداد قابل ارتقا با proxy](/fa/posts/bc-gas-optimization-proxies/) درباره‌ی هزینه‌ی تراکنش بود؛ این پست درباره‌ی زمان اجرای آن است. سازنده‌ی بلاک ترتیب را انتخاب می‌کند و ترتیب نتیجه را عوض می‌کند: در [AMM و فرمول constant product](/fa/posts/bc-amm-constant-product/) همان swap ده‌هزار USDXی، بسته به این‌که چه چیزی زودتر اجرا شود، 90.66 یا 63.95 DEMO داد. ارزشی که با انتخاب، اضافه کردن یا کنار گذاشتن تراکنش‌ها می‌شود برداشت، {{< term "mev" "MEV" >}} (maximal extractable value) نام دارد.
+در [AMM و فرمول constant product](/fa/posts/bc-amm-constant-product/) همان swap ده‌هزار USDXی، بسته به این‌که چه چیزی زودتر اجرا شود، 90.66 یا 63.95 DEMO داد، و این ترتیب را سازنده‌ی بلاک انتخاب می‌کند. ارزشی که با انتخاب، اضافه کردن یا کنار گذاشتن تراکنش‌ها می‌شود برداشت، {{< term "mev" "MEV" >}} (maximal extractable value) نام دارد. [بهینه‌سازی gas و قرارداد قابل ارتقا با proxy](/fa/posts/bc-gas-optimization-proxies/) درباره‌ی هزینه‌ی تراکنش بود؛ این پست درباره‌ی زمان اجرای آن است.
 
 در [Mempool، کارمزد و انتخاب تراکنش](/fa/posts/bc-mempool-fees/) ماینر خودم بر اساس نرخ کارمزد مرتب می‌کرد. این‌جا {{< term "mempool" "استخر تراکنش‌های در انتظار" >}} یک نود واقعی را از Go می‌خوانم، با کد کلاینت [کار با اتریوم از Go با go-ethereum](/fa/posts/bc-go-ethereum-client/). همه چیز روی قراردادهای خودم در anvil محلی اجرا می‌شود.
 
@@ -125,7 +126,7 @@ swapی که منتظر می‌ماند ممکن است دیرتر و در لحظ
 
 back-run قیمت را برگرداند. {{< term "arbitrage" "Arbitrage" >}} بین دو استخر همین کار را می‌کند و قیمت DEXها را هم‌راستا نگه می‌دارد. {{< term "liquidation" "liquidation" >}}های پست [وام‌دهی، وثیقه و liquidation](/fa/posts/bc-lending-liquidation/) هم MEV هستند: پاداش به اولین نفر می‌رسد و بدون آن‌ها bad debt بزرگ می‌شود.
 
-## چند نکته‌ی مهم
+## پیش از امضای یک swap
 
 - swap با `minAmountOut = 0` امضا نکنید؛ آن را از quote تازه حساب کنید.
 - deadline را چند دقیقه بگذارید.
@@ -139,4 +140,4 @@ back-run قیمت را برگرداند. {{< term "arbitrage" "Arbitrage" >}} ب
 
 ## قدم بعدی
 
-پست بعد: **Proof of Stake، BFT و finality**.
+**Proof of Stake، BFT و finality**: بعد از ترتیب داخل بلاک، این‌که چه کسی بلاک را می‌سازد و کی قطعی می‌شود.

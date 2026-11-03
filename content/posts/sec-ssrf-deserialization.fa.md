@@ -3,13 +3,14 @@ date = '2027-05-12T10:00:00+03:30'
 draft = false
 title = 'SSRF و deserialization ناامن'
 description = 'SSRF و deserialization ناامن با اجرای واقعی: blocklistهای شکست‌خورده، redirect، DNS rebinding، fetcher امن در Go و دام‌های pickle و YAML.'
+contentType = 'tutorial'
 categories = ["Security"]
 series = ["Software Security"]
 tags = ["security", "ssrf", "deserialization", "go", "python", "pickle"]
 cover = { image = "/images/covers/sec-ssrf-deserialization.fa.png", alt = "SSRF و deserialization ناامن", hiddenInSingle = true }
 +++
 
-مقاله‌ی قبلی، [زنجیره‌ی تأمین و آسیب‌پذیری وابستگی‌ها](/fa/posts/sec-supply-chain-vulns/)، درباره‌ی کدی بود که شما ننوشته‌اید. این مقاله درباره‌ی ورودی‌ای است که شما ننوشته‌اید: یک URL یا مشتی بایت. در [OWASP Top 10 در کد واقعی](/fa/posts/sec-owasp-top10-in-code/) یک {{< term "ssrf" "SSRF" >}} تک‌خطی و یک راه‌حل تک‌میزبانی نشان دادم و اعتراف کردم redirect و DNS را آزمایش نکرده‌ام. اینجا آزمایششان می‌کنم. سبک سرویس همان [ساخت API با net/http در Go](/fa/posts/go-http-api-stdlib/) است؛ [Rate limiting و caching در Go](/fa/posts/go-rate-limiting-caching/) هم مکمل خوبی است.
+`127.1` و `0x7f000001` از blocklist من برای `127.0.0.1` گذشتند و به secret داخلی رسیدند. بعد از کدی که ننوشته‌اید ([زنجیره‌ی تأمین و آسیب‌پذیری وابستگی‌ها](/fa/posts/sec-supply-chain-vulns/))، نوبت ورودی‌ای است که ننوشته‌اید: یک URL یا مشتی بایت. در [OWASP Top 10 در کد واقعی](/fa/posts/sec-owasp-top10-in-code/) یک {{< term "ssrf" "SSRF" >}} تک‌خطی و یک راه‌حل تک‌میزبانی نشان دادم و اعتراف کردم redirect و DNS را آزمایش نکرده‌ام؛ اینجا آزمایش می‌کنم. سبک سرویس: [ساخت API با net/http در Go](/fa/posts/go-http-api-stdlib/)؛ [Rate limiting و caching در Go](/fa/posts/go-rate-limiting-caching/) هم مکمل خوبی است.
 
 > فقط دفاعی. همه‌چیز در demo خودم روی `127.0.0.1` (آدرس {{< term "loopback" "loopback" >}}) یا آدرس‌های مستندات اجرا شد. هیچ میزبان بیرونی تماس نگرفت. Go 1.26 روی macOS.
 
@@ -111,7 +112,7 @@ yaml tag ran print()
 
 در Go: `json.Unmarshal` به `any` یک `map[string]interface {}` داد و چیزی اجرا نکرد. `encoding/gob` نوع ثبت‌نشده را رد کرد (`gob: type not registered for interface: main.Cmd`). هیچ‌کدام از این دو قالب نام تابعی برای صدا زدن نمی‌دهند. اما متدهای `UnmarshalJSON` خودتان اجرا می‌شوند، پس آن‌ها را بدون عارضه‌ی جانبی نگه دارید. serializerهای Java، PHP و Node مشکل gadget chain داشته‌اند؛ فقط نامشان را می‌آورم و آزمایششان نکردم.
 
-## چند نکته‌ی مهم
+## قاعده‌های هر fetcher
 
 - block-list می‌بازد؛ scheme، port و اگر می‌شود host را allow-list کنید.
 - آدرسی را که واقعاً به آن وصل می‌شوید بررسی کنید، در هر مرحله.
@@ -124,4 +125,4 @@ yaml tag ran print()
 
 ## قدم بعدی
 
-مقاله‌ی بعدی «اشتباه‌های رایج رمزنگاری» است.
+«اشتباه‌های رایج رمزنگاری» همین شکست را نشان می‌دهد: کد کار می‌کند، طراحی شکسته است.

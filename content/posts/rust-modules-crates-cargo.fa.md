@@ -3,13 +3,14 @@ date = '2026-12-08T10:00:00+03:30'
 draft = false
 title = 'Module، Crate و Cargo در Rust'
 description = 'Module، crate و Cargo در Rust: package و crate، privacy و pub، use و re-export، lib و bin در یک package، feature، dev-dependencies و workspace.'
+contentType = 'tutorial'
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "beginner", "cargo", "modules", "crates"]
 cover = { image = "/images/covers/rust-modules-crates-cargo.fa.png", alt = "Module، Crate و Cargo در Rust", hiddenInSingle = true }
 +++
 
-بعد از [مدیریت خطا با Result و Option](/fa/posts/rust-error-handling-result/)، هنوز همه‌ی مثال‌هایمان در یک فایل جا می‌شوند. این مقاله درباره‌ی تقسیم کد بین فایل‌ها و درباره‌ی Cargo است، ابزاری که پروژه را می‌سازد و مدیریت می‌کند. سه واژه راحت با هم قاطی می‌شوند، پس اول تعریف‌ها: **crate** یک واحد کامپایل است (کتاب‌خانه یا برنامه‌ی اجرایی)، **package** چیزی است که `Cargo.toml` توصیف می‌کند و یک یا چند crate در خود دارد، و **module** یک فضای نام داخل یک crate است.
+تابعی را که داخل یک `mod` است از بیرون صدا بزنید؛ کامپایلر قبول نمی‌کند، چون آیتم‌های module به‌طور پیش‌فرض private هستند. تا [مدیریت خطا با Result و Option](/fa/posts/rust-error-handling-result/) همه‌ی مثال‌ها در یک فایل جا می‌شدند. سه واژه راحت با هم قاطی می‌شوند، پس اول تعریف‌ها: **crate** یک واحد کامپایل است (کتاب‌خانه یا برنامه‌ی اجرایی)، **package** چیزی است که `Cargo.toml` توصیف می‌کند و یک یا چند crate در خود دارد، و **module** یک فضای نام داخل یک crate است.
 
 > همه‌ی کدهای زیر با Rust نسخه‌ی 1.90 (و cargo 1.90.0) اجرا شده‌اند. خروجی‌ها و پیام‌های کامپایلر از همان اجراها کپی شده‌اند.
 
@@ -186,7 +187,7 @@ cli v0.1.0 (.../workspace/cli)
 
 [مقاله‌ی Go](/fa/posts/go-packages-modules/) همین تقسیم‌بندی را با واژه‌های دیگر گفت: پکیج در Go یک دایرکتوری است و module در Go واحدی است که `go.mod` توصیف می‌کند. crate در Rust از نظر واحد کامپایل به پکیج Go نزدیک‌تر است، اما module‌ها با `mod` در کد تعریف می‌شوند و فقط به دایرکتوری وابسته نیستند. Go دیده شدن را با حرف بزرگ مشخص می‌کند و Rust با `pub`، و هر دو نسخه‌ی وابستگی‌ها را در فایلی جدا قفل می‌کنند (`go.sum` و `Cargo.lock`).
 
-## چند نکته‌ی احتیاط
+## دام‌های ساختار و visibility
 
 - اگر `mod foo;` را در والد ننویسید، فایل جدید به‌سادگی نادیده گرفته می‌شود؛ خودکار پیدا نمی‌شود.
 - `pub` روی struct فیلدهایش را public نمی‌کند. هر فیلد `pub` جدا می‌خواهد.
@@ -201,4 +202,4 @@ cli v0.1.0 (.../workspace/cli)
 
 ## قدم بعدی
 
-در مقاله‌ی بعد سراغ generic و trait در Rust می‌رویم: نوشتن کدی که برای نوع‌های مختلف کار کند و اینکه Rust رفتار مشترک را چطور توصیف می‌کند.
+«Generics و Trait در Rust»: حالا که کد مرتب شده، سؤال بعدی نوشتن کدی است که برای نوع‌های مختلف کار کند.

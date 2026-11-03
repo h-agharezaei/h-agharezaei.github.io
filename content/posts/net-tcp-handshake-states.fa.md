@@ -3,13 +3,14 @@ date = '2027-01-12T10:00:00+03:30'
 draft = false
 title = 'TCP: دست‌دادن و حالت‌های اتصال'
 description = 'دست‌دادن TCP و حالت‌های اتصال روی loopback: LISTEN، ESTABLISHED، TIME_WAIT، half-close، RST، connection refused، timeout و backlog.'
+contentType = 'tutorial'
 categories = ["Networking"]
 series = ["Networking"]
 tags = ["networking", "tcp", "sockets", "handshake", "tcp-states", "python"]
 cover = { image = "/images/covers/net-tcp-handshake-states.fa.png", alt = "TCP: دست‌دادن و حالت‌های اتصال", hiddenInSingle = true }
 +++
 
-در پست قبل، [DNS در عمل](/fa/posts/net-dns-in-practice/)، یک نام را به آدرس تبدیل کردیم. حالا به آن آدرس وصل می‌شویم. یک اتصال {{< term "tcp" "TCP" >}} عمر دارد: باز می‌شود، استفاده می‌شود و بسته می‌شود، و هر مرحله یک حالت قابل‌مشاهده در کرنل دارد. اگر تا حالا `connection refused`، timeout یا هزاران socket گیرکرده در `TIME_WAIT` دیده‌اید، این پست معنی‌شان را توضیح می‌دهد. پایه‌اش [مدل TCP/IP](/fa/posts/net-tcp-ip-model/) است.
+`connection refused`، timeout، هزاران socket گیرکرده در `TIME_WAIT`: هرکدام ردی از عمر یک اتصال {{< term "tcp" "TCP" >}} است. اتصال باز می‌شود، استفاده می‌شود و بسته می‌شود، و هر مرحله یک حالت قابل‌مشاهده در کرنل دارد. [DNS در عمل](/fa/posts/net-dns-in-practice/) یک نام را به آدرس تبدیل کرد؛ اینجا به آن آدرس وصل می‌شویم، بر پایه‌ی [مدل TCP/IP](/fa/posts/net-tcp-ip-model/).
 
 > همه‌چیز روی macOS (arm64) با Python 3.14 اجرا شده، روی `127.0.0.1` با یک port تصادفی (در خروجی `PORT` نوشته شده و port موقت کلاینت `EPH`) یا روی آدرس نمونه‌ی مستندات `192.0.2.1`. root ندارم، پس packet capture در کار نیست. فقط خط‌های مربوط به port دموی خودم را نشان می‌دهم.
 
@@ -110,7 +111,7 @@ after setting 30: 30
 
 عدد `8` فقط چیزی است که macOS برای «روشن» برمی‌گرداند؛ پیش‌فرض ۷۲۰۰ ثانیه هم مقدار macOS اینجاست و در هر سیستم فرق دارد.
 
-## چند نکته‌ی مهم
+## اشکال‌یابی از روی حالت‌ها
 
 - socketهای زیاد در `CLOSE_WAIT` باگ شماست؛ زیاد بودن `TIME_WAIT` عادی است و روی طرفی است که اول بسته.
 - موقع اشکال‌یابی `refused` (سریع، RST) را از timeout (بی‌پاسخ) جدا کنید.
@@ -124,4 +125,4 @@ after setting 30: 30
 
 ## قدم بعدی
 
-پست بعدی «سرور و کلاینت TCP از صفر» است.
+بعدی «سرور و کلاینت TCP از صفر» است: حالا که سمت کرنل یک اتصال را دیدیم، کد دو سر آن را می‌نویسیم.

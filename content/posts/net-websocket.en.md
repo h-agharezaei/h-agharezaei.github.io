@@ -3,13 +3,14 @@ date = '2027-03-25T10:00:00+03:30'
 draft = false
 title = 'WebSocket'
 description = 'WebSocket explained by hand on loopback: the upgrade handshake, masked frames, ping and close, then a Go hub with heartbeats and slow-client limits.'
+contentType = 'tutorial'
 categories = ["Networking"]
 series = ["Networking"]
 tags = ["networking", "websocket", "http", "go", "heartbeat", "backpressure"]
 cover = { image = "/images/covers/net-websocket.png", alt = "WebSocket", hiddenInSingle = true }
 +++
 
-In [the previous post](/posts/net-http2/) we looked at HTTP/2. HTTP is still request and response, though: the server cannot speak first. {{< term "websocket" "WebSocket" >}} fixes that by turning one {{< term "tcp" "TCP" >}} connection into a two-way message channel. It starts as ordinary {{< term "http" "HTTP" >}}, as in [HTTP/1.1 by hand](/posts/net-http1-by-hand/), then the bytes change shape; the framing problem is the one from [a TCP server from scratch](/posts/net-sockets-tcp-from-scratch/).
+HTTP is request and response, even the HTTP/2 of [the previous post](/posts/net-http2/): the server cannot speak first. {{< term "websocket" "WebSocket" >}} fixes that by turning one {{< term "tcp" "TCP" >}} connection into a two-way message channel. It starts as ordinary {{< term "http" "HTTP" >}}, as in [HTTP/1.1 by hand](/posts/net-http1-by-hand/), then the bytes change shape; the framing problem is the one from [a TCP server from scratch](/posts/net-sockets-tcp-from-scratch/).
 
 > Everything ran on `127.0.0.1` with random ports (not printed), Go 1.26, macOS, `github.com/coder/websocket` v1.8.15. I did not run Linux. The machine was busy, so there are counts, no timings. The demo is a local example directory.
 
@@ -100,7 +101,7 @@ My opinion, not a measurement:
 - {{< term "server-sent-events" "SSE" >}} when only the server pushes (feeds, progress); it is plain HTTP and reconnects by itself. I did not run an SSE demo here.
 - WebSocket when both sides send often (chat, games, collaboration).
 
-## A few things to watch
+## Before you ship a WebSocket server
 
 - Always bound the per-client queue and decide what happens on overflow.
 - Add a heartbeat or read deadline; do not trust a quiet connection.
@@ -114,4 +115,4 @@ Change the hub to drop the oldest queued message instead of disconnecting. Then 
 
 ## What's next
 
-The next post is "gRPC over HTTP/2".
+Next is "gRPC over HTTP/2", which stays inside HTTP instead of leaving it.

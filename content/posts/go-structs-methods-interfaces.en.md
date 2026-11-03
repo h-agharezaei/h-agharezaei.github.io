@@ -3,13 +3,14 @@ date = '2026-11-10T10:00:00+03:30'
 draft = false
 title = 'Structs, methods and interfaces in Go'
 description = 'How Go models data and behavior: structs, embedding, value vs pointer receivers, implicit interfaces, type switches, and the nil-interface gotcha.'
+contentType = 'tutorial'
 categories = ["Go"]
 series = ["Go Fundamentals"]
 tags = ["go", "beginner", "struct", "interface", "methods"]
 cover = { image = "/images/covers/go-structs-methods-interfaces.png", alt = "Structs, methods and interfaces in Go", hiddenInSingle = true }
 +++
 
-In the [previous post](/posts/go-slices-maps-strings/) we looked at slices, maps and strings. Now we need a way to group data and attach behavior to it. Go has no classes and no inheritance. It has **structs** for data, **methods** for behavior, and **interfaces** for abstraction, and these three small pieces cover most of what you would use classes for.
+Go has no classes, no inheritance and no `implements` keyword. It has **structs** for data, **methods** for behavior, and **interfaces** for abstraction, and any type that has an interface's methods satisfies it without ever naming it. These three small pieces cover most of what you would use classes for. After [slices, maps and strings](/posts/go-slices-maps-strings/), it is time to build our own types.
 
 > I ran every example in this post with Go 1.26. The outputs are copied from the real run.
 
@@ -81,7 +82,7 @@ after IncValue: 0
 after IncPointer: 1
 ```
 
-A value receiver works on a copy, so the change is lost. Use a pointer receiver when the method must mutate the struct, or when the struct is large. For consistency, if one method needs a pointer receiver, give them all pointer receivers. We will see why pointers behave this way in the next post.
+A value receiver works on a copy, so the change is lost. Use a pointer receiver when the method must mutate the struct, or when the struct is large. For consistency, if one method needs a pointer receiver, give them all pointer receivers.
 
 ## Interfaces are satisfied implicitly
 
@@ -202,7 +203,7 @@ A common guideline: functions should accept interfaces and return concrete types
 
 Capitalization is visibility. `User`, `Name` and `Describe` start with an uppercase letter, so other packages can use them. `user`, `name` or `describe` are visible only inside the same package. There is no `public` or `private` keyword.
 
-## A few things to watch
+## Common mistakes with receivers and interfaces
 
 - A value type does not get the pointer-receiver methods in an interface. I tried `var i Incer = C{}` where `Inc` has a pointer receiver, and the compiler said: `C does not implement Incer (method Inc has pointer receiver)`. Use `&C{}`.
 - Never return a typed nil pointer as an `error` or other interface. Return `nil` directly.
@@ -218,4 +219,4 @@ Capitalization is visibility. `User`, `Name` and `Describe` start with an upperc
 
 ## What's next
 
-So far I kept saying "copy" and "pointer" without explaining them properly. In the next post, pointers and the memory model in Go, we will look at what really happens.
+"Pointers and the memory model in Go": so far I kept saying "copy" and "pointer" without explaining them, and that post shows what really happens.

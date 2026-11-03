@@ -3,19 +3,20 @@ date = '2027-04-29T10:00:00+03:30'
 draft = false
 title = 'Logical clocks: Lamport and vector clocks'
 description = 'Logical clocks in Go: Lamport and vector clocks checked against a true happens-before order on 5000 simulated runs, plus conflict detection.'
+contentType = 'tutorial'
 categories = ["Distributed"]
 series = ["Distributed Systems"]
 tags = ["distributed-systems", "logical-clocks", "lamport", "vector-clock", "go"]
 cover = { image = "/images/covers/ds-logical-clocks.png", alt = "Logical clocks: Lamport and vector clocks", hiddenInSingle = true }
 +++
 
-The previous post, [Consistency models](/posts/ds-consistency-models/), left one promise open: causal consistency needs a way to say "this happened before that" without trusting a clock. This post builds that tool. It leans on the skew discussion in [why distributed systems are hard](/posts/ds-why-distributed-is-hard/) and the last-write-wins warning in [CAP and PACELC, correctly](/posts/ds-cap-pacelc/).
+Wall clocks only a few ticks apart can stamp an effect before its cause. Causal consistency, left open by [Consistency models](/posts/ds-consistency-models/), needs to say "this happened before that" without trusting a clock; this post builds that tool. It leans on [why distributed systems are hard](/posts/ds-why-distributed-is-hard/) (skew) and [CAP and PACELC, correctly](/posts/ds-cap-pacelc/) (last write wins).
 
 > Honest labelling: everything is Go 1.26 in one process. The "processes" and the message delays are a **simulation** with seeded randomness (messages are picked at random from those in flight, so they reorder). It is not a network. Numbers are counts, never timings. Tests run with `go test -race`.
 
 ## Why wall clocks fail
 
-Give each simulated process a wall clock with a fixed offset (0, -4 and +3 ticks, my invention to model {{< term "clock-skew" "clock skew" >}}) and stamp every event. Over 5000 runs, **3537** contained a message received with a wall timestamp no later than its own send, an effect stamped before its cause. The simulated offsets are mine, but the point stands: the order of timestamps is not the order of causes.
+Give each simulated process a wall clock with a fixed offset (0, -4 and +3 ticks, my invention to model {{< term "clock-skew" "clock skew" >}}) and stamp every event. Over 5000 runs, **3537** contained a message received with a wall timestamp no later than its own send, an effect stamped before its cause. The order of timestamps is not the order of causes.
 
 ## Happens-before, precisely
 
@@ -46,7 +47,7 @@ id proc kind  lamport  vector   from
  9  P0   L       5    [5 2 0]  -1
 ```
 
-Over 5000 random runs (2,760,000 ordered pairs of events), the results:
+Over 5000 random runs (2,760,000 ordered pairs of events):
 
 ```
 happens-before pairs: 685631, concurrent pairs: 1388738
@@ -94,7 +95,7 @@ Version vectors never lost a write (a test asserts it); they hand the applicatio
 
 {{< term "hybrid-logical-clock" "Hybrid logical clocks" >}} combine a physical time with a logical counter, so timestamps stay near real time yet respect causality. I did not run one; from what I know of the published design, that is the compromise some databases use.
 
-## A few things to watch
+## Where logical clocks stop helping
 
 - Lamport order is consistent with causality, not equal to it.
 - Vector size grows with participants; in a store with many clients, tracking per replica is usual.
@@ -107,4 +108,4 @@ Add a fourth process and check that the zero-mismatch result still holds. Then m
 
 ## What's next
 
-The next post is “Timeouts, retries and backoff with jitter”.
+Next, “Timeouts, retries and backoff with jitter”: what to do when a call simply does not answer.

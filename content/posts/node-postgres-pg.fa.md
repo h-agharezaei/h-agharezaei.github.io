@@ -3,13 +3,14 @@ date = '2027-02-11T10:00:00+03:30'
 draft = false
 title = 'Postgres از Node.js با pg'
 description = 'Postgres از Node.js با pg: Pool، پارامتر، غافلگیری نوع‌ها، تراکنش، SQL injection، خطاهای SQLSTATE، timeout و خاموشی تمیز، همه با اجرای واقعی.'
+contentType = 'tutorial'
 categories = ["Node.js"]
 series = ["Node.js"]
 tags = ["nodejs", "postgres", "pg", "sql", "connection-pool"]
 cover = { image = "/images/covers/node-postgres-pg.fa.png", alt = "Postgres از Node.js با pg", hiddenInSingle = true }
 +++
 
-در مقاله‌ی قبل، [ساختار پروژه و کانفیگ در Node.js](/fa/posts/node-project-structure-config/)، آدرس دیتابیس از کانفیگ خوانده شد. حالا از آن استفاده می‌کنیم. با `pg` (همان node-postgres) به یک PostgreSQL واقعی وصل می‌شوم و با [Postgres با pgx و sqlc در Go](/fa/posts/go-postgres-pgx-sqlc/) مقایسه می‌کنم. helper تراکنش هم شبیه [تراکنش و الگوی Repository در Go](/fa/posts/go-transactions-patterns/) است.
+`count(*)` از `pg` به‌شکل رشته برمی‌گردد، پس `row.n + 1` می‌شود `301`، نه `31`، بی‌صدا. با آدرس کانفیگ [ساختار پروژه و کانفیگ در Node.js](/fa/posts/node-project-structure-config/)، `pg` (همان node-postgres) را به یک PostgreSQL واقعی وصل می‌کنم و با [Postgres با pgx و sqlc در Go](/fa/posts/go-postgres-pgx-sqlc/) و برای تراکنش با [تراکنش و الگوی Repository در Go](/fa/posts/go-transactions-patterns/) مقایسه می‌کنم.
 
 > Node نسخه‌ی v20.13.1، `pg` نسخه‌ی 8.23.1، `pg-cursor` نسخه‌ی 2.22.1، PostgreSQL نسخه‌ی 18.3 روی loopback و schema مشترک «shop» (customers، orders و...) با چند ردیف. اسکریپت‌ها مثال محلی‌اند و خروجی‌ها واقعی‌اند. زمان‌بندی نگرفته‌ام.
 
@@ -27,11 +28,11 @@ console.log(r.rows, r.rowCount, r.fields.map(f => f.name), r.command);
 [ { id: '1', name: 'c1' }, { id: '2', name: 'c2' } ] 2 [ 'id', 'name' ] SELECT
 ```
 
-نتیجه `rows`، `rowCount`، `fields` و `command` دارد. به `id` دقت کنید: رشته‌ی `'1'` است.
+به `id` دقت کنید: رشته‌ی `'1'` است.
 
 ## غافلگیری نوع‌ها
 
-چند نوع را در یک query انتخاب کردم:
+چند نوع در یک query:
 
 ```text
 count   string  30
@@ -42,7 +43,7 @@ int     number  7
 now()   Date
 ```
 
-`bigint`، `numeric`، `count(*)` و `sum` به‌شکل **string** برمی‌گردند. عددهای JavaScript از نوع double هستند و مقدار بزرگ‌تر از 2^53 خراب می‌شود: `9007199254740993::bigint` به‌صورت `'9007199254740993'` رسید و `Number()` آن `9007199254740992` شد. تله‌اش `row.n + 1` است: نتیجه `301` شد، نه `31`. تبدیل را عمدی انجام دهید (`Number(row.n)` وقتی می‌دانید کوچک است، وگرنه `BigInt` یا string، یا در SQL با `count(*)::int`). `timestamptz` به `Date` تبدیل می‌شود و ستون **{{< term "jsonb" "jsonb" >}}** به شیء واقعی parse می‌شود (`meta.tags` برابر `['a', 'b']` بود؛ [JSONB و جست‌وجوی متنی](/fa/posts/db-jsonb-fulltext-search/) را ببینید). pgx در Go مقدار `bigint` را مستقیم در `int64` می‌ریزد؛ اینجا پیش‌فرض امن، string است.
+`bigint`، `numeric`، `count(*)` و `sum` به‌شکل **string** برمی‌گردند. عددهای JavaScript از نوع double هستند و مقدار بزرگ‌تر از 2^53 خراب می‌شود: `9007199254740993::bigint` به‌صورت `'9007199254740993'` رسید و `Number()` آن `9007199254740992` شد. تبدیل را عمدی انجام دهید (`Number(row.n)` وقتی می‌دانید کوچک است، وگرنه `BigInt` یا string، یا در SQL با `count(*)::int`). `timestamptz` به `Date` تبدیل می‌شود و ستون **{{< term "jsonb" "jsonb" >}}** به شیء واقعی parse می‌شود (`meta.tags` برابر `['a', 'b']` بود؛ [JSONB و جست‌وجوی متنی](/fa/posts/db-jsonb-fulltext-search/) را ببینید). pgx در Go مقدار `bigint` را مستقیم در `int64` می‌ریزد؛ اینجا پیش‌فرض امن، string است.
 
 ## محدودیت‌های pool
 
@@ -55,7 +56,7 @@ after release 2 2
 after idle timeout 0 0
 ```
 
-pool تمام‌شده فوری خطا نمی‌دهد: query منتظر می‌ماند و بعد از timeout همین خطا پرتاب می‌شود. بدون `connectionTimeoutMillis` (پیش‌فرض: بی‌نهایت صبر) برنامه گیر می‌کند. client نشت‌کرده (بدون `release()`) هم همین شکل را دارد. بعد از release هر دو idle شدند و با `idleTimeoutMillis: 1000` بسته شدند.
+pool تمام‌شده فوری خطا نمی‌دهد: query منتظر می‌ماند و بعد از timeout همین خطا پرتاب می‌شود. بدون `connectionTimeoutMillis` (پیش‌فرض: بی‌نهایت صبر) برنامه گیر می‌کند. client نشت‌کرده (بدون `release()`) هم همین شکل را دارد. بعد از release هر دو idle شدند و `idleTimeoutMillis: 1000` بستشان.
 
 ## تراکنش با client اختصاصی
 
@@ -78,7 +79,7 @@ async function withTx(fn) {
 }
 ```
 
-دو سفارش `paid` commit کردم، بعد تراکنشی اجرا کردم با یک insert معتبر و یک insert با مشتری ناموجود:
+دو سفارش `paid` commit کردم، بعد تراکنشی با یک insert معتبر و یکی با مشتری ناموجود:
 
 ```text
 paid before 0
@@ -127,8 +128,6 @@ check     | code 23514 | constraint orders_status_check  -> 422 invalid
 syntax    | code 42601 -> unmapped, rethrow
 ```
 
-کدهای ناشناخته به‌عنوان باگ دوباره پرتاب می‌شوند.
-
 ## Timeout و رویداد error در pool
 
 با `statement_timeout: 200` سرور query کند را لغو می‌کند و اتصال قابل استفاده می‌ماند:
@@ -154,7 +153,7 @@ survived; idle clients: 0
 
 برای خاموشی، `pool.end()` منتظر clientهای قرض‌گرفته می‌ماند. سروری ساختم که handler آن `pg_sleep(1)` اجرا می‌کرد، یک درخواست فرستادم و بعد `SIGTERM`. پاسخ `42` باز هم رسید، لاگ `closing server, then pool` و `pool ended, exiting` را نشان داد و exit code برابر 0 بود. این همان الگوی [سرور HTTP با node:http](/fa/posts/node-http-server/) است.
 
-## چند نکته‌ی مهم
+## جایی که داده‌ی pg خراب می‌شود
 
 - همیشه پارامتر؛ هرگز مقدار را به SQL نچسبانید.
 - `bigint`، `numeric` و `count(*)` رشته‌اند: عمداً تبدیل کنید.
@@ -168,4 +167,4 @@ survived; idle clients: 0
 
 ## قدم بعدی
 
-مقاله‌ی بعدی «NATS JetStream از Node.js» است.
+«NATS JetStream از Node.js»: بعد از دیتابیس، پیام‌رسانی، ستون دوم backend.

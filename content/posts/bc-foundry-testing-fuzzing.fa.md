@@ -3,13 +3,14 @@ date = '2026-11-16T18:00:00+03:30'
 draft = false
 title = 'تست، fuzz و invariant با Foundry'
 description = 'تست قرارداد Solidity با Foundry: تست واحد با cheatcode، fuzz با ورودی محدود، تست invariant با handler که باگ کاشته‌شده را پیدا می‌کند، gas و coverage.'
+contentType = 'tutorial'
 categories = ["Blockchain"]
 series = ["Blockchain"]
 tags = ["blockchain", "solidity", "foundry", "testing", "fuzzing"]
 cover = { image = "/images/covers/bc-foundry-testing-fuzzing.fa.png", alt = "تست، fuzz و invariant با Foundry", hiddenInSingle = true }
 +++
 
-در [اولین قرارداد با Solidity و Foundry](/fa/posts/bc-solidity-first-contract/) یک خزانه‌ی کوچک ETH دیپلوی کردم و با `cast` امتحانش کردم. قرارداد را بعد از دیپلوی بدون سازوکار اضافه نمی‌شود وصله کرد و پول هم نگه می‌دارد، پس تست از یک سرویس بک‌اند مهم‌تر است. این پست همان خزانه را با Foundry و به زبان Solidity تست می‌کند.
+قرارداد را بعد از دیپلوی بدون سازوکار اضافه نمی‌شود وصله کرد و پول هم نگه می‌دارد، پس تست این‌جا از یک سرویس بک‌اند مهم‌تر است. این پست خزانه‌ی [پست قبل](/fa/posts/bc-solidity-first-contract/) را با Foundry و به زبان Solidity تست می‌کند.
 
 ایده‌ها همان‌هایی است که در [تست در Go: table-driven و benchmark](/fa/posts/go-testing-basics/)، [تست و مستندسازی در Rust](/fa/posts/rust-testing-docs/)، [تست خاصیت‌محور](/fa/posts/eng-property-based-testing/) و [fuzzing برای پیدا کردن باگ امنیتی](/fa/posts/sec-fuzzing/) دیدیم. چیز تازه cheatcodeها و اجراکننده‌ی invariant است.
 
@@ -181,7 +182,7 @@ $ forge coverage
 
 {{< term "code-coverage" "Coverage" >}} کار کرد (forge هشدار داد که optimizer را خاموش می‌کند). صد درصد خط‌ها، ۲۵ درصد شاخه‌ها. `--report debug` خط `revert ZeroAmount()` را با صفر بار اجرا نشان می‌دهد: درست است، هیچ تستی صفر نمی‌فرستد. `revert IsPaused()` را هم صفر نشان می‌دهد، با این‌که یک تست زیر `vm.expectRevert` به آن می‌رسد؛ دنبال دلیلش نرفتم. عدد شاخه‌ها را فهرست سؤال می‌خوانم، نه نمره.
 
-## چند نکته‌ی مهم
+## دام‌های fuzz و invariant
 
 - برای بازه، `bound` از `vm.assume` بهتر است: assume ورودی را دور می‌ریزد و ردهای زیاد تست را شکست می‌دهد.
 - handlerی که بیشتر وقت‌ها revert می‌کند چیزی را تست نمی‌کند. ستون `reverts` را نگاه کنید.
@@ -196,4 +197,4 @@ $ forge coverage
 
 ## قدم بعدی
 
-پست بعد: **توکن‌ها: ERC-20 و ERC-721**.
+پست بعد: **توکن‌ها: ERC-20 و ERC-721**، با همان پروژه و همان ابزار.

@@ -3,13 +3,14 @@ date = '2026-12-10T10:00:00+03:30'
 draft = false
 title = 'Building a command-line tool in Go'
 description = 'Build wordstat, a real Go CLI: the flag package, subcommands, reading stdin, exit codes, a testable run function, version stamping and cross-compiling.'
+contentType = 'tutorial'
 categories = ["Go"]
 series = ["Go Fundamentals"]
 tags = ["go", "beginner", "cli", "flag", "build"]
 cover = { image = "/images/covers/go-cli-tool.png", alt = "Building a command-line tool in Go", hiddenInSingle = true }
 +++
 
-In the [previous post](/posts/go-file-io-json/) we read files and wrote JSON through `io.Reader` and `io.Writer`. Now we put that to work in something you can actually install: a command-line tool. We build `wordstat`, which reads a file (or stdin) and prints line, word and byte counts plus the top-N words, as text or as JSON. Along the way: the `flag` package, subcommands, exit codes, a structure that is easy to test, and getting one binary for any platform.
+`os.Exit` ends the process immediately and pending `defer`s never run; that one detail decides how a well-behaved command-line tool in Go is structured. After [files, `io.Reader`/`io.Writer` and JSON](/posts/go-file-io-json/), we put those pieces to work in something you can actually install. We build `wordstat`, which reads a file (or stdin) and prints line, word and byte counts plus the top-N words, as text or as JSON. Along the way: the `flag` package, subcommands, exit codes, a structure that is easy to test, and getting one binary for any platform.
 
 > I ran everything with Go 1.26 on an arm64 Mac. All output below is copied from real runs.
 
@@ -221,7 +222,7 @@ wordstat:       Mach-O 64-bit executable arm64
 
 I could not run the Linux binary on this Mac, only build it and inspect it. The native binary was about 3.0 MB; adding `-ldflags "-s -w"` (strip symbols) made it about 2.0 MB.
 
-## A few things to watch
+## flag and exit code traps
 
 - `flag` stops at the first positional argument, so `wordstat file -json` treats `-json` as a file name.
 - Never call `os.Exit` deep inside helpers; return errors and decide the exit code in one place.
@@ -237,4 +238,4 @@ I could not run the Linux binary on this Mac, only build it and inspect it. The 
 
 ## What's next
 
-In the next post we use all of this in the series mini project: a URL shortener in Go.
+"Mini project: a URL shortener in Go": the last post of the series, which uses all of this together in one small project.

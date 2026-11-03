@@ -4,13 +4,14 @@ draft = false
 title = 'Case studies: a rate limiter and a notification system'
 seoTitle = 'Case studies: rate limiter and notifications'
 description = "Rate limiter and notification system case studies: requirements, estimates and failure modes, each built small in Go and run on seeded loads."
+contentType = 'engineering'
 categories = ["Distributed"]
 series = ["Distributed Systems"]
 tags = ["distributed-systems", "system-design", "rate-limiting", "notifications"]
 cover = { image = "/images/covers/ds-case-studies.png", alt = "Case studies: a rate limiter and a notification system", hiddenInSingle = true }
 +++
 
-[The previous post](/posts/ds-capacity-estimation/) gave us the arithmetic. This one applies the series to two classic interview questions and builds a small version of each, so the claims are checked.
+I built small Go versions of two classic interview questions, a rate limiter and a notification system, so the claims are checked: one crash window sent 4 of 100 notifications twice, and only the provider's own key closed it. The arithmetic comes from the [previous post](/posts/ds-capacity-estimation/).
 
 > Honest labelling: one machine. "Nodes" are in-process shards, the network is loopback, senders are fake, the store is in memory (a mutex plays the transaction), NATS is embedded. Traffic numbers are invented, loads are seeded, I print counts, not timings.
 
@@ -108,19 +109,15 @@ Failure walk-through:
 | Relay crash after publish | JetStream drops the republished rows |
 | NATS down | I did not run this; rows would wait in the outbox |
 
-The first crash row is the unavoidable {{< term "at-least-once-delivery" "at-least-once" >}} edge ([idempotency](/posts/nats-jetstream-idempotency/)): only the provider's key closes it. The breaker run dead-letters everything because the provider never recovers; a real system should park. Success was 98.0%, below the 99% target; in my experience the fix is a second provider, not more retries. Lane order can break if a slow reply looks like an empty `high` lane.
+The first crash row is the unavoidable {{< term "at-least-once-delivery" "at-least-once" >}} edge ([idempotency](/posts/nats-jetstream-idempotency/)). The breaker run dead-letters everything because the provider never recovers; a real system should park. Success was 98.0%, below the 99% target; in my experience the fix is a second provider, not more retries. Lane order can break if a slow reply looks like an empty `high` lane.
 
-## A few things to watch
+## Lessons shared by both designs
 
 - Every number is simulated or invented.
 - Choose fail open or closed before the incident.
 - Check preferences at send time.
 - Count duplicates at the provider too.
 - Watch the oldest message age ([observability](/posts/nats-jetstream-observability/)).
-
-## Exercise
-
-Add a `delivered` status with simulated webhooks that arrive late, twice or never.
 
 ## What's next
 

@@ -3,13 +3,14 @@ date = '2027-01-20T10:00:00+03:30'
 draft = false
 title = 'Sorting: quick, merge and heap'
 description = 'Sorting algorithms in Go: quicksort, merge sort and heap sort with exact comparison counts, the O(n^2) worst case, stability and what to use in practice.'
+contentType = 'tutorial'
 categories = ["Algorithms"]
 series = ["Algorithms"]
 tags = ["algorithms", "sorting", "go", "quicksort", "merge-sort", "heap-sort"]
 cover = { image = "/images/covers/algo-sorting.png", alt = "Sorting: quick, merge and heap", hiddenInSingle = true }
 +++
 
-In the previous post, [Binary search and invariants](/posts/algo-binary-search-invariants/), the data was already sorted. Now we produce that order. Three classic algorithms give O(n log n) ({{< term "big-o" "Big-O" >}}, as in [Big-O analysis with real measurements](/posts/algo-big-o-measured/)): {{< term "quicksort" "quicksort" >}}, {{< term "merge-sort" "merge sort" >}} and {{< term "heap-sort" "heap sort" >}}. The last one reuses the heap from [Heaps and priority queues](/posts/algo-heaps-priority-queues/). They differ in worst case, memory and one property that surprises people: {{< term "stable-sort" "stability" >}}.
+Give the simplest {{< term "quicksort" "quicksort" >}} 10,000 already sorted items and it does about n^2/2 comparisons, recursing as deep as the input; random input needs 156,275 comparisons and depth 31. In [Binary search and invariants](/posts/algo-binary-search-invariants/) the data was already sorted; here we produce that order. Three classic algorithms give O(n log n) ({{< term "big-o" "Big-O" >}}, as in [Big-O analysis with real measurements](/posts/algo-big-o-measured/)): quicksort, {{< term "merge-sort" "merge sort" >}} and {{< term "heap-sort" "heap sort" >}}. The last one reuses the heap from [Heaps and priority queues](/posts/algo-heaps-priority-queues/). They differ in worst case, memory and one property that surprises people: {{< term "stable-sort" "stability" >}}.
 
 > Go 1.26, local example. When I wanted to time things, the 1-minute load average on this machine was 10.61, far above my limit of 2.0, so I publish no nanoseconds. Everything below is deterministic: counts of calls to `less`, and allocations.
 
@@ -59,7 +60,7 @@ n         quick        merge        heap         n*log2(n)
 1000000   21623445     18674250     36795744     19931569
 ```
 
-All three grow like n log n. Merge sort stays below n log2 n, quicksort lands 5 to 9% above it, and heap sort needs almost twice as many comparisons as merge sort. That matches the heap sort result of the previous post. Counts are not time, though: they ignore memory access patterns, so I make no claim about which is fastest.
+All three grow like n log n. Merge sort stays below n log2 n, quicksort lands 5 to 9% above it, and heap sort needs almost twice as many comparisons as merge sort. That matches the heap sort count in the heaps post. Counts are not time: they ignore memory access patterns, so I make no claim about which is fastest.
 
 Allocations, measured with `testing.AllocsPerRun` at n = 10000 (each run includes one allocation for cloning the input): quicksort 1 and heap sort 1, so zero extra; merge sort 2, the buffer.
 
@@ -73,7 +74,7 @@ random  comparisons=156275  n^2/2=50000000  max recursion depth=31
 median-of-three quick on the same sorted input: comparisons=107963
 ```
 
-Sorted input gives about n^2/2 comparisons and a recursion as deep as the input; the same code on random input needs 156,275 comparisons and depth 31. Median-of-three handles the sorted case with 107,963. It is not immune: adversarial inputs exist for any fixed pivot rule, which is one reason libraries add fallbacks.
+Median-of-three handles the sorted case with 107,963. It is not immune: adversarial inputs exist for any fixed pivot rule, which is one reason libraries add fallbacks.
 
 ## Stability
 
@@ -95,7 +96,7 @@ Only merge sort and the standard stable functions keep order. Note that `sort.Sl
 
 According to the Go docs and source, `sort.Slice` and `slices.Sort` use a pattern-defeating quicksort since Go 1.19. I counted `sort.Slice` on 100,000 random numbers: 1,739,892 calls to `less`, close to my 1,792,110 for quicksort.
 
-## A few things to watch
+## Choosing a sort without surprises
 
 - Use `slices.Sort` or `slices.SortFunc` unless you have a reason; use `slices.SortStableFunc` when equal keys must keep their order, for example sorting by a second key after a first.
 - Your comparison must be a consistent ordering. A `less` that is not, such as one using `<=`, can break the result.
@@ -109,4 +110,4 @@ Make the merge sort do one thing less: skip the merge when `!less(a[m], a[m-1])`
 
 ## What's next
 
-Search trees and the B-tree.
+Search trees and the B-tree: keeping data ordered while it changes, instead of sorting it once.

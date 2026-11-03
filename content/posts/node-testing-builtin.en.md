@@ -3,13 +3,14 @@ date = '2027-01-16T10:00:00+03:30'
 draft = false
 title = 'Testing in Node.js with node:test'
 description = 'Testing in Node.js with node:test on v20.13.1: describe/it, hooks, mocks, mock timers, reporters, coverage, exit codes, and what is missing.'
+contentType = 'tutorial'
 categories = ["Node.js"]
 series = ["Node.js"]
 tags = ["nodejs", "testing", "node-test", "mocking", "coverage"]
 cover = { image = "/images/covers/node-testing-builtin.png", alt = "Testing in Node.js with node:test", hiddenInSingle = true }
 +++
 
-In the previous post, [Building an API with Fastify](/posts/node-fastify-api/), we got an API running. Now I want to know it keeps working. Node ships a {{< term "test-runner" "test runner" >}} in the standard library, so no Jest or Mocha is needed to start. This is the Node counterpart of [Testing in Go](/posts/go-testing-basics/), and it uses [async/await](/posts/node-promises-async-await/) and the [HTTP server](/posts/node-http-server/) we built earlier.
+In my run, a top-level `before()` did not run before the top-level tests next to it, and every fetch failed with `undefined/health`. Small surprises like that are why it pays to know your tools before trusting a green result. [Building an API with Fastify](/posts/node-fastify-api/) got an API running; now I want to know it keeps working. Node ships a {{< term "test-runner" "test runner" >}} in the standard library, so no Jest or Mocha is needed to start. This is the Node counterpart of [Testing in Go](/posts/go-testing-basics/), and it uses [async/await](/posts/node-promises-async-await/) and the [HTTP server](/posts/node-http-server/) we built earlier.
 
 > Node v20.13.1 (printed by `node --version`). The demo is a local example: `price.js`, `app.js` and two files in `test/`. All outputs are real. I do not publish timings: the machine was busy (load average above 10), so I removed durations from what you see.
 
@@ -96,7 +97,7 @@ It is experimental, and in this version it also lists the test files themselves.
 
 Snapshot testing: I checked, and on v20.13.1 `t.assert` is `undefined` and `--test-update-snapshots` fails with `bad option`. So it is not available here; I did not test newer versions.
 
-## A few things to watch
+## Where node:test surprises you
 
 - A top-level `before()` next to top-level `test()` calls did not run first in my run: `base` was `undefined` and fetch failed with `Failed to parse URL from undefined/health`. Wrapping in `describe` fixed it.
 - Discovery is by name and folder; pass paths when in doubt.
@@ -110,4 +111,4 @@ Add a `GET /price?value=...&percent=...` route to `app.js` that calls `applyDisc
 
 ## What's next
 
-Next: Project structure and config in Node.js.
+"Project structure and config in Node.js": testability comes down to structure, to where dependencies and config are built and injected.

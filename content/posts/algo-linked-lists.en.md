@@ -3,13 +3,14 @@ date = '2026-12-07T10:00:00+03:30'
 draft = false
 title = 'Linked lists and why they are rarely the answer'
 description = 'Linked list in Go: a generic List[T], node memory overhead, allocation counts, cache locality measured against a slice, and where an LRU cache fits.'
+contentType = 'tutorial'
 categories = ["Algorithms"]
 series = ["Algorithms"]
 tags = ["algorithms", "data-structures", "go", "linked-list", "cache"]
 cover = { image = "/images/covers/algo-linked-lists.png", alt = "Linked lists and why they are rarely the answer", hiddenInSingle = true }
 +++
 
-In the previous post, [Dynamic arrays and slices from the inside](/posts/algo-dynamic-arrays/), the array won on almost every count. The textbook rival is the {{< term "linked-list" "linked list" >}}: constant-time insertion, no copying on growth. So why do people reach for it so rarely? This time I measured. We use [Generics in Go](/posts/go-generics/) for the container, the memory side is in [Pointers and the memory model in Go](/posts/go-pointers-memory/), and the one place a list really fits shows up in [Rate limiting and caching in Go](/posts/go-rate-limiting-caching/).
+Summing a million elements, a {{< term "linked-list" "linked list" >}} was about 3x slower than a slice when its nodes sat in order, and 65x slower when they were shuffled in memory. Yet the list is the textbook rival of the array, which won on almost every count in [Dynamic arrays and slices from the inside](/posts/algo-dynamic-arrays/): constant-time insertion, no copying on growth. So why do people reach for it so rarely? We use [Generics in Go](/posts/go-generics/) for the container, the memory side is in [Pointers and the memory model in Go](/posts/go-pointers-memory/), and the one place a list really fits shows up in [Rate limiting and caching in Go](/posts/go-rate-limiting-caching/).
 
 > Go 1.26, macOS arm64, local example. Counts and sizes are deterministic. Timings are labelled with the load they were measured under.
 
@@ -139,7 +140,7 @@ func (c *LRU) Put(k string, v int) {
 
 With capacity 3, puts `a b c`, a read of `a`, then a put of `d` gave keys `[d a c]`: `b` was evicted. The test passes too. The map finds the element in O(1), the list moves and evicts in O(1). Neither alone can do both.
 
-## A few things to watch
+## When a list is worth it
 
 - Default to a slice. Reach for a list only when you hold nodes and splice often.
 - Each node is a separate allocation, which means more garbage collector work too.
@@ -153,4 +154,4 @@ Make `List[T]` doubly linked and add `Remove(node)` that takes the node itself. 
 
 ## What's next
 
-A hash table from scratch.
+A hash table from scratch: the map half of the LRU cache above, built by hand.

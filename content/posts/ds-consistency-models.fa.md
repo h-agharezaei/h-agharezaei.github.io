@@ -3,13 +3,14 @@ date = '2027-04-25T10:00:00+03:30'
 draft = false
 title = 'مدل‌های consistency'
 description = 'مدل‌های consistency با یک history checker به Go: linearizable، sequential، read-your-writes و monotonic reads، روی ۱۰۰۰ history شبیه‌سازی‌شده.'
+contentType = 'tutorial'
 categories = ["Distributed"]
 series = ["Distributed Systems"]
 tags = ["distributed-systems", "consistency", "linearizability", "go", "replication"]
 cover = { image = "/images/covers/ds-consistency-models.fa.png", alt = "مدل‌های consistency", hiddenInSingle = true }
 +++
 
-«consistent» کلمه‌ای است که در design reviewها از همه بیشتر غلط به کار برده‌ام. مقاله‌ی قبل، [CAP و PACELC درست](/fa/posts/ds-cap-pacelc/)، نشان داد C در CAP یک معنی مشخص دارد. این مقاله درباره‌ی کل پلکان وعده‌هایی است که یک store می‌تواند بدهد، و درباره‌ی این‌که به‌جای بحث، یک وعده را **بررسی** کنیم. روی [چرا سیستم توزیع‌شده سخت است](/fa/posts/ds-why-distributed-is-hard/) و [replication lag در Postgres](/fa/posts/db-replication-streaming/) بنا شده است.
+«consistent» کلمه‌ای است که در design reviewها از همه بیشتر غلط به کار برده‌ام. مقاله‌ی قبل، [CAP و PACELC درست](/fa/posts/ds-cap-pacelc/)، نشان داد C در CAP یک معنی مشخص دارد. این مقاله کل پلکان وعده‌های یک store را مرور می‌کند، و این‌که به‌جای بحث، یک وعده را چطور **بررسی** کنیم. پیش‌زمینه: [چرا سیستم توزیع‌شده سخت است](/fa/posts/ds-why-distributed-is-hard/) و [replication lag در Postgres](/fa/posts/db-replication-streaming/).
 
 > صادقانه: همه‌چیز کد Go 1.26 در یک process است. leader و followerها **شبیه‌سازی** هستند، با تصادف seed‌دار و tickهای گسسته، نه شبکه. عددها تعداد history هستند، نه زمان. خود checker واقعی است و با `go test -race` تست شده.
 
@@ -60,7 +61,7 @@ B: هر دو write قبل از readها تمام شده‌اند، پس دو rea
 | {{< term "causal-consistency" "Causal" >}} | علت قبل از معلول دیده می‌شود، writeهای نامرتبط ممکن است فرق کنند |
 | {{< term "eventual-consistency" "Eventual" >}} | اگر writeها متوقف شوند replicaها همگرا می‌شوند |
 
-read-your-writes و monotonic reads تضمین‌های سطح session کنار این پلکان‌اند. causal به راهی برای ردیابی «happened before» نیاز دارد که مقاله‌ی بعد (آخر متن) می‌سازد. checker علّی پیاده نکردم.
+read-your-writes و monotonic reads تضمین‌های سطح session کنار این پلکان‌اند. causal به ردیابی «happened before» نیاز دارد؛ checker علّی پیاده نکردم.
 
 ## leader و follower عقب‌مانده
 
@@ -81,7 +82,7 @@ readهای ساده از follower همه‌چیز را می‌شکنند. راه
 
 اجرایشان نکردم، ولی checkerهای واقعی وجود دارند: Jepsen با Knossos، و Porcupine به Go، که history دیتابیس‌های واقعی را زیر خطا ثبت می‌کنند. به تجربه‌ی من بهترین عادت این است که برای هر مسیر read بپرسیم کدام ویژگی‌ها را قول می‌دهد و اگر به replica بخورد چه می‌شود. streamهای replicated در JetStream در [JetStream در production](/fa/posts/nats-jetstream-production/) آمده‌اند.
 
-## چند نکته‌ی مهم
+## جایی که ادعای consistency گمراه می‌کند
 
 - eventual consistency درباره‌ی میزان کهنگی چیزی نمی‌گوید؛ lag را اندازه بگیرید.
 - session token وقتی هیچ replicaی به‌اندازه‌ی کافی تازه نیست به fallback (leader) نیاز دارد.
@@ -94,4 +95,4 @@ readهای ساده از follower همه‌چیز را می‌شکنند. راه
 
 ## قدم بعدی
 
-مقاله‌ی بعد «ساعت منطقی: Lamport و vector clock» است.
+بعد، «ساعت منطقی: Lamport و vector clock»: ردیابی «happened before» که causal لازم دارد.

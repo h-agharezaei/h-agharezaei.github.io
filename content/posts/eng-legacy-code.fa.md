@@ -2,6 +2,7 @@
 date = '2027-05-21T10:00:00+03:30'
 draft = false
 title = 'کار با کد legacy'
+contentType = 'tutorial'
 description = 'کار با کد legacy در Go: کاوش با git و coverage، ثبت رفتار با تست golden، ساخت seam، رفع باگ و جایگزینی تدریجی با strangler در shadow mode.'
 categories = ["Engineering"]
 series = ["Software Engineering"]
@@ -9,13 +10,13 @@ tags = ["legacy-code", "refactoring", "golden-master", "strangler-fig", "softwar
 cover = { image = "/images/covers/eng-legacy-code.fa.png", alt = "کار با کد legacy", hiddenInSingle = true }
 +++
 
-پست قبل، [postmortem بدون سرزنش](/fa/posts/eng-postmortems-blameless/)، به action itemها رسید و خیلی‌هایشان در کدی می‌افتند که کسی جرأت دست زدن به آن را ندارد. تعریف کاری من: {{< term "legacy-code" "کد legacy" >}} کدی است که تست ندارد (ایده از کتاب *Working Effectively with Legacy Code* نوشته‌ی مایکل فدرز است). مرتبط: [refactoring امن](/fa/posts/eng-refactoring-safely/)، [هرم تست و TDD](/fa/posts/eng-testing-pyramid-tdd/)، [تست در Go](/fa/posts/go-testing-basics/).
+خیلی از action itemهای [postmortem بدون سرزنش](/fa/posts/eng-postmortems-blameless/) در کدی می‌افتند که کسی جرأت دست زدنش را ندارد: coverage صفر، ledger سراسری و کامنت «10 or more» بالای شرط `>`. تعریف کاری من: {{< term "legacy-code" "کد legacy" >}} کدی است که تست ندارد (ایده از کتاب *Working Effectively with Legacy Code* مایکل فدرز). مرتبط: [refactoring امن](/fa/posts/eng-refactoring-safely/)، [هرم تست و TDD](/fa/posts/eng-testing-pyramid-tdd/)، [تست در Go](/fa/posts/go-testing-basics/).
 
-**پکیج «legacy» ساخته‌ی خودم است**: 80 خط، global state، `time.Now`، `os.Getenv`، یک باگ پنهان و 12 commit ساختگی (Go 1.26، دموی محلی). خروجی‌ها اجرای واقعی‌اند و نظرها مشخص شده‌اند.
+**پکیج «legacy» ساخته‌ی خودم است**: 80 خط، global state، `time.Now`، `os.Getenv`، یک باگ پنهان و 12 commit ساختگی (Go 1.26، دموی محلی). خروجی‌ها از اجرای واقعی‌اند؛ نظرها مشخص‌اند.
 
 ## 1. قبل از تغییر، بفهمید
 
-کد `country|sku:qty,...` را parse می‌کند، قیمت می‌زند و به یک `Ledger` سراسری اضافه می‌کند. اول فقط خواندن:
+کد `country|sku:qty,...` را parse می‌کند، قیمت می‌زند و به `Ledger` سراسری اضافه می‌کند. اول فقط خواندن:
 
 ```text
 $ git blame -L '/q > 10/,+1' shop.go
@@ -29,11 +30,11 @@ $ go test -cover ./...
 	example.com/legacy		coverage: 0.0% of statements
 ```
 
-`git log -L` یک خط را در تاریخچه دنبال می‌کند. کامنت می‌گوید «10 or more» ولی commit «tweak bulk threshold» از `>=` به `>` رفته: سرنخ است، نه حکم. `go vet` ساکت است و coverage برابر 0.0% نقطه‌ی شروع واقعی است. `go list -f '{{.Imports}}'` پکیج‌های `time` و `os` را نشان می‌دهد: ورودی‌های پنهان ساعت و محیط‌اند.
+`git log -L` یک خط را در تاریخچه دنبال می‌کند. کامنت می‌گوید «10 or more» ولی commit «tweak bulk threshold» از `>=` به `>` رفته: سرنخ است، نه حکم. `go vet` ساکت است. `go list -f '{{.Imports}}'` پکیج‌های `time` و `os` را نشان می‌دهد: ورودی‌های پنهان ساعت و محیط‌اند.
 
 ## 2. اول رفتار را ثبت کنید
 
-{{< term "characterization-test" "تست characterization" >}} آنچه کد انجام می‌دهد را با باگ‌هایش ثبت می‌کند. ساعتِ غیرقابل‌کنترل این را ناممکن می‌کند، پس اولین ویرایش یک خط است: `var now = time.Now`، یک {{< term "seam" "seam" >}}. تست 120 ورودی seed‌دار را در سه حالت (جمعه، دوشنبه، `SHOP_TAX=7`) با `testdata/golden.txt` مقایسه می‌کند؛ `go test -update` بازنویسی‌اش می‌کند:
+{{< term "characterization-test" "تست characterization" >}} رفتار کد را با باگ‌هایش ثبت می‌کند. ساعتِ غیرقابل‌کنترل این را ناممکن می‌کند، پس اولین ویرایش یک خط است: `var now = time.Now`، یک {{< term "seam" "seam" >}}. تست 120 ورودی seed‌دار را در سه حالت (جمعه، دوشنبه، `SHOP_TAX=7`) با `testdata/golden.txt` مقایسه می‌کند؛ `go test -update` بازنویسی‌اش می‌کند:
 
 ```text
 $ go test -update ./... && go test -race -cover ./...
@@ -56,7 +57,7 @@ ok  	example.com/legacy	1.489s      # parse + compute
 ok  	example.com/legacy	1.451s	coverage: 97.9% of statements   # record
 ```
 
-این همان {{< term "dependency-injection" "dependency injection" >}} با کمترین تشریفات است. **نظر من:** در ابتدا متغیر تابعی کافی است؛ interface بعداً هم می‌شود.
+این {{< term "dependency-injection" "dependency injection" >}} با کمترین تشریفات است. **نظر من:** در ابتدا متغیر تابعی کافی است؛ interface بعداً هم می‌شود.
 
 ## 4. باگ را بعد از ثبت‌شدنش درست کنید
 
@@ -68,15 +69,15 @@ ok  	example.com/legacy	1.451s	coverage: 97.9% of statements   # record
          want fri	XX|fig:10,melon:6	TOTAL=41.54
 ```
 
-بعد `go test -update` چهل خط golden را بازنویسی کرد: 37 سفارش که هر کدام آیتمی با تعداد دقیقاً 10 داشت و 3 خط خلاصه. diff را خواندم و کد و golden را با هم commit کردم. تست هرگز نگفت چه چیزی درست است؛ من گفتم.
+`go test -update` چهل خط golden را بازنویسی کرد: 37 سفارش که هر کدام آیتمی با تعداد دقیقاً 10 داشت و 3 خط خلاصه. diff را خواندم و کد و golden را با هم commit کردم. تست هرگز نگفت چه درست است؛ من گفتم.
 
 ## 5. sprout و wrap
 
-برای رفتار جدید به گره دست نزنید. **sprout** یک تابع جدید و تست‌شده است (`ApplyCoupon` با پنج حالت جدول)؛ **wrap** دور تابع قدیمی می‌پیچد (`ProcessAudited` تابع `Process` را صدا می‌زند و بعد hook به نام `audit`). کوپن را به `Process` وصل نکردم.
+**sprout** یک تابع جدید و تست‌شده است (`ApplyCoupon` با پنج حالت جدول)؛ **wrap** دور تابع قدیمی می‌پیچد (`ProcessAudited` اول `Process` و بعد hook `audit` را صدا می‌زند). کوپن را به `Process` وصل نکردم.
 
 ## 6. strangler fig
 
-برای جایگزینی بزرگ‌تر، الگوی {{< term "strangler-fig" "strangler fig" >}} (از توصیفی از مارتین فاولر، آن‌طور که یادم هست) یک router جلوی کد می‌گذارد. `ProcessV2` از سنت صحیح و بدون global استفاده می‌کند. در {{< term "shadow-mode" "shadow mode" >}} router پاسخ قدیمی را برمی‌گرداند و تفاوت‌ها را روی 10,000 ورودی seed‌دار (یک دوشنبه) می‌شمارد:
+الگوی {{< term "strangler-fig" "strangler fig" >}} (از توصیفی از مارتین فاولر، آن‌طور که یادم هست) یک router جلوی کد می‌گذارد. `ProcessV2` از سنت صحیح و بدون global استفاده می‌کند. در {{< term "shadow-mode" "shadow mode" >}} router پاسخ قدیمی را برمی‌گرداند و تفاوت‌ها را روی 10,000 ورودی seed‌دار (یک دوشنبه) می‌شمارد:
 
 ```text
 inputs=10000 mismatches=3051 (one cent apart: 3040, other: 11, error-vs-total: 0)
@@ -87,7 +88,7 @@ served by new: 2141 of 10000 at SHOP_ROUTE=20
 
 ## 7. کد مرده را پاک کنید
 
-`go tool cover -func` تابع `oldTax` را روی 0.0% نشان داد، grep هیچ فراخواننده‌ای پیدا نکرد و با سبز بودن تست‌ها آن را پاک کردم. **staticcheck را اجرا نکردم**، که ابزار معمول این کار است.
+`go tool cover -func` تابع `oldTax` را روی 0.0% نشان داد، grep هیچ فراخواننده‌ای پیدا نکرد و با تست‌های سبز پاکش کردم. **staticcheck را اجرا نکردم**، ابزار معمول این کار.
 
 ## rewrite یا refactor؟ (نظر)
 
@@ -97,7 +98,7 @@ served by new: 2141 of 10000 at SHOP_ROUTE=20
 
 کد را هر بار کمی بهتر برگردانید (قاعده‌ی boy scout)، یافته‌ها را در [ADR](/fa/posts/eng-adr-documentation/) بنویسید و پاکسازی ناتمام را [بدهی فنی](/fa/posts/eng-technical-debt/) ثبت کنید.
 
-## چند نکته‌ی مهم
+## کار با legacy کجا خراب می‌شود
 
 - coverage فقط می‌گوید چه اجرا شد.
 - همه‌ی خروجی‌ها را ثبت کنید: مقدار برگشتی، globalها، فایل‌ها.
@@ -110,4 +111,4 @@ served by new: 2141 of 10000 at SHOP_ROUTE=20
 
 ## قدم بعدی
 
-پست بعدی «مبانی DDD» است.
+«مبانی DDD»: مرز مدل قدیم و جدید که strangler می‌سازد موضوع اصلی DDD است.

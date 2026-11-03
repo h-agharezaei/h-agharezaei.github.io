@@ -4,19 +4,20 @@ draft = false
 title = 'Network troubleshooting with curl, dig and traceroute'
 seoTitle = 'Network troubleshooting with curl, dig, traceroute'
 description = 'Network troubleshooting with curl, dig and traceroute: real exit codes, redirects, Host header, DNS answers, NXDOMAIN and a layer-by-layer checklist.'
+contentType = 'tutorial'
 categories = ["Networking"]
 series = ["Networking"]
 tags = ["networking", "troubleshooting", "curl", "dig", "traceroute", "dns"]
 cover = { image = "/images/covers/net-troubleshooting-curl-traceroute.png", alt = "Network troubleshooting with curl, dig and traceroute", hiddenInSingle = true }
 +++
 
-In [the previous post](/posts/net-load-balancer-l4-l7/) a request crossed one more box on its way. When something breaks, the skill is to find which layer broke. This post is a small toolbox: curl for {{< term "http" "HTTP" >}}, dig for {{< term "dns" "DNS" >}}, nc and lsof for ports, traceroute for the path. It uses ideas from [the TCP/IP model](/posts/net-tcp-ip-model/), [DNS in practice](/posts/net-dns-in-practice/) and [HTTP/1.1 by hand](/posts/net-http1-by-hand/).
+A 404 makes curl exit with 0, a timeout with 28; only the second is a network problem. The skill is finding which layer broke, and each box, like the balancer in [the previous post](/posts/net-load-balancer-l4-l7/), adds a suspect. The toolbox: curl for {{< term "http" "HTTP" >}}, dig for {{< term "dns" "DNS" >}}, nc and lsof for ports, traceroute for the path. It builds on [the TCP/IP model](/posts/net-tcp-ip-model/), [DNS in practice](/posts/net-dns-in-practice/) and [HTTP/1.1 by hand](/posts/net-http1-by-hand/).
 
 > Privacy: servers ran on `127.0.0.1:18080` (a small Go test server, macOS, curl 8.7.1). For DNS I always asked a public resolver explicitly and dropped the lines that name my machine or network. I did not paste any traceroute through the internet, because it lists real hops. The machine was busy, so no timings. `ss` and `ip` are Linux tools and I did not run them.
 
 ## curl: what did the server say
 
-`curl -v` shows the request and response headers. One thing it showed: the `Host` header curl sent was `127.0.0.1:18080`. `-I` asks only for headers. `-w` prints facts about the transfer:
+`curl -v` shows the request and response headers. It showed that curl sent `Host: 127.0.0.1:18080`. `-I` asks only for headers. `-w` prints facts about the transfer:
 
 ```
 $ curl -s -o /dev/null -w 'http=%{http_code}\n' http://127.0.0.1:18080/missing
@@ -88,7 +89,7 @@ $ lsof -nP -iTCP:18080 -sTCP:LISTEN     (only my line kept)
 srv  IPv4  TCP  127.0.0.1:18080 (LISTEN)
 ```
 
-{{< term "traceroute" "traceroute" >}} sends packets with a growing {{< term "ttl" "TTL" >}}; each router that drops one answers with {{< term "icmp" "ICMP" >}}. Against {{< term "loopback" "loopback" >}} it has one hop:
+{{< term "traceroute" "traceroute" >}} sends packets with a growing TTL; each router that drops one answers with {{< term "icmp" "ICMP" >}}. Against {{< term "loopback" "loopback" >}} it has one hop:
 
 ```
 $ traceroute -m 3 127.0.0.1
@@ -110,7 +111,7 @@ On the internet it prints one line per hop; a hop showing `* * *` often only mea
 
 For TLS I used openssl in [TLS and certificates with openssl](/posts/net-tls-openssl/). I did not use curl for any certificate claim: this curl is built on SecureTransport and its verification behaved oddly in earlier runs.
 
-## A few things to watch
+## Misreadings to avoid
 
 - A 404 is not a network problem; check the exit code and the status separately.
 - Pin names with `--resolve` instead of editing system files.
@@ -123,4 +124,4 @@ Add a handler that redirects forever. What does curl `-L` do, and which exit cod
 
 ## What's next
 
-The next post is "Case study: why is this request slow".
+Next is "Case study: why is this request slow": this toolbox, applied phase by phase.

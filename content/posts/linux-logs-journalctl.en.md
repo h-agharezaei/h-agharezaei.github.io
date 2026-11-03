@@ -3,13 +3,14 @@ date = '2027-05-30T10:00:00+03:30'
 draft = false
 title = 'Logs and journalctl'
 description = 'Logs and journalctl from the docs: journal fields, priorities, filters, retention and rate limits, logrotate, plus Go slog, parser and linter demos.'
+contentType = 'tutorial'
 categories = ["Linux"]
 series = ["Linux"]
 tags = ["linux", "logging", "journalctl", "journald", "logrotate", "slog", "go", "macos"]
 cover = { image = "/images/covers/linux-logs-journalctl.png", alt = "Logs and journalctl", hiddenInSingle = true }
 +++
 
-I wrote this on a Mac; nothing here ran on Linux. This is the twelfth post of the Linux series, after [Users, sudo and capabilities](/posts/linux-users-sudo-capabilities/). The facts below come from the journalctl, journald.conf, systemd.journal-fields, syslog(3) and logrotate man pages; Linux-looking text is labelled "illustrative, not captured". Related: [systemd: units and timers](/posts/linux-systemd-units-timers/) and [Config, structured logging and errors in Go](/posts/go-config-logging-errors/).
+With `Storage=auto` and no `/var/log/journal`, the journal loses logs at reboot; better to know before you need them. As with [Users, sudo and capabilities](/posts/linux-users-sudo-capabilities/), I wrote this on a Mac, not Linux. Facts come from the journalctl, journald.conf, systemd.journal-fields, syslog(3) and logrotate man pages; Linux-looking text is labelled "illustrative, not captured". Related: [systemd: units and timers](/posts/linux-systemd-units-timers/) and [Config, structured logging and errors in Go](/posts/go-config-logging-errors/).
 
 ## Text logs and the journal
 
@@ -90,7 +91,7 @@ The nearest real thing here is the macOS unified log. I wrote a line with `logge
 | Filter | field matches, `-p`, `-u` | `--predicate`, subsystem |
 | Write | stdout, `logger`, syslog | `os_log`, `logger` |
 
-## A few things to watch
+## Logging traps
 
 - Check `Storage=`: `auto` without `/var/log/journal` loses logs at reboot.
 - Log time in UTC.
@@ -104,4 +105,4 @@ On a throwaway VM, run a service that logs one error, find it with `journalctl -
 
 ## What's next
 
-The next post is “strace and perf for troubleshooting”.
+Next: “strace and perf for troubleshooting”, for when logs do not say why.

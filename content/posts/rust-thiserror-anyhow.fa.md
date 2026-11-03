@@ -3,13 +3,14 @@ date = '2027-01-27T10:00:00+03:30'
 draft = false
 title = 'خطا در اپلیکیشن واقعی: thiserror و anyhow'
 description = 'خطا در Rust با thiserror و anyhow: کوتاه کردن enum خطا، زنجیره‌ی context، downcast و نگاشت خطای تایپ‌دار به کد وضعیت HTTP در یک نقطه.'
+contentType = 'tutorial'
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "errors", "thiserror", "anyhow", "backend"]
 cover = { image = "/images/covers/rust-thiserror-anyhow.fa.png", alt = "خطا در اپلیکیشن واقعی: thiserror و anyhow", hiddenInSingle = true }
 +++
 
-در [مقاله‌ی قبل](/fa/posts/rust-database-sqlx/) منبع معمول خطا دیتابیس بود: قطع اتصال، ردیف پیدا‌نشده، نقض constraint. در [مدیریت خطا با Result](/fa/posts/rust-error-handling-result/) پیاده‌سازی‌های `Display`، `Error` و `From` را دستی نوشتیم. برای یادگیری خوب است، اما کد تکراری زیادی دارد. دو crate این تکرار را حذف می‌کنند: **thiserror** برای نوع‌های خطایی که خودتان تعریف می‌کنید و **anyhow** برای کدی که فقط باید خطا را گزارش کند. Go هم جواب خودش را دارد، یعنی sentinel error و wrap کردن با `%w`، که در [پیکربندی، لاگ و خطا در Go](/fa/posts/go-config-logging-errors/) دیدیم.
+یک خطای `anyhow` را با `{}` چاپ کنید، یک خط می‌بینید؛ با `{:?}` چاپش کنید، کل فهرست `Caused by:` را. این‌که کدام در لاگ شما بنشیند تعیین می‌کند بعداً بفهمید درخواست چرا شکست خورد یا نه. در [دیتابیس با SQLx در Rust](/fa/posts/rust-database-sqlx/) منبع معمول خطا دیتابیس بود: قطع اتصال، ردیف پیدا‌نشده، نقض constraint. در [مدیریت خطا با Result](/fa/posts/rust-error-handling-result/) پیاده‌سازی‌های `Display`، `Error` و `From` را دستی نوشتیم. برای یادگیری خوب است، اما کد تکراری زیادی دارد. دو crate این تکرار را حذف می‌کنند: **thiserror** برای نوع‌های خطایی که خودتان تعریف می‌کنید و **anyhow** برای کدی که فقط باید خطا را گزارش کند. Go هم جواب خودش را دارد، یعنی sentinel error و wrap کردن با `%w`، که در [پیکربندی، لاگ و خطا در Go](/fa/posts/go-config-logging-errors/) دیدیم.
 
 > Rust 1.90، thiserror 2.0.21 و anyhow 1.0.104. همه‌ی کدهای زیر به‌صورت یک نمونه‌ی محلی کامپایل و اجرا شده‌اند و خروجی‌ها از همان اجراها کپی شده‌اند.
 
@@ -209,7 +210,7 @@ fn status_of(err: &ServiceError) -> (u16, String) {
 500 internal error   (log: dial tcp 10.0.0.5:5432: connection refused)
 ```
 
-## چند نکته
+## اشتباه‌های رایج در گزارش خطا
 
 - `anyhow::Error` را در API عمومی کتاب‌خانه نگذارید. فراخواننده نمی‌تواند `match` کند، فقط downcast.
 - `{}` علت‌ها را پنهان می‌کند. با `{:#}` یا `{:?}` لاگ کنید وگرنه دلیل را از دست می‌دهید.
@@ -225,4 +226,4 @@ fn status_of(err: &ServiceError) -> (u16, String) {
 
 ## قدم بعدی
 
-در مقاله‌ی بعد سراغ کلاینت async برای NATS JetStream در Rust می‌رویم.
+«کلاینت async NATS JetStream در Rust» این خطاها را به کار می‌گیرد: Worker آنجا با یک enum کوچک `thiserror` تصمیم می‌گیرد پیام ناموفق دوباره تحویل شود یا کنار گذاشته شود.

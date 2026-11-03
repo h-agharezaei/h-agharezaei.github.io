@@ -3,6 +3,7 @@ date = '2026-12-09T10:00:00+03:30'
 draft = false
 title = 'planner و آمار: چرا ایندکس استفاده نمی‌شود'
 description = 'آمار planner در PostgreSQL با اجرای واقعی EXPLAIN: چرا ایندکس کنار گذاشته می‌شود؛ آمار کهنه، cast، تابع، LIKE، OR و آمار گسترده.'
+contentType = 'tutorial'
 categories = ["Databases"]
 series = ["Databases"]
 tags = ["databases", "postgresql", "planner", "statistics", "explain"]
@@ -117,7 +118,7 @@ after:  rows=1666
 4. تخمین خوب است ولی ایندکس نیست: selectivity، cast، تابع و wildcard را بررسی کنید.
 5. فقط بعد از این، `enable_seqscan = off` را در یک session برای مقایسه بزنید.
 
-## چند نکته‌ی مهم
+## قضاوت درباره‌ی planner
 
 - Seq Scan باگ نیست؛ با مقایسه‌ی تخمین و واقعی قضاوت کنید.
 - parameter را cast کنید، نه ستون را.
@@ -130,4 +131,4 @@ after:  rows=1666
 
 ## قدم بعدی
 
-پست بعدی سری: تراکنش و ACID.
+«تراکنش و ACID»: بعد از خواندن، نوبت نوشتن است.

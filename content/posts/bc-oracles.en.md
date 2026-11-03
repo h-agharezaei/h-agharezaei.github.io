@@ -3,13 +3,14 @@ date = '2026-11-24T18:00:00+03:30'
 draft = false
 title = 'Oracles and price manipulation'
 description = 'Oracles and price manipulation in Solidity: a one-transaction attack on my own AMM-priced lending market, then a TWAP oracle with a staleness check.'
+contentType = 'tutorial'
 categories = ["Blockchain"]
 series = ["Blockchain"]
 tags = ["blockchain", "solidity", "defi", "oracle", "security", "foundry"]
 cover = { image = "/images/covers/bc-oracles.png", alt = "Oracles and price manipulation", hiddenInSingle = true }
 +++
 
-[Lending, collateral and liquidation](/posts/bc-lending-liquidation/) ended with a placeholder: a price the owner types in. A contract cannot fetch a price from a website. Whatever number it uses must already be on-chain, put there by someone or computed from something. That is the {{< term "oracle" "oracle" >}} problem.
+A contract cannot fetch a price from a website. Whatever number it uses must already be on-chain, put there by someone or computed from something. That is the {{< term "oracle" "oracle" >}} problem, and [Lending, collateral and liquidation](/posts/bc-lending-liquidation/) sidestepped it with a price the owner types in.
 
 The tempting answer is already deployed: the pool from [AMMs and the constant-product formula](/posts/bc-amm-constant-product/) has a price, `reserve1 / reserve0`. This post wires the lending market to that spot price, attacks it in one transaction, then fixes it. The attack runs only against my own contracts in a local Foundry test.
 
@@ -116,7 +117,7 @@ During a crash, liquidations arrive late. And holding a price over several block
 
 The other common design is a push oracle: independent reporters publish a price on-chain. Chainlink-style feeds, according to their docs, expose the answer together with an `updatedAt` timestamp. A consumer should reject old answers and sudden jumps beyond a set deviation. I did not build one here; the staleness rule above is the same idea.
 
-## A few things to watch
+## Where an oracle gets fooled
 
 - Never price collateral with a spot price from a pool that can be traded in the same transaction.
 - Flash loans give anyone large capital for one transaction. "It would need a lot of money" is not a defence.
@@ -131,4 +132,4 @@ The other common design is a push oracle: independent reporters publish a price 
 
 ## What's next
 
-Next post: **Contract security: reentrancy, access control and real incidents**.
+**Contract security: reentrancy, access control and real incidents**: this attack needed no bug; the next ones do.

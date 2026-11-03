@@ -3,6 +3,7 @@ date = '2026-12-09T10:00:00+03:30'
 draft = false
 title = 'The planner and statistics: why an index is not used'
 description = 'PostgreSQL planner statistics explained with real EXPLAIN runs: why an index is skipped, stale ANALYZE, casts, functions, LIKE, OR and extended statistics.'
+contentType = 'tutorial'
 categories = ["Databases"]
 series = ["Databases"]
 tags = ["databases", "postgresql", "planner", "statistics", "explain"]
@@ -39,7 +40,7 @@ To see the alternative, use `SET enable_seqscan = off` **only as a diagnostic**:
 Bitmap Heap Scan ... (cost=1572.45..6684.54 rows=140407)   Buffers: shared hit=1797
 ```
 
-Its estimated cost, 6684, is higher than the Seq Scan's 5857, so the planner skipped it. Honestly, on this fully cached demo it touched fewer buffers (1797 vs 3357) and I did not time either, so I cannot claim it is slower here. The cost model also uses `random_page_cost` (4 by default, 1 for sequential pages); I do not tune it. Never ship `enable_seqscan = off`.
+Its estimated cost, 6684, is higher than the Seq Scan's 5857, so the planner skipped it. On this fully cached demo it touched fewer buffers (1797 vs 3357) and I did not time either, so I cannot claim it is slower here. The cost model also uses `random_page_cost` (4 by default, 1 for sequential pages). Never ship `enable_seqscan = off`.
 
 ## Tiny tables
 
@@ -117,7 +118,7 @@ after:  rows=1666
 4. Estimates fine but no index: check selectivity, casts, functions, wildcards.
 5. Only then, `enable_seqscan = off` in a session to compare.
 
-## A few things to watch
+## Judging the planner
 
 - A Seq Scan is not a bug; judge by estimate versus actual.
 - Cast the parameter, never the column.
@@ -130,4 +131,4 @@ Load 200k rows where 99% of one indexed column is `'a'`, without `ANALYZE`. Comp
 
 ## What's next
 
-Next in the series: Transactions and ACID.
+Transactions and ACID: after reading comes writing.

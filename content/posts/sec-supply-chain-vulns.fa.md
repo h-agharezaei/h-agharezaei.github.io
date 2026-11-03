@@ -3,13 +3,14 @@ date = '2027-05-05T10:00:00+03:30'
 draft = false
 title = 'زنجیره‌ی تأمین و آسیب‌پذیری وابستگی‌ها'
 description = 'امنیت زنجیره‌ی تأمین نرم‌افزار با اجرای واقعی در Go، npm و Python: go.sum، npm audit، hash در lockfile، اسکریپت نصب و pip-audit.'
+contentType = 'tutorial'
 categories = ["Security"]
 series = ["Software Security"]
 tags = ["security", "supply-chain", "dependencies", "go", "npm", "python"]
 cover = { image = "/images/covers/sec-supply-chain-vulns.fa.png", alt = "زنجیره‌ی تأمین و آسیب‌پذیری وابستگی‌ها", hiddenInSingle = true }
 +++
 
-مقاله‌ی قبلی، [مدیریت راز و کلید](/fa/posts/sec-secrets-management/)، از اعتبارنامه‌های خودتان محافظت می‌کرد. این مقاله درباره‌ی کدی است که شما ننوشته‌اید. بیشتر چیزی که یک سرویس سفارش‌ها اجرا می‌کند، مثل سرویس [ساخت API با net/http در Go](/fa/posts/go-http-api-stdlib/)، یک {{< term "transitive-dependency" "وابستگی غیرمستقیم" >}} است که هرگز نخوانده‌اید. این همان {{< term "software-supply-chain" "زنجیره‌ی تأمین نرم‌افزار" >}} است. پیش‌زمینه: [بسته‌ها و ماژول‌ها](/fa/posts/go-packages-modules/)، [npm، package.json و lockfile](/fa/posts/node-npm-package-json/) و [محیط Python: venv و uv](/fa/posts/py-environment-uv-venv/).
+یک فایل از وابستگی‌ای را در cache ماژول‌های Go عوض کنید و `go mod verify` جواب می‌دهد `dir has been modified`. چنین بررسی‌هایی مهم‌اند، چون بیشتر چیزی که یک سرویس سفارش‌ها اجرا می‌کند، مثل سرویس [ساخت API با net/http در Go](/fa/posts/go-http-api-stdlib/)، یک {{< term "transitive-dependency" "وابستگی غیرمستقیم" >}} است که هرگز نخوانده‌اید. این همان {{< term "software-supply-chain" "زنجیره‌ی تأمین نرم‌افزار" >}} است: [مدیریت راز و کلید](/fa/posts/sec-secrets-management/) از اعتبارنامه‌های خودتان محافظت می‌کرد و این مقاله درباره‌ی کدی است که ننوشته‌اید. پیش‌زمینه: [بسته‌ها و ماژول‌ها](/fa/posts/go-packages-modules/)، [npm، package.json و lockfile](/fa/posts/node-npm-package-json/) و [محیط Python: venv و uv](/fa/posts/py-environment-uv-venv/).
 
 > فقط دفاعی. همه‌چیز در پروژه‌های موقت با cache خصوصی اجرا شد و بعد پاک شد. بدون جزئیات اکسپلویت و بدون هیچ هدف بیرونی. خروجی advisoryها همان است که در تاریخ 2026-10-27 برگشت.
 
@@ -129,7 +130,7 @@ jinja2 2.11.2  PYSEC-2026-1473 3.1.3
 | npm | نسخه‌ی دقیق + lockfile | `npm ci` | `npm audit` |
 | Python | `--generate-hashes` | `--require-hashes` | `pip-audit` |
 
-## چند نکته‌ی مهم
+## آنچه اسکنر به شما نمی‌گوید
 
 - اسکنر فقط advisoryهای شناخته‌شده را نشان می‌دهد؛ نبودن یافته اثبات امن‌بودن نیست.
 - `npm audit fix --force` ممکن است از major عبور کند. قبل از اعمال بخوانید.
@@ -142,4 +143,4 @@ jinja2 2.11.2  PYSEC-2026-1473 3.1.3
 
 ## قدم بعدی
 
-مقاله‌ی بعدی «SSRF و deserialization ناامن» است.
+«SSRF و deserialization ناامن» از کدی که ننوشته‌اید به ورودی‌ای می‌رسد که ننوشته‌اید: یک URL یا مشتی بایت.

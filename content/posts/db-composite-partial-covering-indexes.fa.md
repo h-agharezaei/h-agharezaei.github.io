@@ -3,13 +3,14 @@ date = '2026-12-05T10:00:00+03:30'
 draft = false
 title = 'ایندکس ترکیبی، جزئی و پوششی'
 description = 'ایندکس ترکیبی، جزئی و پوششی در PostgreSQL 18: ترتیب ستون‌ها، INCLUDE و Index Only Scan، ایندکس عبارتی، با planهای واقعی EXPLAIN.'
+contentType = 'tutorial'
 categories = ["Databases"]
 series = ["Databases"]
 tags = ["databases", "postgresql", "indexes", "explain", "performance"]
 cover = { image = "/images/covers/db-composite-partial-covering-indexes.fa.png", alt = "ایندکس ترکیبی، جزئی و پوششی", hiddenInSingle = true }
 +++
 
-در [پست قبلی](/fa/posts/db-indexes-btree-explain/) ایندکس‌های تک‌ستونی ساختیم و planشان را با `EXPLAIN ANALYZE` خواندیم. کوئری واقعی کم‌تر روی یک ستون فیلتر می‌کند. ابزارهای بعدی: {{< term "composite-index" "ایندکس ترکیبی" >}} (**composite index**)، {{< term "partial-index" "ایندکس جزئی" >}} (**partial index**)، {{< term "covering-index" "ایندکس پوششی" >}} (**covering index**) و {{< term "expression-index" "ایندکس عبارتی" >}} (**expression index**).
+دو ایندکس روی همان دو ستون با ترتیب متفاوت: یکی ۶ page می‌خواند و دیگری ۲۵. ایندکس تک‌ستونیِ [ایندکس B-tree و EXPLAIN ANALYZE](/fa/posts/db-indexes-btree-explain/) برای کوئری چندشرطی کافی نیست. ابزارهای بعدی: {{< term "composite-index" "ایندکس ترکیبی" >}}، {{< term "partial-index" "ایندکس جزئی" >}}، {{< term "covering-index" "ایندکس پوششی" >}} و {{< term "expression-index" "ایندکس عبارتی" >}}.
 
 > همه‌چیز روی PostgreSQL 18.3 واقعی و با schema مشترک shop (۲۰۰ هزار سفارش، ۲۰ هزار مشتری) اجرا شده. planها از `EXPLAIN (ANALYZE, BUFFERS, TIMING OFF, SUMMARY OFF)` آمده و فقط خطوط مهم را نگه داشته‌ام. به‌جای میلی‌ثانیه تعداد bufferها را می‌آورم، چون به ماشین بستگی ندارد.
 
@@ -75,13 +76,13 @@ without INCLUDE: Bitmap Heap Scan        Buffers: 763 pages
 with INCLUDE:    Index Only Scan         Heap Fetches: 0     Buffers: 9 pages
 ```
 
-حالا تله‌ی کلاسیک. ۲۰٪ سفارش‌ها را update کردم و vacuum نزدم:
+تله‌ی کلاسیک: ۲۰٪ سفارش‌ها را update کردم و vacuum نزدم:
 
 ```text
 Index Only Scan ...   Heap Fetches: 1200   Buffers: shared hit=1213
 ```
 
-همان node، ولی ۱۲۱۳ صفحه. ایندکس نمی‌داند ردیف برای ما قابل‌دیدن است یا نه؛ {{< term "visibility-map" "visibility map" >}} صفحه‌های کاملاً قابل‌دیدن heap را علامت می‌زند و update این بیت‌ها را پاک کرد. بعد از `VACUUM orders` (درباره‌ی {{< term "vacuum" "VACUUM" >}}) شد `Heap Fetches: 0` و ۱۴ صفحه. پس Index Only Scan روی جدول پر‌update به عقب‌نماندن vacuum وابسته است. انتخاب `status` هم که در ایندکس نیست، دوباره Bitmap Heap Scan شد.
+ایندکس نمی‌داند ردیف برای ما قابل‌دیدن است یا نه؛ {{< term "visibility-map" "visibility map" >}} صفحه‌های کاملاً قابل‌دیدن heap را علامت می‌زند و update این بیت‌ها را پاک کرد. بعد از `VACUUM orders` (درباره‌ی {{< term "vacuum" "VACUUM" >}}) شد `Heap Fetches: 0` و ۱۴ صفحه. پس Index Only Scan روی جدول پر‌update به عقب‌نماندن vacuum وابسته است. انتخاب `status` هم که در ایندکس نیست، دوباره Bitmap Heap Scan شد.
 
 ## ایندکس عبارتی و شرط‌های non-sargable
 
@@ -110,7 +111,7 @@ Result: 1200 rows, index buffers 37
 
 اندازه‌ها از `pg_stat_user_indexes` در پایان: `orders_pkey` ‏8792 kB، `orders_cust_status` ‏2016 kB، `orders_cust_idx` ‏1856 kB، `orders_status_idx` ‏1368 kB. هرکدام با هر insert و update نوشته می‌شود. حالا `orders_cust_idx` اضافه است چون `(customer_id, status)` کوئری‌های `customer_id` را هم جواب می‌دهد.
 
-## چند نکته‌ی مهم
+## قاعده‌ها و دام‌های ایندکس چندستونی
 
 - ستون‌های equality اول، ستون range آخر؛ ستون `ORDER BY` را درست بعد از equalityها بگذارید.
 - ایندکس جزئی کوچک است، ولی فقط کوئری‌ای از آن استفاده می‌کند که `WHERE`اش شرط ایندکس را نتیجه بدهد.
@@ -124,4 +125,4 @@ Result: 1200 rows, index buffers 37
 
 ## قدم بعدی
 
-گاهی ایندکس درست وجود دارد و PostgreSQL باز هم نادیده‌اش می‌گیرد. پست بعدی: «planner و آمار: چرا ایندکس استفاده نمی‌شود».
+«planner و آمار: چرا ایندکس استفاده نمی‌شود»: گاهی ایندکس درست وجود دارد و PostgreSQL باز هم نادیده‌اش می‌گیرد.

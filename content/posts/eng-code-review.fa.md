@@ -2,6 +2,7 @@
 date = '2027-03-17T10:00:00+03:30'
 draft = false
 title = 'code review مؤثر'
+contentType = 'tutorial'
 description = 'code review مؤثر در Go: اول gofmt، vet، race detector و staticcheck، بعد آنچه فقط آدم می‌بیند و روش گفتن مؤدبانه‌ی آن، همراه با اجرای واقعی.'
 categories = ["Engineering"]
 series = ["Software Engineering"]
@@ -9,7 +10,7 @@ tags = ["code-review", "software-engineering", "testing", "go", "collaboration"]
 cover = { image = "/images/covers/eng-code-review.fa.png", alt = "code review مؤثر", hiddenInSingle = true }
 +++
 
-در [refactor امن](/fa/posts/eng-refactoring-safely/) شبکه‌ی ایمنی یک تست بود. {{< term "code-review" "code review" >}} شبکه‌ی دیگری است که از آدم‌ها ساخته شده و گران است: توجه reviewer کمیاب‌ترین چیز در تیم است. قاعده‌ی من این است که اول ماشین‌ها بروند و آدم‌ها فقط چیزی را ببینند که ماشین نمی‌بیند. مبانی تست: [تست در Go](/fa/posts/go-testing-basics/)؛ لایه‌بندی: [ساختار پروژه و clean architecture](/fa/posts/go-project-layout-clean-architecture/). نظرها با **به تجربه‌ی من** مشخص شده‌اند و یافته‌های زیر اجرا شده‌اند.
+در یک PR کوچک Go هفت مشکل کاشتم؛ `gofmt`، `go vet`، race detector و staticcheck روی هم سه‌تا را گرفتند. body بسته‌نشده، goroutineهای نشت‌کرده و یک خطای مرزی از همه‌ی ابزارها رد شدند. {{< term "code-review" "code review" >}} شبکه‌ی ایمنی همین‌هاست: برخلاف تستِ [refactor امن](/fa/posts/eng-refactoring-safely/) از آدم‌ها ساخته شده و گران است، چون توجه reviewer کمیاب‌ترین چیز در تیم است. قاعده‌ی من این است که اول ماشین‌ها بروند و آدم‌ها فقط چیزی را ببینند که ماشین نمی‌بیند. مبانی تست: [تست در Go](/fa/posts/go-testing-basics/)؛ لایه‌بندی: [ساختار پروژه و clean architecture](/fa/posts/go-project-layout-clean-architecture/). نظرها با **به تجربه‌ی من** مشخص شده‌اند و یافته‌های زیر اجرا شده‌اند.
 
 > Go 1.26، یک repo محلی git با دو commit و یک branch؛ کد را خودم و عمداً معیوب نوشته‌ام.
 
@@ -104,7 +105,7 @@ check.go:49  What: LastPage(11, 5) returns 2.
 
 فایل {{< term "codeowners" "CODEOWNERS" >}} از صاحبان یک مسیر review می‌خواهد و {{< term "branch-protection" "branch protection" >}} می‌تواند پیش از merge تأیید و CI سبز را اجباری کند. هر دو روی پلتفرم میزبان تنظیم می‌شوند؛ اینجا هیچ‌کدام را راه نینداختم.
 
-## چند نکته‌ی مهم
+## توجه reviewer کجا هدر می‌رود
 
 - سبک کد را دستی review نکنید؛ خودکارش کنید.
 - اول تست‌ها را بخوانید: اگر روی باگ شکست نمی‌خورند، کد زیرشان review نشده است.
@@ -117,4 +118,4 @@ check.go:49  What: LastPage(11, 5) returns 2.
 
 ## قدم بعدی
 
-پست بعدی «طراحی API: نسخه‌بندی و pagination» است.
+«طراحی API: نسخه‌بندی و pagination»: آنجا یک تغییر باید برای کلاینت‌های زیادی کار کند.

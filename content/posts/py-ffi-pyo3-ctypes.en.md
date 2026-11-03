@@ -3,13 +3,14 @@ date = '2027-05-24T10:00:00+03:30'
 draft = false
 title = 'Calling Rust from Python with ctypes and PyO3'
 description = 'Calling Rust from Python with ctypes and PyO3: C ABI, freeing memory, panics, maturin, exceptions, releasing the GIL, abi3 wheels and when not to.'
+contentType = 'tutorial'
 categories = ["Python"]
 series = ["Python"]
 tags = ["python", "rust", "ffi", "ctypes", "pyo3", "maturin"]
 cover = { image = "/images/covers/py-ffi-pyo3-ctypes.png", alt = "Calling Rust from Python with ctypes and PyO3", hiddenInSingle = true }
 +++
 
-In the [previous post](/posts/py-data-csv-sqlite/) we stayed inside the standard library. Sometimes a hot loop is too slow in Python, and you already have Rust. This last post of the Python series shows two {{< term "ffi" "FFI" >}} ways to call Rust: `ctypes` (no build step on the Python side) and {{< term "pyo3" "PyO3" >}} with maturin (a real module). The boundary rules are the same as in [Calling Rust from Go over FFI](/posts/go-calls-rust-ffi/) and [Unsafe and FFI in Rust](/posts/rust-unsafe-ffi/). Python threads and the lock are in [The GIL and threading](/posts/py-gil-threading/).
+Without type declarations, ctypes turns a Rust function's 5,000,000,000 into 705,032,704, silently. Sometimes a hot loop is too slow in Python and you already have Rust; after [the standard library](/posts/py-data-csv-sqlite/), this last post of the Python series shows two {{< term "ffi" "FFI" >}} ways to call Rust: `ctypes` (no build step on the Python side) and {{< term "pyo3" "PyO3" >}} with maturin (a real module). The boundary rules are the same as in [Calling Rust from Go over FFI](/posts/go-calls-rust-ffi/) and [Unsafe and FFI in Rust](/posts/rust-unsafe-ffi/). Python threads and the lock are in [The GIL and threading](/posts/py-gil-threading/).
 
 > Python 3.14.0, Rust 1.90, macOS arm64, {{< term "uv" "uv" >}} 0.10.9, maturin 1.15.0, PyO3 pinned to `=0.30.1`. Everything below was run, in throwaway directories I deleted afterwards. The machine load was 6, so I publish **no timings**.
 
@@ -51,11 +52,11 @@ print(ctypes.string_at(p).decode())  # Hello, Roham!
 lib.free_string(p)
 ```
 
-A callback works through `CFUNCTYPE`; keep a reference to the callback object alive for the whole call. `each_square(4, cb)` made Python record `[(0, 0), (1, 1), (2, 4), (3, 9)]`.
+A callback works through `CFUNCTYPE`; keep the callback object alive for the whole call. `each_square(4, cb)` made Python record `[(0, 0), (1, 1), (2, 4), (3, 9)]`.
 
 ## A panic crosses the boundary
 
-I added `boom()` that panics and ran it in a subprocess. Modern Rust refuses to unwind out of `extern "C"`:
+I ran a panicking `boom()` in a subprocess. Modern Rust refuses to unwind out of `extern "C"`:
 
 ```text
 exit code -6
@@ -100,7 +101,7 @@ The first line compares against a pure-Python version for five values of `n`. Wr
 
 ## Releasing the GIL
 
-A Rust function that holds the {{< term "gil" "GIL" >}} blocks other Python threads. In PyO3 0.30.1 the method is `py.detach(|| ...)`; I verified that it compiles and that the old name `allow_threads` is not in this version's `marker.rs`. I wrote `count_multiples_nogil` with it. My ticker-thread test of its effect was flawed (the compiler can fold that loop), so I claim no speedup. Python-versus-Rust speed: not measured.
+A Rust function that holds the {{< term "gil" "GIL" >}} blocks other Python threads. In PyO3 0.30.1 the method is `py.detach(|| ...)`; I verified that it compiles and that the old name `allow_threads` is not in this version's `marker.rs`. I wrote `count_multiples_nogil` with it. My ticker-thread test of its effect was flawed (the compiler can fold that loop), so I claim no speedup.
 
 ## Types, wheels and abi3
 
@@ -112,7 +113,7 @@ Ship a `_core.pyi` stub and an empty `py.typed` file so mypy sees the {{< term "
 - Crashes in native code have no Python traceback, and debugging is harder.
 - Alternatives: `cffi`, Cython, pybind11 (for C++). For Rust, I would reach for PyO3.
 
-## A few things to watch
+## Rules at the FFI boundary
 
 - Set `argtypes` and `restype` for every ctypes function.
 - Free memory with the allocator that made it.

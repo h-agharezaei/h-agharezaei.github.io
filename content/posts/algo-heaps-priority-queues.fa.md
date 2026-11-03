@@ -3,13 +3,14 @@ date = '2026-12-31T10:00:00+03:30'
 draft = false
 title = 'heap و priority queue'
 description = 'heap دودویی و priority queue در Go: Heap[T] جنریک، heapify در برابر n بار push، top-K روی stream، container/heap با Fix و scheduler پایدار.'
+contentType = 'tutorial'
 categories = ["Algorithms"]
 series = ["Algorithms"]
 tags = ["algorithms", "data-structures", "go", "heap", "priority-queue"]
 cover = { image = "/images/covers/algo-heaps-priority-queues.fa.png", alt = "heap و priority queue", hiddenInSingle = true }
 +++
 
-در مقاله‌ی قبلی، [stack، queue و deque](/fa/posts/algo-stacks-queues-deques/)، آیتم‌ها به همان ترتیبی که آمده بودند بیرون می‌رفتند. اغلب این درست نیست: کار فوری‌تر، کوچک‌ترین فاصله یا بزرگ‌ترین امتیاز را می‌خواهیم. این همان {{< term "priority-queue" "priority queue" >}} است و تقریباً همیشه روی یک {{< term "binary-heap" "heap دودویی" >}} ساخته می‌شود. heap در یک slice معمولی زندگی می‌کند، مثل [آرایه‌ی پویا و slice از درون](/fa/posts/algo-dynamic-arrays/)، کانتینر از [Generics در Go](/fa/posts/go-generics/) استفاده می‌کند و هزینه‌ها را مثل [تحلیل Big-O با اندازه‌گیری واقعی](/fa/posts/algo-big-o-measured/) با {{< term "big-o" "Big-O" >}} می‌گوییم.
+نگه‌داشتن ۱۰ عدد بزرگ‌تر از میان یک میلیون عدد با ساختاری که هیچ‌وقت بیش از ۱۰ آیتم نداشت ۶۵۴ مقایسه خرج کرد؛ مرتب‌کردن همه حدود ۲۱ میلیون. ترتیب ورود، یعنی چیزی که [stack، queue و deque](/fa/posts/algo-stacks-queues-deques/) می‌داد، اغلب درست نیست: کار فوری‌تر، کوچک‌ترین فاصله یا بزرگ‌ترین امتیاز را می‌خواهیم. این همان {{< term "priority-queue" "priority queue" >}} است و تقریباً همیشه روی یک {{< term "binary-heap" "heap دودویی" >}} ساخته می‌شود. heap در یک slice معمولی زندگی می‌کند، مثل [آرایه‌ی پویا و slice از درون](/fa/posts/algo-dynamic-arrays/)، کانتینر از [Generics در Go](/fa/posts/go-generics/) استفاده می‌کند و هزینه‌ها را مثل [تحلیل Big-O با اندازه‌گیری واقعی](/fa/posts/algo-big-o-measured/) با {{< term "big-o" "Big-O" >}} می‌گوییم.
 
 > Go 1.26، مثال محلی. تعداد عملیات (فراخوانی `less`) را منتشر می‌کنم که قطعی است، و هیچ زمان واقعی‌ای نمی‌دهم.
 
@@ -121,9 +122,9 @@ after Remove(d), rest: [a b c e]
 
 ## heap sort
 
-heapify کنید و n بار pop. O(n log n) است و ساختار اضافه نمی‌خواهد، اما در شمارش من مقایسه‌ی بیشتری از `sort.Slice` داشت: ۳٬۰۱۹٬۵۳۶ در برابر ۱٬۷۵۴٬۷۹۳ برای ۱۰۰٬۰۰۰ عدد. در مقاله‌ی بعدی «Sorting: quick, merge and heap» دقیق‌تر به آن می‌پردازم. الگوریتم Dijkstra هم در مقاله‌ای بعدی از همین heap استفاده می‌کند.
+heapify کنید و n بار pop. O(n log n) است و ساختار اضافه نمی‌خواهد، اما در شمارش من مقایسه‌ی بیشتری از `sort.Slice` داشت: ۳٬۰۱۹٬۵۳۶ در برابر ۱٬۷۵۴٬۷۹۳ برای ۱۰۰٬۰۰۰ عدد. در مقاله‌ی بعدترِ «مرتب‌سازی: quick، merge و heap» دقیق‌تر به آن می‌پردازم. الگوریتم Dijkstra هم در مقاله‌ای بعدی از همین heap استفاده می‌کند.
 
-## چند نکته‌ی مهم
+## آنچه heap تضمین نمی‌کند
 
 - heap مرتب نیست؛ فقط ریشه تضمین‌شده است.
 - جست‌وجوی یک مقدار دلخواه O(n) است.
@@ -137,4 +138,4 @@ heapify کنید و n بار pop. O(n log n) است و ساختار اضافه �
 
 ## قدم بعدی
 
-جست‌وجوی دودویی و invariant.
+جست‌وجوی دودویی و invariant: همان عادت invariant که این heap را درست نگه داشت، جایی که بیشترین سود را دارد.

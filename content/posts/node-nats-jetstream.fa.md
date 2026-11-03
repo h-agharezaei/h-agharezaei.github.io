@@ -3,13 +3,14 @@ date = '2027-02-27T10:00:00+03:30'
 draft = false
 title = 'NATS JetStream از Node.js'
 description = 'NATS JetStream از Node.js: publish با msgID، pull consumer ماندگار، ack، nak، term، backoff، drain تمیز و تعامل با Go، همه با اجرای واقعی.'
+contentType = 'tutorial'
 categories = ["Node.js"]
 series = ["Node.js"]
 tags = ["nodejs", "nats", "jetstream", "messaging", "graceful-shutdown"]
 cover = { image = "/images/covers/node-nats-jetstream.fa.png", alt = "NATS JetStream از Node.js", hiddenInSingle = true }
 +++
 
-در مقاله‌ی قبل، [Postgres از Node.js با pg](/fa/posts/node-postgres-pg/)، با دیتابیس حرف زدیم. حالا ستون دوم یک backend: پیام‌رسانی. از Node.js سراغ **{{< term "jetstream" "JetStream" >}}** می‌روم و با [یک Publisher و Worker ساده با NATS JetStream در Go](/fa/posts/nats-jetstream-go/) مقایسه می‌کنم. ایده‌ها همان‌هایی است که در [Retry و Dead-Letter Queue](/fa/posts/nats-jetstream-retry-dlq/)، [Idempotency](/fa/posts/nats-jetstream-idempotency/)، [خاموشی تمیز Workerها در Go](/fa/posts/go-graceful-shutdown-workers/) و [کلاینت async NATS JetStream در Rust](/fa/posts/rust-nats-async-client/) دیدیم؛ فقط کلاینت عوض می‌شود.
+یک پیام را دو بار با `msgID` یکسان publish کنید و **{{< term "jetstream" "JetStream" >}}** یک بار ذخیره‌اش می‌کند؛ یک ack را جا بیندازید و پیام برمی‌گردد. پیام‌رسانی ستون دوم یک backend است، بعد از دیتابیسِ [Postgres از Node.js با pg](/fa/posts/node-postgres-pg/). از Node.js سراغ JetStream می‌روم و با [یک Publisher و Worker ساده با NATS JetStream در Go](/fa/posts/nats-jetstream-go/) مقایسه می‌کنم. ایده‌ها همان‌هایی است که در [Retry و Dead-Letter Queue](/fa/posts/nats-jetstream-retry-dlq/)، [Idempotency](/fa/posts/nats-jetstream-idempotency/)، [خاموشی تمیز Workerها در Go](/fa/posts/go-graceful-shutdown-workers/) و [کلاینت async NATS JetStream در Rust](/fa/posts/rust-nats-async-client/) دیدیم؛ فقط کلاینت عوض می‌شود.
 
 > Node نسخه‌ی v20.13.1، `nats` نسخه‌ی 2.29.3 (در `package.json` آن Node >= 14 خواسته شده). سرور یک برنامه‌ی کوچک Go با nats-server توکار است که جدا و روی 127.0.0.1 اجرا شد. اسکریپت‌ها مثال محلی‌اند، خروجی‌ها واقعی‌اند و زمان‌بندی نگرفته‌ام.
 
@@ -103,7 +104,7 @@ go got subject=orders.interop data={"id":7,"total":99} header[Trace-Id]=abc-123 
 
 چیزهایی که مطمئنم: nats.go هم `js.Publish` و `PullSubscribe` با `Fetch` دارد و ack متد خود پیام است (`Ack`، `Nak`، `Term`)، مثل اینجا. در Node همه‌چیز Promise برمی‌گرداند و `consume()` یک async iterator است؛ کلیدهای کانفیگ snake_case سرور هستند (`max_deliver`، `ack_wait`) و مدت‌ها بر حسب نانوثانیه‌اند، پس از helper به نام `nanos()` استفاده کنید.
 
-## چند نکته‌ی مهم
+## پیام‌هایی که می‌چرخند یا گم می‌شوند
 
 - همیشه `max_deliver` محدود و `backoff` بگذارید، وگرنه پیام خراب تا ابد می‌چرخد.
 - `m.ack()` بدون انتظار است؛ `await m.ackAck()` تأیید می‌کند سرور آن را گرفته.
@@ -117,4 +118,4 @@ handlerی بنویسید که وقتی `m.info.deliveryCount` به سقف رسی
 
 ## قدم بعدی
 
-مقاله‌ی بعدی «اعتبارسنجی ورودی با Zod» است.
+«اعتبارسنجی ورودی با Zod»: payloadی که از stream می‌رسد هنوز ورودی غیرقابل‌اعتماد است و آن مقاله به همین می‌پردازد.

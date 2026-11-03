@@ -3,15 +3,16 @@ date = '2026-11-13T18:00:00+03:30'
 draft = false
 title = 'جمع‌بندی بخش اول: یک نود کامل کوچک با Go'
 description = 'یک full node کوچک با Go: پروسه‌های جدا روی loopback، بلاک روی دیسک با اعتبارسنجی دوباره، API از نوع JSON-RPC، کیف‌پول خط فرمان و خاموشی تمیز.'
+contentType = 'tutorial'
 categories = ["Blockchain"]
 series = ["Blockchain"]
 tags = ["blockchain", "go", "full-node", "json-rpc", "bitcoin"]
 cover = { image = "/images/covers/bc-toy-node-go.fa.png", alt = "جمع‌بندی بخش اول: یک نود کامل کوچک با Go", hiddenInSingle = true }
 +++
 
-پست قبلی، [Bitcoin Script: یک مفسر stack کوچک با Rust](/fa/posts/bc-bitcoin-script-rust/)، یک گریز کوتاه بود. کد Go از [Mempool، کارمزد و انتخاب تراکنش](/fa/posts/bc-mempool-fees/) ادامه دارد، جایی که همه‌ی نودها در یک پروسه بودند و با بسته شدنش همه‌چیز را فراموش می‌کردند.
+تا این‌جا نودها در یک پروسه‌ی دمو بودند و با بسته شدنش همه‌چیز را فراموش می‌کردند. کد Go از [پست mempool](/fa/posts/bc-mempool-fees/) ادامه دارد؛ [مفسر Script](/fa/posts/bc-bitcoin-script-rust/) یک گریز کوتاه بود.
 
-این پست بخش اول را می‌بندد: یک {{< term "full-node" "full node" >}} به اسم `toynode`، بلاک روی دیسک، API و کیف‌پول خط فرمان. تکه‌ها از [ساخت ابزار خط فرمان با Go](/fa/posts/go-cli-tool/)، [ساخت API با net/http در Go](/fa/posts/go-http-api-stdlib/) و [خاموشی تمیز Workerها در Go](/fa/posts/go-graceful-shutdown-workers/) می‌آیند.
+این پست با حل همین مشکل بخش اول را می‌بندد: یک {{< term "full-node" "full node" >}} به اسم `toynode`، بلاک روی دیسک، API و کیف‌پول خط فرمان. تکه‌ها از [ابزار خط فرمان](/fa/posts/go-cli-tool/)، [API با net/http](/fa/posts/go-http-api-stdlib/) و [خاموشی تمیز](/fa/posts/go-graceful-shutdown-workers/) می‌آیند.
 
 > اجرا با Go 1.27 روی macOS (arm64). کد مثال محلی است و فقط روی loopback. کلیدها از کلمه‌هایی مثل "miner" ساخته شده‌اند: عمومی‌اند و فقط برای دمو. مسیرهای موقت `<tmp>` نوشته شده‌اند.
 
@@ -140,7 +141,7 @@ bob 0xd94f176c: 20
 - قاعده‌ی بلوغ coinbase، median-time-past و سقف timestamp آینده.
 - دیتابیس واقعی برای UTXO، pruning، peer discovery، تخمین کارمزد.
 
-## چند نکته‌ی مهم
+## درس‌های عملیاتی
 
 - هر چه بار می‌کنید دوباره اعتبارسنجی کنید؛ دیسک هم ورودی است.
 - قبل از اعلام ذخیره `fsync` کنید و رکورد نیمه‌کاره را موقع شروع ببرید.
@@ -155,4 +156,4 @@ bob 0xd94f176c: 20
 
 ## قدم بعدی
 
-بخش دوم شروع می‌شود. پست بعد: **EVM از درون: stack، memory، storage و gas با یک مفسر کوچک Rust**.
+بخش دوم از زیر Solidity شروع می‌شود: **EVM از درون: stack، memory، storage و gas با یک مفسر کوچک Rust**.

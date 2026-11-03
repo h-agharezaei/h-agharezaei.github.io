@@ -3,13 +3,14 @@ date = '2027-04-23T10:00:00+03:30'
 draft = false
 title = 'case study: چرا این درخواست کند است'
 description = 'چرا این درخواست کند است: تفکیک فازها با httptrace در Go برای چهار درخواست مرموز روی loopback، زمان‌های curl و چک‌لیست لایه‌به‌لایه.'
+contentType = 'analysis'
 categories = ["Networking"]
 series = ["Networking"]
 tags = ["networking", "latency", "troubleshooting", "httptrace", "curl", "case-study"]
 cover = { image = "/images/covers/net-slow-request-case-study.fa.png", alt = "case study: چرا این درخواست کند است", hiddenInSingle = true }
 +++
 
-در [پست قبل](/fa/posts/net-troubleshooting-curl-traceroute/) یک جعبه‌ابزار ساختیم. این پست آخر سری آن را روی سؤالی می‌گذارد که هر مهندس backend می‌شنود: «این درخواست کند است، چرا؟» ترفند این است که به جمع کل نگاه نکنیم و آن را به فازها بشکنیم: پیدا کردن نام، connect در {{< term "tcp" "TCP" >}}، handshake در {{< term "tls" "TLS" >}}، انتظار برای اولین بایت ({{< term "ttfb" "TTFB" >}}) و دانلود بدنه. نگاه کنید به [مدل TCP/IP](/fa/posts/net-tcp-ip-model/) و [DNS در عمل](/fa/posts/net-dns-in-practice/).
+«این درخواست کند است، چرا؟» هر مهندس backend این سؤال را می‌شنود و زمان کل به‌تنهایی جوابش را نمی‌دهد. اینجا جعبه‌ابزار [پست قبل](/fa/posts/net-troubleshooting-curl-traceroute/) را رویش به کار می‌برم. ترفند این است که به جمع کل نگاه نکنیم و آن را به فازها بشکنیم: پیدا کردن نام، connect در {{< term "tcp" "TCP" >}}، handshake در {{< term "tls" "TLS" >}}، انتظار برای اولین بایت ({{< term "ttfb" "TTFB" >}}) و دانلود بدنه. نگاه کنید به [مدل TCP/IP](/fa/posts/net-tcp-ip-model/) و [DNS در عمل](/fa/posts/net-dns-in-practice/).
 
 > حریم خصوصی: همه‌چیز روی `127.0.0.1` و با گواهی self-signed برای `localhost` اجرا شد (کلاینت verification را رد می‌کند، فقط برای همین دموی محلی قابل قبول است). ماشین خیلی مشغول بود (load average بالای 20)، پس عددها به نزدیک‌ترین 50 میلی‌ثانیه گرد شده‌اند: تأخیرهای تزریق‌شده (300 تا 400 میلی‌ثانیه) غالب‌اند. DNS واقعی، تأخیر واقعی ISP، packet loss و packet capture را امتحان نکردم.
 
@@ -89,15 +90,11 @@ HTTP/2    all three: wait=0  done at 200
 | 7 | بدنه | body | بایت زیاد یا قطره‌قطره؟ |
 | 8 | دوباره کلاینت | بعد از body | parse؟ |
 
-## چند نکته‌ی مهم
+## درس‌های این چهار درخواست
 
 - قبل از حدس زدن، فازهای یک درخواست را اندازه بگیرید؛ جمع کل مقصر را پنهان می‌کند.
 - بدنه‌ی بزرگ و بدنه‌ی قطره‌قطره هر دو دانلود طولانی نشان می‌دهند؛ بایت‌ها را ببینید.
 - عددهای فقط-کلاینت نمی‌توانند handshake کند را از گیرکردن accept جدا کنند.
-
-## تمرین
-
-یک flag به سرور اضافه کنید که اتصال را بعد از header ببندد. کلاینت چه خطایی گزارش می‌کند؟ بعد یک retry اضافه کنید و فکر کنید تلاش دوم پنهان را چطور متوجه می‌شوید.
 
 ## قدم بعدی
 

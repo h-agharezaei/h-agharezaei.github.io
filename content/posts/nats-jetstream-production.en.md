@@ -4,13 +4,14 @@ draft = false
 title = 'JetStream in production: clustering, retention and security'
 seoTitle = 'JetStream in Production: Clustering and Security'
 description = 'Run JetStream with three replicas, survive a node loss, pick a retention policy and lock it down with permissions and TLS, all shown with real runs in Go.'
+contentType = 'engineering'
 categories = ["Go"]
 series = ["NATS JetStream"]
 tags = ["go", "nats", "jetstream", "cluster", "security", "production", "retention"]
 cover = { image = "/images/covers/nats-jetstream-production.png", alt = "JetStream in production: clustering, retention and security", hiddenInSingle = true }
 +++
 
-In the [previous post](/posts/nats-kv-object-store/) we used JetStream as a KV and blob store. This last post of the series is about what changes when it leaves your laptop: one server becomes three, streams need a retention plan, and not everyone should be allowed to publish everywhere. Monitoring and tests come first, so see [observability](/posts/nats-jetstream-observability/) and [testing](/posts/nats-jetstream-testing/); for shutting your workers down cleanly see [graceful shutdown](/posts/go-graceful-shutdown-workers/).
+Without a config, anybody who can reach a NATS port can do anything. That is fine on a laptop, but when JetStream leaves it, one server becomes three, streams need a retention plan, and not everyone should be allowed to publish everywhere. This last post of the series covers those changes; the [previous post](/posts/nats-kv-object-store/) used JetStream as a KV and blob store. Monitoring and tests come first, so see [observability](/posts/nats-jetstream-observability/) and [testing](/posts/nats-jetstream-testing/); for shutting your workers down cleanly see [graceful shutdown](/posts/go-graceful-shutdown-workers/).
 
 > Go 1.26, `nats-server` v2.15.1 and `nats.go` v1.54.0. All servers are embedded in the demo programs and run on localhost. The machine was not idle, so I give no timings.
 
@@ -114,7 +115,7 @@ TLS, right CA:        <nil>   (TLS 1.3)
 
 Verification stays on; `InsecureSkipVerify` also connects, but it removes the whole point. NATS also supports nkeys, JWT and accounts for multi-tenant setups. I did not try them here.
 
-## A few things to watch
+## Pre-launch checklist
 
 - Replicas are not backups. A bad publish or a purge is replicated too.
 - Use an odd number of nodes, and `Replicas` of 3 for anything you care about.
@@ -124,4 +125,4 @@ Verification stays on; `InsecureSkipVerify` also connects, but it removes the wh
 
 ## What's next
 
-This is the last post of the NATS JetStream series. The calendar goes back to the Rust series next, with unsafe and FFI in Rust.
+This is the last post of the NATS JetStream series. The Rust series continues with Unsafe and FFI in Rust, which steps outside safe Rust to call C and expose a C-ABI library.

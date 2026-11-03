@@ -3,13 +3,14 @@ date = '2027-02-15T10:00:00+03:30'
 draft = false
 title = 'HTTP/1.1 با دست'
 description = 'HTTP/1.1 با دست روی loopback: درخواست خام، header اجباری Host، تفاوت Content-Length و chunked، اتصال پایدار و سرور ۵۰ خطی.'
+contentType = 'tutorial'
 categories = ["Networking"]
 series = ["Networking"]
 tags = ["networking", "http", "http1", "sockets", "go", "chunked"]
 cover = { image = "/images/covers/net-http1-by-hand.fa.png", alt = "HTTP/1.1 با دست", hiddenInSingle = true }
 +++
 
-در [پست قبل](/fa/posts/net-udp-sockets/) با datagramها آشنا شدیم و پیش‌تر در [سرور TCP](/fa/posts/net-sockets-tcp-from-scratch/) دیدیم که stream مرز پیام ندارد. {{< term "http" "HTTP" >}}/1.1 یک جواب به پرسش «پیام کجا تمام می‌شود؟» است که روی {{< term "tcp" "TCP" >}} ساخته شده. امروز آن را با بایت خام حرف می‌زنیم، بدون هیچ کتابخانه‌ی HTTP در سمت کلاینت. برای نگاه با کتابخانه به [ساخت API با net/http در Go](/fa/posts/go-http-api-stdlib/) و [سرور HTTP با node:http](/fa/posts/node-http-server/) سر بزنید.
+روی streamای که مرز پیام ندارد، پیام کجا تمام می‌شود؟ [سرور TCP](/fa/posts/net-sockets-tcp-from-scratch/) با framing خودش جواب داد، [UDP](/fa/posts/net-udp-sockets/) با datagram از این پرسش فرار کرد و {{< term "http" "HTTP" >}}/1.1 جواب دیگری است که روی {{< term "tcp" "TCP" >}} ساخته شده. امروز آن را با بایت خام حرف می‌زنیم، بدون هیچ کتابخانه‌ی HTTP در سمت کلاینت. برای نگاه با کتابخانه به [ساخت API با net/http در Go](/fa/posts/go-http-api-stdlib/) و [سرور HTTP با node:http](/fa/posts/node-http-server/) سر بزنید.
 
 > همه‌چیز روی `127.0.0.1` با port تصادفی، Go 1.26، Python 3.14 و macOS اجرا شد. هدف یک سرور `net/http` بود و کلاینت یک socket خام در Python (و `nc`). Linux را اجرا نکردم و ماشین مشغول بود، پس زمان‌سنجی ندارم. دموی کار یک پوشه‌ی مثال محلی است.
 
@@ -112,7 +113,7 @@ hi from tiny
 
 فقط یک مفهوم: اگر proxy و backend درباره‌ی اینکه `Content-Length` پایان درخواست را تعیین می‌کند یا `Transfer-Encoding` اختلاف داشته باشند، بایت‌ها می‌توانند به‌عنوان شروع درخواست دیگری خوانده شوند. این {{< term "request-smuggling" "request smuggling" >}} است. آن را نشان ندادم و جایش در سری امنیت است.
 
-## چند نکته‌ی مهم
+## جاهایی که HTTP دست‌نویس می‌شکند
 
 - خط‌ها با CRLF تمام می‌شوند و headerها با یک خط خالی؛ به `\n` تنها تکیه نکنید.
 - body به `Content-Length` یا framing از نوع chunked نیاز دارد، وگرنه گیرنده پایانش را نمی‌داند.
@@ -126,4 +127,4 @@ hi from tiny
 
 ## قدم بعدی
 
-پست بعدی «TLS و گواهی با openssl» است.
+بعدی «TLS و گواهی با openssl» است: همه‌ی بایت‌های بالا به شکل متن ساده از socket گذشتند و TLS همان چیزی است که از آن‌ها محافظت می‌کند.

@@ -3,13 +3,14 @@ date = '2027-02-07T10:00:00+03:30'
 draft = false
 title = 'کلاس و dataclass در Python'
 description = 'کلاس و dataclass در Python برای برنامه‌نویس‌های Go و Node.js: property، متدهای dunder، slots، MRO، Protocol و enum، همه روی Python 3.14 اجرا شده.'
+contentType = 'tutorial'
 categories = ["Python"]
 series = ["Python"]
 tags = ["python", "beginner", "classes", "dataclasses"]
 cover = { image = "/images/covers/py-classes-dataclasses.fa.png", alt = "کلاس و dataclass در Python", hiddenInSingle = true }
 +++
 
-در [مقاله‌ی قبل](/fa/posts/py-functions-generators/) تابع، closure و generator نوشتیم. حالا داده و رفتار را کنار هم می‌گذاریم: کلاس. اگر از Go آمده‌اید، نزدیک‌ترین چیز [Struct و متد در Go](/fa/posts/go-structs-methods-interfaces/) است و مقایسه را فقط جایی آورده‌ام که از واقعیتش مطمئنم.
+لیستی که روی کلاس تعریف شود بین همه‌ی نمونه‌ها مشترک است: دو حساب جدا هر دو `[3, 7]` چاپ می‌کنند. بعد از تابع‌های [پست قبل](/fa/posts/py-functions-generators/)، کلاس داده و رفتار را کنار هم می‌گذارد. نزدیک‌ترینش در Go، [Struct و متد](/fa/posts/go-structs-methods-interfaces/) است و مقایسه را فقط جایی آورده‌ام که مطمئنم.
 
 > همه‌چیز با Python 3.14.0 روی macOS اجرا شده است (`python3 --version`). دموها سه اسکریپت محلی هستند. تعداد بایت‌ها مخصوص همین ماشین و نسخه است.
 
@@ -44,7 +45,7 @@ print(a.bank, b.bank, Account.bank)
 Mine Demo Demo
 ```
 
-`self` صریح است و فقط پارامتر اول متد است. `@classmethod` خود کلاس را می‌گیرد (یک constructor جایگزین) و `@staticmethod` چیزی نمی‌گیرد. نکته‌ی خطرناک: `history` روی کلاس است، پس هر دو حساب یک لیست را شریک‌اند. نوشتن `a.bank = ...` یک attribute روی نمونه می‌سازد و کلاس را عوض نمی‌کند. state تغییرپذیر را در `__init__` بسازید.
+`self` صریح است و فقط پارامتر اول متد است. `@classmethod` خود کلاس را می‌گیرد (یک constructor جایگزین) و `@staticmethod` چیزی نمی‌گیرد. نوشتن `a.bank = ...` یک attribute روی نمونه می‌سازد و کلاس را عوض نمی‌کند. state تغییرپذیر را در `__init__` بسازید.
 
 ## Property
 
@@ -64,7 +65,7 @@ def celsius(self, v):
 ValueError: below absolute zero    # t.celsius = -300
 ```
 
-پس می‌توانید با یک attribute ساده شروع کنید و بعداً بدون تغییر در کدهای صدازننده، اعتبارسنجی اضافه کنید.
+پس می‌شود با attribute ساده شروع کرد و بعداً بی‌تغییر در صدازننده‌ها اعتبارسنجی افزود.
 
 ## متدهای dunder
 
@@ -111,7 +112,7 @@ Slotted   6400928 bytes  (64 per object)
 AttributeError: 'Slotted' object has no attribute 'd' and no __dict__ for setting new attributes
 ```
 
-اینجا حدود ۴۰ بایت برای هر شیء صرفه‌جویی شد، به قیمت اینکه نمی‌توان attribute تازه اضافه کرد. برای میلیون‌ها شیء کوچک می‌ارزد، وگرنه نه.
+اینجا حدود ۴۰ بایت برای هر شیء صرفه‌جویی شد و دیگر نمی‌توان attribute تازه اضافه کرد. برای میلیون‌ها شیء کوچک می‌ارزد، وگرنه نه.
 
 ## ارث‌بری، MRO و composition
 
@@ -151,7 +152,7 @@ class Status(Enum):
 
 `Status("active")` همان `Status.ACTIVE` است، `.name` برابر `ACTIVE` و `.value` برابر `active` است و `Status("nope")` خطای `ValueError: 'nope' is not a valid Status` می‌دهد.
 
-## چند نکته‌ی مهم
+## جایی که کلاس‌ها غافلگیر می‌کنند
 
 - attributeهای تغییرپذیر کلاس مشترک‌اند. لیست و dict را در `__init__` یا با `default_factory` بسازید.
 - `__eq__` را تعریف کنید، `__hash__` از دست می‌رود مگر آن را هم بنویسید.
@@ -167,4 +168,4 @@ class Status(Enum):
 
 ## قدم بعدی
 
-مقاله‌ی بعدی «خطا و context manager در Python» است.
+قدم بعد: «خطا و context manager در Python»، که exceptionهای سفارشی‌اش هم کلاس‌اند.

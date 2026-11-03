@@ -3,13 +3,14 @@ date = '2026-12-08T10:00:00+03:30'
 draft = false
 title = 'Modules, crates and Cargo in Rust'
 description = 'Rust modules, crates and Cargo: packages, pub and privacy errors, use and re-exports, lib plus bin, Cargo features, dev-dependencies and workspaces.'
+contentType = 'tutorial'
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "beginner", "cargo", "modules", "crates"]
 cover = { image = "/images/covers/rust-modules-crates-cargo.png", alt = "Modules, crates and Cargo in Rust", hiddenInSingle = true }
 +++
 
-After [error handling with Result and Option](/posts/rust-error-handling-result/), every example still fits in one file. This post is about splitting code up and about Cargo, which builds and manages the project. Three words are easy to mix up, so first the definitions: a **crate** is one compilation unit (a library or an executable), a **package** is what `Cargo.toml` describes and holds one or more crates, and a **module** is a namespace inside a crate.
+Call a function in a `mod` from outside and the compiler refuses: module items are private by default. Up to [error handling with Result and Option](/posts/rust-error-handling-result/), every example fit in one file. Three words are easy to mix up, so first the definitions: a **crate** is one compilation unit (a library or an executable), a **package** is what `Cargo.toml` describes and holds one or more crates, and a **module** is a namespace inside a crate.
 
 > I ran everything below with Rust 1.90 (cargo 1.90.0). Outputs and compiler messages are copied from those runs.
 
@@ -186,7 +187,7 @@ cli v0.1.0 (.../workspace/cli)
 
 The [Go post](/posts/go-packages-modules/) described the same split with different words: a Go package is a directory and a Go module is the unit described by `go.mod`. In Rust a crate is closer to a Go package as a unit of compilation, but modules are declared in code with `mod`, not by directory alone. Go marks visibility with capitalization and Rust with `pub`, and both pin dependency versions in a second file (`go.sum`, `Cargo.lock`).
 
-## A few things to watch
+## Layout and visibility pitfalls
 
 - Forgetting `mod foo;` in the parent: a new file is simply ignored; it is not found automatically.
 - `pub` on a struct does not make its fields public. Each field needs its own `pub`.
@@ -201,4 +202,4 @@ The [Go post](/posts/go-packages-modules/) described the same split with differe
 
 ## What's next
 
-Next we look at generics and traits in Rust: writing code that works for many types and how Rust describes shared behavior.
+Generics and traits in Rust: with code organized, the next question is writing code that works for many types.

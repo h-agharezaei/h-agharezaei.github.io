@@ -3,6 +3,7 @@ date = '2026-11-18T10:00:00+03:30'
 draft = false
 title = 'Packages and modules: structuring a Go project'
 description = 'Go packages and modules: exported names, internal/, init order, import cycles, go.mod and go.sum, and a sane project layout, with real compiler output.'
+contentType = 'tutorial'
 categories = ["Go"]
 series = ["Go Fundamentals"]
 tags = ["go", "beginner", "modules", "packages"]
@@ -122,7 +123,7 @@ github.com/google/uuid v1.6.0
 - Create a package when it has a clear purpose and a name you can say in one word, not because a diagram looks neat.
 - `pkg/` is optional. Some projects use it for importable libraries; many skip it. Don't treat any layout as dogma.
 
-## A few things to watch
+## Project structure traps
 
 - Over-structuring is the most common beginner trap: ten packages with one function each leads to cycles and ugly imports like `utils` and `common`.
 - Package names are short, lowercase and singular; avoid repeating them in names (`store.Store` is fine, `store.StoreItem` stutters).
@@ -138,4 +139,4 @@ github.com/google/uuid v1.6.0
 
 ## What's next
 
-Next we get to what Go is best known for: goroutines and channels, and how to run work concurrently without tangling it.
+"Goroutines and channels in Go": with the project structure in place, we get to what Go is best known for, running work concurrently without tangling it.

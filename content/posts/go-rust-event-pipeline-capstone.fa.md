@@ -4,13 +4,14 @@ draft = false
 title = 'پروژه‌ی پایانی: Pipeline رویدادمحور با Go، Rust و NATS'
 seoTitle = 'Pipeline رویدادمحور با Go، Rust و NATS'
 description = 'Postgres، الگوی outbox، JetStream، یک worker با Rust و یک read model در NATS KV را به هم وصل می‌کنیم و بعد اجزا را می‌کشیم تا ببینیم نتیجه درست می‌ماند.'
+contentType = 'engineering'
 categories = ["Go", "Rust"]
 series = ["Go + Rust"]
 tags = ["go", "rust", "nats", "jetstream", "outbox", "capstone", "postgres"]
 cover = { image = "/images/covers/go-rust-event-pipeline-capstone.fa.png", alt = "پروژه‌ی پایانی: Pipeline رویدادمحور با Go، Rust و NATS", hiddenInSingle = true }
 +++
 
-[مقاله‌ی قبلی](/fa/posts/go-calls-rust-ffi/) Rust را داخل پردازه‌ی Go گذاشت. این آخرین مقاله‌ی سری، قطعه‌های کل این مجموعه را کنار هم می‌گذارد: سرویس‌های Go در لبه‌ها، یک worker با Rust برای قانون کسب‌وکار، و NATS در وسط. هیچ‌چیز تازه‌ای نیست؛ موضوع این است که اجزا چطور به هم وصل می‌شوند و وقتی یکی می‌میرد چه می‌شود. همه را با یک `run.sh` اجرا می‌کنم و بعد عمداً خرابش می‌کنم.
+اگر worker بعد از publish نتیجه و قبل از ack بمیرد چه می‌شود؟ پیام دوباره تحویل می‌شود؛ سؤال این است که اثرش دو بار اعمال می‌شود یا نه. بعد از [گذاشتن Rust داخل پردازه‌ی Go](/fa/posts/go-calls-rust-ffi/)، این آخرین مقاله‌ی سری قطعه‌های کل این مجموعه را کنار هم می‌گذارد: سرویس‌های Go در لبه‌ها، یک worker با Rust برای قانون کسب‌وکار، و NATS در وسط. هیچ‌چیز تازه‌ای نیست؛ موضوع این است که اجزا چطور به هم وصل می‌شوند و وقتی یکی می‌میرد چه می‌شود. همه را با یک `run.sh` اجرا می‌کنم و بعد عمداً خرابش می‌کنم.
 
 > Go 1.26، Rust 1.90، Postgres 18.3 (با launcher توکار)، nats-server 2.15 توکار، macOS arm64. همه‌چیز محلی اجرا شده است. این یک دموست: یک node، بدون auth و بدون TLS. در [JetStream در production](/fa/posts/nats-jetstream-production/) آمده که یک استقرار واقعی چه لازم دارد.
 
@@ -156,7 +157,7 @@ report: orders=5 outbox=5 (unpublished=0) ORDERS msgs=5 RESULTS msgs=5 KV keys=5
 
 بعد یک `o-6` تازه مثل همیشه از همه‌ی مرحله‌ها گذشت.
 
-## چند نکته‌ی مهم
+## محدودیت‌های این طراحی
 
 - بررسی «قبلاً پردازش شده» از نوع check-then-act است. اگر چند worker روی یک سفارش باشند، ممکن است هر دو از آن رد شوند. پنجره‌ی ۵ دقیقه‌ای dedup روی `Nats-Msg-Id` این را می‌پوشاند، اما راه‌حل واقعی یک کلید یکتا در store خودتان است.
 - همه‌چیز at-least-once است؛ درستی از مراحل idempotent می‌آید، نه از «exactly once».
@@ -166,4 +167,4 @@ report: orders=5 outbox=5 (unpublished=0) ORDERS msgs=5 RESULTS msgs=5 KV keys=5
 
 ## قدم بعدی
 
-بعدی در تقویم: Docker، CI و انتشار یک سرویس Rust.
+بعدی در تقویم: «Docker، CI و release سرویس Rust»، که سرویس Rust را از اجرای محلی مثل همین دمو به انتشار می‌رساند.

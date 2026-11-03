@@ -3,13 +3,14 @@ date = '2027-03-25T10:00:00+03:30'
 draft = false
 title = 'WebSocket'
 description = 'WebSocket با دست روی loopback: handshake مربوط به upgrade، فریم‌های mask‌شده، ping و close، و بعد hub در Go با heartbeat و محدودیت کلاینت کند.'
+contentType = 'tutorial'
 categories = ["Networking"]
 series = ["Networking"]
 tags = ["networking", "websocket", "http", "go", "heartbeat", "backpressure"]
 cover = { image = "/images/covers/net-websocket.fa.png", alt = "WebSocket", hiddenInSingle = true }
 +++
 
-در [پست قبل](/fa/posts/net-http2/) با HTTP/2 آشنا شدیم. با این حال HTTP هنوز درخواست و پاسخ است و سرور نمی‌تواند اول حرف بزند. {{< term "websocket" "WebSocket" >}} این مشکل را حل می‌کند و یک اتصال {{< term "tcp" "TCP" >}} را به کانال پیام دوطرفه تبدیل می‌کند. شروعش {{< term "http" "HTTP" >}} معمولی است، مثل [HTTP/1.1 با دست](/fa/posts/net-http1-by-hand/)، بعد شکل بایت‌ها عوض می‌شود؛ مسئله‌ی framing همان است که در [سرور TCP از صفر](/fa/posts/net-sockets-tcp-from-scratch/) دیدیم.
+HTTP، حتی HTTP/2 [پست قبل](/fa/posts/net-http2/)، درخواست و پاسخ است: سرور نمی‌تواند اول حرف بزند. {{< term "websocket" "WebSocket" >}} این مشکل را حل می‌کند و یک اتصال {{< term "tcp" "TCP" >}} را به کانال پیام دوطرفه تبدیل می‌کند. شروعش {{< term "http" "HTTP" >}} معمولی است، مثل [HTTP/1.1 با دست](/fa/posts/net-http1-by-hand/)، بعد شکل بایت‌ها عوض می‌شود؛ مسئله‌ی framing همان است که در [سرور TCP از صفر](/fa/posts/net-sockets-tcp-from-scratch/) دیدیم.
 
 > همه‌چیز روی `127.0.0.1` با port تصادفی (چاپ نشده)، Go 1.26، macOS و `github.com/coder/websocket` نسخه‌ی v1.8.15 اجرا شد. Linux را اجرا نکردم. ماشین مشغول بود، پس تعداد دارم و زمان‌سنجی ندارم. دمو یک پوشه‌ی مثال محلی است.
 
@@ -100,7 +101,7 @@ fast clients=3 messages=600 delivered=1800 evicted=1
 - {{< term "server-sent-events" "SSE" >}} وقتی فقط سرور می‌فرستد (feed، پیشرفت کار)؛ HTTP ساده است و خودش دوباره وصل می‌شود. دموی SSE اینجا اجرا نکردم.
 - WebSocket وقتی هر دو طرف زیاد می‌فرستند (چت، بازی، همکاری).
 
-## چند نکته‌ی مهم
+## پیش از راه‌اندازی سرور WebSocket
 
 - صف هر کلاینت را محدود کنید و تعیین کنید سرریز چه می‌شود.
 - heartbeat یا read deadline بگذارید؛ به اتصال ساکت اعتماد نکنید.
@@ -114,4 +115,4 @@ hub را طوری عوض کنید که به‌جای قطع کلاینت، قد�
 
 ## قدم بعدی
 
-پست بعدی «gRPC روی HTTP/2» است.
+بعدی «gRPC روی HTTP/2» است، که به‌جای ترک HTTP داخلش می‌ماند.

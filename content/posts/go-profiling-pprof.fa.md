@@ -3,13 +3,14 @@ date = '2027-02-20T10:00:00+03:30'
 draft = false
 title = 'پروفایلینگ با pprof در Go'
 description = 'نقطه‌ی داغ یک سرویس Go را با pprof پیدا کنید: پروفایل CPU، heap و goroutine روی سرویس زنده، رفع مشکل با benchstat و allocs/op و پروفایل داخل تست.'
+contentType = 'tutorial'
 categories = ["Go"]
 series = ["Go Backend"]
 tags = ["go", "backend", "pprof", "profiling", "performance", "benchmark"]
 cover = { image = "/images/covers/go-profiling-pprof.fa.png", alt = "پروفایلینگ با pprof در Go", hiddenInSingle = true }
 +++
 
-[مقاله‌ی قبل](/fa/posts/go-rate-limiting-caching/) درباره‌ی rate limiting و caching بود. حالا سؤال دیگری داریم: سرویس کند است، دقیقاً چه چیزی را عوض کنیم؟ حدس زدن راه مطمئنی برای بهینه کردن خط اشتباه است. **pprof** ابزار **profiler** خودِ Go است و این‌جا روی یک سرویس کوچک `net/http` استفاده‌اش می‌کنیم که عمداً کندش کرده‌ام. مقاله روی [benchmark](/fa/posts/go-testing-basics/) و [مبانی حافظه](/fa/posts/go-pointers-memory/) از مقاله‌های قبل بنا شده است.
+سرویس کند است؛ دقیقاً چه چیزی را عوض کنیم؟ حدس زدن راه مطمئنی برای بهینه کردن خط اشتباه است. **pprof** ابزار **profiler** خودِ Go است و این‌جا روی یک سرویس کوچک `net/http` استفاده‌اش می‌کنیم که عمداً کندش کرده‌ام. مقاله روی [benchmark](/fa/posts/go-testing-basics/) و [مبانی حافظه](/fa/posts/go-pointers-memory/) بنا شده و بعد از [Rate limit و cache در Go](/fa/posts/go-rate-limiting-caching/) می‌آید.
 
 > Go 1.26 روی macOS (arm64). این ماشین مشترک است و load average در زمان اجراها بین ۳ و ۱۰ بود؛ پس **ns/op نشان نمی‌دهم** و ادعای نسبت سرعت ندارم. به allocs/op، B/op و سهم هر خط در پروفایل تکیه می‌کنم که به بار ماشین بستگی ندارند.
 
@@ -129,7 +130,7 @@ go tool pprof -sample_index=alloc_space -top app.test mem.prof
 
 همان `-list` این‌جا هم کار می‌کند و روی کد کند، برای کل اجرا ۱٫۸۳ گیگابایت allocation روی خط `regexp.MustCompile` و ۱۱٫۰۲ گیگابایت روی خط `+=` نشان داد. دستور دوم به باینری `app.test` نیاز دارد که اجرای تست باقی می‌گذارد. `/debug/pprof/trace` و `go tool trace` با `runtime/trace` یک خط زمانی از گوروتین‌ها، GC و scheduler می‌دهند و به سؤال‌هایی مثل «چرا هیچ‌چیز اجرا نمی‌شود» جواب می‌دهند که نمونه‌برداری نمی‌تواند. من فقط بررسی کردم که endpoint یک trace برمی‌گرداند؛ رابط کاربری را باز نکردم.
 
-## چند نکته
+## خطاهای رایج در پروفایل‌گیری
 
 - پروفایل CPU نمونه‌برداری است (حدود ۱۰۰ بار در ثانیه)، پس سربار دارد و رویدادهای کوتاه را از دست می‌دهد. روی بار واقعی پروفایل بگیرید، نه روی پروسه‌ی بیکار.
 - قبل و بعد را با بار یکسان پروفایل کنید و هر بار فقط یک چیز را عوض کنید.
@@ -139,4 +140,4 @@ go tool pprof -sample_index=alloc_space -top app.test mem.prof
 
 ## قدم بعدی
 
-در مقاله‌ی بعد درباره‌ی Docker، CI و دیپلوی یک سرویس Go حرف می‌زنیم.
+قدم بعدی «Docker، CI و دیپلوی سرویس Go» است، چون سرویسی که حالا می‌دانیم وقتش کجا می‌رود باید از لپ‌تاپ بیرون برود.

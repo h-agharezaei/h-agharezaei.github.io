@@ -4,13 +4,14 @@ draft = false
 title = 'Getting started with Rust: install, Cargo and a first program'
 seoTitle = 'Getting Started with Rust: Install and Cargo'
 description = 'Getting started with Rust for Go and Node.js developers: install with rustup, learn basic Cargo commands, add a dependency and run a first program.'
+contentType = 'tutorial'
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "cargo", "beginner", "tooling"]
 cover = { image = "/images/covers/rust-getting-started.png", alt = "Getting started with Rust: install, Cargo and a first program", hiddenInSingle = true }
 +++
 
-This is the first post in a Rust series, from beginner to advanced. I have spent most of my career writing backend services in Go and Node.js, and I am learning Rust in public. Where it helps, I will compare Rust with Go, since I have already written a few posts about Go.
+In practice you almost never call the Rust compiler, `rustc`, directly. Two tools sit in front of it: rustup, which installs and updates the toolchain, and Cargo, which creates projects, builds, runs, adds dependencies and formats code, roughly what the `go` command does for Go. This post also opens a Rust series, from beginner to advanced: I have spent most of my career writing backend services in Go and Node.js, and I am learning Rust in public. Where it helps, I will compare Rust with Go, since I have already written a few posts about Go.
 
 Why Rust at all? Honestly, not because it is trendy. Rust gives you memory safety without a garbage collector, performance in the same range as C and C++, and a strong type system that moves many bugs from runtime to compile time. The price is a steeper learning curve and a compiler that argues with you a lot at the beginning. This post is only about tooling: install, Cargo, and a program that runs.
 
@@ -132,7 +133,7 @@ The `--` separates Cargo's own flags from the arguments for your program.
 | Format | `gofmt` / `go fmt` | `cargo fmt` |
 | Dependency file | `go.mod` | `Cargo.toml` (plus `Cargo.lock`) |
 
-## A few things to watch
+## Tooling gotchas
 
 - Cargo builds into `target/`, which can get large. Keep it out of git (`cargo new` adds a `.gitignore` for it).
 - The first build with a new dependency downloads and compiles it; later builds reuse the cache.
@@ -147,4 +148,4 @@ The `--` separates Cargo's own flags from the arguments for your program.
 
 ## What's next
 
-Next we will look at types, variables and control flow in Rust: immutability by default, shadowing, `if`, `match` and loops.
+Types, variables and control flow in Rust: the basic vocabulary, where immutability, shadowing, `if` and `match` already differ from Go.

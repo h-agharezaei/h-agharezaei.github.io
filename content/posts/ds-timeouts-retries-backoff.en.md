@@ -3,6 +3,7 @@ date = '2027-05-04T10:00:00+03:30'
 draft = false
 title = 'Timeouts, retries and backoff with jitter'
 description = 'Timeouts and retries done right: a real loopback client, a seeded retry-storm simulation, retry budgets, deadline propagation and hedged requests in Go.'
+contentType = 'engineering'
 categories = ["Distributed"]
 series = ["Distributed Systems"]
 tags = ["distributed-systems", "go", "retries", "backoff", "timeouts"]
@@ -87,7 +88,7 @@ hedging: 10000 requests, >100 ms: 502 without hedge, 25 with hedge; extra reques
 
 Slow outliers dropped from 502 to 25, for 5% extra load. The simulation assumes independent latencies; real slowness is often correlated.
 
-## A few things to watch
+## Hidden costs of retrying
 
 - Every retry loop needs a cap on attempts and an overall deadline.
 - Add jitter to every backoff; I did not measure a real production benefit here.
@@ -95,10 +96,6 @@ Slow outliers dropped from 502 to 25, for 5% extra load. The simulation assumes 
 - A timeout is "unknown": make the operation idempotent first.
 - Hedging needs safe, repeatable calls and spare capacity.
 
-## Exercise
-
-In `sim.go` set `capacity` to 150 and `outageTo` to 5. Which strategy gives up clients first? Then add a `Retry-After` rule to the simulated server.
-
 ## What's next
 
-The next post is “Circuit breakers and bulkheads”.
+Next, “Circuit breakers and bulkheads”: when a dependency stays down, the better move is to stop calling it.

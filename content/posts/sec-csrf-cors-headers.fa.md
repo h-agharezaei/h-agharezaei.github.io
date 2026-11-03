@@ -3,19 +3,20 @@ date = '2027-04-17T10:00:00+03:30'
 draft = false
 title = 'CSRF، CORS و هدرهای امنیتی'
 description = 'CSRF، CORS و هدرهای امنیتی در Go روی localhost: چرا CORS جلوی نوشتن جعلی را نمی‌گیرد، CORS با allow-list، توکن و بررسی Origin و تست هدرها.'
+contentType = 'tutorial'
 categories = ["Security"]
 series = ["Software Security"]
 tags = ["security", "csrf", "cors", "security-headers", "go"]
 cover = { image = "/images/covers/sec-csrf-cors-headers.fa.png", alt = "CSRF، CORS و هدرهای امنیتی", hiddenInSingle = true }
 +++
 
-مقاله‌ی قبلی، [مجوزدهی: RBAC و IDOR](/fa/posts/sec-authorization-rbac-idor/)، می‌پرسید فراخواننده چه کاری می‌تواند بکند. این مقاله می‌پرسد آیا درخواست واقعاً از صفحه‌ی خودِ او آمده است. [نشست یا JWT؟](/fa/posts/sec-sessions-vs-jwt/) {{< term "csrf" "CSRF" >}} و {{< term "samesite" "SameSite" >}} را معرفی کرد و [تزریق و XSS](/fa/posts/sec-injection-xss/) {{< term "content-security-policy" "CSP" >}} و `HttpOnly` را؛ اینجا از سمت سرور عمیق‌تر می‌شوم. سبک API همان [net/http](/fa/posts/go-http-api-stdlib/) است.
+حتی با {{< term "cors" "CORS" >}} بی‌نقص، origin دیگری موجودی alice را خرج می‌کند؛ پس مجوزهای فراخواننده ([مجوزدهی: RBAC و IDOR](/fa/posts/sec-authorization-rbac-idor/)) کافی نیست؛ درخواست باید از صفحه‌ی خودش بیاید. [نشست یا JWT؟](/fa/posts/sec-sessions-vs-jwt/) {{< term "csrf" "CSRF" >}} و {{< term "samesite" "SameSite" >}} را معرفی کرد و [تزریق و XSS](/fa/posts/sec-injection-xss/) {{< term "content-security-policy" "CSP" >}} و `HttpOnly` را؛ اینجا سراغ سمت سرور می‌روم. سبک API همان [net/http](/fa/posts/go-http-api-stdlib/) است.
 
 > فقط دفاعی. یک برنامه‌ی Go 1.26 روی `127.0.0.1:9100`، داده‌ی درون حافظه، کوکی نشست ثابت `sid=s-alice` و پرچم `-mode vuln|fixed`. «origin بیگانه» فقط هدر `Origin` است که با curl می‌فرستم. **رفتار هیچ مرورگری را آزمایش نکردم**؛ هر ادعا درباره‌ی کار مرورگر از روی استانداردهاست و محتاطانه گفته شده.
 
 ## CORS را مرورگر اعمال می‌کند، نه سرور
 
-{{< term "cors" "CORS" >}} به مرورگر می‌گوید صفحه‌ای از origin دیگر مجاز است پاسخ را *بخواند* یا نه. جلوی فرستاده‌شدن درخواست را نمی‌گیرد. POST با بدنه‌ی form یک «simple request» است: بدون preflight و با کوکی. در نسخه‌ی آسیب‌پذیر:
+CORS به مرورگر می‌گوید صفحه‌ای از origin دیگر مجاز است پاسخ را *بخواند* یا نه. جلوی فرستاده‌شدن درخواست را نمی‌گیرد. POST با بدنه‌ی form یک «simple request» است: بدون preflight و با کوکی. در نسخه‌ی آسیب‌پذیر:
 
 ```
 $ curl -si -H 'Cookie: sid=s-alice' -H 'Origin: https://evil.test' -d amount=30 /transfer
@@ -25,7 +26,7 @@ Access-Control-Allow-Origin: https://evil.test
 {"balance":70}
 ```
 
-موجودی روی سرور از ۱۰۰ به ۷۰ رسید. حتی با CORS بی‌نقص این نوشتن انجام می‌شد؛ پس CORS دفاع CSRF نیست.
+موجودی روی سرور از ۱۰۰ به ۷۰ رسید. CORS دفاع CSRF نیست.
 
 ## درخواست preflight
 
@@ -99,7 +100,7 @@ no Origin, no Sec-Fetch-Site         -> 403 cross-site request refused
 
 یک تست جلوی پس‌رفت را می‌گیرد: همه‌ی routeها و یک مسیر ناشناس (404) را صدا می‌زند و حضور هر شش هدر را بررسی می‌کند. با `go test` سبز است؛ میان‌افزار دور کل mux است، پس پاسخ‌های خطا هم پوشش دارند.
 
-## چند نکته‌ی مهم
+## لایه‌ها، نه یک راه‌حل
 
 - CORS خواندن را کنترل می‌کند، نه فرستادن را. نوشتن را با توکن یا بررسی origin محافظت کنید.
 - origin دقیق در allow-list، `Vary: Origin`، هرگز بازتاب و هرگز `null`.
@@ -113,4 +114,4 @@ no Origin, no Sec-Fetch-Site         -> 403 cross-site request refused
 
 ## قدم بعدی
 
-مقاله‌ی بعد «TLS و گواهی x509 در عمل» است.
+«TLS و گواهی x509 در عمل» خود اتصال را محکم می‌کند؛ HSTS آنجا اثر دارد.

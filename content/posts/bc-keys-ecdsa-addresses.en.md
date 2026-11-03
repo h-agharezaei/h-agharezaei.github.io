@@ -3,13 +3,14 @@ date = '2026-11-05T18:00:00+03:30'
 draft = false
 title = 'Keys, ECDSA signatures and addresses on secp256k1'
 description = 'secp256k1 keys in Go: ECDSA sign and verify, RFC 6979 nonces, nonce reuse leaking the key, low-S and an EIP-55 Ethereum address, with real output.'
+contentType = 'tutorial'
 categories = ["Blockchain"]
 series = ["Blockchain"]
 tags = ["blockchain", "go", "ecdsa", "secp256k1", "ethereum", "cryptography"]
 cover = { image = "/images/covers/bc-keys-ecdsa-addresses.png", alt = "Keys, ECDSA signatures and addresses on secp256k1", hiddenInSingle = true }
 +++
 
-The previous post, [Merkle trees and inclusion proofs](/posts/bc-merkle-trees-proofs/), was about proving that data is in a block. A chain also has to answer: who may spend? There is no login server. You sign with a private key and every node checks the signature with your public key. This post builds a small Go package for that, for the next post to reuse. In [Common cryptography mistakes](/posts/sec-crypto-mistakes/) I only quoted the docs saying that ECDSA nonce reuse leaks the private key; this time I reproduce it.
+Who may spend? A chain has no login server to ask. You sign with a private key and every node checks the signature with your public key. [Merkle trees and inclusion proofs](/posts/bc-merkle-trees-proofs/) proved that data is in a block; this post builds a small Go package for signatures, for the next post to reuse. In [Common cryptography mistakes](/posts/sec-crypto-mistakes/) I only quoted the docs saying that ECDSA nonce reuse leaks the private key; this time I reproduce it.
 
 > All keys below are fresh throwaway keys that were never funded, or private key `1`, a famous public test key. Never send money to any address on this page. Go 1.27.3, `github.com/decred/dcrd/dcrec/secp256k1/v4` v4.4.1 and `golang.org/x/crypto` v0.58.0 on macOS (arm64). The demo is a local module: a `wallet` package with tests and a `cmd/demo` program.
 
@@ -124,7 +125,7 @@ ok  	example.com/bckeys/wallet	0.344s
 
 Bitcoin addresses differ and I did not implement them: as far as I know, they hash the (usually compressed) public key with SHA-256 then RIPEMD-160 and encode it as Base58Check or Bech32, depending on type.
 
-## A few things to watch
+## Key and signature traps
 
 - The private key is the account. Never log, print or commit it.
 - Never generate nonces yourself; use a library that does RFC 6979.

@@ -3,13 +3,14 @@ date = '2027-04-22T10:00:00+03:30'
 draft = false
 title = 'ساخت API با FastAPI و Pydantic'
 description = 'FastAPI و Pydantic نسخه‌ی ۲: اعتبارسنجی پارامتر و خطای 422، مدل درخواست، response_model، Depends، handler همگام و ناهمگام، lifespan و SIGTERM.'
+contentType = 'tutorial'
 categories = ["Python"]
 series = ["Python"]
 tags = ["python", "fastapi", "pydantic", "api", "validation"]
 cover = { image = "/images/covers/py-fastapi-pydantic.fa.png", alt = "ساخت API با FastAPI و Pydantic", hiddenInSingle = true }
 +++
 
-در [مقاله‌ی قبل](/fa/posts/py-asyncio/) event loop را یاد گرفتیم؛ حالا handler‌های `async def` روی آن اجرا می‌شوند. FastAPI روی {{< term "pydantic" "Pydantic" >}} ساخته شده و {{< term "type-hint" "type hint" >}}‌های شما را ([type hint و mypy](/fa/posts/py-type-hints-mypy/)) می‌خواند تا ورودی را اعتبارسنجی کند، خروجی را شکل بدهد و مستندات بسازد. اگر Zod را می‌شناسید ([اعتبارسنجی ورودی با Zod](/fa/posts/node-validation-zod/)) مدل ذهنی آشناست.
+`/items/abc` را به endpointی بفرستید که شناسه‌ی عددی می‌خواهد، و FastAPI بی‌آن‌که تابع شما را اجرا کند یک 422 برمی‌گرداند که می‌گوید خطا کجا و چرا است. این اعتبارسنجی از نوع‌ها می‌آید و handler‌های `async def` روی همان event loop [پست قبل](/fa/posts/py-asyncio/) اجرا می‌شوند. FastAPI روی {{< term "pydantic" "Pydantic" >}} ساخته شده و {{< term "type-hint" "type hint" >}}‌های شما را ([type hint و mypy](/fa/posts/py-type-hints-mypy/)) می‌خواند تا ورودی را اعتبارسنجی کند، خروجی را شکل بدهد و مستندات بسازد. اگر Zod را می‌شناسید ([اعتبارسنجی ورودی با Zod](/fa/posts/node-validation-zod/)) مدل ذهنی آشناست.
 
 > Python 3.14.0، fastapi 0.162.0، uvicorn 0.54.0، httpx 0.28.1، Pydantic 2.14.1 (یعنی v2)، email-validator 2.3.0، در یک venv موقت با `uv`. سرور روی `127.0.0.1` و port تصادفی. اسکریپت‌های دمو نمونه‌های محلی‌اند. ترتیب و تعداد منتشر می‌کنم، نه زمان.
 
@@ -115,7 +116,7 @@ def me(user: Annotated[str, Depends(need_token)]): ...
 
 Zod در زمان اجرا از schema ‌ای که جدا می‌نویسید اعتبارسنجی می‌کند؛ Pydantic اعتبارسنجی را از annotation‌های نوع روی کلاس می‌سازد. Go اعتبارسنجی struct در خودش ندارد: فیلدها را دستی چک می‌کنید یا کتابخانه اضافه می‌کنید. با `net/http` ([API با net/http](/fa/posts/go-http-api-stdlib/)) decode و اعتبارسنجی با خودتان است؛ FastAPI هر دو را از signature انجام می‌دهد.
 
-## چند نکته‌ی مهم
+## پیش از استفاده‌ی جدی
 
 - مدل ورودی و خروجی را جدا نگه دارید وگرنه فیلد محرمانه نشت می‌کند.
 - `def` یا `async def` را آگاهانه انتخاب کنید.
@@ -128,4 +129,4 @@ Zod در زمان اجرا از schema ‌ای که جدا می‌نویسید �
 
 ## قدم بعدی
 
-مقاله‌ی بعد «SQLAlchemy و Postgres» است.
+قدم بعد: «SQLAlchemy و Postgres»، چون این API هنوز پایگاه داده ندارد.

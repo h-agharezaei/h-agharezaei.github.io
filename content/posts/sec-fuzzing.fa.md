@@ -3,13 +3,14 @@ date = '2027-05-27T10:00:00+03:30'
 draft = false
 title = 'fuzzing برای پیدا کردن باگ امنیتی'
 description = 'fuzzing در Go: سه باگ عمدی parser (محدوده، سرریز int32، حلقه‌ی بی‌پایان) را با go test -fuzz پیدا می‌کنیم، ورودی‌ها را دوباره اجرا و باگ‌ها را رفع می‌کنیم.'
+contentType = 'tutorial'
 categories = ["Security"]
 series = ["Software Security"]
 tags = ["security", "fuzzing", "go", "testing", "parser"]
 cover = { image = "/images/covers/sec-fuzzing.fa.png", alt = "fuzzing برای پیدا کردن باگ امنیتی", hiddenInSingle = true }
 +++
 
-مقاله‌ی قبلی، [امنیت حافظه: C در برابر Rust](/fa/posts/sec-memory-safety-c-vs-rust/)، نشان داد یک اندیس بد چه می‌کند. امروز می‌گذارم ماشین دنبال چنین ورودی‌های بدی بگردد. parser بایت‌هایی را می‌خواند که دیگری کنترل می‌کند، پس جایی است که یک بررسی جاافتاده به {{< term "denial-of-service" "حمله‌ی انکار سرویس" >}} یا بدتر تبدیل می‌شود. {{< term "fuzzing" "fuzzing" >}} ورودی‌های جهش‌یافته می‌دهد تا چیزی بشکند. مکمل [تست مبتنی بر ویژگی](/fa/posts/eng-property-based-testing/) است.
+`go test -fuzz` حدود ۲۵۰ اجرا لازم داشت تا parser کوچک من را با `slice bounds out of range` از کار بیندازد، چون به فیلد طول اعتماد کرده بود. [امنیت حافظه: C در برابر Rust](/fa/posts/sec-memory-safety-c-vs-rust/) نشان داد یک اندیس بد چه می‌کند؛ اینجا ماشین دنبال ورودی‌هایی می‌گردد که چنین اندیسی می‌سازند. parser بایت‌هایی را می‌خواند که دیگری کنترل می‌کند، پس جایی است که یک بررسی جاافتاده به {{< term "denial-of-service" "حمله‌ی انکار سرویس" >}} یا بدتر تبدیل می‌شود. {{< term "fuzzing" "fuzzing" >}} ورودی‌های جهش‌یافته می‌دهد تا چیزی بشکند. مکمل [تست مبتنی بر ویژگی](/fa/posts/eng-property-based-testing/) است.
 
 > فقط دفاعی. parser ۶۰ خطی خودم را، در تست خودم، با Go 1.26 fuzz کردم و به چیز دیگری دست نزدم. سه باگ عمدی‌اند. دمو یک مثال محلی است.
 
@@ -99,7 +100,7 @@ fuzzer به یک معیار نیاز دارد. panic معیار رایگان ا�
 - fuzzer را با sanitizer مثل {{< term "addresssanitizer" "AddressSanitizer" >}} در C جفت کنید. Go و Rust {{< term "memory-safety" "امنیت حافظه" >}} می‌دهند ولی باز هم panic و hang دارند.
 - فرهنگ‌لغت کلمات کلیدی و fuzzing ساختارآگاه برای قالب‌های دارای checksum یا گرامر کمک می‌کند.
 
-## چند نکته‌ی مهم
+## تا fuzzing نتیجه بدهد
 
 - فایل‌های `testdata/fuzz` را commit کنید.
 - seed از نمونه‌ی واقعی بهتر از seed خالی است.
@@ -113,4 +114,4 @@ fuzzer به یک معیار نیاز دارد. panic معیار رایگان ا�
 
 ## قدم بعدی
 
-مقاله‌ی بعدی «لاگ، audit و واکنش به حادثه» است.
+«لاگ، audit و واکنش به حادثه» سراغ باگ‌هایی می‌رود که باز هم رد می‌شوند؛ آن‌وقت مهم این است که بتوانید بفهمید چه شد.

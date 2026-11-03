@@ -3,13 +3,14 @@ date = '2026-12-16T10:00:00+03:30'
 draft = false
 title = 'خاموشی تمیز Workerها در Go'
 description = 'چطور Worker جاب‌های JetStream در Go را تمیز خاموش کنیم: SIGTERM با signal.NotifyContext، تمام کردن پیام‌های در حال اجرا، timeout و Drain، با سیگنال واقعی.'
+contentType = 'engineering'
 categories = ["Go"]
 series = ["NATS JetStream"]
 tags = ["go", "nats", "jetstream", "shutdown", "context", "signals"]
 cover = { image = "/images/covers/go-graceful-shutdown-workers.fa.png", alt = "خاموشی تمیز Workerها در Go", hiddenInSingle = true }
 +++
 
-[مقاله‌ی قبل](/fa/posts/nats-jetstream-idempotency/) با این جمله تمام شد که تحویل مجدد هنگام deploy رایج‌ترین جایی است که با پیام‌های تکراری روبه‌رو می‌شویم. deploy به Worker قدیمی یک سیگنال می‌فرستد و یک Worker جدید بالا می‌آورد. اگر قدیمی همین‌طوری بمیرد، هر کاری که وسط‌اش بوده بعداً دوباره تحویل داده می‌شود. در این مقاله این را با سیگنال واقعی آزمایش می‌کنم و بعد درستش می‌کنم. اگر `context` برایت تازه است اول [sync، select و context](/fa/posts/go-sync-select-context/) را بخوان.
+deploy به Worker قدیمی یک سیگنال می‌فرستد و یک Worker جدید بالا می‌آورد. اگر قدیمی همین‌طوری بمیرد، هر کاری که وسط‌اش بوده بعداً دوباره تحویل داده می‌شود؛ به گفته‌ی [مقاله‌ی قبل](/fa/posts/nats-jetstream-idempotency/)، این رایج‌ترین جایی است که با پیام‌های تکراری روبه‌رو می‌شویم. اینجا این را با سیگنال واقعی آزمایش می‌کنم و بعد درستش می‌کنم. اگر `context` برایت تازه است اول [sync، select و context](/fa/posts/go-sync-select-context/) را بخوان.
 
 > همه‌چیز روی Go 1.26 با `nats-server` تعبیه‌شده‌ی v2.15.1 و `nats.go` نسخه‌ی v1.54.0 اجرا شده است. برای فرستادن سیگنال واقعی، دمو یک باینری ساخته‌شده با دو حالت است: `server` (سرور تعبیه‌شده، یک stream به نام `JOBS`، یک consumer با `AckWait` پنج‌ثانیه‌ای و دو جاب منتشرشده) و `worker`، هر کدام در پروسه‌ی جدا. با یک اسکریپت shell دستور `kill -TERM <pid>` را می‌فرستم. زمان‌ها ساعت دیواری هستند و عدد داخل کروشه PID است.
 
@@ -123,7 +124,7 @@ Worker سر وقت دست کشید، ack نزد و با کد ۱ خارج شد. �
 
 کد خروج غیر صفر به هر که پروسه را مدیریت می‌کند می‌گوید خاموشی تمیز نبوده؛ برای همین هنگام timeout عدد ۱ را برمی‌گردانم. در Kubernetes، تا جایی که از رفتار مستندش می‌دانم، pod اول `SIGTERM` می‌گیرد و بعد از `terminationGracePeriodSeconds` یک `SIGKILL` که قابل گرفتن نیست. اینجا Kubernetes را اجرا نکردم و درباره‌ی مقدار پیش‌فرضش هم ادعایی ندارم. قاعده‌ای که از آن برمی‌دارم: shutdown timeout را کمتر از grace period بگذار و grace period را بلندتر از کندترین جاب معمولی.
 
-## چند نکته‌ی مهم
+## دام‌های خاموش‌شدن
 
 - `Fetch` با `MaxWait` یعنی حلقه حداکثر ظرف یک ثانیه سیگنال را می‌فهمد. این مدت را کوتاه نگه دار.
 - اگر می‌خواهی handlerها تمام کنند، context سیگنال را به آن‌ها نده. از یک context جدا استفاده کن که فقط timeout آن را cancel می‌کند.
@@ -133,4 +134,4 @@ Worker سر وقت دست کشید، ack نزد و با کد ۱ خارج شد. �
 
 ## قدم بعدی
 
-Worker حالا درست خاموش می‌شود، ولی وقتی چیزی خراب شود هنوز بیشتر حدس می‌زنیم. مقاله‌ی بعد درباره‌ی observability برای JetStream است: متریک، لاگ و trace.
+Worker حالا درست خاموش می‌شود، ولی وقتی چیزی خراب شود هنوز بیشتر حدس می‌زنیم. «Observability برای JetStream: متریک، لاگ و trace» درباره‌ی جایگزین کردن همین حدس با داده است.

@@ -3,13 +3,14 @@ date = '2027-01-02T10:00:00+03:30'
 draft = false
 title = 'DNS in practice'
 description = 'DNS in practice with real dig runs, a query built by hand with Python struct and a tiny authoritative server in Go: records, TTL, NXDOMAIN and delegation.'
+contentType = 'tutorial'
 categories = ["Networking"]
 series = ["Networking"]
 tags = ["networking", "dns", "dig", "udp", "go", "python"]
 cover = { image = "/images/covers/net-dns-in-practice.png", alt = "DNS in practice", hiddenInSingle = true }
 +++
 
-In [the previous post](/posts/net-addressing-subnets/) we computed with IP addresses, but nobody types them. People type names, and {{< term "dns" "DNS" >}} turns them into addresses. We met the layers in [the TCP/IP model post](/posts/net-tcp-ip-model/): DNS is an application protocol that usually rides on {{< term "udp" "UDP" >}}. This time we read real answers with `dig`, build a query byte by byte and write a tiny server.
+Nobody types IP addresses: people type names, and {{< term "dns" "DNS" >}} must turn them into addresses before the real request can start. [The previous post](/posts/net-addressing-subnets/) computed with those addresses, and [the TCP/IP model post](/posts/net-tcp-ip-model/) showed the layers: DNS is an application protocol that usually rides on {{< term "udp" "UDP" >}}. This time we read real answers with `dig`, build a query byte by byte and write a tiny server.
 
 > macOS (arm64), Go 1.26, Python 3.14, `dig` 9.10. Every `dig` names the public resolver `1.1.1.1` explicitly, so my own resolver address never appears; where I removed or replaced something I say so. Loopback demos use `127.0.0.1`. I did not measure any timings.
 
@@ -114,7 +115,7 @@ missing.example.com [] lookup missing.example.com no such host
 
 (The real error also names the system resolver's address; I removed it.) Python's `socket.getaddrinfo` goes through the OS: `localhost` gave `127.0.0.1`, and `example.com` gave its two public IPv4 addresses. The OS consults `/etc/hosts` and the configured resolvers in an order set by system configuration; I describe it in words and did not paste it. Go can use its own pure-Go resolver or the C library's: with `GODEBUG=netdns=go` and `netdns=cgo` both resolved `localhost` and `example.com`, and that is all I claim.
 
-## A few things to watch
+## Common DNS traps
 
 - Many "slow requests" are slow lookups: a cache miss costs several round trips, and a failing resolver adds a timeout before the real request starts. A later case-study post chases one down.
 - A low TTL means fast changes but more lookups; a high one the opposite.
@@ -128,4 +129,4 @@ Extend the toy server to answer AAAA for `shop.test` with `::1`, and decide what
 
 ## What's next
 
-Next is "TCP: the handshake and connection states".
+Next is "TCP: the handshake and connection states": with an address in hand, the client opens a connection.

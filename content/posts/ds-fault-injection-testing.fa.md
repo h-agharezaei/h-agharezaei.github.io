@@ -3,23 +3,24 @@ date = '2027-06-06T10:00:00+03:30'
 draft = false
 title = 'تست خرابی با تزریق خطا'
 description = 'تست خرابی با تزریق خطا در Go: proxy خطازا و wrapper برای RoundTripper روی loopback، چهار باگ کلاینت را آشکار می‌کند و با seed ثابت بازتولید می‌شود.'
+contentType = 'tutorial'
 categories = ["Distributed"]
 series = ["Distributed Systems"]
 tags = ["distributed-systems", "fault-injection", "chaos-engineering", "testing", "go"]
 cover = { image = "/images/covers/ds-fault-injection-testing.fa.png", alt = "تست خرابی با تزریق خطا", hiddenInSingle = true }
 +++
 
-[مقاله‌ی قبل](/fa/posts/ds-distributed-rate-limiting/) درباره‌ی محدودیت‌ها بود. [timeout و retry](/fa/posts/ds-timeouts-retries-backoff/) و [circuit breaker](/fa/posts/ds-circuit-breaker-bulkhead/) کدی هستند برای روزی که یک وابستگی بد رفتار می‌کند، و کدی که در آن روز اجرا نشده باشد فقط حدس است. {{< term "fault-injection" "تزریق خطا" >}} آن روز بد را عمداً و ارزان می‌سازد. روش پیرامونش {{< term "chaos-engineering" "مهندسی آشوب" >}} است. مبانی تست: [تست در Go](/fa/posts/go-testing-basics/)، [تست JetStream](/fa/posts/nats-jetstream-testing/).
+در یک اجرا همه‌ی سفارش‌ها «موفق» بودند، اما ۱۶ مشتری دو بار پرداخت کردند. [timeout و retry](/fa/posts/ds-timeouts-retries-backoff/) و [circuit breaker](/fa/posts/ds-circuit-breaker-bulkhead/) کدی هستند برای روزی که یک وابستگی بد رفتار می‌کند، و کدی که در آن روز اجرا نشده باشد فقط حدس است. {{< term "fault-injection" "تزریق خطا" >}} آن روز بد را عمداً و ارزان می‌سازد. روش پیرامونش {{< term "chaos-engineering" "مهندسی آشوب" >}} است. [مقاله‌ی قبل](/fa/posts/ds-distributed-rate-limiting/) درباره‌ی محدودیت‌ها بود؛ مبانی تست: [تست در Go](/fa/posts/go-testing-basics/)، [تست JetStream](/fa/posts/nats-jetstream-testing/).
 
 > صادقانه: همه‌چیز Go 1.26 روی loopback و یک ماشین است. proxy روی 127.0.0.1 یک **مدل** از شبکه‌ی بد است، نه خودِ آن. randomness با seed ثابت است و شمارش چاپ می‌کنم، نه زمان (ماشین شلوغ بود).
 
 ## طبقه‌بندی خطاها
 
-تأخیر، خطا (5xx و 4xx)، reset یا refused شدن اتصال، hang، پاسخ ناقص، payload خراب، body کند، clock skew، تمام شدن منابع، kill شدن process. دموی من هفت مورد اول را پوشش می‌دهد؛ سه مورد آخر را نساخته‌ام.
+تأخیر، خطا (5xx و 4xx)، reset یا refused شدن اتصال، hang، پاسخ ناقص، payload خراب، body کند، clock skew، تمام شدن منابع، kill شدن process. دموی من هفت مورد اول را پوشش می‌دهد.
 
 ## دو تزریق‌کننده
 
-اول، یک proxy از نوع TCP بین کلاینت و سرور (ایده‌ی Toxiproxy که فقط اسمش را می‌شناسم و اجرایش نکرده‌ام). برای هر اتصال می‌تواند تأخیر با jitter بدهد، پهنای باند را محدود کند، بعد از N بایت ببندد، reset بفرستد، blackhole کند (بپذیرد، هرگز جواب ندهد)، 503 آماده بدهد، یا `drop_response`: درخواست را رد کند، بگذارد سرور تمام کند، بعد کلاینت را reset کند. دوم، یک wrapper برای `http.RoundTripper` در unit testهای بدون socket: error، 503، latency، truncate، corrupt.
+اول، یک proxy ‏TCP بین کلاینت و سرور (ایده‌ی Toxiproxy که فقط اسمش را می‌شناسم و اجرایش نکرده‌ام). برای هر اتصال می‌تواند تأخیر با jitter بدهد، پهنای باند را محدود کند، بعد از N بایت ببندد، reset بفرستد، blackhole کند (بپذیرد، هرگز جواب ندهد)، 503 آماده بدهد، یا `drop_response`: درخواست را رد کند، بگذارد سرور تمام کند، بعد کلاینت را reset کند. دوم، یک wrapper برای `http.RoundTripper` در unit testهای بدون socket: error، 503، latency، truncate، corrupt.
 
 برنامه‌ی خطا `Schedule{Seed, weights}` است؛ خطای اتصال `i` فقط به `(seed, i)` بستگی دارد. یک GET برای هر خطا، deadline ۳۰۰ms:
 
@@ -62,7 +63,7 @@ Principles of Chaos Engineering را این‌طور می‌فهمم: {{< term "
   retry + Idempotency-Key (after)    ok=100/100 attempts=122 charges=100 double-charged=0
 ```
 
-همه‌ی سفارش‌ها «موفق» بودند، اما ۱۶ مشتری دو بار پرداخت کردند. نرخ موفقیت این را نشان نمی‌دهد؛ شمارش خودِ سرور هم باید بررسی شود. راه‌حل کلید {{< term "idempotency" "idempotency" >}} است.
+نرخ موفقیت این ۱۶ پرداخت دوباره را نشان نمی‌دهد؛ شمارش خودِ سرور هم باید بررسی شود. راه‌حل کلید {{< term "idempotency" "idempotency" >}} است.
 
 **ب) بدون timeout.** خطا: blackhole. تست ۲ ثانیه منتظر می‌ماند:
 
@@ -87,11 +88,11 @@ Principles of Chaos Engineering را این‌طور می‌فهمم: {{< term "
   probe fixed (after)  final state=closed    rejected= 27 ok in ticks 65..119: 55/55
 ```
 
-باگ breaker را خودم کاشتم؛ باگ‌های واقعی عجیب‌ترند. تست‌ها با `go test -race` پاس می‌شوند.
+باگ‌های واقعی عجیب‌ترند. تست‌ها با `go test -race` پاس می‌شوند.
 
 ## بازتولید خطا با seed
 
-seed یکسان، transcript یکسان (خطاها، نتیجه‌ی سفارش‌ها، شارژها). md5 transcript:
+seed یکسان، transcript یکسان (خطاها، نتیجه‌ی سفارش‌ها، شارژها)؛ md5 آن:
 
 ```
   seed 42, run 1: md5 1a6089762f2084ba9da0a3e6ab92b0b8
@@ -107,7 +108,7 @@ seed یکسان، transcript یکسان (خطاها، نتیجه‌ی سفارش
 
 در تجربه‌ی من: unit test با RoundTripper در CI برای هر commit، proxy در CI یا staging، و production فقط با حفاظ. یک {{< term "game-day" "game day" >}} به runbook، نقش‌های مشخص، شرط‌های توقف و کانال ارتباطی نیاز دارد. بدون این‌ها در production خطا تزریق نمی‌کنم.
 
-## چند نکته‌ی مهم
+## قواعد یک آزمایش خرابی
 
 - فرضیه را اول، با عدد، بنویسید.
 - درستی (شارژ دوباره) را بسنجید، نه فقط دسترس‌پذیری را.
@@ -120,4 +121,4 @@ seed یکسان، transcript یکسان (خطاها، نتیجه‌ی سفارش
 
 ## قدم بعدی
 
-مقاله‌ی بعد «modular monolith یا microservice؟» است.
+«modular monolith یا microservice؟»: هر مرز شبکه جای تازه‌ای برای همین خطاهاست؛ باید مرز بیشتری ساخت؟

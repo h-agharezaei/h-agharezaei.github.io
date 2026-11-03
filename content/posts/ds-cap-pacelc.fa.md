@@ -3,13 +3,14 @@ date = '2027-04-20T10:00:00+03:30'
 draft = false
 title = 'CAP و PACELC درست'
 description = 'CAP و PACELC با شبیه‌سازی‌های Go با seed ثابت: CP رد می‌کند، AP جدا می‌شود و merge می‌شود، و replication همگام و ناهمگام تأخیر را با تازگی عوض می‌کند.'
+contentType = 'tutorial'
 categories = ["Distributed"]
 series = ["Distributed Systems"]
 tags = ["distributed-systems", "cap-theorem", "pacelc", "consistency", "go"]
 cover = { image = "/images/covers/ds-cap-pacelc.fa.png", alt = "CAP و PACELC درست", hiddenInSingle = true }
 +++
 
-در [مقاله‌ی قبل](/fa/posts/ds-why-distributed-is-hard/) timeout یعنی «نامعلوم». CAP همان لحظه‌ای است که این نامعلوم آن‌قدر طول می‌کشد که باید تصمیم بگیرید چه کنید. «از سه تا دو تا را انتخاب کن» شعاری است که همه یادشان مانده و به نظر من بیشتر گمراه می‌کند تا یاد بدهد. اول دقیق بگویمش. پیش‌زمینه: [replication](/fa/posts/db-replication-streaming/) و [JetStream](/fa/posts/nats-jetstream-production/).
+«از سه تا دو تا را انتخاب کن» شعاری است که همه از CAP یادشان مانده و به نظر من بیشتر گمراه می‌کند تا یاد بدهد. CAP از جایی شروع می‌شود که «نامعلوم»ِ timeout، از [مقاله‌ی قبل](/fa/posts/ds-why-distributed-is-hard/)، آن‌قدر بماند که مجبور به تصمیم شوید. پیش‌زمینه: [replication](/fa/posts/db-replication-streaming/) و [JetStream](/fa/posts/nats-jetstream-production/).
 
 > صادقانه: همه‌ی این‌ها **شبیه‌سازی** هستند، در یک برنامه‌ی Go 1.26 (با seed ثابت و قطعی). زمان با «tick» ساختگی شمرده می‌شود و «شبکه» یک boolean و یک تأخیر است. شبکه‌ی واقعی نیست و زمانی گزارش نمی‌کنم.
 
@@ -23,7 +24,7 @@ cover = { image = "/images/covers/ds-cap-pacelc.fa.png", alt = "CAP و PACELC د
 - **A**: هر گره‌ی سالم به هر درخواست پاسخ می‌دهد.
 - **P**: سیستم وقتی شبکه پیام‌های بین گره‌ها را گم می‌کند کار می‌کند.
 
-شبکه‌ی واقعی partition می‌شود، پس P انتخاب نیست. بیان صادقانه: **هنگام partition باید از C یا A بگذری**، برای عملیاتی که کامل نمی‌شود. این همان {{< term "cap-theorem" "قضیه‌ی CAP" >}} است.
+شبکه‌ی واقعی partition می‌شود، پس P انتخاب نیست. بیان صادقانه‌ی {{< term "cap-theorem" "قضیه‌ی CAP" >}} این است: **هنگام partition باید از C یا A بگذری**، برای عملیاتی که کامل نمی‌شود.
 
 ## ۱. CP: رد کردن
 
@@ -37,7 +38,7 @@ CP : writes=50 rejected=20 | reads=100 rejected=40 stale=0 | diverged=false fina
 
 ## ۲. AP: پذیرفتن در هر دو سمت
 
-حالا هر دو سمت می‌پذیرند. یک کلاینت هم روی B می‌نویسد (۴ نوشتن اضافه در طول partition). بیرون از partition، A با تأخیر ۲ tick به‌صورت ناهمگام به B می‌رساند.
+یک کلاینت هم روی B می‌نویسد (۴ نوشتن اضافه در طول partition). بیرون از partition، A با تأخیر ۲ tick ناهمگام به B می‌رساند.
 
 ```
 AP : writes accepted=49 (rejected=0, concurrent on B=4)
@@ -54,7 +55,7 @@ cart LWW  : [pen tea] (book was added and acknowledged, now gone)
 cart union: [book pen tea]
 ```
 
-union مجموعه‌ها یک {{< term "crdt" "CRDT" >}} کوچک است: merge به هر ترتیب و هر چند بار همان جواب را می‌دهد. برای عدد، G-counter برای هر گره یک خانه نگه می‌دارد، با بیشینه‌ی هر خانه merge می‌کند و مقدارش جمع خانه‌هاست. با seed برابر ۴۲، از ۱۰۰ شروع شد و A به‌اندازه‌ی ۸ و B به‌اندازه‌ی ۱۶ افزایش داد:
+union مجموعه‌ها یک {{< term "crdt" "CRDT" >}} کوچک است: merge به هر ترتیب و هر چند بار همان جواب را می‌دهد. برای عدد، G-counter برای هر گره یک خانه نگه می‌دارد، با بیشینه‌ی هر خانه merge می‌کند و مقدارش جمع خانه‌هاست. با seed ۴۲ و شروع از ۱۰۰، A به‌اندازه‌ی ۸ و B به‌اندازه‌ی ۱۶ افزود:
 
 ```
 counter: +8 on A, +16 on B, expected 124 | LWW register 116 (lost 8) | G-counter 124
@@ -81,11 +82,11 @@ sync : writes=45 ack ticks mean=5.8 max=8 | follower reads=100 stale=0 max lag=0
 async: writes=45 ack ticks mean=0.0 max=0 | follower reads=100 stale=69 max lag=2 writes
 ```
 
-tickها شبیه‌سازی‌اند. حالت sync برای هر نوشتن حدود ۶ tick داد و هیچ‌وقت خواندنی قدیمی‌تر از نوشتن تأییدشده برنگرداند. async فوراً ack داد، ولی ۶۹ خواندن از follower عقب‌تر از آخرین نوشتن تأییدشده بود. این معامله‌ی «وگرنه» است و در حالت سالم هم هست.
+sync برای هر نوشتن حدود ۶ tick داد و هیچ‌وقت خواندنی قدیمی‌تر از نوشتن تأییدشده برنگرداند. async فوراً ack داد، ولی ۶۹ خواندن از follower عقب‌تر از آخرین نوشتن تأییدشده بود. این معامله‌ی «وگرنه» است، حتی در حالت سالم.
 
 طبق مقاله‌ی قبلی خودم، streaming replication در PostgreSQL به‌طور پیش‌فرض ناهمگام است و می‌شود همگامش کرد. طبق مستندات، streamهای replicate شده‌ی JetStream مبتنی بر quorum هستند؛ این را توضیح دادم و اینجا cluster اجرا نکردم.
 
-## چند نکته‌ی مهم
+## اشتباه‌های رایج با CAP
 
 - بگویید «هنگام partition، C یا A»، هرگز «CA».
 - قاعده‌ی merge را پیش از راه‌اندازی تعیین کنید.
@@ -97,4 +98,4 @@ tickها شبیه‌سازی‌اند. حالت sync برای هر نوشتن ح
 
 ## قدم بعدی
 
-مقاله‌ی بعدی «مدل‌های consistency» است.
+بعد، «مدل‌های consistency»: فضای بین linearizable و کهنه.

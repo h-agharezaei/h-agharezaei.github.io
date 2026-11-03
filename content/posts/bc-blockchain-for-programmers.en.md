@@ -4,25 +4,26 @@ draft = false
 title = 'Blockchain for programmers: what problem it actually solves'
 seoTitle = 'Blockchain for programmers: the problem it solves'
 description = 'Blockchain for programmers: a shared append-only ledger without a central operator, tamper evidence in Go, and when a database is better.'
+contentType = 'tutorial'
 categories = ["Blockchain"]
 series = ["Blockchain"]
 tags = ["blockchain", "go", "hash", "ledger", "beginner"]
 cover = { image = "/images/covers/bc-blockchain-for-programmers.png", alt = "Blockchain for programmers: what problem it actually solves", hiddenInSingle = true }
 +++
 
-This starts a 32-post course on blockchain from a programmer's point of view: no prices, no investing, just data structures, cryptography, networking and code. First, the problem, because most confusion around blockchain comes from skipping it. Background posts: [a hash table from scratch](/posts/algo-hash-tables/), [common cryptography mistakes](/posts/sec-crypto-mistakes/), [consensus and Raft](/posts/ds-consensus-raft/), [logging, auditing and incident response](/posts/sec-logging-audit-incident-response/) and the [Binance hack write-up](/posts/binance-hack-hot-wallet-2026/), where the hard part was off-chain.
+Edit a record in a hash-linked log, recompute every hash, and local verification passes again. So what does a blockchain add? This 32-post course answers it for programmers: no prices, no investing, just data structures, cryptography, networking and code. Background posts: [a hash table from scratch](/posts/algo-hash-tables/), [common cryptography mistakes](/posts/sec-crypto-mistakes/), [consensus and Raft](/posts/ds-consensus-raft/), [logging, auditing and incident response](/posts/sec-logging-audit-incident-response/) and the [Binance hack write-up](/posts/binance-hack-hot-wallet-2026/), where the hard part was off-chain.
 
 > The demo was run with Go 1.27 on macOS (arm64).
 
 ## The problem in one sentence
 
-Several parties who do not trust each other want to keep one shared, append-only list of records, and none of them is allowed to be the operator who decides what is in it.
+Several parties who do not trust each other want to keep one shared, append-only list of records, and none of them may be the operator who decides what goes in.
 
 That is a {{< term "distributed-ledger" "distributed ledger" >}}. *Shared*: everybody keeps a full copy. *Append-only*: history is not edited, only extended. *No operator*: there is no admin with `UPDATE` rights, so the parties need a rule, a {{< term "consensus" "consensus" >}} protocol, to agree on the next entry. Without trust, the protocol must survive a {{< term "byzantine-fault" "Byzantine fault" >}}: a participant who lies, not one who merely crashes. Raft assumes honest nodes; that is the key difference.
 
 ## Why not a database with an audit log?
 
-If one company runs the system, a database plus an {{< term "audit-log" "audit log" >}} is the right answer: faster, cheaper, easy to fix and query. The question is who you trust:
+If one company runs the system, a database plus an {{< term "audit-log" "audit log" >}} is the right answer: faster, cheaper, easier to fix. The question is who you trust:
 
 | | Database + audit log | Blockchain |
 |---|---|---|
@@ -35,7 +36,7 @@ The audit log protects you from your staff, not your customers from you: you hol
 
 ## Tamper-evident, not tamper-proof
 
-The basic tool is a {{< term "hash-chain" "hash chain" >}}: each record stores the {{< term "sha-256" "SHA-256" >}} hash of the previous record. Change one record and the next link breaks. A minimal Go version (real blocks come next post):
+The basic tool is a {{< term "hash-chain" "hash chain" >}}: each record stores the {{< term "sha-256" "SHA-256" >}} hash of the previous record. Change one record and the next link breaks. A minimal Go version:
 
 ```go
 type Record struct {
@@ -78,7 +79,7 @@ head matches peer: false
 
 The last two lines are the lesson. Whoever controls the whole file can recompute the chain and pass local verification. The chain is only *tamper-evident* if someone else holds a hash you cannot change. In a blockchain many independent nodes hold the head, so a rewrite shows up. Making rewrites *expensive* (proof of work, stake) comes later.
 
-The missing piece is identity: who may append "bob -> carol"? That needs a {{< term "digital-signature" "digital signature" >}} by Bob's key, covered later.
+The missing piece is identity: who may append "bob -> carol"? That needs Bob's {{< term "digital-signature" "digital signature" >}}, covered later.
 
 ## Where blockchain is the wrong tool
 
@@ -95,13 +96,13 @@ The missing piece is identity: who may append "bob -> carol"? That needs a {{< t
 3. DeFi and security (Solidity, Go): AMMs, lending, oracles, contract security, MEV.
 4. Advanced: proof of stake, rollups, bridges, zero-knowledge, exchange engineering, a capstone.
 
-Everything runs locally, with no real keys.
+Everything runs locally, without real keys.
 
-## A few things to watch
+## What a hash chain does not prove
 
 - A hash chain proves order and integrity, not truth or authorship.
-- Tamper evidence needs an independent copy of the head hash; one machine is not enough.
-- Without the "no central operator" requirement, you are building a slow database.
+- Tamper evidence needs an independent copy of the head hash.
+- Without the no-operator requirement, you are building a slow database.
 - Hash a well-defined encoding. The `"|"` separator here is a toy; a real format needs an unambiguous byte layout.
 
 ## Exercise
@@ -112,4 +113,4 @@ Everything runs locally, with no real keys.
 
 ## What's next
 
-In the next post, *Hashes, blocks and the chain: a first blockchain in Go*, we turn these records into real blocks.
+*Hashes, blocks and the chain: a first blockchain in Go* turns these records into the real blocks everything else builds on.

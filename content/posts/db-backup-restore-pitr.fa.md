@@ -3,13 +3,14 @@ date = '2027-02-25T10:00:00+03:30'
 draft = false
 title = 'backup، restore و PITR'
 description = 'backup و restore در PostgreSQL با دست: بک‌آپ منطقی، base backup سرد و آنلاین، WAL archiving و بازیابی به لحظه‌ی دلخواه تا یک restore point.'
+contentType = 'tutorial'
 categories = ["Databases"]
 series = ["Databases"]
 tags = ["databases", "postgresql", "backup", "pitr", "wal-archiving"]
 cover = { image = "/images/covers/db-backup-restore-pitr.fa.png", alt = "backup، restore و PITR", hiddenInSingle = true }
 +++
 
-در [پست قبلی](/fa/posts/db-replication-streaming/) یک `DELETE` روی primary کمی بعد روی replica هم دیده شد. replica شما را از مردن سرور نجات می‌دهد، نه از یک دستور اشتباه. این پست درباره‌ی چیزی است که نجات می‌دهد: یک base backup به‌علاوه‌ی آرشیوی از {{< term "wal" "WAL" >}} که در [تراکنش و ACID](/fa/posts/db-transactions-acid/) دیدیم، و با آن می‌توان تاریخچه را تا لحظه‌ای دلخواه replay کرد. این همان {{< term "pitr" "بازیابی به لحظه‌ی دلخواه" >}} یا PITR است.
+یک `DELETE FROM orders;` که `WHERE`ش فراموش شده، ۶۵۱ سفارش را در یک لحظه پاک کرد. در [replication با دو instance واقعی](/fa/posts/db-replication-streaming/) دیدیم چنین `DELETE`ی کمی بعد روی replica هم دیده می‌شود: replica شما را از مردن سرور نجات می‌دهد، نه از یک دستور اشتباه. این پست درباره‌ی چیزی است که نجات می‌دهد: یک base backup به‌علاوه‌ی آرشیوی از {{< term "wal" "WAL" >}} که در [تراکنش و ACID](/fa/posts/db-transactions-acid/) دیدیم، و با آن می‌توان تاریخچه را تا لحظه‌ای دلخواه replay کرد. این همان {{< term "pitr" "بازیابی به لحظه‌ی دلخواه" >}} یا PITR است.
 
 > همه‌چیز روی یک PostgreSQL 18.3 واقعی (باینری‌های embedded) و یک دیتابیس کوچک اجرا شد (دو جدول، ۱۰۰ customer، ۵۰۰ order، حدود ۴۰ مگابایت). زمان‌سنجی نیست. تنها `pg_dump` و `pg_basebackup` این ماشین نسخه‌ی 17.5 است، پس هیچ‌کدام را **با موفقیت اجرا نکردم**. هرجا معادل دستی گذاشتم گفته‌ام. مسیرهای موقت پایین با `<archive>` جایگزین شده‌اند.
 
@@ -125,7 +126,7 @@ target زمانی از نام دقیق‌تر نیست: ساعت و time zone د
 FATAL:  recovery ended before configured recovery target was reached
 ```
 
-## چند نکته‌ی مهم
+## بک‌آپ واقعی چه می‌خواهد
 
 - replica بک‌آپ نیست: `DELETE` اشتباه هم replicate می‌شود. هر دو را داشته باشید.
 - بک‌آپی که هرگز restore نکرده‌اید فقط امید است. به‌صورت زمان‌بندی‌شده در یک instance آزمایشی restore کنید و یک query واقعی بزنید.
@@ -139,4 +140,4 @@ FATAL:  recovery ended before configured recovery target was reached
 
 ## قدم بعدی
 
-پست بعدی «connection pool و حالت‌های خرابی» است.
+«connection pool و حالت‌های خرابی»: وقتی مطمئن شدیم داده برمی‌گردد، سؤال بعدی رسیدن به داده است؛ هر query یک اتصال می‌خواهد و تعداد اتصال‌ها محدود است.

@@ -3,19 +3,20 @@ date = '2027-05-11T10:00:00+03:30'
 draft = false
 title = 'Replication and quorums'
 description = 'Replication and quorums in Go simulations: lost acknowledged writes, the R+W>N rule, read repair, Merkle trees, LWW losses and a non-linearizable read.'
+contentType = 'tutorial'
 categories = ["Distributed"]
 series = ["Distributed Systems"]
 tags = ["distributed-systems", "replication", "quorum", "consistency", "go"]
 cover = { image = "/images/covers/ds-replication-quorum.png", alt = "Replication and quorums", hiddenInSingle = true }
 +++
 
-[The previous post](/posts/ds-circuit-breaker-bulkhead/) was about surviving a sick dependency. The other way to survive a dead machine is to keep several copies of the data, which is {{< term "replication" "replication" >}}. For the database view see [replication with two real instances](/posts/db-replication-streaming/).
+A leader acknowledges a write, crashes, and the follower that takes over never saw it. Keeping several copies, {{< term "replication" "replication" >}}, only helps if you decide when a write counts as done. [The previous post](/posts/ds-circuit-breaker-bulkhead/) covered a sick dependency; for the database view see [replication with two real instances](/posts/db-replication-streaming/).
 
 > Honest labelling: everything here is a Go 1.26 simulation on one machine. Loss and delays are seeded random numbers and I show counts, not timings.
 
 ## Leader-based: when is a write acknowledged?
 
-One leader, two followers, 20 writes, and the leader crashes at a random tick. I ran 1000 seeded runs per mode and counted writes that were acknowledged to the client but missing on the follower that took over.
+One leader, two followers, 20 writes, and the leader crashes at a random tick. Over 1000 seeded runs per mode I counted acknowledged writes missing on the follower that took over.
 
 ```
   async                                            acked=13170 lost-acked=1505 runs-with-loss= 932  acked/20 with a follower down=20
@@ -37,7 +38,7 @@ In a Dynamo-style design any replica takes a write. N=3. A write goes to all thr
   R=2 W=2 R+W>N=true  failed-writes= 5897 failed-reads= 5884 stale=    0 read-uncommitted= 3763
 ```
 
-Stale means older than the newest acknowledged write. It is zero whenever R+W>N, and 3368 for R=1, W=1. But look at `read-uncommitted`: a write that reached fewer than W replicas is reported as failed, yet its value stays on those replicas, and later reads return it. The client was told "failed" and the value is visible anyway.
+Stale means older than the newest acknowledged write. It is zero whenever R+W>N, and 3368 for R=1, W=1. But look at `read-uncommitted`: a write that reached fewer than W replicas is reported as failed, yet its value stays on those replicas, and later reads return it.
 
 ## Repair: read repair, anti-entropy, hinted handoff
 
@@ -49,7 +50,7 @@ Stale means older than the newest acknowledged write. It is zero whenever R+W>N,
   differing keys=3  found=[17 18 900]  hash comparisons=41 (full scan: 1024)
 ```
 
-{{< term "hinted-handoff" "Hinted handoff" >}} I only describe, I did not implement it: while a replica is down, another node keeps its writes and delivers them later. That is a sloppy quorum, so the overlap above no longer holds.
+{{< term "hinted-handoff" "Hinted handoff" >}} I only describe, not implement: while a replica is down, another node keeps its writes and delivers them later. That is a sloppy quorum, so the overlap above no longer holds.
 
 ## Conflicts: LWW versus version vectors
 
@@ -68,16 +69,16 @@ With p=0.99 per replica, a quorum of W needs at least W replicas up. Exactly, W=
 
 ## Quorums are not linearizable
 
-Scripted interleaving, N=3, R=2, W=2: write 1 has reached only replica A and has not returned. Reader 1 asks A and B and gets 1. Reader 2 starts after that and asks B and C, getting 0. With the checker idea from the [consistency models](/posts/ds-consistency-models/) post:
+Scripted interleaving, N=3, R=2, W=2: write 1 has reached only replica A and has not returned. Reader 1 asks A and B and gets 1. Reader 2 starts after that and asks B and C, getting 0. With the checker from [consistency models](/posts/ds-consistency-models/):
 
 ```
   writeBack=false reader1 saw 1, reader2 (started later) saw 0, linearizable=false
   writeBack=true  reader1 saw 1, reader2 (started later) saw 1, linearizable=true
 ```
 
-If readers write back what they saw before returning, the history passes, though that is one scripted case. {{< term "linearizability" "Linearizability" >}} in general needs consensus; Raft and Paxos get their own posts later in the series. Real systems use it: see replicas `R3` in [JetStream in production](/posts/nats-jetstream-production/).
+If readers write back what they saw before returning, the history passes, though that is one scripted case. {{< term "linearizability" "Linearizability" >}} in general needs consensus; Raft gets its own post later in the series. Real systems use it: see replicas `R3` in [JetStream in production](/posts/nats-jetstream-production/).
 
-## A few things to watch
+## Where quorums surprise you
 
 - A "failed" quorum write may still be visible.
 - LWW is acceptable only when losing a write is acceptable.
@@ -89,4 +90,4 @@ Add a fourth replica with N=4, W=3, R=2 and rerun the table. Does anything chang
 
 ## What's next
 
-The next post is “Sharding and consistent hashing”.
+Next, “Sharding and consistent hashing”: replication copies all the data, sharding splits it.

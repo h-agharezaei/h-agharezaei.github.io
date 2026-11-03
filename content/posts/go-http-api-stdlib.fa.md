@@ -3,13 +3,14 @@ date = '2027-01-03T10:00:00+03:30'
 draft = false
 title = 'ساخت API با net/http در Go'
 description = 'ساخت API با net/http در Go بدون فریم‌ورک: ServeMux، middleware، خواندن امن JSON، timeout‌های سرور، graceful shutdown و تست handler‌ها با httptest.'
+contentType = 'tutorial'
 categories = ["Go"]
 series = ["Go Backend"]
 tags = ["go", "backend", "http", "api", "net-http", "middleware"]
 cover = { image = "/images/covers/go-http-api-stdlib.fa.png", alt = "ساخت API با net/http در Go", hiddenInSingle = true }
 +++
 
-در [مقاله‌ی قبل](/fa/posts/go-config-logging-errors/) سرویس `orders` یک `Config` تایپ‌دار از متغیرهای محیطی گرفت، `slog` با handler متنی و JSON، یک شناسه‌ی درخواست که در context می‌ماند، و یک تابع (`statusOf`) که خطاها را به status کد HTTP تبدیل می‌کند. خود سرور هنوز ساده بود: یک read timeout، بدون محافظ panic، بدون سقف بدنه و بدون خاموش‌شدن مرتب. حالا لایه‌ی HTTP را رویش می‌سازیم، فقط با کتاب‌خانه‌ی استاندارد. از Go 1.22 router متد و wildcard را می‌فهمد، پس برای API کوچک سراغ فریم‌ورک نمی‌روم. در [پروژه‌ی URL shortener](/fa/posts/go-mini-project-url-shortener/) هم از `net/http` استفاده کرده بودیم؛ اینجا **middleware**، خواندن امن درخواست، timeout و تست را اضافه می‌کنیم.
+`http.ListenAndServe` یک `http.Server` با مقدار صفر می‌سازد و صفر یعنی بدون timeout: کلاینتی که هدرها را بایت‌به‌بایت بفرستد یک goroutine را تا ابد نگه می‌دارد. سرور `orders` بعد از [کانفیگ، لاگ ساختاریافته و خطا](/fa/posts/go-config-logging-errors/) هنوز همین است: یک read timeout، بدون محافظ panic، بدون سقف بدنه و بدون خاموش‌شدن مرتب. از Go 1.22 router متد و wildcard را می‌فهمد، پس برای API کوچک سراغ فریم‌ورک نمی‌روم. در [پروژه‌ی URL shortener](/fa/posts/go-mini-project-url-shortener/) هم از `net/http` استفاده کرده بودیم؛ اینجا **middleware**، خواندن امن درخواست، timeout و تست را اضافه می‌کنیم، فقط با کتاب‌خانه‌ی استاندارد.
 
 > همه‌ی مثال‌ها با Go 1.26 روی macOS (arm64) و فقط با کتاب‌خانه‌ی استاندارد اجرا شده‌اند. نمونه همان ماژول مقاله‌ی قبل است. در لاگ‌ها فیلد `time=` حذف شده است.
 
@@ -202,7 +203,7 @@ ok  	example.com/orders/internal/service
 ok  	example.com/orders/internal/transport/http
 ```
 
-## چند نکته که باید حواستان باشد
+## جاهایی که net/http غافلگیرتان می‌کند
 
 - `404` و `405` خودِ mux متن ساده‌اند. شناسه و خط لاگ می‌گیرند، اما اگر کلاینت‌ها JSON انتظار دارند، wrap‌شان کنید.
 - `WriteTimeout` handler‌های کند را هم شامل می‌شود: دانلود یا stream طولانی به مقدار بزرگ‌تر یا `http.ResponseController` نیاز دارد.
@@ -212,4 +213,4 @@ ok  	example.com/orders/internal/transport/http
 
 ## قدم بعدی
 
-مقاله‌ی بعد: Postgres با pgx و sqlc در Go، جایی که store در حافظه جایش را به یک دیتابیس واقعی می‌دهد.
+قدم بعدی «Postgres با pgx و sqlc در Go» است، چون داده‌ها هنوز در یک map در حافظه‌اند.

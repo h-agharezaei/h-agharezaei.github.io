@@ -3,13 +3,14 @@ date = '2027-01-22T10:00:00+03:30'
 draft = false
 title = 'سرور و کلاینت TCP از صفر'
 description = 'سرور TCP از صفر در Go: حلقه‌ی Accept، فریم‌بندی جریان بایتی، پروتکل KV با length prefix، deadline، half-close و خاموشی تمیز.'
+contentType = 'tutorial'
 categories = ["Networking"]
 series = ["Networking"]
 tags = ["networking", "tcp", "sockets", "go", "framing", "protocol"]
 cover = { image = "/images/covers/net-sockets-tcp-from-scratch.fa.png", alt = "سرور و کلاینت TCP از صفر", hiddenInSingle = true }
 +++
 
-در [پست قبلی](/fa/posts/net-tcp-handshake-states/) دیدیم یک اتصال چطور باز و بسته می‌شود. حالا هر دو سر را می‌نویسیم. API مربوط به {{< term "socket" "socket" >}} کوچک است ولی یک واقعیت درباره‌ی {{< term "tcp" "TCP" >}} همه را گیر می‌اندازد: پیام ندارد. این را در [پست مدل TCP/IP](/fa/posts/net-tcp-ip-model/) دیدیم؛ اینجا باهاش کار می‌کنیم. کد از {{< term "goroutine" "goroutine" >}} استفاده می‌کند، مثل [goroutine و channel](/fa/posts/go-goroutines-channels/).
+دو `Write` در یک سر می‌تواند در سر دیگر یک `Read` شود و یک write سه read، چون {{< term "tcp" "TCP" >}} پیام ندارد. API مربوط به {{< term "socket" "socket" >}} کوچک است ولی همین واقعیت همه را گیر می‌اندازد. [پست قبلی](/fa/posts/net-tcp-handshake-states/) باز و بسته‌شدن یک اتصال را نشان داد و [پست مدل TCP/IP](/fa/posts/net-tcp-ip-model/) جریان بایتی را؛ اینجا هر دو سر را می‌نویسیم و با همین مشکل کنار می‌آییم. کد از {{< term "goroutine" "goroutine" >}} استفاده می‌کند، مثل [goroutine و channel](/fa/posts/go-goroutines-channels/).
 
 > همه‌چیز روی `127.0.0.1` با port تصادفی (`:0`)، Go 1.26 و macOS اجرا شده است. هیچ آدرسی از دستگاه من نیامده؛ port‌های موقت در یک خط خطا با `PORT` عوض شده‌اند. دمو یک پوشه‌ی نمونه‌ی محلی است. ماشین مشغول بود، پس زمان‌بندی نشان نمی‌دهم.
 
@@ -108,7 +109,7 @@ dial after shutdown: refused=true
 
 ماژول `socket` در Python پوشش نازکی روی همان فراخوانی‌هاست: `bind`، `listen`، `accept`، `recv` و `sendall`. یک echo server و کلاینت ۱۴ خطی در یک پردازه، `client got b'ping\n'` چاپ کرد. Node تابع `net.createServer` را دارد که برای هر اتصال یک callback صدا می‌زند (با [node:http](/fa/posts/node-http-server/) مقایسه کنید)؛ نسخه‌ی Node را اینجا اجرا نکردم.
 
-## چند نکته‌ی مهم
+## چک‌لیست مقاوم‌سازی سرور
 
 - فرض نکنید یک `Write` برابر یک `Read` است؛ حلقه بزنید یا از `io.ReadFull` استفاده کنید.
 - هر طولی را که از شبکه می‌خوانید پیش از allocate سقف‌دار کنید.
@@ -122,4 +123,4 @@ dial after shutdown: refused=true
 
 ## قدم بعدی
 
-پست بعدی «UDP و تفاوتش با TCP» است.
+بعدی «UDP و تفاوتش با TCP» است: پروتکلی که مرز پیام را نگه می‌دارد، پس فریم‌بندی لازم نیست، ولی تضمین‌هایی که اینجا از TCP گرفتیم هم دیگر نیست.

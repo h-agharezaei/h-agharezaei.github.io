@@ -3,6 +3,7 @@ date = '2027-03-16T10:00:00+03:30'
 draft = false
 title = 'مرور سری Go در سال ۱۴۰۵'
 description = 'نقشه‌ی ۳۹ مقاله‌ی مرتبط با Go در سال ۱۴۰۵: مبانی، Go Backend، NATS JetStream و Go + Rust، به‌همراه درس‌هایی که بارها تکرار شدند.'
+contentType = 'analysis'
 categories = ["Meta"]
 tags = ["go", "recap", "1405", "nats", "backend"]
 cover = { image = "/images/covers/year-1405-go-recap.fa.png", alt = "مرور سری Go در سال ۱۴۰۵", hiddenInSingle = true }

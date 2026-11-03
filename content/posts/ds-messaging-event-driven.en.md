@@ -3,13 +3,14 @@ date = '2027-05-29T10:00:00+03:30'
 draft = false
 title = 'Messaging and event-driven architecture'
 description = 'Event-driven architecture in Go over NATS: commands vs events, fan-out, envelopes, idempotent consumers, ordering, schema changes and loop limits.'
+contentType = 'tutorial'
 categories = ["Distributed"]
 series = ["Distributed Systems"]
 tags = ["distributed-systems", "messaging", "event-driven", "nats", "go"]
 cover = { image = "/images/covers/ds-messaging-event-driven.png", alt = "Messaging and event-driven architecture", hiddenInSingle = true }
 +++
 
-[The previous post](/posts/ds-cqrs-event-sourcing/) ended with events as a way to move state. This post is the architecture view of messaging. How JetStream works is already covered in the [NATS series](/posts/nats-jetstream-retry-dlq/); I use it here and do not repeat it.
+In my run, 50 events became 59 side effects: event-driven systems trade a plain call for duplicates, reordering, schema drift and loops. The [previous post](/posts/ds-cqrs-event-sourcing/) ended with events moving state; JetStream itself is covered in the [NATS series](/posts/nats-jetstream-retry-dlq/).
 
 > Honest labelling: everything runs on one machine, services are goroutines, and the "network" is loopback to an embedded nats-server. It shows the patterns, not a real network. Counts, no timings.
 
@@ -51,7 +52,7 @@ The causation id rebuilds the chain; the correlation id finds it in the logs. In
 
 ## At-least-once and idempotent consumers
 
-I published 50 events to a JetStream consumer with a 300 ms ack wait. Handlers "crash" after the side effect but before the ack for about 20% of first deliveries (seeded, so repeatable).
+I published 50 events to a JetStream consumer with a 300 ms ack wait. Handlers "crash" after the side effect but before the ack for about 20% of first deliveries (seeded).
 
 ```
 events=50 deliveries=59 redelivered=9
@@ -62,7 +63,7 @@ That is {{< term "at-least-once-delivery" "at-least-once delivery" >}}: 9 duplic
 
 ## Ordering
 
-JetStream keeps order within a stream, nothing more. When one ack is lost, redelivery breaks it. Events v1 created, v2 paid and v3 shipped for one order, v2 not acked the first time:
+JetStream keeps order only within a stream. When one ack is lost, redelivery breaks it. Events v1 created, v2 paid and v3 shipped for one order, v2 not acked the first time:
 
 ```
 arrived v1 created  delivery#1 applied-by-version-check=true
@@ -94,7 +95,7 @@ callback, responder gone: err=nats: no responders available for request
 callback, slow responder: err=nats: timeout
 ```
 
-Fat events decouple availability but copy data around; thin events keep one source of truth but couple runtime.
+Fat events copy data; thin events couple runtime.
 
 ## The dangers
 
@@ -107,7 +108,7 @@ max hops=5    handled=5 dropped-by-hop-limit=1 killed-by-switch=false
 
 A {{< term "poison-message" "poison message" >}} is the sibling problem: cap deliveries and send it to a {{< term "dlq" "dead-letter queue" >}} ([retry and DLQ](/posts/nats-jetstream-retry-dlq/)).
 
-## A few things to watch
+## Messaging traps
 
 - Assume duplicates and reordering; dedupe by id and compare versions.
 - Put correlation and causation ids in every envelope from day one.
@@ -122,4 +123,4 @@ Add a `PaymentFailed` event to the choreography so orders cancels the order.
 
 ## What's next
 
-The next post is “Service discovery and load balancing”.
+“Service discovery and load balancing”: direct calls, unlike a bus, first need to know where the other service is.

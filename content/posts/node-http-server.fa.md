@@ -3,13 +3,14 @@ date = '2026-12-27T10:00:00+03:30'
 draft = false
 title = 'سرور HTTP با node:http'
 description = 'سرور HTTP با node:http و اجرای واقعی: routing دستی، محدودیت حجم بدنه با 413، timeout، keep-alive، خاموشی تمیز و تست با node:test.'
+contentType = 'tutorial'
 categories = ["Node.js"]
 series = ["Node.js"]
 tags = ["nodejs", "http", "node-http", "graceful-shutdown", "node-test"]
 cover = { image = "/images/covers/node-http-server.fa.png", alt = "سرور HTTP با node:http", hiddenInSingle = true }
 +++
 
-در مقاله‌ی قبل، [stream و backpressure در Node.js](/fa/posts/node-streams-backpressure/)، دیدیم که داده تکه‌تکه جابه‌جا می‌شود. سرور HTTP اولین جایی است که این مهم می‌شود: request و response هر دو stream هستند. اینجا با کتابخانه‌ی استاندارد یک API کوچک سفارش می‌سازیم، هم‌شکل [ساخت API با net/http در Go](/fa/posts/go-http-api-stdlib/). این مقاله به [event loop](/fa/posts/node-event-loop/)، [async/await](/fa/posts/node-promises-async-await/) و [مدیریت خطا](/fa/posts/node-errors-unhandled-rejections/) تکیه دارد.
+اگر بدنه‌ی بیش از حد بزرگ را با destroy کردن request رد کنید، کلاینت هرگز 413 شما را نمی‌بیند و curl فقط پاسخ خالی می‌گیرد. سرور HTTP جایی است که داده‌ی تکه‌تکه‌ی [stream و backpressure در Node.js](/fa/posts/node-streams-backpressure/) واقعاً مهم می‌شود، چون request و response هر دو stream هستند. اینجا با کتابخانه‌ی استاندارد یک API کوچک سفارش می‌سازیم، هم‌شکل [ساخت API با net/http در Go](/fa/posts/go-http-api-stdlib/). این مقاله به [event loop](/fa/posts/node-event-loop/)، [async/await](/fa/posts/node-promises-async-await/) و [مدیریت خطا](/fa/posts/node-errors-unhandled-rejections/) تکیه دارد.
 
 > Node نسخه‌ی v20.13.1. کد یک مثال محلی است (`app.js`، `main.js` و چند اسکریپت دمو)؛ همه‌ی خروجی‌ها از اجرای واقعی روی loopback کپی شده‌اند.
 
@@ -136,7 +137,7 @@ after(() => { server.closeAllConnections(); server.close(); });
 
 `ServeMux` در Go (از Go 1.22) الگوهایی مثل `GET /orders/{id}`، `PathValue` و 405 خودکار با هدر `Allow` می‌دهد؛ اینجا همه را دستی نوشتم. Go برای سقف بدنه `http.MaxBytesReader` و برای تخلیه‌ی تمیز `Server.Shutdown` دارد. Go هر درخواست را در goroutine جدا اجرا می‌کند؛ Node همه‌ی درخواست‌ها را روی یک thread پردازش می‌کند، پس handler مسدودکننده همه‌ی کلاینت‌ها را متوقف می‌کند.
 
-## چند نکته‌ی مهم
+## پیش از رفتن به پروداکشن
 
 - handler غیرهمگام را همیشه `.catch` کنید؛ rejection باید 500 شود، نه crash.
 - حجم بدنه را محدود کنید و پیش از destroy کردن socket پاسخ بدهید.
@@ -149,4 +150,4 @@ after(() => { server.closeAllConnections(); server.close(); });
 
 ## قدم بعدی
 
-مقاله‌ی بعدی «ساخت API با Fastify» است.
+«ساخت API با Fastify»: هر چیزی که اینجا دستی نوشتیم، از routing تا اعتبارسنجی و خاموشی، آنجا را یک framework به عهده می‌گیرد.

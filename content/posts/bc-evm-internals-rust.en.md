@@ -4,17 +4,16 @@ draft = false
 title = 'Inside the EVM: stack, memory, storage and gas with a tiny Rust interpreter'
 seoTitle = 'Inside the EVM: a tiny Rust interpreter'
 description = 'EVM internals in Rust: a tiny interpreter with 256-bit stack, memory, storage, calldata, JUMPDEST checks, REVERT and gas that stops loops.'
+contentType = 'tutorial'
 categories = ["Blockchain"]
 series = ["Blockchain"]
 tags = ["blockchain", "rust", "ethereum", "evm", "interpreter"]
 cover = { image = "/images/covers/bc-evm-internals-rust.png", alt = "Inside the EVM: stack, memory, storage and gas with a tiny Rust interpreter", hiddenInSingle = true }
 +++
 
-The previous post, [Part one wrap-up: a small full node in Go](/posts/bc-toy-node-go/), closed part one. Part two is Ethereum, starting below Solidity: the machine that runs contracts.
+Without a meter, one `while true` in contract code would hang every node that runs it. [Bitcoin Script](/posts/bc-bitcoin-script-rust/) avoided that by having no loops; the {{< term "evm" "EVM" >}} allows loops and charges {{< term "gas" "gas" >}} per step. Part two, after [part one](/posts/bc-toy-node-go/), starts here, below Solidity.
 
-In [The account model, nonces and replay protection](/posts/bc-account-model-nonce/) an {{< term "account-model" "account" >}} was a balance and a nonce. Ethereum adds a {{< term "smart-contract" "smart contract" >}}: an account that also has code and storage. A transaction to it runs the code on the {{< term "evm" "EVM" >}}.
-
-In [Bitcoin Script: a tiny stack interpreter in Rust](/posts/bc-bitcoin-script-rust/) I wrote a stack machine without loops. This one has loops, so it needs gas.
+In [the account model post](/posts/bc-account-model-nonce/) an {{< term "account-model" "account" >}} was a balance and a nonce. Ethereum adds a {{< term "smart-contract" "smart contract" >}}: an account that also has code and storage. A transaction to it runs the code on the EVM.
 
 > Rust 1.90 on macOS (arm64), no dependencies. Local example code. This is a **teaching subset, not a conformant EVM**: 19 opcodes plus `PUSH1`..`PUSH32`, simplified gas, no calls, logs or contract creation.
 
@@ -54,7 +53,7 @@ match op {
 
 `Vm` works on a copy of storage, committed only after `STOP` or `RETURN`.
 
-The {{< term "gas" "gas" >}} costs are **simplified, not mainnet values**: cheap ops 3, `JUMP` 8, `JUMPI` 10, memory 3 per new word, and flat `SLOAD` 100 and `SSTORE` 5000 that I picked. Real storage pricing depends on warm or cold access (EIP-2929) and on old and new values; real memory cost has a quadratic term.
+The gas costs are **simplified, not mainnet values**: cheap ops 3, `JUMP` 8, `JUMPI` 10, memory 3 per new word, and flat `SLOAD` 100 and `SSTORE` 5000 that I picked. Real storage pricing depends on warm or cold access (EIP-2929) and on old and new values; real memory cost has a quadratic term.
 
 ## A counter
 
@@ -115,7 +114,7 @@ A countdown, `while n != 0 { n = n - 1 }`, with `JUMPI` and `JUMP`:
   halted: StackOverflow { pc: 3 }, all gas consumed, storage changes discarded
 ```
 
-The EVM is {{< term "turing-complete" "Turing-complete" >}} up to gas, and by the {{< term "halting-problem" "halting problem" >}} no node can tell in advance whether arbitrary code stops. Without a meter, one `while true` would hang every node: a {{< term "denial-of-service" "denial of service" >}}. Bitcoin Script has no loops; the EVM allows them and charges every step, paid by the sender.
+The EVM is {{< term "turing-complete" "Turing-complete" >}} up to gas, and by the {{< term "halting-problem" "halting problem" >}} no node can tell in advance whether arbitrary code stops. Without a meter, one `while true` would hang every node: a {{< term "denial-of-service" "denial of service" >}}. The sender pays for every step.
 
 ## Jump targets
 
@@ -144,7 +143,7 @@ This stores the input in slot 0, then reverts if it is below 10:
 
 The `SSTORE` of 7 ran, then vanished. According to the docs, real `REVERT` refunds unused gas; errors like an invalid jump consume all of it. `cargo test` passes 7 tests.
 
-## A few things to watch
+## Interpreter traps
 
 - Operand order: `SUB` computes top minus second; easy to get wrong by hand.
 - Arithmetic wraps silently at 2^256; Solidity 0.8 and later adds overflow checks on top.
@@ -159,4 +158,4 @@ The `SSTORE` of 7 ran, then vanished. According to the docs, real `REVERT` refun
 
 ## What's next
 
-Next post: **A first contract with Solidity and Foundry**.
+Next post: **A first contract with Solidity and Foundry**, where a compiler writes the bytecode.

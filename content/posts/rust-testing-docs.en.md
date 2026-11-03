@@ -3,13 +3,14 @@ date = '2027-01-05T10:00:00+03:30'
 draft = false
 title = 'Testing and documentation in Rust'
 description = 'Rust testing and docs: unit, integration and doc tests, assert macros and failure output, should_panic, ignore, test filters and cargo doc.'
+contentType = 'tutorial'
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "testing", "documentation", "intermediate"]
 cover = { image = "/images/covers/rust-testing-docs.png", alt = "Testing and documentation in Rust", hiddenInSingle = true }
 +++
 
-In the [previous post](/posts/rust-smart-pointers/) we looked at smart pointers. Now a topic every real project needs: tests and docs. Rust has both built in, and they are closer than in most languages, because the examples in your documentation are compiled and run as tests. If you read the [Go testing post](/posts/go-testing-basics/), you will recognize the workflow, with some differences I point out at the end.
+In Rust, the examples in your documentation are compiled and run as tests, so a doc example that drifts away from the code fails like any other test. After [smart pointers](/posts/rust-smart-pointers/), it is time for tests and docs, which Rust has built in. If you read the [Go testing post](/posts/go-testing-basics/), you will recognize the workflow, with some differences I point out at the end.
 
 We test a small library crate called `textkit` with three functions: `slugify` (title to URL slug), `format_cents` (`123456` to `1,234.56`) and `parse_cents` (`"12.34"` to `1234`, returning a `Result`).
 
@@ -167,7 +168,7 @@ assertion `left == right` failed
 
 In both languages tests are part of the toolchain. In Go they live in `_test.go` files next to the code; in Rust unit tests sit in the same file under `#[cfg(test)]`, and integration tests go in `tests/`. Go has `Example` functions checked against their output; Rust runs the code blocks of doc comments.
 
-## A few things to watch
+## cargo test gotchas
 
 - Integration tests cannot see private functions. Test those in the unit module.
 - Output of passing tests is hidden unless you pass `--nocapture`.
@@ -183,4 +184,4 @@ In both languages tests are part of the toolchain. In Go they live in `_test.go`
 
 ## What's next
 
-In the next post we get to concurrency with threads in Rust: spawning threads, moving data into them, and sharing state safely.
+Concurrency with threads in Rust: where the same ownership rules also prevent data races.

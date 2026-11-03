@@ -3,13 +3,14 @@ date = '2026-12-26T10:00:00+03:30'
 draft = false
 title = 'Go or Rust? When to use which'
 description = 'An honest Go vs Rust comparison from a backend engineer: one measured microbenchmark, a table of real differences, and a guide for when each language fits.'
+contentType = 'analysis'
 categories = ["Go", "Rust"]
 series = ["Go + Rust"]
 tags = ["go", "rust", "comparison", "backend"]
 cover = { image = "/images/covers/go-vs-rust-when-to-use.png", alt = "Go or Rust? When to use which", hiddenInSingle = true }
 +++
 
-The Go fundamentals are done and the Rust series has reached ownership, borrowing and errors, so this is a good place to stop and ask the question people always ask: which one should I use? I work mainly in Go and Node.js and I am still learning Rust, so treat this as one person's view with a little data, not a verdict. I will mark clearly what I measured and what is only my experience.
+In one word-count test, Go counted faster, Rust used less than half the memory and built a binary under a fifth the size, and swapping one default hasher made Rust faster than both. So which one should you use? I work mainly in Go and Node.js and am still learning Rust, so treat this as one person's view with a little data, not a verdict. I mark what I measured and what is only my experience.
 
 ## One small measurement
 
@@ -69,7 +70,7 @@ Rust fits when you have hard latency or memory constraints and cannot afford GC 
 
 For most CRUD APIs, queue consumers and glue code, it does not matter much. Database, network and design quality dominate the language. Pick what your team can maintain.
 
-## A few things to watch
+## Comparison traps
 
 - One microbenchmark is not evidence about your workload. Measure yours.
 - Defaults matter: hasher, allocator, build profile and GC settings all change numbers.
@@ -79,4 +80,4 @@ For most CRUD APIs, queue consumers and glue code, it does not matter much. Data
 
 ## What's next
 
-The Rust series continues with closures and iterators. In the Go Backend series, the next post covers config, structured logging and errors in Go.
+Next in this series: Go and Rust talking over gRPC, which stops comparing the two languages and makes them work together.

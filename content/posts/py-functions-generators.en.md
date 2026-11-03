@@ -3,13 +3,14 @@ date = '2027-01-28T10:00:00+03:30'
 draft = false
 title = 'Functions, closures and generators in Python'
 description = 'Python functions, closures, decorators and generators for Go and Node.js developers: parameter kinds, late binding, yield, itertools and lru_cache on 3.14.'
+contentType = 'tutorial'
 categories = ["Python"]
 series = ["Python"]
 tags = ["python", "beginner", "functions", "closures", "generators"]
 cover = { image = "/images/covers/py-functions-generators.png", alt = "Functions, closures and generators in Python", hiddenInSingle = true }
 +++
 
-In the [previous post](/posts/py-types-control-flow/) we covered types and control flow. Functions are where Python starts to feel different from Go. They are ordinary objects, they can be wrapped by {{< term "decorator" "decorators" >}}, and a function can pause in the middle and resume later. I compare with [Go's functions](/posts/go-functions-defer-errors/) only where I am sure, and [the Node.js event loop](/posts/node-event-loop/) is useful background for the closures section.
+Functions are where Python starts to feel different from Go, more than [types and control flow](/posts/py-types-control-flow/) did. They are ordinary objects, they can be wrapped by {{< term "decorator" "decorators" >}}, and a function can pause in the middle and resume later. I compare with [Go's functions](/posts/go-functions-defer-errors/) only where I am sure, and [the Node.js event loop](/posts/node-event-loop/) is useful background for the closures section.
 
 > Everything ran with Python 3.14.0 on macOS. The demo files are local scripts: `params.py`, `closures.py`, `gens.py`.
 
@@ -152,7 +153,7 @@ list(chain([1, 2], "ab", (9,)))  [1, 2, 'a', 'b', 9]
 
 Go has closures too, and they capture variables by reference. I did not test Go's loop-variable semantics here. Go has no `yield` generators; I ran a tiny program with `iter.Seq[int]` in Go 1.26, a function that takes a `yield func(int) bool` callback, and `for v := range Count(3)` printed `1 2 3`. It is push-based, unlike Python's pull-based `next()`.
 
-## A few things to watch
+## Common mistakes with functions and generators
 
 - Never use a mutable default argument; use `None`.
 - Closures capture variables, not values: fix loops with `i=i`.
@@ -168,4 +169,4 @@ Go has closures too, and they capture variables by reference. I did not test Go'
 
 ## What's next
 
-The next post is "Classes and dataclasses in Python".
+Next: "Classes and dataclasses in Python", where data and behavior come together.

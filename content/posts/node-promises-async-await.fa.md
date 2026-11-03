@@ -3,13 +3,14 @@ date = '2026-12-03T10:00:00+03:30'
 draft = false
 title = 'Promise و async/await در Node.js'
 description = 'Promise و async/await در Node.js با اجرای واقعی: زنجیره، return await، اشتباهات رایج، Promise.all، AbortController و محدودکننده‌ی concurrency.'
+contentType = 'tutorial'
 categories = ["Node.js"]
 series = ["Node.js"]
 tags = ["nodejs", "promises", "async-await", "javascript", "abortcontroller"]
 cover = { image = "/images/covers/node-promises-async-await.fa.png", alt = "Promise و async/await در Node.js", hiddenInSingle = true }
 +++
 
-در مقاله‌ی قبل، [npm، package.json و قفل وابستگی](/fa/posts/node-npm-package-json/)، وابستگی‌ها را مدیریت کردیم. حالا سراغ خود کد می‌رویم و تقریباً هر API در Node.js که با آن کار می‌کنید یک **{{< term "promise" "promise" >}}** برمی‌گرداند. این مقاله مستقیم روی [event loop](/fa/posts/node-event-loop/) بنا شده: callback یک promise یک microtask است. اگر از Go می‌آیید، مقایسه‌ی کوتاهش را نزدیک پایان ببینید و برای مدل دیگر به [goroutine و channel](/fa/posts/go-goroutines-channels/) سر بزنید.
+اگر داخل یک تابع async عبارت `return fail()` را در `try/catch` بگذارید، `catch` هیچ‌وقت اجرا نمی‌شود؛ یک `await` اضافه کنید و اجرا می‌شود. همین قاعده‌های کوچک تعیین می‌کنند خطا گرفته شود یا process را بکشد، و تقریباً هر API در Node.js که با آن کار می‌کنید یک **{{< term "promise" "promise" >}}** برمی‌گرداند. حالا که وابستگی‌ها در [npm، package.json و قفل وابستگی](/fa/posts/node-npm-package-json/) سر و سامان گرفتند، سراغ خود کد می‌رویم. این مقاله مستقیم روی [event loop](/fa/posts/node-event-loop/) بنا شده: callback یک promise یک microtask است. اگر از Go می‌آیید، مقایسه‌ی کوتاهش را نزدیک پایان ببینید و برای مدل دیگر به [goroutine و channel](/fa/posts/go-goroutines-channels/) سر بزنید.
 
 > همه‌چیز با Node نسخه‌ی v20.13.1 اجرا شده است. اسکریپت‌ها مثال‌های محلی هستند و خروجی‌ها از اجرای واقعی کپی شده‌اند.
 
@@ -193,7 +194,7 @@ elapsed ~ 400 ms (measured here)
 
 promise مقداری است که نماینده‌ی نتیجه‌ای در آینده است. goroutine تابعی است که زمان‌بندی می‌شود تا هم‌زمان اجرا شود و نتیجه‌ها روی channel رد و بدل می‌شوند. promiseها برای کد JavaScript موازی‌کاری نمی‌آورند؛ فقط انتظار را سازمان می‌دهند.
 
-## چند نکته‌ی مهم
+## promiseهایی که گم می‌شوند
 
 - هر promise باید await شود، return شود یا `.catch` داشته باشد.
 - وقتی می‌خواهید خطا همان‌جا گرفته شود، داخل `try/catch` از `return await` استفاده کنید.
@@ -206,4 +207,4 @@ promise مقداری است که نماینده‌ی نتیجه‌ای در آی
 
 ## قدم بعدی
 
-مقاله‌ی بعدی «خطا و unhandled rejection در Node.js» است.
+«خطا و unhandled rejection در Node.js»: دیدیم یک rejection بی‌صاحب process را می‌کشد؛ قدم بعد این است که بدانیم خطا کجا گرفته شود و کجا نه.

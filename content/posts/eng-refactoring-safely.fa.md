@@ -2,6 +2,7 @@
 date = '2027-03-03T10:00:00+03:30'
 draft = false
 title = 'refactor امن'
+contentType = 'tutorial'
 description = 'refactor امن در Go: ثبت رفتار کد legacy با تست golden-master، تغییر در گام‌های کوچک، گرفتن یک اشتباه تک‌نویسه و تغییر امضای تابع به روش parallel change.'
 categories = ["Engineering"]
 series = ["Software Engineering"]
@@ -9,7 +10,7 @@ tags = ["refactoring", "testing", "legacy-code", "software-engineering", "go"]
 cover = { image = "/images/covers/eng-refactoring-safely.fa.png", alt = "refactor امن", hiddenInSingle = true }
 +++
 
-در پست قبل، [تست خاصیت‌محور](/fa/posts/eng-property-based-testing/)، کد را با قاعده‌هایش توصیف کردیم. امروز کد قاعده‌ی نوشته‌شده‌ای ندارد، فقط رفتار دارد. {{< term "refactoring" "refactor" >}} یعنی تغییر ساختار بدون تغییر رفتار، و این قول را بدون تستی که رفتار را از قبل ثابت کند نمی‌شود داد. عادت گام‌های کوچک سبز در {{< term "tdd" "TDD" >}} اینجا هم می‌آید؛ مبانی تست: [تست در Go](/fa/posts/go-testing-basics/). قضاوت‌ها با **نظر من** مشخص شده‌اند و بقیه‌ی چیزها اجرا شده‌اند.
+در تابع قیمت‌گذاری ۸۹ خطی `>=` را به `>` تغییر دهید و جمع از 111027 به 119954 سنت می‌رسد، بی‌صدا. برخلاف [تست خاصیت‌محور](/fa/posts/eng-property-based-testing/)، این کد قاعده‌ی نوشته‌شده‌ای ندارد، فقط رفتار. {{< term "refactoring" "refactor" >}} یعنی تغییر ساختار بدون تغییر رفتار، و این قول را بدون تستی که رفتار را از قبل ثابت کند نمی‌شود داد. عادت گام‌های کوچک سبز در {{< term "tdd" "TDD" >}} اینجا هم می‌آید؛ مبانی تست: [تست در Go](/fa/posts/go-testing-basics/).
 
 > Go 1.26 و `go test -race`، مثال محلی؛ تابع legacy را خودم ساخته‌ام.
 
@@ -46,14 +47,14 @@ ok  	example.com/pricing	1.351s	coverage: 100.0% of statements
 
 ## ساده‌تر شد؟
 
-`gocyclo` را اینجا اجرا نکردم: دانلود و اجرایش در این محیط مسدود شد، پس خروجی‌اش را ندارم. یک شمارنده‌ی کوچک با `go/ast` و همان قاعده نوشتم ({{< term "cyclomatic-complexity" "پیچیدگی سیکلوماتیک" >}} یعنی یک به‌علاوه‌ی هر `if`، `for`، `case` غیر default، `&&` و `||`). این عددها از آن قاعده‌اند، نه از gocyclo:
+اجرای `gocyclo` در این محیط مسدود شد، پس یک شمارنده‌ی کوچک با `go/ast` و همان قاعده نوشتم ({{< term "cyclomatic-complexity" "پیچیدگی سیکلوماتیک" >}} یعنی یک به‌علاوه‌ی هر `if`، `for`، `case` غیر default، `&&` و `||`). این عددها از آن قاعده‌اند، نه از gocyclo:
 
 ```text
 before: PriceOrder 26
 after:  Price 7, discountPercent 7, couponOff 6, taxFor 5, shipping 5, percentOf 1
 ```
 
-بدترین تابع از ۲۶ به ۷ رسید؛ منطق همان است، فقط به تکه‌های خواندنی تقسیم شده.
+بدترین تابع از ۲۶ به ۷ رسید: همان منطق، در تکه‌های خواندنی.
 
 ## شبکه‌ی ایمنی یک اشتباه را می‌گیرد
 
@@ -86,7 +87,7 @@ func PriceOrder(qty, unit int, tier, coupon, country string, express bool) int {
 
 **نظر من:** refactor را ترجیح بدهید. شاهدش فایل golden است: ۳۰۰۰ خط آن رفتار دقیق کد قدیمی است، با عجیب‌گی‌هایی که شاید کسی به آن‌ها تکیه کرده. بازنویسی از spec توی ذهن آدم‌ها شروع می‌کند و این‌ها را از دست می‌دهد.
 
-## چند نکته‌ی مهم
+## refactor کجا خراب می‌شود
 
 - commit مربوط به refactor را از commit تغییر رفتار جدا نگه دارید (**توصیه‌ی من**)؛ reviewer می‌تواند «چیزی عوض نشده» را مکانیکی بررسی کند.
 - فایل golden به اندازه‌ی ورودی‌هایش خوب است. ۱۰۰٪ پوشش statement درباره‌ی مرزها چیز زیادی نمی‌گوید؛ {{< term "mutation-testing" "تست جهش" >}} این را بهتر می‌سنجد (اینجا اجرایش نکردم).
@@ -100,4 +101,4 @@ func PriceOrder(qty, unit int, tier, coupon, country string, express bool) int {
 
 ## قدم بعدی
 
-پست بعدی «code review مؤثر» است.
+«code review مؤثر»، یعنی همین commitهای جدا از نگاه reviewer.

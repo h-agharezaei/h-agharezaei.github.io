@@ -3,13 +3,14 @@ date = '2027-04-10T10:00:00+03:30'
 draft = false
 title = '/proc and observing the system'
 description = 'Linux /proc and system observation: what the key files hold, the macOS tools that answer the same questions, and a Go program with build tags.'
+contentType = 'tutorial'
 categories = ["Linux"]
 series = ["Linux"]
 tags = ["linux", "proc", "observability", "debugging", "go", "macos"]
 cover = { image = "/images/covers/linux-proc-observability.png", alt = "/proc and observing the system", hiddenInSingle = true }
 +++
 
-"The server is slow" and "the process leaks" are only useful once you can look inside a running system. This is the fourth post of the Linux series, after [Processes and signals](/posts/linux-processes-signals/). Here we look at how Linux exposes its state, and which tools show the same facts elsewhere.
+"The server is slow" and "the process leaks" are only useful once you can look inside a running system. After [Processes and signals](/posts/linux-processes-signals/): how Linux exposes its state, and which tools show the same facts elsewhere.
 
 > Honest disclaimer: this Mac has no Linux kernel. `/proc`, `/sys`, `strace` and `perf` do not exist here, and neither do `free` or `vmstat`. Parts marked **documentation** come from the man pages (`proc(5)` and its sub-pages on man7.org), not from a run. Everything marked **ran** ran on macOS (Go 1.26, BSD userland).
 
@@ -90,7 +91,7 @@ On macOS the second file is used and the program printed `not Linux: no /proc he
 
 A general {{< term "syscall" "system call" >}} tracer is `strace`; I did not run it. {{< term "rss" "RSS" >}} is the number to watch for growth, a topic we met in [Node.js profiling and memory](/posts/node-profiling-memory-shutdown/).
 
-## A few things to watch
+## Misreading the numbers
 
 - Compare load average with the number of cores.
 - Check units: `ru_maxrss` is bytes on macOS and, per the docs, kilobytes on Linux.
@@ -104,4 +105,4 @@ On a Linux machine, run the program built with `GOOS=linux` and compare `FDSize`
 
 ## What's next
 
-The next post is “systemd: units and timers”.
+Next: “systemd: units and timers”, which runs these processes on a server.

@@ -3,13 +3,14 @@ date = '2027-01-19T10:00:00+03:30'
 draft = false
 title = 'تراکنش و الگوی Repository در Go'
 description = 'تراکنش‌ها با pgx در Go: rollback، تابع کمکی WithTx، unit of work روی repository، lost update، SELECT FOR UPDATE، retry برای serializable و مشکل N+1.'
+contentType = 'engineering'
 categories = ["Go"]
 series = ["Go Backend"]
 tags = ["go", "backend", "postgres", "transactions", "pgx", "repository"]
 cover = { image = "/images/covers/go-transactions-patterns.fa.png", alt = "تراکنش و الگوی Repository در Go", hiddenInSingle = true }
 +++
 
-در [مقاله‌ی قبل](/fa/posts/go-postgres-pgx-sqlc/) سرویس سفارش‌ها یک store واقعی Postgres گرفت، ولی هر فراخوانی دنیای جدا از بقیه بود. کار واقعی اغلب دو نوشتن می‌خواهد که یا هر دو انجام شوند یا هیچ‌کدام. این مقاله درباره‌ی **تراکنش** (transaction) در pgx است، اینکه چطور آن را از کد domain دور نگه داریم، و اینکه کدام مشکل‌های هم‌زمانی را حل می‌کند و کدام را نه.
+از alice صد واحد کم کنید، به carol اضافه کنید و بگذارید دومی به‌خاطر سقف موجودی شکست بخورد: بدون تراکنش، برداشت commit شده و صد واحد ناپدید می‌شود. کار واقعی اغلب دو نوشتن می‌خواهد که با هم موفق یا ناموفق شوند، اما در store مقاله‌ی [Postgres با pgx و sqlc](/fa/posts/go-postgres-pgx-sqlc/) هر فراخوانی دنیای جدا از بقیه است. این مقاله درباره‌ی **تراکنش** (transaction) در pgx است، اینکه چطور آن را از کد domain دور نگه داریم، و اینکه کدام مشکل‌های هم‌زمانی را حل می‌کند و کدام را نه.
 
 > Go 1.26، pgx v5.11.0 و یک PostgreSQL 18.3 واقعی که ماژول embedded-postgres بالا می‌آورد، مثل قبل. دمو یک کپی محلی از دموی قبلی است با migration دوم که جدول `accounts` (موجودی باید بین 0 و 10000 باشد، با دو `CHECK` نام‌دار) و جدول `order_items` را اضافه می‌کند.
 
@@ -187,7 +188,7 @@ JOIN         orders=20 items=60 queries=1
 
 یک query برای سفارش‌ها و یکی به‌ازای هر سفارش همان الگوی N+1 است. `WHERE order_id = ANY($1)` با یک slice همه‌ی آیتم‌ها را یک‌جا می‌آورد و `JOIN` در یک دستور. به‌جای حلقه‌ی query یکی از این دو را بردارید.
 
-## چند نکته که باید حواستان باشد
+## هزینه‌ها و محدودیت‌های تراکنش
 
 - تراکنش را کوتاه نگه دارید؛ اتصال را اشغال می‌کند و قفل نگه می‌دارد.
 - برای هر عملیات یک راهبرد انتخاب کنید: قفل ردیف (`FOR UPDATE`) یا serializable همراه retry. بی‌دقت ترکیبشان نکنید.
@@ -197,4 +198,4 @@ JOIN         orders=20 items=60 queries=1
 
 ## قدم بعدی
 
-مقاله‌ی بعد: الگوهای concurrency در Go، با worker pool و errgroup.
+قدم بعدی «الگوهای concurrency: worker pool و errgroup» است: اینجا هم‌زمانی بین کلاینت‌های دیتابیس بود، آنجا داخل خود پروسه‌ی Go.

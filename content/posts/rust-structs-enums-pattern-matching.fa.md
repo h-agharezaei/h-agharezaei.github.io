@@ -3,13 +3,14 @@ date = '2026-11-20T10:00:00+03:30'
 draft = false
 title = 'Struct، Enum و Pattern Matching در Rust'
 description = 'آموزش struct، بلوک impl، enum همراه با داده، Option، match کامل، if let و let else در Rust با کد قابل اجرا و خطای واقعی کامپایلر.'
+contentType = 'tutorial'
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "beginner", "enums", "pattern-matching", "structs"]
 cover = { image = "/images/covers/rust-structs-enums-pattern-matching.fa.png", alt = "Struct، Enum و Pattern Matching در Rust", hiddenInSingle = true }
 +++
 
-در [مقاله‌ی قبل](/fa/posts/rust-borrowing-references/) یاد گرفتیم چطور مقدارها را با reference قرض بدهیم. حالا می‌توانیم داده را مدل کنیم. اگر از Go می‌آیید، struct برایتان آشناست ولی enum نه: در Rust هر variant می‌تواند داده داشته باشد و `match` شما را مجبور می‌کند همه‌ی حالت‌ها را رسیدگی کنید. این ترکیب چیزی است که وقتی به زبان‌های دیگر برمی‌گردم بیشتر از همه دلم برایش تنگ می‌شود.
+اگر یکی از variantها را در `match` جا بیندازید، برنامه کامپایل نمی‌شود: `error[E0004]: non-exhaustive patterns`. همین بررسی است که مدل کردن داده در Rust را متفاوت می‌کند، و حالا که در [مقاله‌ی قبل](/fa/posts/rust-borrowing-references/) قرض دادن مقدارها با reference را دیدیم، می‌توانیم نوع‌های خودمان را بسازیم. اگر از Go می‌آیید، struct برایتان آشناست ولی enum نه: در Rust هر variant می‌تواند داده داشته باشد و `match` شما را مجبور می‌کند همه‌ی حالت‌ها را رسیدگی کنید. این ترکیب چیزی است که وقتی به زبان‌های دیگر برمی‌گردم بیشتر از همه دلم برایش تنگ می‌شود.
 
 > همه‌ی کدهای زیر با Rust نسخه‌ی 1.90 کامپایل و اجرا شده‌اند و خروجی‌ها از همان اجراها کپی شده‌اند.
 
@@ -181,7 +182,7 @@ Empty                                    area = 0.00
 
 خروجی `first_even(&[7, 8])` عبارت `found 8` بود و `parse_age("42")` و `parse_age("abc")` به‌ترتیب `42` و `0` برگرداندند.
 
-## چند نکته که باید حواستان باشد
+## جاهایی که match غافلگیرتان می‌کند
 
 - ترتیب در `match` مهم است: شاخه‌ها از بالا به پایین امتحان می‌شوند، پس شاخه‌ی `Rect` همراه guard باید قبل از شاخه‌های عمومی‌تر بیاید.
 - `{:?}` فقط روی نوع‌هایی کار می‌کند که `Debug` را derive یا پیاده‌سازی کرده باشند؛ فراموش کردن derive یکی از رایج‌ترین خطاهای اول است.
@@ -197,4 +198,4 @@ Empty                                    area = 0.00
 
 ## قدم بعدی
 
-حالا نوع‌های خودمان را داریم. در مقاله‌ی بعد، collection ها و رشته‌ها در Rust، بسیاری از آن‌ها را با `Vec` و `HashMap` نگه می‌داریم و `String` را دقیق‌تر بررسی می‌کنیم.
+حالا نوع‌های خودمان را داریم. «Collectionها و String در Rust» ادامه‌ی طبیعی آن است: تعداد زیادی از آن‌ها را با `Vec` و `HashMap` نگه می‌داریم و `String` را دقیق‌تر بررسی می‌کنیم.

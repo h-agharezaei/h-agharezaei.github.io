@@ -3,13 +3,14 @@ date = '2026-11-04T10:00:00+03:30'
 draft = false
 title = 'Functions, defer and error handling in Go'
 description = 'Go functions with multiple returns, variadics and closures, plus the error interface, %w wrapping, errors.Is/As, defer and why panic is not for errors.'
+contentType = 'tutorial'
 categories = ["Go"]
 series = ["Go Fundamentals"]
 tags = ["go", "beginner", "functions", "errors", "defer"]
 cover = { image = "/images/covers/go-functions-defer-errors.png", alt = "Functions, defer and error handling in Go", hiddenInSingle = true }
 +++
 
-In the [previous post](/posts/go-types-control-flow/) we covered types, variables and control flow. Now we get to the part that shapes most Go code you will ever read: functions and error handling. Go has no exceptions. Functions return errors as ordinary values, and `defer` takes care of cleanup. Once this clicks, a lot of Go's style makes sense.
+Go has no exceptions. Functions return errors as ordinary values, the caller checks `if err != nil` right away, and `defer` takes care of cleanup. Once this clicks, the shape of most Go code and a lot of its style make sense. The only prerequisite is [types, variables and control flow](/posts/go-types-control-flow/).
 
 > I ran every example below with Go 1.26. The outputs are copied from those runs.
 
@@ -174,7 +175,7 @@ func safeName() (name string, err error) {
 
 Do not use panic for expected failures like bad input or a missing file. Return an error instead. Panic is for bugs and impossible states, and `recover` is mostly for boundaries such as an HTTP server protecting itself from one bad request.
 
-## A few things to watch
+## Common mistakes with errors and defer
 
 - Never ignore an error with `_` unless you can say why it is safe.
 - Wrap with `%w`, not `%v`, if callers may need `errors.Is` or `errors.As`. `%v` only keeps the text.
@@ -190,4 +191,4 @@ Do not use panic for expected failures like bad input or a missing file. Return 
 
 ## What's next
 
-In the next post we look at slices, maps and strings in Go: how they actually work and the traps that catch beginners.
+"Slices, maps and strings in Go": the language's most used data types behave in ways their syntax does not show, and that post explains how they actually work and the traps that catch beginners.

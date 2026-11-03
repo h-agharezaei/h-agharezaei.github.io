@@ -3,13 +3,14 @@ date = '2027-02-15T10:00:00+03:30'
 draft = false
 title = 'HTTP/1.1 by hand'
 description = 'HTTP/1.1 by hand on loopback: raw requests, the mandatory Host header, Content-Length vs chunked, persistent connections and a 50-line server.'
+contentType = 'tutorial'
 categories = ["Networking"]
 series = ["Networking"]
 tags = ["networking", "http", "http1", "sockets", "go", "chunked"]
 cover = { image = "/images/covers/net-http1-by-hand.png", alt = "HTTP/1.1 by hand", hiddenInSingle = true }
 +++
 
-In [the previous post](/posts/net-udp-sockets/) we saw datagrams, and before that [a TCP server](/posts/net-sockets-tcp-from-scratch/) taught us that a stream has no message boundaries. {{< term "http" "HTTP" >}}/1.1 is one answer to "where does a message end?", built on top of {{< term "tcp" "TCP" >}}. Today we speak it with raw bytes, with no HTTP library on the client side. For the library view see [Building an API with net/http in Go](/posts/go-http-api-stdlib/) and [An HTTP server with node:http](/posts/node-http-server/).
+Where does a message end on a stream that has no boundaries? [A TCP server](/posts/net-sockets-tcp-from-scratch/) answered with its own framing, [UDP](/posts/net-udp-sockets/) avoided the question with datagrams, and {{< term "http" "HTTP" >}}/1.1 is another answer, built on top of {{< term "tcp" "TCP" >}}. Today we speak it with raw bytes, with no HTTP library on the client side. For the library view see [Building an API with net/http in Go](/posts/go-http-api-stdlib/) and [An HTTP server with node:http](/posts/node-http-server/).
 
 > Everything ran on `127.0.0.1` with random ports, Go 1.26, Python 3.14, macOS. A `net/http` server was the target; the client was a Python raw socket (and `nc`). I did not run Linux, and the machine was busy, so there are no timings. The demo is a local example directory.
 
@@ -112,7 +113,7 @@ My server logged the same request line and three headers. It works, but it ignor
 
 One concept only: if a proxy and a backend disagree about whether `Content-Length` or `Transfer-Encoding` decides where a request ends, bytes can be read as the start of another request. That is {{< term "request-smuggling" "request smuggling" >}}. I did not demonstrate it; it belongs to the security series.
 
-## A few things to watch
+## Where hand-written HTTP breaks
 
 - Lines end with CRLF and headers end with a blank line; a bare `\n` is not safe to rely on.
 - A body needs `Content-Length` or chunked framing, otherwise the receiver cannot know where it ends.
@@ -126,4 +127,4 @@ Extend the tiny server to read `Content-Length` and echo the body back. Then sen
 
 ## What's next
 
-The next post is "TLS and certificates with openssl".
+Next is "TLS and certificates with openssl": every byte above crossed the socket as plain text, and TLS is what protects it.

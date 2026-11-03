@@ -3,15 +3,16 @@ date = '2026-11-19T18:00:00+03:30'
 draft = false
 title = 'کار با اتریوم از Rust با alloy'
 description = 'alloy در Rust: provider و کیف‌پول، ارسال EIP-1559 با رسید، فراخوانی توکن با ماکروی sol!، decode خطای سفارشی به enum و دنبال کردن رویداد Transfer.'
+contentType = 'tutorial'
 categories = ["Blockchain"]
 series = ["Blockchain"]
 tags = ["blockchain", "rust", "ethereum", "alloy", "erc20"]
 cover = { image = "/images/covers/bc-rust-alloy-client.fa.png", alt = "کار با اتریوم از Rust با alloy", hiddenInSingle = true }
 +++
 
-در [کار با اتریوم از Go با go-ethereum](/fa/posts/bc-go-ethereum-client/) موجودی خواندیم، ether فرستادیم، `DemoToken` را صدا زدیم و خطای سفارشی‌اش را decode کردیم. این پست همان قدم‌ها را از Rust با {{< term "alloy" "alloy" >}} برمی‌دارد تا بشود این دو را کنار هم گذاشت.
+اگر از Go و از Rust به یک anvil ether بفرستید، tipها فرق می‌کنند: go-ethereum ۱ gwei پیشنهاد داد و {{< term "alloy" "alloy" >}} ۱ {{< term "wei" "wei" >}} انتخاب کرد. این پست همان قدم‌های [پست Go](/fa/posts/bc-go-ethereum-client/) را با Rust برمی‌دارد.
 
-قرارداد همان قرارداد [توکن‌ها: ERC-20 و ERC-721](/fa/posts/bc-erc20-erc721/) است. کد async روی tokio اجرا می‌شود، مثل [async/await و Tokio در Rust](/fa/posts/rust-async-tokio/)، و `sol!` یک procedural macro از همان جنسی است که در [ماکروها در Rust](/fa/posts/rust-macros/) دیدیم.
+قرارداد از [پست توکن‌ها](/fa/posts/bc-erc20-erc721/) است، کد async روی tokio اجرا می‌شود، مثل [پست Tokio](/fa/posts/rust-async-tokio/)، و `sol!` یک procedural macro مثل [ماکروهای Rust](/fa/posts/rust-macros/) است.
 
 > اجرا با Rust 1.90 روی macOS (arm64)، `alloy` 1.6.3 (featureهای پیش‌فرض خاموش؛ `std`، `reqwest`، `provider-http`، `signer-local`، `contract`، `rpc-types`)، `tokio` 1.54.1، `futures-util` 0.3 و Foundry 1.8.7. نسخه‌ی 1.6.3 را انتخاب کردم چون نسخه‌های جدیدتر alloy به Rust جدیدتر از 1.90 نیاز دارند. یک anvil تازه روی `127.0.0.1:8545` با اسکریپت دیپلوی پست توکن‌ها. کلیدهای داخل کد کلیدهای تست عمومی anvil هستند: هیچ‌جای واقعی از آن‌ها استفاده نکنید.
 
@@ -36,7 +37,7 @@ balance wei:  9999997683290180192033
 balance ETH:  9999.997683290180192033
 ```
 
-همان عددهای اجرای Go، از همان دیپلوی. موجودی به {{< term "wei" "wei" >}} از نوع `U256` است، یک عدد صحیح ۲۵۶ بیتی با اندازه‌ی ثابت؛ Go از `*big.Int` استفاده می‌کرد.
+همان عددهای اجرای Go، از همان دیپلوی. موجودی به wei از نوع `U256` است، یک عدد صحیح ۲۵۶ بیتی با اندازه‌ی ثابت؛ Go از `*big.Int` استفاده می‌کرد.
 
 ## کیف‌پول و ارسال EIP-1559
 
@@ -172,7 +173,7 @@ block 7: 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 -> 0x70997970C51812dc3A010C7
 - پیش‌فرض‌ها: alloy خودش nonce، gas و کارمزد را پر کرد؛ در Go با دست یا `bind.Transact`.
 - وزن: `Cargo.lock` ۳۹۷ پکیج دارد و build نوع dev بدون debug info، ۵۰۶ مگابایت `target/` ساخت.
 
-## چند نکته‌ی مهم
+## پیش‌فرض‌های غافلگیرکننده
 
 - fillerها کارمزد را از تاریخچه‌ی کارمزد برمی‌دارند. روی شبکه‌ی واقعی tip را چک کنید.
 - در 1.6.3 filler پیش‌فرض nonce برای هر آدرس cache می‌کند و محلی می‌شمارد، مثل شمارنده‌ی nonce در پست Go. دو پروسه با یک کلید باز هم با هم برخورد می‌کنند.
@@ -186,4 +187,4 @@ block 7: 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 -> 0x70997970C51812dc3A010C7
 
 ## قدم بعدی
 
-پست بعد: **Event و ساخت indexer با Go و Postgres**.
+پست بعد: **Event و ساخت indexer با Go و Postgres**؛ رویدادهایی که بعد از ری‌استارت نود هم می‌مانند.

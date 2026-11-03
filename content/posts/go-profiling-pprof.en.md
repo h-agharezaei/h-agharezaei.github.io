@@ -3,13 +3,14 @@ date = '2027-02-20T10:00:00+03:30'
 draft = false
 title = 'Profiling Go with pprof'
 description = 'Find a Go hot spot with pprof: CPU, heap and goroutine profiles on a live service, a fix verified with benchstat and allocs/op, and profiling inside tests.'
+contentType = 'tutorial'
 categories = ["Go"]
 series = ["Go Backend"]
 tags = ["go", "backend", "pprof", "profiling", "performance", "benchmark"]
 cover = { image = "/images/covers/go-profiling-pprof.png", alt = "Profiling Go with pprof", hiddenInSingle = true }
 +++
 
-The [previous post](/posts/go-rate-limiting-caching/) was about rate limiting and caching. Now a different question: the service is slow, so what do you change? Guessing is how people end up optimizing the wrong line. **pprof** is Go's built-in **profiler**, and this post uses it on a tiny `net/http` service that I made slow on purpose. It builds on [benchmarks](/posts/go-testing-basics/) and the [memory basics](/posts/go-pointers-memory/) from earlier.
+The service is slow, so what do you change? Guessing is how people end up optimizing the wrong line. **pprof** is Go's built-in **profiler**, and this post uses it on a tiny `net/http` service that I made slow on purpose. It builds on [benchmarks](/posts/go-testing-basics/) and the [memory basics](/posts/go-pointers-memory/), and follows [rate limiting and caching in Go](/posts/go-rate-limiting-caching/).
 
 > Go 1.26, macOS arm64. This machine is shared and the load average was between 3 and 10 during my runs, so I show **no ns/op** and claim no speedup ratio. I rely on allocs/op, B/op and profile attribution, which do not depend on load.
 
@@ -129,7 +130,7 @@ go tool pprof -sample_index=alloc_space -top app.test mem.prof
 
 The same `-list` works there, and on the slow code it showed 1.83 GB of allocations on the `regexp.MustCompile` line and 11.02 GB on the `+=` line for the whole run. The last command needs the `app.test` binary, which the test run leaves behind. `/debug/pprof/trace` and `go tool trace` use `runtime/trace` to show a timeline of goroutines, GC and scheduling, which answers "why is nothing running" questions that sampling cannot. I only checked that the endpoint returns a trace; I did not open the UI.
 
-## A few things to watch
+## Profiling mistakes
 
 - CPU profiling samples (about 100 times per second), so it adds overhead and misses short events. Profile realistic load, not an idle process.
 - Profile before and after, with the same load, and change one thing at a time.
@@ -139,4 +140,4 @@ The same `-list` works there, and on the slow code it showed 1.83 GB of allocati
 
 ## What's next
 
-Next is Docker, CI and deploying a Go service.
+Next is "Docker, CI and deploying a Go service", because a service whose time we now understand still has to leave the laptop.

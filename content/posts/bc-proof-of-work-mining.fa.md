@@ -3,13 +3,14 @@ date = '2026-11-08T18:00:00+03:30'
 draft = false
 title = 'Proof of Work، difficulty و mining'
 description = 'Proof of Work در Go: فیلد nonce و bits در header، ماین کردن و اعتبارسنجی، دو برابر شدن hash با هر بیت، retarget محدودشده و chainwork.'
+contentType = 'tutorial'
 categories = ["Blockchain"]
 series = ["Blockchain"]
 tags = ["blockchain", "go", "proof-of-work", "mining", "bitcoin"]
 cover = { image = "/images/covers/bc-proof-of-work-mining.fa.png", alt = "Proof of Work، difficulty و mining", hiddenInSingle = true }
 +++
 
-در [پست قبلی](/fa/posts/bc-account-model-nonce/) مدل حساب را دیدیم. تا اینجا هر کسی می‌توانست در چند میکروثانیه یک بلاک معتبر بسازد. در [بلاکچین از دید برنامه‌نویس](/fa/posts/bc-blockchain-for-programmers/) گفتم زنجیره‌ی hash فقط دستکاری را آشکار می‌کند و گران کردن بازنویسی بعداً می‌آید. این همان پست است.
+بعد از مدل حساب در [پست قبلی](/fa/posts/bc-account-model-nonce/)، یک چیز هنوز درست نیست: هر کسی می‌تواند در چند میکروثانیه یک بلاک معتبر بسازد. در [بلاکچین از دید برنامه‌نویس](/fa/posts/bc-blockchain-for-programmers/) گفتم زنجیره‌ی hash فقط دستکاری را آشکار می‌کند و گران کردن بازنویسی بعداً می‌آید. این همان پست است.
 
 در [consensus و Raft](/fa/posts/ds-consensus-raft/) توافق بین فهرست مشخصی از سرورها بود که هر کدام یک رأی داشتند. شبکه‌ی باز فهرست ندارد: هر کسی می‌تواند هزار نود بالا بیاورد. {{< term "proof-of-work" "Proof of Work" >}} به‌جای «هر نود یک رأی» می‌گوید «هر واحد محاسبه یک رأی».
 
@@ -141,7 +142,7 @@ validate: <nil>
 
 در {{< term "sybil-attack" "حمله‌ی Sybil" >}} یک نفر خودش را جای چند نفر جا می‌زند؛ با یک رأی برای هر نود، هزار نود جعلی برنده می‌شوند. با proof of work هویت جعلی هزینه‌ای ندارد و چیزی هم اضافه نمی‌کند؛ فقط hash حساب می‌شود و hash برق و سخت‌افزار می‌خواهد. بازنویسی یک بلاک یعنی انجام دوباره‌ی کار آن و همه‌ی کار بعدش، سریع‌تر از بقیه‌ی شبکه.
 
-## چند نکته‌ی مهم
+## دام‌های کد consensus
 
 - proof of work را قبل از چک‌های گران بررسی کنید و `Bits` را با قاعده‌ی خودتان مقایسه کنید، نه با ادعای بلاک.
 - در کد consensus عدد صحیح به کار ببرید؛ ممیز شناور ممکن است متفاوت گرد شود.

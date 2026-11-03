@@ -3,13 +3,14 @@ date = '2027-05-18T10:00:00+03:30'
 draft = false
 title = 'Consensus and Raft'
 description = 'Consensus and Raft explained with a seeded 5-node Go simulation: elections, partitions, log repair and a safety checker that catches a broken variant.'
+contentType = 'tutorial'
 categories = ["Distributed"]
 series = ["Distributed Systems"]
 tags = ["distributed-systems", "consensus", "raft", "go", "simulation"]
 cover = { image = "/images/covers/ds-consensus-raft.png", alt = "Consensus and Raft", hiddenInSingle = true }
 +++
 
-[The previous post](/posts/ds-sharding-consistent-hashing/) split data across nodes. Copies raise a harder question: how do several nodes agree on one order of writes when some crash and the network lies? That is {{< term "consensus" "consensus" >}}. I build a minimal {{< term "raft" "Raft" >}} (paper by Ongaro and Ousterhout) and try to break it. See [replication and quorums](/posts/ds-replication-quorum/), [consistency models](/posts/ds-consistency-models/), [CAP](/posts/ds-cap-pacelc/) and [timeouts](/posts/ds-timeouts-retries-backoff/).
+How do several nodes agree on one order of writes when some crash and the network lies? That is {{< term "consensus" "consensus" >}}, and sharding ([the previous post](/posts/ds-sharding-consistent-hashing/)) does not remove it. I build a minimal {{< term "raft" "Raft" >}} (paper by Ongaro and Ousterhout) and try to break it. See [replication and quorums](/posts/ds-replication-quorum/), [consistency models](/posts/ds-consistency-models/), [CAP](/posts/ds-cap-pacelc/) and [timeouts](/posts/ds-timeouts-retries-backoff/).
 
 > Honest labelling: a **simulation** in Go 1.26 on one machine. A single-threaded loop steps 5 nodes; network (delay, loss, duplication, reordering, partitions) and clock are simulated and seeded, so outputs are reproducible. Counts only, no timings. Not implemented: membership changes, snapshots, real disks, read-index. No real Raft cluster was run.
 
@@ -44,7 +45,7 @@ t= 53  n4 election timeout -> candidate, term 2
 -- new leader n1 term 2 log [1:noop 1:x=1 1:y=2 1:x=3 2:noop] commit=5 kv=map[x:3 y:2]
 ```
 
-n2 timed out first and won. After it died, the committed entries survived on the new leader. n4 timed out late in term 2, lost, and followed n1.
+n2 timed out first and won. After it died, committed entries survived on the new leader. n4 timed out late in term 2, lost, and followed n1.
 
 ## A partition
 
@@ -66,14 +67,14 @@ The minority leader accepted four writes but its commit stayed at 3: two nodes a
 
 ## The safety checker
 
-Every run is checked for four properties:
+Every run checks four properties:
 
 - **Election Safety:** at most one leader per term.
 - **Log Matching:** if two logs agree on an entry's term at an index, they agree on everything before it.
 - **Leader Completeness:** a new leader holds every committed entry.
 - **State Machine Safety:** no two nodes apply different commands at one index.
 
-Each run: 5 nodes, 1000 ticks, 10% loss, 5% duplication, delay 1 to 6, random crashes, restarts, partitions, and extra crashes of the leader. 3000 seeds, correct code:
+Each run: 5 nodes, 1000 ticks, 10% loss, 5% duplication, delay 1 to 6, random crashes, restarts, partitions, and extra leader crashes. 3000 seeds, correct code:
 
 ```
 correct Raft                       runs=3000 violations=0
@@ -114,12 +115,12 @@ I crashed k of n nodes at the start (20 seeds each) and asked whether 5 commands
 
 f failures need 2f+1 nodes; a 4th node adds cost, not tolerance. The sweep for 1 to 7 is a test.
 
-## A few things to watch
+## Raft traps
 
 - Every write goes through the leader. A deposed leader may not know yet, so its reads can be stale; {{< term "linearizability" "linearizable" >}} reads need a read-index or a lease (named, not built).
 - A rejoining node can bump terms and disturb a healthy leader; pre-vote addresses that (not built).
-- Raft and Paxos solve the same problem. etcd and Consul use Raft. NATS documents JetStream replication as Raft-based; I did not re-read it for this post. See [JetStream in production](/posts/nats-jetstream-production/).
-- In my experience, persistence is the bug magnet: not syncing the term or vote before replying breaks Election Safety. My simulation keeps them in memory, so it cannot show that.
+- Raft and Paxos solve the same problem. etcd and Consul use Raft. NATS documents JetStream replication as Raft-based; I did not re-read that. See [JetStream in production](/posts/nats-jetstream-production/).
+- In my experience, persistence is the bug magnet: not syncing the term or vote before replying breaks Election Safety. My in-memory simulation cannot show that.
 - Finding nothing in 3000 runs is evidence, not a proof.
 
 ## Exercise

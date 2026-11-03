@@ -3,13 +3,14 @@ date = '2026-11-11T18:00:00+03:30'
 draft = false
 title = 'The mempool, fees and transaction selection'
 description = 'A mempool in Go: admission by fee rate, block templates with ancestor packages, replace-by-fee, eviction when full and re-broadcast after a reorg.'
+contentType = 'tutorial'
 categories = ["Blockchain"]
 series = ["Blockchain"]
 tags = ["blockchain", "go", "mempool", "fees", "bitcoin"]
 cover = { image = "/images/covers/bc-mempool-fees.png", alt = "The mempool, fees and transaction selection", hiddenInSingle = true }
 +++
 
-In the [previous post](/posts/bc-forks-reorgs/) a reorg put a transaction back into `pending`, but nobody re-broadcast it. Also, zero fees were fine, a block took everything, nothing limited the map, and spending an unconfirmed output was rejected.
+Our `pending` map accepted zero fees, let a block take everything, had no size limit, and rejected spending an unconfirmed output; the reorg in the [previous post](/posts/bc-forks-reorgs/) also returned a transaction to it that nobody re-broadcast.
 
 A fee is inputs minus outputs, as in [Transactions and the UTXO model](/posts/bc-transactions-utxo/), and the miner collects it in the coinbase ([Proof of work, difficulty and mining](/posts/bc-proof-of-work-mining/)). I copied last post's module and replaced the map with a {{< term "mempool" "mempool" >}} package.
 
@@ -130,7 +131,7 @@ D: tip 3 000b42f2e39f, bob 0, mallory 150, pending 1
 
 Last time C and D ended with `pending 0`. `go test -race ./...` passes, including a reorg that returns a child before its parent.
 
-## A few things to watch
+## Non-negotiable mempool rules
 
 - Sort by fee per byte, and judge a child with its unconfirmed ancestors.
 - A replacement must pay for everything it removes.
@@ -144,4 +145,4 @@ Last time C and D ended with `pending 0`. `go test -race ./...` passes, includin
 
 ## What's next
 
-Next post: **Bitcoin Script: a tiny stack interpreter in Rust**.
+Next post: **Bitcoin Script: a tiny stack interpreter in Rust**. It asks what "owned by Alice" means for one output.

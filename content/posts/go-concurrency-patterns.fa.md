@@ -3,13 +3,14 @@ date = '2027-01-25T10:00:00+03:30'
 draft = false
 title = 'الگوهای concurrency: worker pool و errgroup'
 description = 'worker pool محدود، errgroup با لغو در اولین خطا، SetLimit، pipeline، نشتی goroutine، حفظ ترتیب نتایج و semaphore وزن‌دار، با اجرای واقعی و -race.'
+contentType = 'tutorial'
 categories = ["Go"]
 series = ["Go Backend"]
 tags = ["go", "backend", "concurrency", "errgroup", "worker-pool", "semaphore"]
 cover = { image = "/images/covers/go-concurrency-patterns.fa.png", alt = "الگوهای concurrency: worker pool و errgroup", hiddenInSingle = true }
 +++
 
-[مقاله‌ی قبل](/fa/posts/go-transactions-patterns/) درباره‌ی تراکنش و الگوی repository بود. مثال‌های این مقاله Go ساده‌اند و دیتابیس نمی‌خواهند. در کد backend اغلب چند کار مستقل داریم (فراخوانی HTTP، query، فایل) که باید هم‌زمان اجرا شوند، ولی نه بی‌حد، و اگر یکی خراب شد بقیه متوقف شوند. این مقاله روی [goroutine و channel](/fa/posts/go-goroutines-channels/) و [sync، select و context](/fa/posts/go-sync-select-context/) بنا شده و الگوهایی را نشان می‌دهد که بیشتر از همه سراغشان می‌روم.
+کد backend پر از کارهای مستقل است (فراخوانی HTTP، query، فایل) که باید هم‌زمان ولی محدود اجرا شوند و با خراب شدن یکی، بقیه متوقف شوند؛ اگر توقف را درست ننویسید، ۳۰۰ فراخوانیِ timeout‌خورده ۳۰۰ goroutine نشت می‌دهند. برخلاف [تراکنش و الگوی Repository](/fa/posts/go-transactions-patterns/)، مثال‌ها Go ساده‌اند؛ پایه‌شان [goroutine و channel](/fa/posts/go-goroutines-channels/) و [sync، select و context](/fa/posts/go-sync-select-context/) است.
 
 > همه‌چیز با Go 1.26 روی macOS (arm64) و `golang.org/x/sync` نسخه‌ی v0.24.0 اجرا شده، با load average حدود ۱٫۴. زمان نشان نمی‌دهم، فقط تعداد و ترتیب.
 
@@ -165,7 +166,7 @@ TryAcquire(11): false
 
 اوج مصرف هرگز از ۱۰ بیشتر نشد. درخواستی بزرگ‌تر از کل بودجه هرگز موفق نمی‌شود: `Acquire` تا پایان context منتظر می‌ماند و `TryAcquire` فوراً false می‌دهد.
 
-## چند نکته‌ی احتیاطی
+## خطاهای رایج در کد هم‌زمان
 
 - به تابع‌های `Go` راه خروج بده: در حلقه‌ها و فراخوانی‌های blocking به `ctx.Done()` نگاه کن، وگرنه لغو هیچ کاری نمی‌کند.
 - بستن channel کار ارسال‌کننده است؛ با چند ارسال‌کننده، از goroutineی ببند که منتظر همه‌ی آن‌هاست.
@@ -179,4 +180,4 @@ TryAcquire(11): false
 
 ## قدم بعدی
 
-وقتی کار از دیتابیس و message broker رد می‌شود، هم‌زمانی سخت‌تر می‌شود. مقاله‌ی بعد الگوی outbox با Postgres و NATS در Go است.
+قدم بعدی «Outbox Pattern با Postgres و NATS در Go» است، جایی که یک حلقه‌ی پس‌زمینه باید دیتابیس و message broker را با هم هماهنگ نگه دارد.

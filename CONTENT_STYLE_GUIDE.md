@@ -53,7 +53,9 @@ When relevant, cover:
 - Design trade-offs
 - Common implementation mistakes
 
-Do not explain basic concepts unnecessarily when the audience is already expected to know them.
+Do not explain basic concepts unnecessarily when the audience is already expected to know them. But a series that introduces a new field (blockchain, networking, databases...) must not assume prior knowledge of that field: explain its concepts from the ground up.
+
+Simplicity and flow for a human reader always come before brevity. The goal is that the reader understands and wants to keep reading to the end, not a short post for SEO.
 
 ## 5. Language
 
@@ -116,6 +118,7 @@ Before publishing, review the article:
 - Are examples technically correct?
 - Are claims supported by evidence?
 - Is the text natural when read aloud?
+- Could someone new to this topic follow it to the end without getting lost?
 - Are there repetitive AI-generated expressions?
 - Is the Persian typography correct?
 - Does the article have a distinct perspective?

@@ -31,7 +31,16 @@ tags = ["lowercase", "english", "tags"]
 ## Structure
 1. Intro paragraphs with NO heading: open with a concrete problem, observation or question (not "in the previous post we did X, now we do Y"); say why the topic matters; link the previous post of the same series (woven into the prose, one clause is enough) (fa: `/fa/posts/<slug>/`, en: `/posts/<slug>/`) and 2-4 relevant earlier posts.
 2. `##` sections: concept in small runnable examples, then a real run with real output, then a short section of 3-5 pitfalls/trade-offs with a heading specific to the topic (e.g. `## Common traps`, `## Where this breaks`, `## When not to use it`; not the same generic heading every time). Posts with `contentType = 'tutorial'` (including tutorial series about security) also end with `## Exercise` / `## تمرین`; `analysis` posts (security advisories, incident write-ups, comparisons) and `engineering` posts do not. Series posts end with `## What's next` / `## قدم بعدی` naming the next post by TITLE only (never a slug) and saying in one sentence why it follows; avoid "in the next post we will look at...".
-3. Length: prose under **850 words per language**, counted as `sed '/^```/,/^```/d' file | wc -w` (tables and shown output count). Recount after your FINAL edit.
+3. Length follows the explanation, not SEO. **Readability for a human reader comes first**: never compress, drop examples or skip transitions to hit a word count. A post should be as long as it needs to be understood and no longer: cut repetition and filler, not explanation.
+
+## Readability (applies to every post)
+- State the core idea in one or two plain sentences before the code that implements it.
+- Explain every new term in plain words at first use (the glossary tooltip is extra, not a substitute).
+- Give a small concrete example or analogy before the general rule.
+- Connect sections with a sentence: why the reader needs the next part.
+- For each demo: say what it does before the output, and what the output shows after it, line by line when it is not obvious.
+- Short, simple sentences. One idea per sentence. Read it aloud: if it is hard to say, rewrite it.
+- Persian: prefer natural Persian words when they exist (سربرگ for header is optional, but explain it); keep English only for identifiers, code and terms without a natural equivalent.
 
 ## Truthfulness rules (the most important part)
 - Every code block presented as runnable must have been actually run by you with the real toolchain; paste the REAL output. Compile errors and panics shown must come from a program in your demo directory.

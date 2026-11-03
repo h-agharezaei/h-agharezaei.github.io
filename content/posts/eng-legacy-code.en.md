@@ -2,6 +2,7 @@
 date = '2027-05-21T10:00:00+03:30'
 draft = false
 title = 'Working with legacy code'
+contentType = 'tutorial'
 description = 'Working with legacy code in Go: explore with git and coverage, pin behaviour with a golden test, add seams, fix the bug, then strangle it in shadow mode.'
 categories = ["Engineering"]
 series = ["Software Engineering"]
@@ -9,7 +10,7 @@ tags = ["legacy-code", "refactoring", "golden-master", "strangler-fig", "softwar
 cover = { image = "/images/covers/eng-legacy-code.png", alt = "Working with legacy code", hiddenInSingle = true }
 +++
 
-The previous post, [Blameless postmortems](/posts/eng-postmortems-blameless/), ended with action items, and many land in code nobody dares touch. My working definition: {{< term "legacy-code" "legacy code" >}} is code without tests (the idea is from Michael Feathers' book *Working Effectively with Legacy Code*). Related: [Refactoring safely](/posts/eng-refactoring-safely/), [The test pyramid and TDD](/posts/eng-testing-pyramid-tdd/), [Testing in Go](/posts/go-testing-basics/).
+Many action items from [Blameless postmortems](/posts/eng-postmortems-blameless/) land in code nobody dares touch: 0.0% coverage, a global ledger, and a comment saying "10 or more" above a `>` check. My working definition: {{< term "legacy-code" "legacy code" >}} is code without tests (the idea is from Michael Feathers' book *Working Effectively with Legacy Code*). Related: [Refactoring safely](/posts/eng-refactoring-safely/), [The test pyramid and TDD](/posts/eng-testing-pyramid-tdd/), [Testing in Go](/posts/go-testing-basics/).
 
 **The "legacy" package is my own invention**: 80 lines, global state, `time.Now`, `os.Getenv`, a hidden bug, 12 invented commits (Go 1.26, local demo). Output is from real runs; opinions are marked.
 
@@ -29,7 +30,7 @@ $ go test -cover ./...
 	example.com/legacy		coverage: 0.0% of statements
 ```
 
-`git log -L` follows one line through history. A comment says "10 or more", yet the commit "tweak bulk threshold" changed `>=` to `>`: a lead, not a verdict. `go vet` is silent; coverage 0.0% is the real starting point. `go list -f '{{.Imports}}'` shows `time` and `os`: the hidden inputs are the clock and the environment.
+`git log -L` follows one line through history. A comment says "10 or more", yet the commit "tweak bulk threshold" changed `>=` to `>`: a lead, not a verdict. `go vet` is silent. `go list -f '{{.Imports}}'` shows `time` and `os`: the hidden inputs are the clock and the environment.
 
 ## 2. Pin behaviour first
 
@@ -72,11 +73,11 @@ Changing `bulk` to `q >= 10` fails the golden test, as it should:
 
 ## 5. Sprout and wrap
 
-For new behaviour, avoid the knot. A **sprout** is a new tested function (`ApplyCoupon`, five table cases); a **wrap** surrounds the old one (`ProcessAudited` calls `Process`, then an `audit` hook). I did not wire the coupon into `Process`.
+A **sprout** is a new tested function (`ApplyCoupon`, five table cases); a **wrap** surrounds the old one (`ProcessAudited` calls `Process`, then an `audit` hook). I did not wire the coupon into `Process`.
 
 ## 6. Strangler fig
 
-For a bigger replacement, the {{< term "strangler-fig" "strangler fig" >}} pattern (from a description by Martin Fowler, as I remember it) puts a router in front. `ProcessV2` uses integer cents and no globals. In {{< term "shadow-mode" "shadow mode" >}} the router serves the old answer and counts differences on 10,000 seeded inputs (a Monday):
+The {{< term "strangler-fig" "strangler fig" >}} pattern (from a description by Martin Fowler, as I remember it) puts a router in front. `ProcessV2` uses integer cents and no globals. In {{< term "shadow-mode" "shadow mode" >}} the router serves the old answer and counts differences on 10,000 seeded inputs (a Monday):
 
 ```text
 inputs=10000 mismatches=3051 (one cent apart: 3040, other: 11, error-vs-total: 0)
@@ -97,7 +98,7 @@ Joel Spolsky wrote a well-known essay against rewriting from scratch; I agree wi
 
 Leave code a little better each time you pass (the boy-scout rule), write findings in an [ADR](/posts/eng-adr-documentation/), and track unfinished cleanup as [technical debt](/posts/eng-technical-debt/).
 
-## A few things to watch
+## Where legacy work goes wrong
 
 - Coverage says what ran, not what is correct.
 - Record every output: return values, globals, files.
@@ -110,4 +111,4 @@ Wire `ApplyCoupon` into `Process` with a third field in the line. Which golden l
 
 ## What's next
 
-The next post is "Domain-driven design basics".
+“Domain-driven design basics”: the border between old and new models that a strangler creates is largely what DDD is about.

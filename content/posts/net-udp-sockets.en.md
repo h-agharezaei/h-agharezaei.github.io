@@ -3,13 +3,14 @@ date = '2027-02-03T10:00:00+03:30'
 draft = false
 title = 'UDP and how it differs from TCP'
 description = 'UDP in Go on loopback: datagram boundaries, the size limit, ICMP errors, a lossy proxy and a stop-and-wait layer that makes it reliable.'
+contentType = 'tutorial'
 categories = ["Networking"]
 series = ["Networking"]
 tags = ["networking", "udp", "sockets", "go", "datagram", "reliability"]
 cover = { image = "/images/covers/net-udp-sockets.png", alt = "UDP and how it differs from TCP", hiddenInSingle = true }
 +++
 
-In [the previous post](/posts/net-sockets-tcp-from-scratch/) we wrote a TCP server and learned that a stream has no messages. {{< term "udp" "UDP" >}} is the opposite: it has nothing but messages, and no promises. We met both in [the TCP/IP model post](/posts/net-tcp-ip-model/) and used UDP for DNS in [DNS in practice](/posts/net-dns-in-practice/). Here we poke at it on a {{< term "loopback" "loopback" >}} interface and then build the missing guarantees ourselves.
+A UDP read returns exactly one message; if the buffer is too small, the rest is silently gone. {{< term "udp" "UDP" >}} has nothing but messages and no promises, the opposite of the TCP stream in [the previous post](/posts/net-sockets-tcp-from-scratch/). We met both in [the TCP/IP model post](/posts/net-tcp-ip-model/) and used UDP for DNS in [DNS in practice](/posts/net-dns-in-practice/). Here we poke at it on a {{< term "loopback" "loopback" >}} interface and then build the missing guarantees ourselves.
 
 > Everything ran on `127.0.0.1` with random ports, Go 1.26, macOS. Ephemeral ports in error lines were replaced by `PORT`. I did not run Linux, and the machine was busy, so there are no timings. The demo is a local example directory.
 
@@ -25,7 +26,7 @@ There is no `Accept`: one {{< term "socket" "socket" >}} serves everybody, and e
 
 ## Boundaries are preserved
 
-Remember the TCP result where two writes became one read. Here the client sends `hello\n` and `world\n` as two writes, the server waits until both are queued, then reads:
+Here the client sends `hello\n` and `world\n` as two writes, the server waits until both are queued, then reads:
 
 ```
 ReadFrom #1: 6 bytes "hello\n"
@@ -99,7 +100,7 @@ All eight arrived, in order, exactly once, at the price of 6 resends. Stop-and-w
 
 When you want your own rules. DNS fits a question and an answer in one datagram each, with no handshake. Real-time audio and video prefer a late packet dropped over a stale one delivered. QUIC, the transport under HTTP/3, builds its own reliability on top of UDP; I only mention it here and did not test it.
 
-## A few things to watch
+## Habits for UDP code
 
 - One `Write` is one datagram, one `Read` is one datagram; use a big enough buffer.
 - Success from `Write` says nothing about delivery.
@@ -113,4 +114,4 @@ Change the proxy pattern so it drops the first three copies of every packet, and
 
 ## What's next
 
-The next post is "HTTP/1.1 by hand".
+Next is "HTTP/1.1 by hand", where HTTP solves framing on TCP with headers.

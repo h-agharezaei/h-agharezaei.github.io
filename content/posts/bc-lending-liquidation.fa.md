@@ -3,15 +3,16 @@ date = '2026-11-23T18:00:00+03:30'
 draft = false
 title = 'وام‌دهی، وثیقه و liquidation'
 description = 'یک بازار وام با وثیقه‌ی بیشتر از وام در Solidity: سقف وام، بهره با index ثانیه‌ای، health factor و liquidation با پاداش، تست‌شده با Foundry.'
+contentType = 'tutorial'
 categories = ["Blockchain"]
 series = ["Blockchain"]
 tags = ["blockchain", "solidity", "defi", "lending", "foundry"]
 cover = { image = "/images/covers/bc-lending-liquidation.fa.png", alt = "وام‌دهی، وثیقه و liquidation", hiddenInSingle = true }
 +++
 
-در [AMM و فرمول constant product](/fa/posts/bc-amm-constant-product/) یک قرارداد جای order book را گرفت. این پست جای کارمند وام بانک را می‌گیرد. قرارداد نمی‌تواند هویت کسی را بررسی کند یا به دادگاه برود. فقط می‌تواند چیزی باارزش‌تر از وام نگه دارد و پیش از آن‌که وام از وثیقه بیشتر بیرزد، آن را بفروشد.
+قرارداد نمی‌تواند هویت کسی را بررسی کند یا به دادگاه برود. فقط می‌تواند چیزی باارزش‌تر از وام نگه دارد و پیش از آن‌که وام از وثیقه بیشتر بیرزد، آن را بفروشد. [AMM](/fa/posts/bc-amm-constant-product/) جای order book را گرفت؛ این‌جا نوبت کارمند وام است.
 
-اسم این کار {{< term "overcollateralization" "overcollateralization" >}} است (وثیقه‌ی بیشتر از وام). یک بازار کوچک در همان پروژه‌ی Foundry می‌سازم: DEMO را وثیقه بگذارید، USDX قرض بگیرید (هر دو [DemoToken](/fa/posts/bc-erc20-erc721/))، بهره بدهید و liquidate شوید. تست‌ها از `vm.warp` و fuzz [پست تست با Foundry](/fa/posts/bc-foundry-testing-fuzzing/) استفاده می‌کنند.
+اسم این کار {{< term "overcollateralization" "overcollateralization" >}} است. یک بازار کوچک در همان پروژه‌ی Foundry می‌سازم: DEMO را وثیقه بگذارید، USDX قرض بگیرید (هر دو [DemoToken](/fa/posts/bc-erc20-erc721/))، بهره بدهید و liquidate شوید. تست‌ها از `vm.warp` و fuzz [پست تست](/fa/posts/bc-foundry-testing-fuzzing/) استفاده می‌کنند.
 
 > اجرا با Foundry 1.8.7 و solc 0.8.38 روی macOS (arm64). پروژه‌ی پست قبل را در یک پوشه‌ی محلی تازه کپی کردم و `src/PriceFeed.sol`، `src/LendingMarket.sol` و تستشان را اضافه کردم. سمت وام‌دهنده‌ها (سهم سپرده، نرخ وابسته به میزان استفاده) حذف شده و تست USDX را مستقیم در بازار mint می‌کند. قرارداد آموزشی است و audit نشده.
 
@@ -136,7 +137,7 @@ fuzz اول مقدار وثیقه و وام تصادفی امتحان می‌ک�
 
 همه‌ی این‌ها به {{< term "oracle" "oracle" >}}، یعنی `oracle.price()`، اعتماد دارد. در این پست قیمت از `PriceFeed` می‌آید، قراردادی که مالکش عدد را دستی وارد می‌کند. برای تست خوب است و برای پول واقعی غلط: هر کس قیمت را کنترل کند، liquidationها و سقف وام را کنترل می‌کند. پست بعد آن را عوض می‌کند و اول نشان می‌دهد جایگزینِ بدیهی چطور خراب می‌شود.
 
-## چند نکته‌ی مهم
+## قاعده‌های طراحی
 
 - بین سقف وام و آستانه‌ی liquidation فاصله بگذارید.
 - بدهی را رو به بالا و ارزش وثیقه را رو به پایین گرد کنید. گرد کردن باید به نفع پروتکل باشد، نه وام‌گیرنده.

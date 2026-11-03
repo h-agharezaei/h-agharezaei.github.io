@@ -3,13 +3,14 @@ date = '2027-02-24T10:00:00+03:30'
 draft = false
 title = 'Calling Rust from Go over FFI'
 description = 'Build a Rust static library, link it into a Go program with cgo, and handle strings, byte slices, structs, panics and ownership across the boundary.'
+contentType = 'tutorial'
 categories = ["Go", "Rust"]
 series = ["Go + Rust"]
 tags = ["go", "rust", "ffi", "cgo", "interop", "intermediate"]
 cover = { image = "/images/covers/go-calls-rust-ffi.png", alt = "Calling Rust from Go over FFI", hiddenInSingle = true }
 +++
 
-[The previous post of this series](/posts/go-rust-grpc-interop/) connected Go and Rust over the network with gRPC. This one is the in-process way: one binary, Rust compiled into a library, and Go calling it through the C ABI with **cgo**. The library is the `ffi-lib` crate from [Unsafe and FFI in Rust](/posts/rust-unsafe-ffi/), which exports `add`, `greet`, `free_string`, `checksum`, `point_length` and `point_scale` behind a hand-written `ffi_lib.h`. I use it unchanged. For pointers on the Go side, see the [pointers post](/posts/go-pointers-memory/).
+A Rust panic in a function Go calls aborts the whole process. That is the price of going in-process instead of [over gRPC as in the last post](/posts/go-rust-grpc-interop/): one binary, Rust compiled into a library, and Go calling it through the C ABI with **cgo**. The library is the `ffi-lib` crate from [Unsafe and FFI in Rust](/posts/rust-unsafe-ffi/), which exports `add`, `greet`, `free_string`, `checksum`, `point_length` and `point_scale` behind a hand-written `ffi_lib.h`. I use it unchanged. For pointers on the Go side, see the [pointers post](/posts/go-pointers-memory/).
 
 > Go 1.26, Rust 1.90, macOS arm64, `CGO_ENABLED=1` with the system `cc`. Everything below was run locally.
 
@@ -143,7 +144,7 @@ The machine load was above 3, so I ran no benchmark and give no numbers. Qualita
 - **gRPC**: separate processes, a typed contract, independent deploys. You pay for a network hop and encoding.
 - **wasm**: the guest is sandboxed and has its own linear memory, so data is copied in and out, and you need a runtime.
 
-## A few things to watch
+## Where the boundary bites
 
 - Build Rust before Go.
 - Free memory with the allocator that made it: `C.free` for `CString`, `free_string` for `greet`.
@@ -158,4 +159,4 @@ The machine load was above 3, so I ran no benchmark and give no numbers. Qualita
 
 ## What's next
 
-Next: Futures, Pin and async internals in Rust.
+Next: Futures, Pin and async internals in Rust, on what an `async fn` really is.

@@ -3,13 +3,14 @@ date = '2026-12-11T10:00:00+03:30'
 draft = false
 title = 'خطا و unhandled rejection در Node.js'
 description = 'مدیریت خطا در Node.js با اجرای واقعی: Error و زنجیره‌ی cause، محدودیت try/catch، خطای EventEmitter، حالت‌های unhandled rejection و handler خطای مرگبار.'
+contentType = 'tutorial'
 categories = ["Node.js"]
 series = ["Node.js"]
 tags = ["nodejs", "errors", "unhandled-rejection", "javascript", "error-handling"]
 cover = { image = "/images/covers/node-errors-unhandled-rejections.fa.png", alt = "خطا و unhandled rejection در Node.js", hiddenInSingle = true }
 +++
 
-مقاله‌ی قبل، [Promise و async/await در Node.js](/fa/posts/node-promises-async-await/)، با یک rejection که کسی handle نکرده بود تمام شد. اینجا خطا را درست بررسی می‌کنیم: خطا چیست، `try/catch` کجا از کار می‌افتد و Node با شکست‌های دست‌نخورده چه می‌کند. این مقاله روی [event loop](/fa/posts/node-event-loop/) بنا شده است. اگر از Go می‌آیید، [خطا به‌عنوان مقدار](/fa/posts/go-functions-defer-errors/) مدل دیگری است که آخر مقاله مقایسه می‌شود.
+`throw` داخل callback تایمر process را crash می‌کند، حتی اگر `setTimeout` داخل `try/catch` باشد. باید بدانیم Node با شکست‌های دست‌نخورده چه می‌کند. [Promise و async/await](/fa/posts/node-promises-async-await/) با یک unhandled rejection تمام شد؛ اینجا خطا را روی پایه‌ی [event loop](/fa/posts/node-event-loop/) بررسی می‌کنیم. اگر از Go می‌آیید، [خطا به‌عنوان مقدار](/fa/posts/go-functions-defer-errors/) مدل دیگری است که آخر مقاله مقایسه می‌شود.
 
 > همه‌چیز با Node نسخه‌ی v20.13.1 اجرا شده است. اسکریپت‌ها مثال‌های محلی هستند؛ خروجی‌ها از اجرای واقعی کپی شده‌اند و مسیر فایل‌ها و stackهای طولانی کوتاه شده‌اند.
 
@@ -169,7 +170,7 @@ GET /?id=bug   -> 500 {"error":"internal error","code":"E_INTERNAL"}
 
 در Go تابع `error` را مثل یک مقدار معمولی برمی‌گرداند و `if err != nil` شما را وادار می‌کند همان‌جا رسیدگی کنید؛ `panic` برای باگ‌های استثنایی است. جاوااسکریپت throw می‌کند، پس نبودِ handler تا زمان اجرا دیده نمی‌شود. wrap کردن در هر دو هست: اینجا `cause`، آنجا `%w`.
 
-## چند نکته‌ی مهم
+## خطاهایی که بی‌صدا رد می‌شوند
 
 - شیء `Error` (یا زیرکلاس) بیندازید، نه رشته.
 - `try/catch` callback و تایمر را پوشش نمی‌دهد؛ `await` را پوشش می‌دهد.
@@ -177,12 +178,10 @@ GET /?id=bug   -> 500 {"error":"internal error","code":"E_INTERNAL"}
 - handlerهای سراسری لاگ می‌کنند و با کد غیرصفر خارج می‌شوند؛ جبران نمی‌کنند.
 - نگاشت خطا به HTTP را در یک جا نگه دارید و پیام 5xx را پنهان کنید.
 
-خطا در stream و `pipeline` در مقاله‌ی بعد می‌آید.
-
 ## تمرین
 
 یک `TimeoutError` به `errors.js` اضافه کنید که به 504 نگاشت شود و با `curl` ثابت کنید handlerی که منتظر یک فراخوانی کند است همین را برمی‌گرداند.
 
 ## قدم بعدی
 
-مقاله‌ی بعد «stream و backpressure در Node.js» است.
+«stream و backpressure در Node.js»: خطا در stream و `pipeline` آنجا بررسی می‌شود.

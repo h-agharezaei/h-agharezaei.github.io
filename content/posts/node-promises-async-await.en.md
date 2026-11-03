@@ -3,13 +3,14 @@ date = '2026-12-03T10:00:00+03:30'
 draft = false
 title = 'Promises and async/await in Node.js'
 description = 'Promises and async/await in Node.js with real runs: chaining, return await, common mistakes, Promise.all, AbortController and a concurrency limiter.'
+contentType = 'tutorial'
 categories = ["Node.js"]
 series = ["Node.js"]
 tags = ["nodejs", "promises", "async-await", "javascript", "abortcontroller"]
 cover = { image = "/images/covers/node-promises-async-await.png", alt = "Promises and async/await in Node.js", hiddenInSingle = true }
 +++
 
-In the previous post, [npm, package.json and lockfiles](/posts/node-npm-package-json/), we managed dependencies. Now we write the code itself, and almost every Node.js API you will touch returns a {{< term "promise" "promise" >}}. It builds directly on [the event loop](/posts/node-event-loop/): a promise callback is a microtask. If you come from Go, see the short comparison near the end, and [goroutines and channels](/posts/go-goroutines-channels/) for the other model.
+Wrap `return fail()` in a `try/catch` inside an async function and the `catch` never runs; add one `await` and it does. Small rules like this decide whether an error is handled or kills the process, and almost every Node.js API you will touch returns a {{< term "promise" "promise" >}}. With dependencies sorted out in [npm, package.json and lockfiles](/posts/node-npm-package-json/), this post turns to the code itself. It builds directly on [the event loop](/posts/node-event-loop/): a promise callback is a microtask. If you come from Go, see the short comparison near the end, and [goroutines and channels](/posts/go-goroutines-channels/) for the other model.
 
 > Everything was run with Node v20.13.1. The scripts are local examples; outputs are copied from real runs.
 
@@ -193,7 +194,7 @@ The max of 3 is the proof; 4 rounds of 100 ms matches ten tasks in groups of thr
 
 A promise is a value standing for a future result. A goroutine is a function scheduled to run concurrently, and results travel over channels. Promises give you no parallelism for JavaScript code; they organize waiting.
 
-## A few things to watch
+## Promises that get lost
 
 - Every promise must be awaited, returned or given a `.catch`.
 - Use `return await` inside `try/catch` when you want to handle the error there.
@@ -206,4 +207,4 @@ Change `mapLimit` so that when one task throws, no new tasks start. Prove it wit
 
 ## What's next
 
-The next post is "Errors and unhandled rejections in Node.js".
+"Errors and unhandled rejections in Node.js": we saw an unhandled rejection kill the process, so the next step is deciding where errors should be caught and where they should not.

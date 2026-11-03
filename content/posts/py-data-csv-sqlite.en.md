@@ -3,19 +3,20 @@ date = '2027-05-19T10:00:00+03:30'
 draft = false
 title = 'Small data processing with csv and sqlite3'
 description = 'Python csv and sqlite3 from the standard library: quoting, BOM, streaming memory, bulk inserts, parameter binding, indexes, EXPLAIN and WAL.'
+contentType = 'tutorial'
 categories = ["Python"]
 series = ["Python"]
 tags = ["python", "csv", "sqlite", "sqlite3", "data"]
 cover = { image = "/images/covers/py-data-csv-sqlite.png", alt = "Small data processing with csv and sqlite3", hiddenInSingle = true }
 +++
 
-In the [previous post](/posts/py-cli-scripts/) we wrote command-line tools. A lot of real scripts then do one more thing: read a CSV someone sent, and answer a question about it. The standard library is enough for that. This post uses `csv` and `sqlite3` on a 200,000-row file, with [generators](/posts/py-functions-generators/) for streaming. Compare with [files and JSON in Go](/posts/go-file-io-json/).
+My test file has 225,006 physical lines but 200,000 rows, and naive splitting breaks on it. A lot of real scripts, like the command-line tools from [the previous post](/posts/py-cli-scripts/), end up reading a CSV someone sent and answering a question about it. The standard library is enough for that. This post uses `csv` and `sqlite3` on that file, with [generators](/posts/py-functions-generators/) for streaming. Compare with [files and JSON in Go](/posts/go-file-io-json/).
 
 > Python 3.14.0, SQLite 3.54.0 (`sqlite3.sqlite_version`), stdlib only, in a throwaway directory. The orders are invented (seeded random). The machine was busy (load around 3), so I publish counts and bytes, **not timings**. pandas is not installed here and I did not run it. The demo is a local example.
 
 ## Reading CSV correctly
 
-I generated `orders.csv` with `csv.writer`: columns `id, customer, sku, qty, price, ts`, 10,673,000 bytes. Some customers are `Smith, John`, `Anne "Ace" Lee` and a name with a newline. The file has 225,006 physical lines but 200,000 rows. Naive splitting breaks:
+I generated `orders.csv` with `csv.writer`: columns `id, customer, sku, qty, price, ts`, 10,673,000 bytes. Some customers are `Smith, John`, `Anne "Ace" Lee` and a name with a newline. Naive splitting breaks:
 
 ```text
 split: 7 ['7', '"Smith', ' John"', 'SKU-001', '2', '19.99', '2027-01-01T10:00:00']
@@ -60,7 +61,7 @@ with db:
     db.executemany("INSERT INTO orders VALUES (?,?,?,?,?,?)", gen())
 ```
 
-That is 200,000 rows and one commit; `PRAGMA journal_mode` said `delete`, the default. The slow way commits per row: with 2,000 rows that is 2,000 commits, each forcing a durable write. I counted commits and did not time them, because of the load. Each commit is a disk sync, so the difference is large, but I am not quoting a number.
+That is 200,000 rows and one commit; `PRAGMA journal_mode` said `delete`, the default. The slow way commits per row: with 2,000 rows that is 2,000 commits, each forcing a durable write. I counted commits and did not time them, because of the load; the difference is large, but I am not quoting a number.
 
 ## Binding parameters
 
@@ -121,7 +122,7 @@ SKU-018,12299
 
 A single SQLite file is also a common application file format. When you need many writers, a network, or roles, move to Postgres ([SQLAlchemy and Postgres](/posts/py-sqlalchemy-postgres/)).
 
-## A few things to watch
+## Common CSV and SQLite mistakes
 
 - `newline=""` and an explicit encoding on every CSV file.
 - All CSV values are strings; convert them.
@@ -135,4 +136,4 @@ Add a `--stats` flag that streams a CSV into an in-memory SQLite database and pr
 
 ## What's next
 
-The next post is "Calling Rust from Python with ctypes and PyO3".
+Next: "Calling Rust from Python with ctypes and PyO3", for hot loops that are too slow in Python.

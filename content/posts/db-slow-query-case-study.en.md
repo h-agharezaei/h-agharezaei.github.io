@@ -3,13 +3,14 @@ date = '2027-03-23T10:00:00+03:30'
 draft = false
 title = 'Case study: finding and fixing a slow query'
 description = 'A slow query case study in PostgreSQL: stale statistics, a missing composite index, a function on a column and a correlated subquery, with buffer counts.'
+contentType = 'engineering'
 categories = ["Databases"]
 series = ["Databases"]
 tags = ["postgresql", "databases", "slow-query", "explain", "performance", "case-study"]
 cover = { image = "/images/covers/db-slow-query-case-study.png", alt = "Case study: finding and fixing a slow query", hiddenInSingle = true }
 +++
 
-In the [previous post](/posts/db-connection-pooling/) we looked at how connections fail under load. Here is the last post of the series: a slow report, fixed one step at a time with what the earlier posts taught: [B-tree indexes and EXPLAIN](/posts/db-indexes-btree-explain/), [composite indexes](/posts/db-composite-partial-covering-indexes/) and [planner statistics](/posts/db-planner-statistics/).
+A monthly revenue report read 67367 pages, because the planner expected 1 row for the March orders and got 8000; a nightly import had added data the planner knew nothing about. After [Connection pooling and its failure modes](/posts/db-connection-pooling/), this is the last post of the series: that report, fixed one step at a time with what the earlier posts taught: [B-tree indexes and EXPLAIN](/posts/db-indexes-btree-explain/), [composite indexes](/posts/db-composite-partial-covering-indexes/) and [planner statistics](/posts/db-planner-statistics/).
 
 > Real PostgreSQL 18.3 and the shop seed, plus a "nightly import" of 40k March 2026 orders (120k items) with autovacuum off, so it is never analyzed. The machine was busy, so I show buffers (8 KB pages), not milliseconds, from `EXPLAIN (ANALYZE, BUFFERS, TIMING OFF, SUMMARY OFF)` with parallel workers off. `pg_stat_statements` fails here ("must be loaded via shared_preload_libraries", which I cannot set in this build), so I use `EXPLAIN` only.
 
@@ -96,7 +97,7 @@ I made two copies of `orders` (240k rows): one with only the primary key, one wi
 
 About 2.5 times the WAL for the same rows, and the copy's indexes took 13 MB against 5288 kB. That is the price; on a write-heavy table I would check before paying it.
 
-## A few things to watch
+## Lessons from this case
 
 - Compare `rows` with `actual rows` first; it points to statistics.
 - Change one thing at a time and record buffers after each.
@@ -111,12 +112,6 @@ About 2.5 times the WAL for the same rows, and the copy's indexes took 13 MB aga
 4. A function or cast on a column? Rewrite it.
 5. High `loops`? Replace the subquery or the N+1 with a join.
 6. Re-measure, then check the write cost.
-
-## Exercise
-
-1. Load the seed, import the extra month without `ANALYZE`, and reproduce step 0.
-2. Fix it in the order above and note the buffers after each.
-3. Shrink the report to one week. Does the planner now probe `order_items` by index?
 
 ## What's next
 

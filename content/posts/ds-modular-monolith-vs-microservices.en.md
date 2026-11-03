@@ -3,13 +3,14 @@ date = '2027-06-08T10:00:00+03:30'
 draft = false
 title = 'Modular monolith or microservices?'
 description = 'Modular monolith vs microservices in Go: extract one module behind HTTP and count the new failure modes, hops, bytes and lost transactions.'
+contentType = 'engineering'
 categories = ["Distributed"]
 series = ["Distributed Systems"]
 tags = ["distributed-systems", "microservices", "modular-monolith", "architecture", "go"]
 cover = { image = "/images/covers/ds-modular-monolith-vs-microservices.png", alt = "Modular monolith or microservices?", hiddenInSingle = true }
 +++
 
-[The previous post](/posts/ds-fault-injection-testing/) injected faults into a system. This one asks whether you should create more network boundaries to inject them into. I took a tiny domain (orders, inventory, billing), built it as a {{< term "modular-monolith" "modular monolith" >}}, then moved inventory behind HTTP and counted what changed. Background: [bounded contexts](/posts/eng-ddd-basics/) and [project layout](/posts/go-project-layout-clean-architecture/).
+Moving one module behind HTTP left the calling code unchanged and the tests green, yet 188 units got reserved twice. Every network boundary is a new place for the faults of the [previous post](/posts/ds-fault-injection-testing/). I took a tiny domain (orders, inventory, billing), built it as a {{< term "modular-monolith" "modular monolith" >}}, then moved inventory behind HTTP and counted what changed. Background: [bounded contexts](/posts/eng-ddd-basics/) and [project layout](/posts/go-project-layout-clean-architecture/).
 
 > Honest labelling: the "service" is a goroutine on a loopback listener, not a separate machine. Network faults come from a seeded wrapper I wrote (a simulation), and the latency table is a simulation too. Counts, no timings. Judgements marked "in my experience" are opinion.
 
@@ -101,17 +102,13 @@ Independent deploys, scaling per service, separate technology and failure isolat
 
 As I remember it, Martin Fowler's “MonolithFirst” argues for starting with a monolith; others argue that early services force discipline. My opinion: start modular, extract at a seam that is proven by pain (scaling, team, reliability), give the service its own data and never share a database, and move gradually ([strangler](/posts/eng-legacy-code/)).
 
-## A few things to watch
+## Before you extract a module
 
 - Enforce boundaries with a test, not with goodwill.
 - Extraction needs idempotency keys, timeouts and compensation before the first request.
 - Keep ports coarse: one call per use case.
 - The simulation shows shapes, not production numbers.
 
-## Exercise
-
-Make `Release` also fail 10% of the time and find how many retries keep orphans at zero.
-
 ## What's next
 
-The next post is “Deployment strategies: blue-green and canary”.
+“Deployment strategies: blue-green and canary”: once you have more deployable pieces, the next question is how each one reaches users safely.

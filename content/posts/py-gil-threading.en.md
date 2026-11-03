@@ -3,13 +3,14 @@ date = '2027-03-31T10:00:00+03:30'
 draft = false
 title = 'The GIL and threading'
 description = 'The GIL and threading in Python: what the lock does, when threads help, a lost-update race on a free-threaded build, Lock, Queue and thread pools.'
+contentType = 'tutorial'
 categories = ["Python"]
 series = ["Python"]
 tags = ["python", "gil", "threading", "concurrency", "free-threading"]
 cover = { image = "/images/covers/py-gil-threading.png", alt = "The GIL and threading", hiddenInSingle = true }
 +++
 
-In the [previous post](/posts/py-testing-pytest/) we tested our code; now we make it concurrent. Coming from Go ([goroutines and channels](/posts/go-goroutines-channels/)) or Node.js ([the event loop](/posts/node-event-loop/)), the first surprise in Python is the {{< term "gil" "GIL" >}}: in standard CPython only one {{< term "thread" "thread" >}} runs Python bytecode at a time. This post shows what that means with real runs.
+Eight {{< term "thread" "threads" >}} each ran `counter += 1` 200,000 times: standard Python 3.14.0 lost no updates, the 3.14.3 build without the {{< term "gil" "GIL" >}} lost about 85%. The first result does not mean the code is safe. Coming from Go ([goroutines and channels](/posts/go-goroutines-channels/)) or Node.js ([the event loop](/posts/node-event-loop/)), the GIL is the first surprise: in standard CPython only one thread runs Python bytecode at a time. Having [tested the code](/posts/py-testing-pytest/), we now make it concurrent.
 
 > Python 3.14.0 (`python3 --version`) with the GIL for most demos, and Python 3.14.3 free-threaded (`python3.14t`, installed with `uv python install 3.14t`, deleted afterwards) for one comparison. `sys._is_gil_enabled()` printed `True` and `False` respectively. The machine was heavily loaded, so I publish **no timings for CPU work**; the one time I show is a sleep.
 
@@ -28,7 +29,7 @@ For CPU-bound pure Python the GIL means threads take turns, so four threads do n
 
 ## The race the GIL does not prevent
 
-A {{< term "race-condition" "race condition" >}} needs no parallelism, only a thread switch between two steps. I ran 8 threads, each doing `counter += 1` 200,000 times, three runs:
+A {{< term "race-condition" "race condition" >}} needs no parallelism, only a thread switch between two steps. The experiment from the intro, three runs:
 
 ```text
 no lock   run 1: 1600000 expected 1600000
@@ -36,7 +37,7 @@ no lock   run 2: 1600000 expected 1600000
 no lock   run 3: 1600000 expected 1600000
 ```
 
-No lost updates on 3.14.0, and also none when I split the statement into `tmp = counter; counter = tmp + 1`. Do not conclude it is safe: `+=` is several bytecodes and the interpreter may switch threads between them (the default switch interval is `sys.getswitchinterval()`, 0.005 s here). It just did not happen in my runs. The same file on the free-threaded 3.14.3:
+No lost updates on 3.14.0, even when I split the statement into `tmp = counter; counter = tmp + 1`. Do not conclude it is safe: `+=` is several bytecodes and the interpreter may switch threads between them (the default switch interval is `sys.getswitchinterval()`, 0.005 s here). It just did not happen in my runs. The same file on the free-threaded 3.14.3:
 
 ```text
 no lock   run 1: 215326 expected 1600000
@@ -81,7 +82,7 @@ A {{< term "daemon-thread" "daemon thread" >}} (`daemon=True`) is different: whe
 
 `asyncio` is the third option: one thread, an {{< term "event-loop" "event loop" >}} and `await`, very good for many sockets, like Node. A Go goroutine is scheduled by the Go runtime over several OS threads, so CPU work in goroutines runs in parallel. Node's `worker_threads` run JavaScript in separate threads with their own event loops; see [Worker threads and cluster in Node.js](/posts/node-worker-threads-cluster/).
 
-## A few things to watch
+## Where threads fall short
 
 - Threads for waiting (network, disk, `sleep`); processes for computing.
 - A passing run proves nothing about races. Lock shared mutable state, or pass data through a `Queue`.

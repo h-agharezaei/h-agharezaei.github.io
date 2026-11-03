@@ -3,17 +3,18 @@ date = '2027-03-06T10:00:00+03:30'
 draft = false
 title = 'The type-state pattern and API design in Rust'
 description = 'Rust type-state pattern: newtypes, a PhantomData builder, consuming transitions, sealed traits, non_exhaustive and must_use, with real compiler errors.'
+contentType = 'tutorial'
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "typestate", "api-design", "advanced"]
 cover = { image = "/images/covers/rust-typestate-patterns.png", alt = "The type-state pattern and API design in Rust", hiddenInSingle = true }
 +++
 
-The previous topic was tracing. This post is about something that happens before any log line: designing APIs so the bug cannot be written at all. The idea is called "make invalid states unrepresentable". We already have the tools: [structs and enums](/posts/rust-structs-enums-pattern-matching/), [generics and traits](/posts/rust-generics-traits/), and above all [ownership](/posts/rust-ownership/), because a `self`-consuming method is a move, and a move is what makes type-state work. Everything below was run with Rust 1.90 (edition 2024) in a small workspace: one `api` library crate, one `app` binary, and a `fails` crate with one tiny binary per compile error, so every error is reproducible.
+To the compiler, a `u64` user id and a `u64` order id are the same type. This post is about something that happens before [any log line](/posts/rust-tracing-observability/): designing APIs so the bug cannot be written at all. The idea is called "make invalid states unrepresentable". We already have the tools: [structs and enums](/posts/rust-structs-enums-pattern-matching/), [generics and traits](/posts/rust-generics-traits/), and above all [ownership](/posts/rust-ownership/), because a `self`-consuming method is a move, and a move is what makes type-state work. Everything below was run with Rust 1.90 (edition 2024) in a small workspace: one `api` library crate, one `app` binary, and a `fails` crate with one tiny binary per compile error, so every error is reproducible.
 
 ## Newtypes and validated constructors
 
-A `u64` user id and a `u64` order id are the same type to the compiler. A **newtype** is a one-field tuple struct that fixes that:
+A **newtype**, a one-field tuple struct, fixes that:
 
 ```rust
 pub struct UserId(pub u64);
@@ -150,7 +151,7 @@ error[E0639]: cannot create non-exhaustive struct using struct expression
 
 Two smaller habits. Take `impl Into<String>` or `impl AsRef<str>` so callers pass `&str` and `String` alike (`greet("a")` and `greet(String::from("b"))` both worked). And derive or implement `Default`, then use struct update syntax: `Options { retries: 5, ..Default::default() }` printed `Options { timeout_ms: 1000, retries: 5, verbose: false }`.
 
-## A few things to watch
+## Limits of type-state
 
 - Type-state only protects callers who use the typed API; a `pub` field or a public constructor can bypass it.
 - Keep the marker fields private and the marker types unit structs.
@@ -169,4 +170,4 @@ Go has no type-state in practice. The usual tools are `NewX` constructors, where
 
 ## What's next
 
-Next: Docker, CI and releasing a Rust service.
+*Docker, CI and releasing a Rust service*: a well-designed service still has to leave the laptop.

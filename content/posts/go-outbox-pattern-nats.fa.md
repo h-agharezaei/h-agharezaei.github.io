@@ -3,13 +3,14 @@ date = '2027-01-31T10:00:00+03:30'
 draft = false
 title = 'Outbox Pattern با Postgres و NATS در Go'
 description = 'مشکل dual write را در Go حل می‌کنیم: جدول outbox در همان transaction، یک relay با SKIP LOCKED که در JetStream منتشر می‌کند، و اجرای واقعی crash.'
+contentType = 'engineering'
 categories = ["Go"]
 series = ["Go Backend"]
 tags = ["go", "backend", "outbox", "postgres", "nats", "jetstream", "transactions"]
 cover = { image = "/images/covers/go-outbox-pattern-nats.fa.png", alt = "Outbox Pattern با Postgres و NATS در Go", hiddenInSingle = true }
 +++
 
-بعد از [الگوهای concurrency در Go](/fa/posts/go-concurrency-patterns/) ابزار اجرای حلقه‌های پس‌زمینه را داریم. یک کار کلاسیک برای آن‌ها خبر دادن به بقیه‌ی سیستم است که چیزی اتفاق افتاده. وقتی سفارشی ذخیره می‌شود، سرویس‌های دیگر event با نام `order.created` می‌خواهند. ذخیره در Postgres و انتشار در NATS دو سیستم جدا هستند و هیچ transaction‌ای هر دو را پوشش نمی‌دهد. این همان **dual write problem** است و **{{< term "outbox-pattern" "outbox" >}} pattern** جواب استانداردش. این‌جا روی جدول سفارش‌ها از [Postgres با pgx و sqlc](/fa/posts/go-postgres-pgx-sqlc/) و ایده‌ی transaction از [الگوهای transaction در Go](/fa/posts/go-transactions-patterns/) سوار می‌شوم و برای انتشار از dedup مقاله‌ی [idempotency در JetStream](/fa/posts/nats-jetstream-idempotency/) استفاده می‌کنم.
+وقتی سفارشی ذخیره می‌شود، سرویس‌های دیگر event با نام `order.created` می‌خواهند. ذخیره در Postgres و انتشار در NATS دو سیستم جدا هستند و هیچ transaction‌ای هر دو را پوشش نمی‌دهد؛ اگر process بین این دو بمیرد، سفارش هست و event نیست. این همان **dual write problem** است و **{{< term "outbox-pattern" "outbox" >}} pattern** جواب استانداردش؛ relay آن یک حلقه‌ی پس‌زمینه از همان جنس [الگوهای concurrency در Go](/fa/posts/go-concurrency-patterns/) است. این‌جا روی جدول سفارش‌ها از [Postgres با pgx و sqlc](/fa/posts/go-postgres-pgx-sqlc/) و ایده‌ی transaction از [الگوهای transaction در Go](/fa/posts/go-transactions-patterns/) سوار می‌شوم و برای انتشار از dedup مقاله‌ی [idempotency در JetStream](/fa/posts/nats-jetstream-idempotency/) استفاده می‌کنم.
 
 > همه‌چیز با Go 1.26 روی یک PostgreSQL 18.3 واقعی (embedded-postgres نسخه‌ی v1.34.0 و pgx نسخه‌ی v5.11.0) و یک nats-server نسخه‌ی v2.15.1 توکار با nats.go نسخه‌ی v1.54.0 اجرا شده است. هر مرحله یک process جداست، پس crash یک `os.Exit(1)` واقعی است. ماشین مشغول بود (load average بین ۴ تا ۱۰)، برای همین ادعایی درباره‌ی زمان نمی‌کنم.
 
@@ -123,7 +124,7 @@ tx.Exec(ctx, `UPDATE outbox SET published_at = now() WHERE id = ANY($1)`, ids)
 
 ردیف‌های منتشرشده بعد از مدتی فقط جا می‌گیرند. یک `DELETE FROM outbox WHERE published_at < now() - interval '7 days'` دوره‌ای آن‌ها را پاک می‌کند؛ چند ردیف را قدیمی نشان دادم و ۹۹ ردیف حذف شد. اگر برای debug یا replay لازم دارید، چند روز نگهشان دارید.
 
-## چند نکته که باید حواستان باشد
+## هزینه‌های پنهان outbox
 
 - **ترتیب.** دو relay می‌توانند event‌های یک aggregate را جابه‌جا منتشر کنند، چون batch‌های متفاوتی برمی‌دارند. حتی یک relay هم فقط ترتیب `id` را دنبال می‌کند و `id` از نوع bigserial وقتی transaction‌ها هم‌پوشانی دارند، ترتیب commit نیست. اگر ترتیب مهم است، برای هر شارد از `aggregate_id` یک relay بگذارید، یا یک version در payload بگذارید تا consumer جابه‌جایی را تحمل کند.
 - relay هنگام حرف زدن با NATS یک transaction و قفل ردیف‌ها را نگه می‌دارد. batch را کوچک نگه دارید و روی انتشار timeout بگذارید.
@@ -134,4 +135,4 @@ tx.Exec(ctx, `UPDATE outbox SET published_at = now() WHERE id = ANY($1)`, ids)
 
 ## قدم بعدی
 
-در مقاله‌ی بعد یک سرویس gRPC در Go می‌سازیم.
+قدم بعدی «سرویس gRPC با Go» است: حالا که event‌ها مطمئن از سرویس بیرون می‌روند، همان سرویس `orders` یک در ورودی دوم برای فراخوانی هم‌زمان می‌گیرد.

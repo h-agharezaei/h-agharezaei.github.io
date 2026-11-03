@@ -3,13 +3,14 @@ date = '2027-01-07T10:00:00+03:30'
 draft = false
 title = 'Concurrency با Thread در Rust'
 description = 'Concurrency با thread در Rust: spawn و join، closure‌های move، کانال mpsc، Arc و Mutex، Send و Sync، scoped thread و تبدیل data race به خطای کامپایل.'
+contentType = 'tutorial'
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "concurrency", "threads", "intermediate"]
 cover = { image = "/images/covers/rust-concurrency-threads.fa.png", alt = "Concurrency با Thread در Rust", hiddenInSingle = true }
 +++
 
-در [مقاله‌ی قبل](/fa/posts/rust-testing-docs/) درباره‌ی تست و مستندسازی صحبت کردیم. حالا سراغ قابلیتی می‌رویم که Rust بیشترین افتخار را به آن می‌کند: «concurrency بدون ترس». ادعا این است که همان **ownership** و **borrowing** که می‌شناسید، **data race** را هم در زمان کامپایل غیرممکن می‌کند. فقط از کتاب‌خانه‌ی استاندارد استفاده می‌کنیم و همه‌ی خطاهای زیر از کامپایل واقعی آمده‌اند. اگر Go بلدید، این بخش معادل [goroutine و channel](/fa/posts/go-goroutines-channels/) و [sync، select و context](/fa/posts/go-sync-select-context/) است.
+شمارنده‌ای که با `Rc` به‌جای `Arc` بین threadها share شود کامپایل نمی‌شود: `Rc<std::sync::Mutex<i32>> cannot be sent between threads safely`. این خطا همان «concurrency بدون ترس» است که Rust به آن افتخار می‌کند؛ موضوعی بعد از تست و مستندسازیِ [مقاله‌ی قبل](/fa/posts/rust-testing-docs/). ادعا این است که همان **ownership** و **borrowing** که می‌شناسید، **data race** را هم در زمان کامپایل غیرممکن می‌کند. فقط از کتاب‌خانه‌ی استاندارد استفاده می‌کنیم و همه‌ی خطاهای زیر از کامپایل واقعی آمده‌اند. اگر Go بلدید، این بخش معادل [goroutine و channel](/fa/posts/go-goroutines-channels/) و [sync، select و context](/fa/posts/go-sync-select-context/) است.
 
 > همه‌ی کدها با Rust نسخه‌ی 1.90 اجرا شده‌اند.
 
@@ -176,7 +177,7 @@ lock failed, but data is recoverable: 0
 
 `lock()` یک `Err` برمی‌گرداند و اگر تصمیم بگیرید داده سالم است، `into_inner()` روی همان خطا باز هم guard را می‌دهد.
 
-## چند نکته که باید حواستان باشد
+## آنچه Rust جلویش را نمی‌گیرد
 
 - فراموش کردن `drop(tx)` باعث می‌شود حلقه‌ی گیرنده تا ابد منتظر بماند.
 - نگه داشتن طولانی `MutexGuard` threadها را پشت سر هم می‌اندازد؛ بخش بحرانی را کوتاه نگه دارید.
@@ -191,4 +192,4 @@ lock failed, but data is recoverable: 0
 
 ## قدم بعدی
 
-وقتی هزاران کار هم‌زمان دارید که بیشترشان منتظر I/O هستند، thread سنگین است. در مقاله‌ی بعد سراغ async/await و Tokio در Rust می‌رویم.
+وقتی هزاران کار هم‌زمان دارید که بیشترشان منتظر I/O هستند، thread سنگین است؛ «async/await و Tokio در Rust» برای همین مشکل است.

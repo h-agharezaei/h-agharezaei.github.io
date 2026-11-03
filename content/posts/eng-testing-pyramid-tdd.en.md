@@ -3,13 +3,14 @@ date = '2027-02-05T10:00:00+03:30'
 draft = false
 title = 'The test pyramid and TDD'
 description = 'The test pyramid and TDD in Go: red-green-refactor on a real example, over-specified mocks, test doubles, flaky tests and why coverage is not a goal.'
+contentType = 'tutorial'
 categories = ["Engineering"]
 series = ["Software Engineering"]
 tags = ["testing", "tdd", "software-engineering", "go"]
 cover = { image = "/images/covers/eng-testing-pyramid-tdd.png", alt = "The test pyramid and TDD", hiddenInSingle = true }
 +++
 
-This post opens the Software Engineering series. Much of this series is judgment rather than syntax, so I will mark opinions as **my opinion** and back every claim about behavior with a real run. Today: how to think about the {{< term "test-pyramid" "test pyramid" >}}, how {{< term "tdd" "TDD" >}} feels in practice, and four ways tests go wrong.
+A mock test can fail after a refactor that changed no behavior, and a suite at 100% {{< term "code-coverage" "coverage" >}} can still let a pricing bug through: one makes refactoring expensive, the other ships bugs. This post opens the Software Engineering series with the {{< term "test-pyramid" "test pyramid" >}}, {{< term "tdd" "TDD" >}} and four ways tests go wrong. Opinions are marked **my opinion**.
 
 The mechanics of `go test` are in [Testing in Go](/posts/go-testing-basics/), and the service layout I use below is from [Project layout and clean architecture in Go](/posts/go-project-layout-clean-architecture/). Same ideas in [node:test](/posts/node-testing-builtin/) and [Rust testing](/posts/rust-testing-docs/).
 
@@ -17,7 +18,7 @@ The mechanics of `go test` are in [Testing in Go](/posts/go-testing-basics/), an
 
 ## The pyramid is a cost model
 
-Many unit tests, fewer {{< term "integration-test" "integration tests" >}}, very few end-to-end tests. The reason is cost: the higher a test sits, the slower it runs, the more it needs set up, and the more ways it can fail for unrelated reasons. In the orders domain that means three levels:
+Many unit tests, fewer {{< term "integration-test" "integration tests" >}}, very few end-to-end tests. The reason is cost: the higher a test sits, the slower it runs, the more it needs set up, and the more ways it can fail for unrelated reasons. In the orders domain:
 
 - unit: `cart.Total`, a pure function, no I/O;
 - integration: `orders.Service` with a fake repository (shown later);
@@ -118,13 +119,12 @@ A test that only calls `BulkPrice(100, 1)` and `BulkPrice(100, 10)` without asse
 price_test.go:12: BulkPrice(100, 10) = 100, want 900
 ```
 
-{{< term "code-coverage" "Coverage" >}} tells you what was never executed. It cannot tell you what was verified.
+Coverage tells you what was never executed. It cannot tell you what was verified.
 
-## A few things to watch
+## Testing traps
 
 - Prefer fakes and stubs; use mocks only when the interaction is the requirement.
-- Treat a flaky test as a bug, not as noise. Remove time and randomness through injection.
-- Never chase a coverage percentage as a target.
+- Treat a flaky test as a bug, not as noise.
 - TDD is a tool; refactoring under green tests is the part I would keep even if I dropped the rest.
 
 ## Exercise
@@ -133,4 +133,4 @@ Add a `FREESHIP` code that is valid only for totals above 5000 cents, using red-
 
 ## What's next
 
-The next post is “Property-based testing”, where the computer invents the test inputs for us.
+“Property-based testing”: every input here was picked by hand; there the computer invents them.

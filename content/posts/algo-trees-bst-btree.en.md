@@ -3,19 +3,20 @@ date = '2027-02-01T10:00:00+03:30'
 draft = false
 title = 'Search trees and the B-tree'
 description = 'Search trees in Go: a binary search tree, why sorted input makes it a list, AVL rotations, and why B-trees are wide, with real heights and counts.'
+contentType = 'tutorial'
 categories = ["Algorithms"]
 series = ["Algorithms"]
 tags = ["algorithms", "trees", "bst", "avl", "b-tree", "go"]
 cover = { image = "/images/covers/algo-trees-bst-btree.png", alt = "Search trees and the B-tree", hiddenInSingle = true }
 +++
 
-In the previous post, [Sorting: quick, merge and heap](/posts/algo-sorting/), we produced order once. A search tree keeps data ordered while it changes, so insert, search and delete stay cheap. It is the idea behind [Binary search and invariants](/posts/algo-binary-search-invariants/) made dynamic, and its wide cousin is the index from [B-tree indexes and EXPLAIN ANALYZE](/posts/db-indexes-btree-explain/).
+Insert 10,000 keys in sorted order into a plain {{< term "binary-search-tree" "binary search tree" >}} and you get a linked list: height 10,000, and about 4,992 comparisons per search instead of 12.4 in a balanced tree. [Sorting: quick, merge and heap](/posts/algo-sorting/) produced order once; a search tree keeps data ordered while it changes, so insert, search and delete stay cheap, as long as the tree stays balanced. It is the idea behind [Binary search and invariants](/posts/algo-binary-search-invariants/) made dynamic, and its wide cousin is the index from [B-tree indexes and EXPLAIN ANALYZE](/posts/db-indexes-btree-explain/).
 
 > Go 1.26, local example, tests with `go test -race`. The load on this machine was too high for timings (3.97 at the last check), so everything is deterministic: heights and comparison counts.
 
 ## A binary search tree
 
-A {{< term "binary-search-tree" "binary search tree" >}} puts smaller keys in the left subtree and larger in the right. My generic version takes a compare function; search and insert walk one path. `Delete` has the three classic cases:
+A binary search tree puts smaller keys in the left subtree and larger in the right. My generic version takes a compare function; search and insert walk one path. `Delete` has the three classic cases:
 
 ```go
 switch {
@@ -99,7 +100,7 @@ fanout   n=1e6      n=1e9
 
 In [B-tree indexes and EXPLAIN ANALYZE](/posts/db-indexes-btree-explain/), the index on `orders.customer_id` (200k rows) has 232 pages (1856 KB) and `bt_metap` reports level 1: a root and leaves. The primary key index has level 2, so `WHERE id = 123` cost only 7 buffers. I did not implement a B-tree here, and I did not try `github.com/google/btree`.
 
-## A few things to watch
+## Trade-offs of search trees
 
 - Plain BSTs are fine for random keys, dangerous for ordered keys such as timestamps or IDs.
 - AVL guarantees O(log n) but pays with extra height bookkeeping on every write.
@@ -113,4 +114,4 @@ Add `Min`, `Max` and `Floor(k)` (the largest key at most k) to the BST, and test
 
 ## What's next
 
-Tries and union-find.
+Tries and union-find: two more tree shapes, one for string prefixes and one for grouping connected items.

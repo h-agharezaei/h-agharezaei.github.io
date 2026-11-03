@@ -3,13 +3,14 @@ date = '2027-01-23T10:00:00+03:30'
 draft = false
 title = 'دیتابیس با SQLx در Rust'
 description = 'کار با Postgres در Rust با SQLx: PgPool، query_as و FromRow، پارامتر bind، تراکنش با rollback خودکار، migration توکار و query‌های بررسی‌شده هنگام کامپایل.'
+contentType = 'tutorial'
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "sqlx", "postgres", "database", "backend"]
 cover = { image = "/images/covers/rust-database-sqlx.fa.png", alt = "دیتابیس با SQLx در Rust", hiddenInSingle = true }
 +++
 
-در [مقاله‌ی قبل](/fa/posts/rust-http-axum-api/) یک API سفارش‌ها با Axum ساختیم که همه‌چیز را در حافظه نگه می‌داشت. این مقاله آن را با Postgres عوض می‌کند. برای این دمو یک `OrderStore` کوچک نوشتم: struct‌ای که یک connection pool دارد و متدهای `create`، `get`، `find`، `list` و یک متد تراکنشی. مستقل است و مثل قبل به‌عنوان state مشترک به Axum داده می‌شود. از **SQLx** استفاده می‌کنم؛ ابزار async برای SQL که ORM نیست: SQL را خودتان می‌نویسید و pool، پارامتر و تبدیل ردیف به struct با خود SQLx است. معادل Go در [Postgres با pgx و sqlc در Go](/fa/posts/go-postgres-pgx-sqlc/) آمده است.
+ماکروی `query!` در SQLx موقع کامپایل به دیتابیس وصل می‌شود، پس نام ستونِ غلط پیش از اجرا گرفته می‌شود. اینجا انبار درون‌حافظه‌ی [API سفارش‌ها با Axum](/fa/posts/rust-http-axum-api/) را با Postgres عوض می‌کنم. برای دمو یک `OrderStore` کوچک نوشتم: structی با یک connection pool و متدهای `create`، `get`، `find`، `list` و یک متد تراکنشی. مستقل است و مثل قبل به‌عنوان state مشترک به Axum داده می‌شود. **SQLx** ابزار async برای SQL است و ORM نیست: SQL را خودتان می‌نویسید و pool، پارامتر و تبدیل ردیف به struct با خودش است. معادل Go در [Postgres با pgx و sqlc در Go](/fa/posts/go-postgres-pgx-sqlc/) آمده است.
 
 > Rust نسخه‌ی 1.90، `sqlx` نسخه‌ی 0.8.6 (با featureهای `runtime-tokio`، `postgres`، `migrate` و `macros`) و `tokio` نسخه‌ی 1.54.1، روی PostgreSQL 18.3 واقعی که یک launcher کوچک Go با `embedded-postgres` بالا آورد (بدون Docker) و آخر کار خاموشش کردم. جدیدترین sqlx روی crates.io یعنی 0.9.0 حداقل rustc 1.94 می‌خواهد و Cargo آن را روی 1.90 من نپذیرفت، پس نسخه‌ی 0.8 را pin کردم.
 
@@ -107,7 +108,7 @@ error: set `DATABASE_URL` to use query macros online, or run `cargo sqlx prepare
 
 هر دو اکوسیستم SQL را SQL نگه می‌دارند. راه معمول در Go مسیر sqlc است: schema و query‌های شما را می‌خواند و از قبل کد Go تولید می‌کند، پس کامپایلر صدا زدن آن کد را بررسی می‌کند و برای build دیتابیس لازم نیست. ماکروهای SQLx هم هنگام کامپایل بررسی می‌کنند، ولی با یک دیتابیس زنده یا cache‌ی `.sqlx` که commit شده. `sqlx::query_as` ساده و `Query` در pgx هر دو بررسی نمی‌شوند: غلط تایپی وقتی query اجرا شود خطا می‌دهد.
 
-## چند نکته که باید حواستان باشد
+## دام‌های کار با دیتابیس
 
 - لیست ستون‌ها را صریح بنویسید و `SELECT *` نزنید؛ `FromRow` با نام تطبیق می‌دهد و ستون اضافه یا تغییرنام‌یافته در زمان اجرا خطا می‌شود.
 - `.sqlx/` را commit کنید و در CI دستور `cargo sqlx prepare --check` را بزنید تا cache کهنه نشود.
@@ -121,4 +122,4 @@ error: set `DATABASE_URL` to use query macros online, or run `cargo sqlx prepare
 
 ## قدم بعدی
 
-`StoreError` ما boilerplate زشتی دارد. در مقاله‌ی بعد: خطا در برنامه‌های واقعی با thiserror و anyhow.
+«خطا در اپلیکیشن واقعی: thiserror و anyhow» boilerplate زشت `StoreError` را حذف می‌کند.

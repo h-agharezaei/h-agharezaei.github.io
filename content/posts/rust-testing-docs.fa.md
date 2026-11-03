@@ -3,13 +3,14 @@ date = '2027-01-05T10:00:00+03:30'
 draft = false
 title = 'تست و مستندسازی در Rust'
 description = 'تست واحد، تست یکپارچگی و doc test در Rust: ماکروهای assert و خروجی شکستشان، should_panic، ignore، فیلتر تست‌ها و cargo doc روی یک crate کوچک.'
+contentType = 'tutorial'
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "testing", "documentation", "intermediate"]
 cover = { image = "/images/covers/rust-testing-docs.fa.png", alt = "تست و مستندسازی در Rust", hiddenInSingle = true }
 +++
 
-در [مقاله‌ی قبل](/fa/posts/rust-smart-pointers/) با smart pointerها آشنا شدیم. حالا سراغ چیزی می‌رویم که هر پروژه‌ی واقعی لازمش دارد: تست و مستندات. Rust هر دو را در خودش دارد و این دو به هم نزدیک‌تر از بیشتر زبان‌ها هستند، چون مثال‌های داخل مستندات کامپایل می‌شوند و مثل تست اجرا می‌شوند. اگر [مقاله‌ی تست در Go](/fa/posts/go-testing-basics/) را خوانده باشید، روند کار برایتان آشناست؛ تفاوت‌ها را آخر مقاله می‌گویم.
+در Rust مثال‌های داخل مستندات کامپایل می‌شوند و مثل تست اجرا می‌شوند؛ پس مثالی که از کد عقب بماند، مثل هر تست دیگری شکست می‌خورد. بعد از [smart pointerها](/fa/posts/rust-smart-pointers/)، نوبت تست و مستندات است که Rust هر دو را در خودش دارد. اگر [مقاله‌ی تست در Go](/fa/posts/go-testing-basics/) را خوانده باشید، روند کار برایتان آشناست؛ تفاوت‌ها را آخر مقاله می‌گویم.
 
 یک crate کتاب‌خانه‌ای کوچک به اسم `textkit` را تست می‌کنیم با سه تابع: `slugify` (عنوان به slug برای URL)، `format_cents` (عدد `123456` به `1,234.56`) و `parse_cents` (رشته‌ی `"12.34"` به `1234` که `Result` برمی‌گرداند).
 
@@ -167,7 +168,7 @@ assertion `left == right` failed
 
 در هر دو زبان تست بخشی از toolchain است. در Go تست‌ها در فایل‌های `_test.go` کنار کد هستند؛ در Rust تست واحد در همان فایل زیر `#[cfg(test)]` است و تست یکپارچگی در `tests/`. Go تابع‌های `Example` دارد که با خروجی‌شان چک می‌شوند؛ Rust بلاک‌های کدِ کامنت مستندات را اجرا می‌کند.
 
-## چند نکته
+## دام‌های cargo test
 
 - تست یکپارچگی تابع private را نمی‌بیند. آن‌ها را در ماژول تست واحد بررسی کنید.
 - خروجی تست‌های موفق بدون `--nocapture` پنهان است.
@@ -183,4 +184,4 @@ assertion `left == right` failed
 
 ## قدم بعدی
 
-در مقاله‌ی بعد سراغ concurrency با thread در Rust می‌رویم: ساخت thread، منتقل کردن داده به آن و اشتراک امن state.
+«Concurrency با Thread در Rust»: جایی که همان قانون‌های ownership جلوی data race را هم می‌گیرند.

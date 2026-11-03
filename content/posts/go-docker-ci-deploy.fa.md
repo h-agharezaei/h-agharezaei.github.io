@@ -3,13 +3,14 @@ date = '2027-02-28T10:00:00+03:30'
 draft = false
 title = 'Docker، CI و دیپلوی سرویس Go'
 description = 'کانتینری کردن سرویس Go: باینری استاتیک، Dockerfile چندمرحله‌ای با distroless، endpoint‌های سلامت و آمادگی و CI با GitHub Actions و actionlint.'
+contentType = 'tutorial'
 categories = ["Go"]
 series = ["Go Backend"]
 tags = ["go", "backend", "docker", "ci", "github-actions", "deploy"]
 cover = { image = "/images/covers/go-docker-ci-deploy.fa.png", alt = "Docker، CI و دیپلوی سرویس Go", hiddenInSingle = true }
 +++
 
-موضوع مقاله‌ی قبل profiling بود. حالا سرویس باید از لپ‌تاپ من بیرون برود. سرویس `orders` از [مقاله‌ی net/http](/fa/posts/go-http-api-stdlib/) را در یک کانتینر می‌گذاریم و CI را مسئول تست و انتشارش می‌کنیم. مدیریت SIGTERM از [مقاله‌ی graceful shutdown](/fa/posts/go-graceful-shutdown-workers/) اینجا مهم‌تر هم می‌شود، چون orchestrator دقیقاً با همین سیگنال کانتینر را متوقف می‌کند.
+orchestrator کانتینر را با SIGTERM متوقف می‌کند، پس مدیریت این سیگنال از [مقاله‌ی graceful shutdown](/fa/posts/go-graceful-shutdown-workers/) بیرون از لپ‌تاپ من مهم‌تر می‌شود. بعد از [پروفایلینگ با pprof](/fa/posts/go-profiling-pprof/)، سرویس `orders` از [مقاله‌ی net/http](/fa/posts/go-http-api-stdlib/) را در کانتینر می‌گذاریم و CI را مسئول تست و انتشارش می‌کنیم.
 
 > **توضیح صادقانه.** Docker daemon روی این ماشین خاموش است و تصمیم گرفتم روشنش نکنم، پس `docker build` را هرگز اجرا نکردم. Dockerfile و workflow زیر با هدف درست بودن نوشته شده‌اند، ولی image ساخته نشده است. چیزی که واقعاً اجرا کردم، روی Go 1.26.0 (macOS arm64): باینری استاتیک cross-compile شده، endpoint‌های سلامت، `-healthcheck`، SIGTERM و `actionlint` روی workflow. بنابراین در این مقاله نه اندازه‌ی image هست و نه خروجی `docker build`.
 
@@ -121,7 +122,7 @@ ci-broken.yml:50:21: property "metadata" is not defined in object type
 - **پنجره‌ی توقف**: orchestrator SIGTERM می‌فرستد و قبل از kill منتظر می‌ماند (در Kubernetes: `terminationGracePeriodSeconds`). timeout خاموشی ما، ۱۰ ثانیه، باید در این پنجره جا شود. مقدار واقعی پلتفرم‌تان را بررسی کنید.
 - **rollback با تگ**: تگ‌های تغییرناپذیر دیپلوی کنید (`type=sha`)، تا rollback یعنی دیپلوی تگ قبلی، نه build دوباره.
 
-## چند نکته که باید حواستان باشد
+## دام‌های کانتینر و CI
 
 - Dockerfile را با build واقعی نیازموده‌ام؛ قبل از اعتماد، `docker build` را خودتان اجرا کنید.
 - `-healthcheck` به `127.0.0.1` و پورت `ORDERS_ADDR` وصل می‌شود؛ اگر روی میزبان دیگری bind کنید شکست می‌خورد.
@@ -130,4 +131,4 @@ ci-broken.yml:50:21: property "metadata" is not defined in object type
 
 ## قدم بعدی
 
-مقاله‌ی بعد: scheduler و garbage collector در Go، تا ببینیم داخل runtime پروسه‌ای که تازه ship کردیم چه می‌گذرد.
+قدم بعدی «زمان‌بند runtime و GC در Go» است: نگاهی به داخل runtime پروسه‌ای که تازه ship کردیم.

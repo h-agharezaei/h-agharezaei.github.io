@@ -3,13 +3,14 @@ date = '2027-03-29T10:00:00+03:30'
 draft = false
 title = 'session یا JWT؟'
 description = 'session یا JWT در Go: ویژگی‌های کوکی، logout فوری، payload خوانا در JWT، دست‌کاری، alg none، ابطال توکن و CSRF token، با خروجی واقعی.'
+contentType = 'engineering'
 categories = ["Security"]
 series = ["Software Security"]
 tags = ["security", "sessions", "jwt", "cookies", "csrf", "authentication", "go"]
 cover = { image = "/images/covers/sec-sessions-vs-jwt.fa.png", alt = "session یا JWT؟", hiddenInSingle = true }
 +++
 
-مقاله‌ی قبلی، [ذخیره‌ی امن پسورد: argon2 و bcrypt](/fa/posts/sec-password-hashing/)، در لحظه‌ی موفق شدن login تمام شد. حالا سرور باید برای درخواست بعدی به یاد بیاورد شما کی هستید. دو پاسخ رایج وجود دارد: {{< term "session" "نشست" >}} (**session**؛ سرور به یاد می‌سپارد) و {{< term "jwt" "JWT" >}} (کلاینت claimهای امضاشده را با خود می‌برد). زمینه یک API کوچک شبیه سفارش‌هاست از [ساخت API با net/http در Go](/fa/posts/go-http-api-stdlib/). HttpOnly و CSP از [تزریق و XSS](/fa/posts/sec-injection-xss/) می‌آیند.
+از یک API مبتنی بر {{< term "jwt" "JWT" >}} logout کنید و توکن همچنان کار می‌کند، چون سرور چیزی نگه نداشته که پاکش کند؛ با {{< term "session" "نشست" >}} (**session**) سمت سرور همان logout فوری است. کل انتخاب به همین تفاوت برمی‌گردد: سرور به یاد بسپارد، یا کلاینت claimهای امضاشده را با خود ببرد. این اولین تصمیم بعد از login موفق است، همان‌جا که [ذخیره‌ی امن پسورد: argon2 و bcrypt](/fa/posts/sec-password-hashing/) تمام شد. زمینه یک API کوچک شبیه سفارش‌هاست از [ساخت API با net/http در Go](/fa/posts/go-http-api-stdlib/). HttpOnly و CSP از [تزریق و XSS](/fa/posts/sec-injection-xss/) می‌آیند.
 
 > فقط دفاعی. یک برنامه‌ی کوچک Go 1.26 با `github.com/golang-jwt/jwt/v5` نسخه‌ی v5.2.1 که روی 127.0.0.1 گوش می‌دهد و فقط خودم با `curl` به آن حمله کردم. **در مرورگر آزمایش نکردم**؛ فقط headerها را دیدم. دمویی جداست و ادامه‌ی دموی قبلی نیست.
 
@@ -113,7 +114,7 @@ POST /transfer (X-CSRF-Token)   -> transfer accepted [200]
 - localStorage یا حافظه‌ی JS با header از نوع Bearer: CSRF ندارد، ولی هر XSS توکن را می‌خواند.
 - نظر من: برای وب‌اپ کلاسیک، session با کوکی ساده‌ترین پیش‌فرض امن است. JWT برای فراخوانی سرویس‌به‌سرویس یا توکن‌های کوتاه‌عمر میان سیستم‌ها مناسب‌تر است.
 
-## چند نکته‌ی مهم
+## راه‌های ساده‌ی خراب کردنش
 
 - راز یا داده‌ای که باید ابطال شود در payload نگذارید.
 - هنگام login شناسه‌ی session را عوض کنید (برای session fixation)؛ نمایش ندادم.
@@ -121,10 +122,6 @@ POST /transfer (X-CSRF-Token)   -> transfer accepted [200]
 - همیشه `exp` را بررسی و الگوریتم را ثابت کنید.
 - توکن کامل یا شناسه‌ی session را لاگ نکنید.
 
-## تمرین
-
-refresh token اضافه کنید: یک JWT پنج‌دقیقه‌ای و یک شناسه‌ی refresh تصادفی که سمت سرور ذخیره می‌شود. تستی بنویسید که نشان دهد ابطال شناسه‌ی refresh جلوی توکن‌های دسترسی جدید را می‌گیرد، و بسنجید توکن دسترسی قدیمی چقدر هنوز کار می‌کند.
-
 ## قدم بعدی
 
-مقاله‌ی بعدی «OAuth2 و OIDC» است.
+«OAuth2 و OIDC» از اینکه سرور بعد از login چه نگه می‌دارد، می‌رسد به اینکه اصلاً login را چه کسی انجام می‌دهد.

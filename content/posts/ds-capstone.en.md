@@ -3,13 +3,14 @@ date = '2027-06-12T10:00:00+03:30'
 draft = false
 title = 'Distributed systems capstone'
 description = 'A distributed systems capstone: an order pipeline with retries, breaker, saga, outbox events and an invariant checker, run on 200 fault campaigns.'
+contentType = 'engineering'
 categories = ["Distributed"]
 series = ["Distributed Systems"]
 tags = ["distributed-systems", "capstone", "fault-injection", "saga", "go", "simulation"]
 cover = { image = "/images/covers/ds-capstone.png", alt = "Distributed systems capstone", hiddenInSingle = true }
 +++
 
-[The previous post](/posts/ds-case-studies/) walked through two designs. Now the whole series goes into one order pipeline, which I try to break with {{< term "fault-injection" "fault injection" >}} and a checker like the one in [Raft](/posts/ds-consensus-raft/).
+Across 200 {{< term "fault-injection" "fault injection" >}} campaigns and 10000 orders, my invariant checker found zero violations. That only counts if the checker can fail, so I also switch each mechanism off in turn. The whole series, up to the [previous post](/posts/ds-case-studies/), goes into one order pipeline, with a checker in the style of [Raft](/posts/ds-consensus-raft/).
 
 > Honest labelling: Go 1.26 on one Mac. The 200-seed campaign is a **simulation** (single-threaded event loop, virtual clock, simulated network and bus, all seeded, counts only). One separate **live run** uses real loopback HTTP and a real embedded nats-server. Static topology, no registry, one machine.
 
@@ -67,11 +68,11 @@ SLI counts over the campaign (no timings):
   attempts that hit the blackholed service=2696, worst retry wave (retries within 25 ms) in any seed=8
 ```
 
-Zero violations. Keys absorbed 1517 payment replays and 2499 API replays, the projection 5777 duplicates, and 2714 orders resumed after crashes.
+Keys absorbed 1517 payment replays and 2499 API replays, the projection 5777 duplicates, and 2714 orders resumed after crashes.
 
 ## Taking mechanisms away
 
-A checker that never fires may be blind, so each mechanism goes off in turn:
+Each mechanism off in turn:
 
 ```
 mechanism removed       broken    bad      attempts  blackhole wave  first failing seed per invariant: I:seed(count)
@@ -168,16 +169,12 @@ Real multi-machine networks and partitions, disk failures, clock hardware, Paxos
 
 The Raft paper, "Designing Data-Intensive Applications" (Martin Kleppmann), the Jepsen analyses, "Distributed systems for fun and profit", the Google SRE book. Named, not quoted.
 
-## A few things to watch
+## Limits of this result
 
 - Other I6 and I7 limits give another table.
 - 0 violations in 200 seeds is evidence, not proof.
 - Inventory and shipping are in process; the bus replays the finished log.
 - The live run is one seed.
-
-## Exercise
-
-Let shipping apply a request, then fail its response. With keys on, does any invariant fire? Off?
 
 ## What's next
 

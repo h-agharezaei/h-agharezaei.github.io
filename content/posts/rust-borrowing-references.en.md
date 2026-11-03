@@ -3,13 +3,14 @@ date = '2026-11-14T10:00:00+03:30'
 draft = false
 title = 'Borrowing and references in Rust'
 description = 'Rust borrowing and references with runnable code: &T and &mut T, the readers-or-one-writer rule, NLL, dangling references, slices and real compiler errors.'
+contentType = 'tutorial'
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "beginner", "borrowing", "references"]
 cover = { image = "/images/covers/rust-borrowing-references.png", alt = "Borrowing and references in Rust", hiddenInSingle = true }
 +++
 
-In the [previous post](/posts/rust-ownership/) we ended with a clumsy pattern: pass a `String` into a function and return it back just to keep using it. {{< term "borrowing" "Borrowing" >}} is the fix. You hand a function a reference, it uses the value, and ownership never moves. This post covers the two kinds of references, the one rule that governs them, and the compiler errors you will meet while learning it.
+Pass a `String` into a function and it is gone; to keep using it, the function has to return it back. That clumsy pattern is where [Ownership in Rust](/posts/rust-ownership/) ended, and {{< term "borrowing" "borrowing" >}} is the fix. You hand a function a reference, it uses the value, and ownership never moves. This post covers the two kinds of references, the one rule that governs them, and the compiler errors you will meet while learning it.
 
 > Everything below was compiled and run with Rust 1.90, and the outputs and errors are copied from those runs.
 
@@ -204,7 +205,7 @@ hello
 
 `first_word` works for a `String` (via `&text`) and for a literal. `sum` works for a whole `Vec` and for a sub-range. Prefer `&str` and `&[T]` over `&String` and `&Vec<T>` in parameters.
 
-## A few things to watch
+## Reading borrow errors
 
 - References are not pointers you manage by hand. You do not free them, and they are never null.
 - Many readers or one writer applies per value, at the same time. Sequential borrows are fine, thanks to NLL.
@@ -220,4 +221,4 @@ hello
 
 ## What's next
 
-So far our data has been single values and collections. In the next post, structs, enums and pattern matching in Rust, we will model our own types and branch on them.
+So far our data has been single values and collections. Structs, enums and pattern matching in Rust is the next step: modeling our own types and branching on them, with references now available to lend them around.

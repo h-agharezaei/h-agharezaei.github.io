@@ -3,13 +3,14 @@ date = '2027-01-09T10:00:00+03:30'
 draft = false
 title = 'Postgres با pgx و sqlc در Go'
 description = 'یک store واقعی PostgreSQL برای سرویس سفارش‌ها با pgx و sqlc: migration، connection pool، deadline روی query، SQL injection و همان تست سرویس.'
+contentType = 'tutorial'
 categories = ["Go"]
 series = ["Go Backend"]
 tags = ["go", "backend", "postgres", "pgx", "sqlc", "sql"]
 cover = { image = "/images/covers/go-postgres-pgx-sqlc.fa.png", alt = "Postgres با pgx و sqlc در Go", hiddenInSingle = true }
 +++
 
-در [مقاله‌ی قبل](/fa/posts/go-http-api-stdlib/) API سفارش‌ها همه‌چیز را در یک map نگه می‌داشت. حالا یک دیتابیس واقعی به آن می‌دهیم. interface به نام `Repository` در سرویس تعریف شده است، همان‌طور که در [ساختار پروژه و Clean Architecture](/fa/posts/go-project-layout-clean-architecture/) دیدیم، پس store مربوط به Postgres فقط پیاده‌سازی دوم همان interface است. اول مستقیم با **pgx** (درایور و ابزارهای Postgres) کار می‌کنیم و بعد همان store را با **sqlc** تولید می‌کنیم.
+جایگزین کردن map با Postgres نباید کد سرویس را عوض کند، چون `Repository` در خود سرویس تعریف شده ([ساختار پروژه و Clean Architecture](/fa/posts/go-project-layout-clean-architecture/)). اینجا [API ساخته‌شده با net/http](/fa/posts/go-http-api-stdlib/) را اول با **pgx** (درایور و ابزارهای Postgres) به دیتابیس وصل می‌کنیم و بعد همان store را با **sqlc** تولید می‌کنیم؛ آخر سر یک تست سرویس روی هر سه store پاس می‌شود.
 
 > همه‌چیز با Go 1.26 روی macOS و روی یک PostgreSQL 18.3 واقعی اجرا شده است. Docker در دسترس نبود، برای همین دمو با ماژول `embedded-postgres` (نسخه‌ی v1.34.0) باینری‌های واقعی Postgres را روی یک پورت آزاد بالا می‌آورد. نسخه‌ی pgx برابر v5.11.0 و sqlc برابر v1.31.1 است.
 
@@ -152,7 +153,7 @@ func (q *Queries) UpsertOrder(ctx context.Context, arg UpsertOrderParams) error
 
 ## یک تست، سه store
 
-بررسی‌های سطح سرویس در یک helper هستند که هر `service.Repository` را می‌گیرد: ساخت و خواندن، رد شدن سفارش نامعتبر، و `ErrNotFound` برای سفارش ناموجود. store درون‌حافظه‌ای، store با pgx و store با sqlc همه همین را اجرا می‌کنند و هرکدام محافظ `var _ service.Repository = (*Store)(nil)` را دارند:
+بررسی‌های سطح سرویس در یک helper هستند که هر `service.Repository` را می‌گیرد: ساخت و خواندن، رد شدن سفارش نامعتبر، و `ErrNotFound` برای سفارش ناموجود. store درون‌حافظه‌ای، pgx و sqlc همه همین را اجرا می‌کنند و هرکدام محافظ `var _ service.Repository = (*Store)(nil)` را دارند:
 
 ```
 $ go test -v ./internal/store/postgres
@@ -163,9 +164,9 @@ $ go test -v ./internal/store/postgres
 PASS
 ```
 
-پکیج sqlc هم همین زیرتست‌ها را گذراند. کد سرویس اصلاً تغییر نکرد.
+پکیج sqlc هم همین زیرتست‌ها را گذراند.
 
-## چند نکته که باید حواستان باشد
+## دام‌های pgx و sqlc
 
 - `SELECT *` همراه `RowToStructByName` وقتی struct و ستون‌ها نخوانند خطا می‌دهد که مفید است، ولی در query‌های production ستون‌ها را صریح بنویسید.
 - بعد از `WithTimeout` همیشه `defer cancel()` بگذارید و در لبه‌ی هر درخواست deadline تعیین کنید.
@@ -175,4 +176,4 @@ PASS
 
 ## قدم بعدی
 
-در مقاله‌ی بعد: تراکنش‌ها و الگوی repository در Go، جایی که چند نوشتن باید با هم موفق یا با هم ناموفق شوند.
+قدم بعدی «تراکنش و الگوی Repository در Go» است، چون چند نوشتن اغلب باید با هم موفق یا ناموفق شوند.

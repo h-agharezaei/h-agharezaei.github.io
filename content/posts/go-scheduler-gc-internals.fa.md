@@ -3,13 +3,14 @@ date = '2027-03-02T10:00:00+03:30'
 draft = false
 title = 'زمان‌بند runtime و GC در Go'
 description = 'درون runtime زبان Go را ببینید: مدل G-M-P، schedtrace، تردها و syscall مسدودکننده، preemption، gctrace، GOGC، GOMEMLIMIT و sync.Pool با اجرای واقعی.'
+contentType = 'tutorial'
 categories = ["Go"]
 series = ["Go Backend"]
 tags = ["go", "backend", "runtime", "scheduler", "gc", "performance"]
 cover = { image = "/images/covers/go-scheduler-gc-internals.fa.png", alt = "زمان‌بند runtime و GC در Go", hiddenInSingle = true }
 +++
 
-در [مقاله‌ی قبل](/fa/posts/go-docker-ci-deploy/) سرویس را به‌شکل کانتینر تحویل دادیم. حالا به درون runtime همان پروسه نگاه می‌کنیم: goroutineها چطور روی CPU می‌نشینند و حافظه چطور پاک می‌شود. مقاله روی [goroutine و channel](/fa/posts/go-goroutines-channels/)، [پروفایلینگ با pprof](/fa/posts/go-profiling-pprof/) و [escape analysis و heap](/fa/posts/go-pointers-memory/) بنا شده است.
+۱۰۰ goroutine منتظر channel هیچ thread نمی‌خواهند، اما ۱۰۰ goroutine گیرکرده در syscall مسدودکننده حدود ۹۸ thread تازه ساختند. بعد از [Docker، CI و دیپلوی سرویس Go](/fa/posts/go-docker-ci-deploy/) دلیلش را در runtime پیدا می‌کنیم، با تکیه بر [goroutine و channel](/fa/posts/go-goroutines-channels/)، [پروفایلینگ با pprof](/fa/posts/go-profiling-pprof/) و [escape analysis و heap](/fa/posts/go-pointers-memory/).
 
 > Go 1.26 روی macOS (arm64) با ۸ CPU. load average حدود ۱٫۶ بود، ولی **هیچ زمانی** نشان نمی‌دهم؛ فقط شمارش و اندازه‌ی تقریبی.
 
@@ -115,7 +116,7 @@ BenchmarkPool-8     20000      0 B/op   0 allocs/op
 
 allocation کمتر یعنی چرخه‌ی GC کمتر. runtime ممکن است در هر GC اشیای pool را دور بریزد؛ پس pool کش است، نه انبار.
 
-## چند نکته‌ی احتیاط
+## دام‌های تنظیم runtime
 
 - `NumGoroutine` و تعداد thread دو سؤال متفاوت‌اند؛ در production هر دو را زیر نظر بگیرید.
 - پیش از پروفایل کردن `GOGC` را دست نزنید؛ اول allocationها را کم کنید.
@@ -129,4 +130,4 @@ allocation کمتر یعنی چرخه‌ی GC کمتر. runtime ممکن است 
 
 ## قدم بعدی
 
-این آخرین مقاله‌ی سری Go Backend است. مقاله‌ی بعدیِ تقویم: observability در Rust با tracing. مرور پایان سال سری Go هم بعداً در ماه مارس می‌آید.
+این آخرین مقاله‌ی سری Go Backend است. بعدی در تقویم «Observability در Rust با tracing» است: از runtime به trace و لاگ. مرور پایان سال سری Go بعداً در مارس می‌آید.

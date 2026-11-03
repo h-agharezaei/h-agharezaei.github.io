@@ -3,13 +3,14 @@ date = '2027-03-21T10:00:00+03:30'
 draft = false
 title = 'کوتاه‌ترین مسیر و Dijkstra'
 description = 'الگوریتم Dijkstra در Go با container/heap: lazy deletion در برابر heap.Fix، مشکل یال منفی، Bellman-Ford، Floyd-Warshall و A* روی شبکه با شمارش.'
+contentType = 'tutorial'
 categories = ["Algorithms"]
 series = ["Algorithms"]
 tags = ["algorithms", "graphs", "dijkstra", "shortest-path", "go"]
 cover = { image = "/images/covers/algo-shortest-paths-dijkstra.fa.png", alt = "کوتاه‌ترین مسیر و Dijkstra", hiddenInSingle = true }
 +++
 
-در مقاله‌ی قبلی، [گراف: BFS و DFS](/fa/posts/algo-graphs-bfs-dfs/)، {{< term "bfs" "BFS" >}} کوتاه‌ترین مسیر را با شمردن یال پیدا می‌کرد. این فقط وقتی درست است که هر یال هزینه‌ی یکسان داشته باشد. جاده، لینک شبکه و قیمت وزن دارند و آن‌وقت مسیرِ با کمترین یال ارزان‌ترین نیست. راه‌حل به یک [priority queue](/fa/posts/algo-heaps-priority-queues/) نیاز دارد؛ همان {{< term "binary-heap" "heap" >}} مقاله‌ی قبل، تا هر بار نزدیک‌ترین رأس تمام‌نشده را برداریم.
+در مثال شش‌رأسی پایین، یال `A-F` هزینه‌ی ۱۴ دارد، ولی مسیر دویالی از C هزینه‌ی ۱۱. {{< term "bfs" "BFS" >}} در [گراف: BFS و DFS](/fa/posts/algo-graphs-bfs-dfs/) یال‌ها را می‌شمرد و مسیر مستقیم را برمی‌گزید، که فقط با یال‌های هم‌هزینه درست است. جاده، لینک شبکه و قیمت وزن دارند. راه‌حل به یک [priority queue](/fa/posts/algo-heaps-priority-queues/) نیاز دارد؛ همان {{< term "binary-heap" "heap" >}} قبلی، تا هر بار نزدیک‌ترین رأس تمام‌نشده را برداریم.
 
 > Go 1.26، مثال محلی، تست با `go test -race`. هنگام اجرا میانگین بار ماشین بالای ۳ بود، پس فقط شمارش منتشر می‌کنم، نه زمان.
 
@@ -44,7 +45,7 @@ F dist=11 path=A>C>F
 lazy: {Pops:8 Stale:2 Checks:18 Relax:7 Fixes:0}
 ```
 
-یال `A-F` هزینه‌ی ۱۴ دارد ولی مسیر از C هزینه‌ی ۱۱. هر ۹ یال از دو سر بررسی می‌شود، پس ۱۸ بررسی.
+هر ۹ یال از دو سر بررسی می‌شود، پس ۱۸ بررسی.
 
 ## lazy deletion یا decrease-key
 
@@ -98,7 +99,7 @@ no wall in the way: dijkstra expanded 216 | A* cost 20 expanded 21
 
 وقتی مسیر مستقیم باز بود A* فقط ۲۱ خانه را گسترش داد و Dijkstra ۲۱۶ خانه. دیوار سود را کم کرد، چون برآورد دیوار را نمی‌بیند. تابع عمومی `Search[N comparable]` برای هر دو همان کد است؛ Dijkstra یعنی A* با برآورد صفر. تست روی ۱۰۰ شبکه‌ی تصادفی هزینه‌ها را برابر یافت.
 
-## چند نکته‌ی مهم
+## کجا Dijkstra اشتباه می‌کند
 
 - Dijkstra وزن نامنفی می‌خواهد؛ وگرنه Bellman-Ford.
 - در lazy deletion حتماً عنصرهای کهنه را رد کنید، وگرنه کار تکراری می‌شود.
@@ -111,4 +112,4 @@ no wall in the way: dijkstra expanded 216 | A* cost 20 expanded 21
 
 ## قدم بعدی
 
-بعضی گراف‌ها درباره‌ی ترتیب‌اند، نه فاصله: مراحل build، importها، کارها. مقاله‌ی بعدی «topological sort و وابستگی‌ها» است.
+«topological sort و وابستگی‌ها» بعدی است، چون بعضی گراف‌ها درباره‌ی ترتیب‌اند، نه فاصله: مراحل build، importها، کارها.

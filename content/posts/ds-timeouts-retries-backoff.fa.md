@@ -3,13 +3,14 @@ date = '2027-05-04T10:00:00+03:30'
 draft = false
 title = 'timeout، retry و backoff با jitter'
 description = 'timeout و retry درست در Go: کلاینت واقعی روی loopback، شبیه‌سازی retry storm با seed ثابت، retry budget، انتقال deadline و درخواست hedged.'
+contentType = 'engineering'
 categories = ["Distributed"]
 series = ["Distributed Systems"]
 tags = ["distributed-systems", "go", "retries", "backoff", "timeouts"]
 cover = { image = "/images/covers/ds-timeouts-retries-backoff.fa.png", alt = "timeout، retry و backoff با jitter", hiddenInSingle = true }
 +++
 
-{{< term "deadline" "timeout" >}} فقط می‌گوید نمی‌دانید چه شد ([چرا سیستم توزیع‌شده سخت است](/fa/posts/ds-why-distributed-is-hard/))، و واکنش معمول retry است. در مقاله‌ی قبل، [ساعت منطقی](/fa/posts/ds-logical-clocks/)، رویدادها را بدون اعتماد به زمان مرتب کردیم؛ اینجا تصمیم می‌گیریم وقتی یک فراخوانی ساکت می‌شود چه کنیم. retry هم درمان است و هم از علت‌های کلاسیک قطعی. فقط برای عملیاتی که تکرارشان امن است معنا دارد ([idempotency در JetStream](/fa/posts/nats-jetstream-idempotency/)) و با [rate limiting](/fa/posts/go-rate-limiting-caching/) هم اثر متقابل دارد.
+{{< term "deadline" "timeout" >}} فقط می‌گوید نمی‌دانید چه شد ([چرا سیستم توزیع‌شده سخت است](/fa/posts/ds-why-distributed-is-hard/))، و واکنش معمول retry است. در مقاله‌ی قبل، [ساعت منطقی](/fa/posts/ds-logical-clocks/)، رویدادها را بدون اعتماد به زمان مرتب کردیم؛ اینجا تصمیم می‌گیریم وقتی یک فراخوانی ساکت می‌شود چه کنیم. retry هم درمان است و هم از علت‌های کلاسیک قطعی. فقط برای عملیاتی که تکرارشان امن است معنا دارد ([idempotency در JetStream](/fa/posts/nats-jetstream-idempotency/)) و با [rate limiting](/fa/posts/go-rate-limiting-caching/) اثر متقابل دارد.
 
 > صادقانه: بخش ۱ کلاینت و سرور HTTP واقعی روی loopback است (Go 1.26 و `httptest`) با شکست‌های seed‌دار. بخش‌های ۲ تا ۴ **شبیه‌سازی** هستند، با ساعت شبیه‌سازی‌شده و تصادف seed‌دار؛ شبکه‌ی شبیه‌سازی‌شده شبکه‌ی واقعی نیست. ماشین مشغول بود، پس فقط تعداد نشان می‌دهم، نه زمان. دمو یک مثال محلی است، نه repo.
 
@@ -87,7 +88,7 @@ hedging: 10000 requests, >100 ms: 502 without hedge, 25 with hedge; extra reques
 
 موارد کند از ۵۰۲ به ۲۵ رسید، با ۵٪ بار اضافه. شبیه‌سازی فرض می‌کند تأخیرها مستقل‌اند؛ در واقعیت کندی اغلب همبسته است.
 
-## چند نکته‌ی مهم
+## هزینه‌های پنهان retry
 
 - هر حلقه‌ی retry سقف تعداد تلاش و deadline کلی لازم دارد.
 - به هر backoff جیتر بدهید؛ فایده‌ی production آن را اینجا اندازه نگرفتم.
@@ -95,10 +96,6 @@ hedging: 10000 requests, >100 ms: 502 without hedge, 25 with hedge; extra reques
 - timeout یعنی «نامعلوم»: اول عملیات را idempotent کنید.
 - hedging به فراخوانی امن و تکرارپذیر و ظرفیت اضافه نیاز دارد.
 
-## تمرین
-
-در `sim.go` مقدار `capacity` را ۱۵۰ و `outageTo` را ۵ کنید. کدام استراتژی زودتر کلاینت‌ها را از دست می‌دهد؟ بعد یک قاعده‌ی `Retry-After` به سرور شبیه‌سازی‌شده اضافه کنید.
-
 ## قدم بعدی
 
-مقاله‌ی بعدی «circuit breaker و bulkhead» است.
+بعد، «circuit breaker و bulkhead»: وقتی وابستگی از کار افتاده می‌ماند، بهتر است صدایش نزنید.

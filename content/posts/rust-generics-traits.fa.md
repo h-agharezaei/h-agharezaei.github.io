@@ -3,13 +3,14 @@ date = '2026-12-12T10:00:00+03:30'
 draft = false
 title = 'Generics و Trait در Rust'
 description = 'تابع و struct جنریک، trait با متد پیش‌فرض، trait bound و where، impl Trait، derive یا پیاده‌سازی دستی، سربارگذاری عملگر، monomorphization و قانون orphan.'
+contentType = 'tutorial'
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "beginner", "generics", "traits"]
 cover = { image = "/images/covers/rust-generics-traits.fa.png", alt = "Generics و Trait در Rust", hiddenInSingle = true }
 +++
 
-در [مقاله‌ی قبل](/fa/posts/rust-modules-crates-cargo/) کد را به ماژول و crate تقسیم کردیم. حالا می‌خواهیم کدی بنویسیم که برای چند نوع هم‌زمان کار کند. در Rust این کار روی دو ایده بنا شده: **generics** (کدی که نوع، پارامتر آن است) و **trait** (مجموعه‌ای نام‌دار از رفتار که یک نوع می‌تواند داشته باشد). این دو را قبلاً بی‌آنکه اسم ببریم استفاده کرده‌اید: `Option<T>` جنریک است و `Display` و `Debug` trait هستند.
+`largest` جنریک بدون trait bound کامپایل نمی‌شود، حتی اگر با نوع نامناسب صدایش نزنید: بدنه‌ی جنریک در برابر وعده‌های bound بررسی می‌شود. کد چندنوعی، قدم بعد از ماژول‌های [مقاله‌ی قبل](/fa/posts/rust-modules-crates-cargo/)، روی دو ایده بنا شده: **generics** (کدی که نوع، پارامتر آن است) و **trait** (مجموعه‌ای نام‌دار از رفتار که یک نوع می‌تواند داشته باشد). این دو را قبلاً بی‌آنکه اسم ببریم استفاده کرده‌اید: `Option<T>` جنریک است و `Display` و `Debug` trait هستند.
 
 > همه‌ی کدهای زیر با Rust نسخه‌ی 1.90 کامپایل و اجرا شده‌اند و خروجی‌ها و پیام‌های کامپایلر از همان اجراها کپی شده‌اند.
 
@@ -153,7 +154,7 @@ error[E0117]: only traits defined in the current crate can be implemented for ty
 
 در Go یک interface به‌صورت ساختاری (structural) برآورده می‌شود: هر نوعی که متدهای درست را داشته باشد جا می‌شود و نیازی به اعلام نیست (درباره‌ی constraint‌ها به [Generics در Go](/fa/posts/go-generics/) نگاه کنید). در Rust این پیوند صریح است: خودتان `impl Trait for Type` می‌نویسید و قانون orphan می‌گوید این خط کجا می‌تواند باشد. در هر دو زبان مجموعه‌ای از رفتار شبیه interface به‌عنوان constraint جنریک به کار می‌رود.
 
-## چند نکته
+## دام‌های trait
 
 - بدون bound تقریباً کاری با `T` نمی‌شود کرد؛ bound‌ها را همان‌طور که کامپایلر می‌گوید اضافه کنید.
 - `impl Trait` در مقدار برگشتی یعنی یک نوع مشخص، نه «هر نوعی».
@@ -168,4 +169,4 @@ error[E0117]: only traits defined in the current crate can be implemented for ty
 
 ## قدم بعدی
 
-در مقاله‌ی بعد با lifetime‌ها در Rust آشنا می‌شویم؛ آن‌ها توضیح می‌دهند این `&T`‌ها مجازند به چه چیزی و تا کِی اشاره کنند.
+«Lifetime در Rust»: توضیح می‌دهد این `&T`‌ها مجازند به چه چیزی و تا کِی اشاره کنند.

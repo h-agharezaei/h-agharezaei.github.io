@@ -3,19 +3,20 @@ date = '2026-12-23T10:00:00+03:30'
 draft = false
 title = 'Stacks, queues and deques'
 description = 'Stack, queue and deque in Go: generic slice and ring-buffer implementations, the q = q[1:] pitfall, allocation counts, and four real uses with output.'
+contentType = 'tutorial'
 categories = ["Algorithms"]
 series = ["Algorithms"]
 tags = ["algorithms", "data-structures", "go", "stack", "queue", "deque"]
 cover = { image = "/images/covers/algo-stacks-queues-deques.png", alt = "Stacks, queues and deques", hiddenInSingle = true }
 +++
 
-In the previous post, [A hash table from scratch](/posts/algo-hash-tables/), we built a structure that finds things by key. Stacks and queues do the opposite: they restrict access on purpose, and that restriction is exactly what makes them fast and easy to reason about. They sit on top of the arrays from [Dynamic arrays and slices from the inside](/posts/algo-dynamic-arrays/), and the node-based alternative was covered in [Linked lists and why they are rarely the answer](/posts/algo-linked-lists/). The code uses [Generics in Go](/posts/go-generics/).
+Queue 1000 pointers to 1 KB values in a slice, dequeue 990 of them with `q = q[1:]`, force a garbage collection, and the popped items are still alive. That is the tempting {{< term "queue" "queue" >}}, and it leaks. {{< term "stack" "Stacks" >}} and queues restrict access on purpose, the opposite of the key lookup in [A hash table from scratch](/posts/algo-hash-tables/), and that restriction is exactly what makes them fast and easy to reason about, as long as the storage underneath is right. They sit on top of the arrays from [Dynamic arrays and slices from the inside](/posts/algo-dynamic-arrays/), and the node-based alternative was covered in [Linked lists and why they are rarely the answer](/posts/algo-linked-lists/). The code uses [Generics in Go](/posts/go-generics/).
 
 > Go 1.26, macOS arm64, local example. All numbers below are counts or sizes, not timings, so they do not depend on machine load. Tests pass with `go test -race`.
 
 ## Three small types
 
-A {{< term "stack" "stack" >}} is last-in, first-out. A slice does it perfectly: push is `append`, pop takes the last element.
+A stack is last-in, first-out. A slice does it perfectly: push is `append`, pop takes the last element.
 
 ```go
 func (s *Stack[T]) Pop() (T, bool) {
@@ -31,7 +32,7 @@ func (s *Stack[T]) Pop() (T, bool) {
 }
 ```
 
-A {{< term "queue" "queue" >}} is first-in, first-out, and a {{< term "deque" "deque" >}} allows push and pop at both ends. Both fit one {{< term "ring-buffer" "ring buffer" >}}: a fixed array plus a `head` index and a count, where positions wrap around with `%`. When the array is full it doubles.
+A queue is first-in, first-out, and a {{< term "deque" "deque" >}} allows push and pop at both ends. Both fit one {{< term "ring-buffer" "ring buffer" >}}: a fixed array plus a `head` index and a count, where positions wrap around with `%`. When the array is full it doubles.
 
 ```go
 func (d *Deque[T]) PushBack(v T) {
@@ -67,7 +68,7 @@ start      len 8 cap 8
 5 enqueues len 8 cap 8 (reallocated)
 ```
 
-Reslicing moves the start forward and the capacity shrinks with it, so the front space is gone. Worse, the old elements are still referenced by the {{< term "backing-array" "backing array" >}}. I queued 1000 pointers to 1 KB values, dequeued 990, forced a garbage collection and read `HeapAlloc`:
+Reslicing moves the start forward and the capacity shrinks with it, so the front space is gone. Worse, the old elements are still referenced by the {{< term "backing-array" "backing array" >}}. For the experiment above I read `HeapAlloc` after the forced collection:
 
 ```
 990 of 1000 items popped with q = q[1:]: ~1000 KB still live
@@ -141,7 +142,7 @@ The inner loop looks quadratic, but every index is pushed once and popped at mos
 
 A buffered Go channel is already a thread-safe FIFO queue ([Goroutines and channels in Go](/posts/go-goroutines-channels/)); use it between goroutines, and the types here when only one goroutine touches the data. These types are not safe for concurrent use. According to the docs, Rust's `std::collections::VecDeque` is a growable ring buffer; I did not run it here.
 
-## A few things to watch
+## Bugs that hide in queues
 
 - Clear the slot when you pop, or the garbage collector cannot free the value.
 - `q = q[1:]` is fine for short-lived queues, not for long-running ones.
@@ -155,4 +156,4 @@ Add `Peek` to `Queue`, then make `Deque` shrink when it is a quarter full. Check
 
 ## What's next
 
-Heaps and priority queues.
+Heaps and priority queues: for when items should leave by urgency, not by arrival order.

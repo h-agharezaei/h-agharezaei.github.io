@@ -3,13 +3,14 @@ date = '2027-01-12T10:00:00+03:30'
 draft = false
 title = 'TCP: the handshake and connection states'
 description = 'The TCP handshake and connection states on loopback: LISTEN, ESTABLISHED, TIME_WAIT, half-close, RST, connection refused, timeouts and the listen backlog.'
+contentType = 'tutorial'
 categories = ["Networking"]
 series = ["Networking"]
 tags = ["networking", "tcp", "sockets", "handshake", "tcp-states", "python"]
 cover = { image = "/images/covers/net-tcp-handshake-states.png", alt = "TCP: the handshake and connection states", hiddenInSingle = true }
 +++
 
-In the previous post, [DNS in practice](/posts/net-dns-in-practice/), we turned a name into an address. Now we connect to it. A {{< term "tcp" "TCP" >}} connection has a life: it is opened, it is used, it is closed, and each phase leaves a visible state in the kernel. If you have ever seen `connection refused`, a timeout, or thousands of sockets stuck in `TIME_WAIT`, this post explains what they mean. It builds on [the TCP/IP model](/posts/net-tcp-ip-model/).
+`connection refused`, a timeout, thousands of sockets stuck in `TIME_WAIT`: each of these is a trace of a {{< term "tcp" "TCP" >}} connection's life. A connection is opened, used and closed, and each phase leaves a visible state in the kernel. [DNS in practice](/posts/net-dns-in-practice/) turned a name into an address; here we connect to it, building on [the TCP/IP model](/posts/net-tcp-ip-model/).
 
 > Everything ran on macOS (arm64) with Python 3.14, on `127.0.0.1` with a random port (printed as `PORT`; the client's temporary port is `EPH`), or on the documentation address `192.0.2.1`. I have no root, so no packet capture. I show only the lines of my demo port.
 
@@ -110,7 +111,7 @@ after setting 30: 30
 
 The `8` is just what macOS returns for "on"; the 7200-second default is the macOS value here and differs per system.
 
-## A few things to watch
+## Debugging by state
 
 - Many `CLOSE_WAIT` sockets are your bug; many `TIME_WAIT` sockets are normal, and they sit on the side that closed first.
 - Distinguish `refused` (fast, RST) from a timeout (no answer) when debugging.
@@ -124,4 +125,4 @@ Change `states.py` so the server closes first. Which side now shows `TIME_WAIT`?
 
 ## What's next
 
-The next post is "A TCP server and client from scratch".
+Next is "A TCP server and client from scratch": having watched the kernel's side of a connection, we write the code on both ends.

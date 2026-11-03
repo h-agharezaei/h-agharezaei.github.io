@@ -3,13 +3,14 @@ date = '2026-12-24T10:00:00+03:30'
 draft = false
 title = 'Closures and iterators in Rust'
 description = 'Rust closures and iterators: capture modes, move, Fn, FnMut and FnOnce, returning closures, adapters and consumers, laziness and a custom Iterator.'
+contentType = 'tutorial'
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "closures", "iterators", "intermediate"]
 cover = { image = "/images/covers/rust-closures-iterators.png", alt = "Closures and iterators in Rust", hiddenInSingle = true }
 +++
 
-In the [previous post](/posts/rust-lifetimes/) we learned how the compiler tracks how long references live. Closures and iterators are where that knowledge pays off: a closure is a small function that captures variables from its surroundings, so it has to follow the same borrowing rules. Iterators are the other half, and together they replace most of the index-based loops you would write in other languages.
+Return a closure that uses a local variable and the compiler refuses unless you add `move`: the closure would outlive what it borrows. Closures and iterators are where the reference tracking from the [previous post](/posts/rust-lifetimes/) pays off: a closure is a small function that captures variables from its surroundings, so it has to follow the same borrowing rules. Iterators are the other half, and together they replace most of the index-based loops you would write in other languages.
 
 > I compiled and ran everything below with Rust 1.90. Outputs and compiler messages are copied from those runs.
 
@@ -206,7 +207,7 @@ let counts = text
 
 On `"the cat and The dog and a bird saw the cat"` both versions return the same result, starting `[("the", 3), ("and", 2), ("cat", 2)]`. I find the chain easier to read once you know the vocabulary, but the loop is just as valid, and I did not benchmark either.
 
-## A few things to watch
+## Capture and laziness traps
 
 - `iter()` yields references, so closures often see `&&i32` in `filter`; that is why patterns like `|&&n|` appear.
 - `into_iter()` on a `Vec` consumes it. Use `iter()` if you need the data afterwards.
@@ -222,4 +223,4 @@ On `"the cat and The dog and a bird saw the cat"` both versions return the same 
 
 ## What's next
 
-Next we look at smart pointers in Rust: `Box`, `Rc` and `RefCell`, and when you need them.
+Smart pointers: Box, Rc and RefCell in Rust explains the `Box<dyn Fn>` that appeared here.

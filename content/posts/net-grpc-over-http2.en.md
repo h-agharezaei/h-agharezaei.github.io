@@ -3,13 +3,14 @@ date = '2027-04-01T10:00:00+03:30'
 draft = false
 title = 'gRPC over HTTP/2'
 description = 'gRPC over HTTP/2 on loopback: the real headers and trailers, the 5-byte message prefix, grpc-timeout, status codes, one connection and GOAWAY.'
+contentType = 'tutorial'
 categories = ["Networking"]
 series = ["Networking"]
 tags = ["networking", "grpc", "http2", "protobuf", "go", "deadline"]
 cover = { image = "/images/covers/net-grpc-over-http2.png", alt = "gRPC over HTTP/2", hiddenInSingle = true }
 +++
 
-In [the previous post](/posts/net-websocket/) we turned one connection into a message channel. {{< term "grpc" "gRPC" >}} takes the other road: it stays inside {{< term "http" "HTTP" >}}/2, as in [HTTP/2 and what changes](/posts/net-http2/), and adds a few rules on top. [A gRPC service in Go](/posts/go-grpc-service/) and [Go and Rust talking over gRPC](/posts/go-rust-grpc-interop/) covered the API side; here I only look at the bytes.
+Every {{< term "grpc" "gRPC" >}} call returns {{< term "http" "HTTP" >}} status 200, even for a missing order; the real result travels in trailers. Unlike [WebSocket](/posts/net-websocket/), gRPC stays inside HTTP/2 ([HTTP/2 and what changes](/posts/net-http2/)) and adds a few rules on top. [A gRPC service in Go](/posts/go-grpc-service/) and [Go and Rust talking over gRPC](/posts/go-rust-grpc-interop/) covered the API side; here I only look at the bytes.
 
 > Everything ran on `127.0.0.1` with random ports (not printed), Go 1.26, macOS, grpc-go v1.84.0. The {{< term "protobuf" "protobuf" >}} code is the `orders` contract from the earlier post (copied), with a tiny new server. I did not run Linux, grpc-web or load balancing. The machine was busy, so counts, no timings.
 
@@ -39,7 +40,7 @@ Every message inside DATA starts with five bytes: one byte for the compression f
 
 ## What the real client sends
 
-Now the same call from the normal grpc-go client, with the server side recording the bytes it received and decoding them:
+The same call from the normal grpc-go client, as recorded and decoded on the server side:
 
 ```
 HEADERS stream=1 end_stream=false
@@ -58,7 +59,7 @@ DATA stream=1 end_stream=true len=9
 
 ## Status codes
 
-HTTP status is always 200. The real result is `grpc-status` in the trailers. A missing order was a **Trailers-Only** response, a single HEADERS frame with `end_stream=true` that holds both the HTTP part and the status:
+The real result is `grpc-status` in the trailers. A missing order was a **Trailers-Only** response, a single HEADERS frame with `end_stream=true` that holds both the HTTP part and the status:
 
 ```
 HEADERS stream=1 end_stream=true
@@ -105,9 +106,9 @@ HEADERS stream=1 end_stream=true
     grpc-status: 0
 ```
 
-The server sends a first {{< term "goaway" "GOAWAY" >}} that does not limit anything, a PING round trip, then a second GOAWAY naming stream 1 as the last one it will handle. The running stream finished, all 5 messages arrived, and a new call afterwards returned `Unavailable`. It is the idea from [graceful shutdown for Go workers](/posts/go-graceful-shutdown-workers/).
+The server sends a first {{< term "goaway" "GOAWAY" >}} that does not limit anything, a PING round trip, then a second GOAWAY naming stream 1 as the last one it will handle. The running stream finished, all 5 messages arrived, and a new call afterwards returned `Unavailable`. Same idea as [graceful shutdown for Go workers](/posts/go-graceful-shutdown-workers/).
 
-## A few things to watch
+## Where gRPC calls go wrong
 
 - Always set a deadline on the client; without one a call can wait forever.
 - Read the status from the trailers, not the HTTP status.
@@ -120,4 +121,4 @@ Change the demo to send a 1 KiB message and look at the DATA frames. Does the pr
 
 ## What's next
 
-The next post is "Layer 4 and layer 7 load balancers".
+Next is "Layer 4 and layer 7 load balancers", because 71 calls on one connection change load balancing.

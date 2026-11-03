@@ -2,6 +2,7 @@
 date = '2027-05-16T10:00:00+03:30'
 draft = false
 title = 'postmortem بدون سرزنش'
+contentType = 'tutorial'
 description = 'postmortem بدون سرزنش با یک حادثه‌ی ساختگی در Go: timeline از لاگ، TTD/TTM/TTR، عامل‌های مؤثر، action item و lint قابل اجرای سند.'
 categories = ["Engineering"]
 series = ["Software Engineering"]
@@ -9,7 +10,7 @@ tags = ["postmortem", "incident", "blameless", "software-engineering", "go", "sl
 cover = { image = "/images/covers/eng-postmortems-blameless.fa.png", alt = "postmortem بدون سرزنش", hiddenInSingle = true }
 +++
 
-پست قبل، [SLI، SLO و error budget](/fa/posts/eng-sli-slo-error-budgets/)، گفت یک {{< term "slo" "SLO" >}} چقدر شکست را می‌پذیرد. این پست درباره‌ی کاری است که بعد از مصرف شدن بخشی از آن {{< term "error-budget" "error budget" >}} در یک حادثه باید کرد. **این حادثه روی ماشین خودم ساختگی (staged) است**: نه کاربر واقعی هست، نه آدم واقعی؛ نام‌ها و نقش‌ها ساختگی‌اند. لاگ‌ها، عددها و خروجی lint اجرای واقعی یک دموی کوچک Go هستند. قضاوت‌ها را «نظر من» نوشته‌ام.
+بعد از حادثه، پرسش این است که چه چیزی جلویش را می‌گرفت، نه مقصر کیست. حادثه‌ها از {{< term "error-budget" "error budget" >}}ی خرج می‌کنند که {{< term "slo" "SLO" >}} اجازه می‌دهد ([SLI، SLO و error budget](/fa/posts/eng-sli-slo-error-budgets/))؛ سند بعد از حادثه جواب آن است. **این حادثه روی ماشین خودم ساختگی (staged) است**: نه کاربر و آدم واقعی، و نام‌ها و نقش‌ها ساختگی‌اند؛ لاگ‌ها، عددها و خروجی lint اجرای واقعی یک دموی کوچک Go هستند.
 
 {{< term "postmortem" "postmortem" >}} بررسی نوشته‌شده‌ای است که از روی شواهد ساخته می‌شود. مرتبط: [پیکربندی، لاگ ساختاریافته و خطا در Go](/fa/posts/go-config-logging-errors/)، [connection pooling و شکست‌هایش](/fa/posts/db-connection-pooling/)، [طراحی pipeline برای CI/CD](/fa/posts/eng-ci-cd-pipeline-design/).
 
@@ -91,7 +92,7 @@ blamey.md
 
 ظرف چند روز بنویسید. در جلسه‌ای مرور کنید که سؤالش «چه چیزی جلوی این را می‌گرفت» است و جایی منتشر کنید که همه‌ی تیم‌ها بخوانند. action itemها را مثل هر کار دیگری دنبال کنید وگرنه postmortem نمایش است؛ موارد انجام‌نشده {{< term "technical-debt" "بدهی فنی" >}} با تاریخ‌اند ([بدهی فنی](/fa/posts/eng-technical-debt/)).
 
-## چند نکته‌ی مهم
+## عادت‌هایی که postmortem را بی‌سرزنش نگه می‌دارد
 
 - timeline را از لاگ بسازید نه حافظه؛ ساعت‌ها را در یک timezone نگه دارید.
 - آنچه خوب پیش رفت و جاهایی که شانس آوردیم را بنویسید: شانس یک ریسک است.
@@ -104,4 +105,4 @@ blamey.md
 
 ## قدم بعدی
 
-پست بعدی «کار با کد legacy» است.
+«کار با کد legacy»: action itemها فقط وقتی کمک می‌کنند که کدشان را بشود امن تغییر داد.

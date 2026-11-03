@@ -4,17 +4,16 @@ draft = false
 title = 'EVM از درون: stack، memory، storage و gas با یک مفسر کوچک Rust'
 seoTitle = 'EVM از درون با یک مفسر کوچک Rust'
 description = 'EVM از درون با Rust: یک مفسر کوچک با stack ۲۵۶ بیتی، memory، storage، calldata، چک JUMPDEST، REVERT و gas که جلوی حلقه‌ی بی‌پایان را می‌گیرد.'
+contentType = 'tutorial'
 categories = ["Blockchain"]
 series = ["Blockchain"]
 tags = ["blockchain", "rust", "ethereum", "evm", "interpreter"]
 cover = { image = "/images/covers/bc-evm-internals-rust.fa.png", alt = "EVM از درون: stack، memory، storage و gas با یک مفسر کوچک Rust", hiddenInSingle = true }
 +++
 
-پست قبلی، [جمع‌بندی بخش اول: یک نود کامل کوچک با Go](/fa/posts/bc-toy-node-go/)، بخش اول را بست. بخش دوم، اتریوم، از زیر Solidity شروع می‌شود: ماشینی که قراردادها را اجرا می‌کند.
+بدون شمارنده، یک `while true` در کد قرارداد همه‌ی نودها را از کار می‌اندازد. [Bitcoin Script](/fa/posts/bc-bitcoin-script-rust/) با نداشتن حلقه از این مشکل فرار می‌کرد؛ {{< term "evm" "EVM" >}} حلقه را مجاز می‌داند و برای هر قدم {{< term "gas" "gas" >}} می‌گیرد. بخش دوم، بعد از [بخش اول](/fa/posts/bc-toy-node-go/)، از همین‌جا و زیر Solidity شروع می‌شود.
 
-در [مدل حساب، nonce و جلوگیری از replay](/fa/posts/bc-account-model-nonce/) هر {{< term "account-model" "حساب" >}} یک موجودی و یک nonce بود. اتریوم {{< term "smart-contract" "smart contract" >}} را اضافه می‌کند: حسابی که کد و storage هم دارد. تراکنش به آن، کدش را روی {{< term "evm" "EVM" >}} اجرا می‌کند.
-
-در [Bitcoin Script: یک مفسر stack کوچک با Rust](/fa/posts/bc-bitcoin-script-rust/) یک ماشین stack بدون حلقه ساختیم. این یکی حلقه دارد، پس به gas نیاز دارد.
+در [مدل حساب](/fa/posts/bc-account-model-nonce/) هر {{< term "account-model" "حساب" >}} یک موجودی و یک nonce بود. اتریوم {{< term "smart-contract" "smart contract" >}} را اضافه می‌کند: حسابی که کد و storage هم دارد. تراکنش به آن، کدش را روی EVM اجرا می‌کند.
 
 > اجرا با Rust 1.90 روی macOS (arm64)، بدون وابستگی. کد مثال محلی است. این یک **زیرمجموعه‌ی آموزشی است، نه یک EVM سازگار با مشخصات**: ۱۹ opcode به‌علاوه‌ی `PUSH1`..`PUSH32`، gas ساده‌شده، بدون call، log و ساخت قرارداد.
 
@@ -54,7 +53,7 @@ match op {
 
 `Vm` روی یک کپی از storage کار می‌کند که فقط بعد از `STOP` یا `RETURN` ثبت می‌شود.
 
-هزینه‌های {{< term "gas" "gas" >}} **ساده‌شده‌اند، نه مقدارهای mainnet**: opهای ارزان 3، `JUMP`=8، `JUMPI`=10، هر کلمه‌ی جدید memory 3، و `SLOAD`=100 و `SSTORE`=5000 ثابت که خودم انتخاب کردم. قیمت واقعی storage به دسترسی warm یا cold (EIP-2929) و به مقدار قبلی و جدید بستگی دارد؛ هزینه‌ی واقعی memory یک جمله‌ی درجه‌دو هم دارد.
+هزینه‌های gas **ساده‌شده‌اند، نه مقدارهای mainnet**: opهای ارزان 3، `JUMP`=8، `JUMPI`=10، هر کلمه‌ی جدید memory 3، و `SLOAD`=100 و `SSTORE`=5000 ثابت که خودم انتخاب کردم. قیمت واقعی storage به دسترسی warm یا cold (EIP-2929) و به مقدار قبلی و جدید بستگی دارد؛ هزینه‌ی واقعی memory یک جمله‌ی درجه‌دو هم دارد.
 
 ## یک شمارنده
 
@@ -115,7 +114,7 @@ storage بین فراخوانی‌ها می‌ماند، stack نه. با gas ک
   halted: StackOverflow { pc: 3 }, all gas consumed, storage changes discarded
 ```
 
-EVM تا جایی که gas اجازه دهد {{< term "turing-complete" "Turing-complete" >}} است، و طبق {{< term "halting-problem" "halting problem" >}} هیچ نودی نمی‌تواند از قبل بفهمد کد دلخواه تمام می‌شود یا نه. بدون شمارنده، یک `while true` همه‌ی نودها را گیر می‌انداخت: {{< term "denial-of-service" "منع سرویس" >}}. Bitcoin Script حلقه ندارد؛ EVM حلقه دارد و هزینه‌ی هر قدم را از فرستنده می‌گیرد.
+EVM تا جایی که gas اجازه دهد {{< term "turing-complete" "Turing-complete" >}} است، و طبق {{< term "halting-problem" "halting problem" >}} هیچ نودی نمی‌تواند از قبل بفهمد کد دلخواه تمام می‌شود یا نه. بدون شمارنده، یک `while true` همه‌ی نودها را گیر می‌انداخت: {{< term "denial-of-service" "منع سرویس" >}}. هزینه‌ی هر قدم را فرستنده می‌دهد.
 
 ## مقصد پرش
 
@@ -144,7 +143,7 @@ EVM تا جایی که gas اجازه دهد {{< term "turing-complete" "Turing-
 
 `SSTORE` عدد 7 اجرا شد و بعد ناپدید شد. طبق مستندات، `REVERT` واقعی gas مصرف‌نشده را پس می‌دهد؛ خطایی مثل پرش نامعتبر همه را می‌سوزاند. هر ۷ تست `cargo test` پاس می‌شوند.
 
-## چند نکته‌ی مهم
+## دام‌های نوشتن مفسر
 
 - ترتیب عملوندها: `SUB` بالای stack منهای دومی است؛ در نوشتن دستی راحت اشتباه می‌شود.
 - حساب در 2^256 بی‌صدا wrap می‌شود؛ Solidity از نسخه‌ی 0.8 به بعد چک overflow را رویش اضافه می‌کند.
@@ -159,4 +158,4 @@ EVM تا جایی که gas اجازه دهد {{< term "turing-complete" "Turing-
 
 ## قدم بعدی
 
-پست بعد: **اولین قرارداد با Solidity و Foundry**.
+پست بعد: **اولین قرارداد با Solidity و Foundry**؛ آن‌جا bytecode را کامپایلر می‌نویسد.

@@ -3,13 +3,14 @@ date = '2027-02-08T10:00:00+03:30'
 draft = false
 title = 'Trait objects and dyn in Rust'
 description = 'Rust trait objects and dyn: Box<dyn Trait>, static vs dynamic dispatch, fat pointers, dyn compatibility (E0038), downcasting with Any and enum vs generics.'
+contentType = 'tutorial'
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "traits", "dyn", "intermediate"]
 cover = { image = "/images/covers/rust-trait-objects-dyn.png", alt = "Trait objects and dyn in Rust", hiddenInSingle = true }
 +++
 
-In the [previous post](/posts/rust-nats-async-client/) the Rust worker consumed messages from a Go program. Earlier, the gRPC posts ended on a question: how does Rust get the runtime polymorphism that Go gives us for free with interfaces? In [Generics and traits](/posts/rust-generics-traits/) we saw static dispatch, where every concrete type gets its own copy of the code. This post covers the other half: **trait objects**, written `dyn Trait`. They let one `Vec` or one `HashMap` hold different types. The Go side of the comparison is in [structs, methods and interfaces](/posts/go-structs-methods-interfaces/).
+A generic `Vec<T>` holds exactly one `T`, so a `Square` and a `Circle` cannot share it. Go solves this for free with interfaces, and the gRPC posts ended on that question: how does Rust get runtime polymorphism? In [Generics and traits](/posts/rust-generics-traits/) we saw static dispatch, where every concrete type gets its own copy of the code. Following [the async NATS JetStream client](/posts/rust-nats-async-client/), this post covers the other half: **trait objects**, written `dyn Trait`. They let one `Vec` or one `HashMap` hold different types. The Go side of the comparison is in [structs, methods and interfaces](/posts/go-structs-methods-interfaces/).
 
 > Everything here ran on Rust 1.90. I make no performance claims; I only show sizes and compiler output.
 
@@ -121,7 +122,7 @@ If you need this often, the design is probably asking for an enum.
 
 In Go, an interface value holds a pair: a type and a pointer to the data. A `dyn` reference is similar in spirit, but Rust requires you to say `dyn` explicitly and checks dyn compatibility at compile time.
 
-## A few things to watch
+## Common mistakes with dyn
 
 - In the 2021 edition a bare trait name in type position is an error; write `dyn Trait`.
 - A `Box<dyn Trait>` owns its value on the heap; `&dyn Trait` borrows. Use whichever ownership you need.
@@ -137,4 +138,4 @@ In Go, an interface value holds a pair: a type and a pointer to the data. A `dyn
 
 ## What's next
 
-Next: macros in Rust, the code that writes code, including the `derive` and `println!` we have been using all along.
+*Macros in Rust*: the code that writes code, including the `derive` and `println!` we have been using all along.

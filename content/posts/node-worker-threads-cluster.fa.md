@@ -3,13 +3,14 @@ date = '2027-03-28T10:00:00+03:30'
 draft = false
 title = 'worker thread و cluster در Node.js'
 description = 'worker thread و cluster در Node.js: بلاک‌کردن event loop از عمد و رفعش با worker، Atomics، pool و cluster، همه با اجرای واقعی و خروجی عددی.'
+contentType = 'tutorial'
 categories = ["Node.js"]
 series = ["Node.js"]
 tags = ["nodejs", "worker-threads", "cluster", "concurrency", "performance"]
 cover = { image = "/images/covers/node-worker-threads-cluster.fa.png", alt = "worker thread و cluster در Node.js", hiddenInSingle = true }
 +++
 
-در مقاله‌ی قبل، [اعتبارسنجی ورودی با Zod](/fa/posts/node-validation-zod/)، همه‌چیز روی یک thread اجرا می‌شد. برای I/O مشکلی نیست، همان‌طور که در [event loop در Node.js](/fa/posts/node-event-loop/) دیدیم، اما یک تابع همگامِ کند جلوی همه‌ی درخواست‌ها را می‌گیرد. این مقاله این مشکل را عمداً نشان می‌دهد، با **{{< term "worker-threads" "worker thread" >}}** حلش می‌کند و در پایان یک سرور HTTP را با **{{< term "node-cluster" "cluster" >}}** روی چند process پخش می‌کند. ادامه‌ی [سرور HTTP با node:http](/fa/posts/node-http-server/) است.
+حین اجرای `fib(38)` روی thread اصلی، `setInterval` ده‌میلی‌ثانیه‌ای اصلاً tick نزد. تا [اعتبارسنجی ورودی با Zod](/fa/posts/node-validation-zod/) همه‌چیز روی یک thread بود: طبق [event loop در Node.js](/fa/posts/node-event-loop/) برای I/O کافی است، اما یک تابع همگامِ کند جلوی همه‌ی درخواست‌ها را می‌گیرد. با **{{< term "worker-threads" "worker thread" >}}** حلش می‌کنم و سرور HTTP را با **{{< term "node-cluster" "cluster" >}}** روی چند process پخش می‌کنم، در ادامه‌ی [سرور HTTP با node:http](/fa/posts/node-http-server/).
 
 > Node نسخه‌ی v20.13.1، اسکریپت‌های محلی روی 127.0.0.1. ماشین مشغول بود، پس فقط تعداد می‌دهم، نه زمان. این‌ها را روی Linux و Windows اجرا نکردم.
 
@@ -112,7 +113,7 @@ alive workers now: 2 | killed was worker#1
 
 در Go یک **{{< term "goroutine" "goroutine" >}}** را runtime روی هسته‌ها زمان‌بندی می‌کند، پس کار CPU API اضافه نمی‌خواهد ([goroutine و channel در Go](/fa/posts/go-goroutines-channels/)، [scheduler و garbage collector در Go](/fa/posts/go-scheduler-gc-internals/)). در Node خودتان thread یا process را انتخاب می‌کنید و هر worker heap جدا دارد.
 
-## چند نکته‌ی مهم
+## هزینه‌های پنهان thread و process
 
 - هر worker event loop و حافظه‌ی خودش را دارد؛ فقط bufferهای مشترک مشترک‌اند.
 - از تعداد هسته‌ها بیشتر worker CPU-bound نسازید.
@@ -126,4 +127,4 @@ pool را طوری بسازید که بعد از `error` یک worker جدید ب
 
 ## قدم بعدی
 
-مقاله‌ی بعدی «پروفایل، حافظه و خاموشی تمیز در Node.js» است.
+«پروفایل، حافظه و خاموشی تمیز در Node.js»: پیش از افزودن worker، ببینید زمان و حافظه کجا می‌رود.

@@ -3,13 +3,14 @@ date = '2027-05-08T10:00:00+03:30'
 draft = false
 title = 'circuit breaker و bulkhead'
 description = 'ساخت circuit breaker در Go از صفر با ساعت تزریق‌شده، به‌همراه bulkhead و load shedding، با شبیه‌سازی‌های seed ثابت و شمارش‌های واقعی.'
+contentType = 'engineering'
 categories = ["Distributed"]
 series = ["Distributed Systems"]
 tags = ["distributed-systems", "circuit-breaker", "bulkhead", "resilience", "go"]
 cover = { image = "/images/covers/ds-circuit-breaker-bulkhead.fa.png", alt = "circuit breaker و bulkhead", hiddenInSingle = true }
 +++
 
-[مقاله‌ی قبل](/fa/posts/ds-timeouts-retries-backoff/) با retryهایی تمام شد که مؤدبانه صبر می‌کنند. وقتی وابستگی بیمار می‌ماند ادب کمکی نمی‌کند: callerها پشتش جمع می‌شوند تا خودشان هم بیمار شوند و {{< term "cascading-failure" "خرابی زنجیره‌ای" >}} رخ می‌دهد. {{< term "circuit-breaker" "circuit breaker" >}} مدتی صدا زدن را متوقف می‌کند و {{< term "bulkhead" "bulkhead" >}} سقف می‌گذارد که یک وابستگی چقدر از ظرفیت شما را بگیرد. ببینید: [الگوهای concurrency](/fa/posts/go-concurrency-patterns/).
+وابستگی‌ای که بیمار می‌ماند callerهایش را هم پایین می‌کشد: پشتش جمع می‌شوند تا خودشان هم بیمار شوند و {{< term "cascading-failure" "خرابی زنجیره‌ای" >}} رخ می‌دهد. retryهای مؤدبانه و jitterدار [مقاله‌ی قبل](/fa/posts/ds-timeouts-retries-backoff/) این را عوض نمی‌کنند. {{< term "circuit-breaker" "circuit breaker" >}} مدتی صدا زدن را متوقف می‌کند و {{< term "bulkhead" "bulkhead" >}} سقف می‌گذارد که یک وابستگی چقدر از ظرفیت شما را بگیرد. ببینید: [الگوهای concurrency](/fa/posts/go-concurrency-patterns/).
 
 > صادقانه: همه‌ی این‌ها Go 1.26 روی یک ماشین است. زمان «tick» ساختگی از یک ساعت تزریق‌شده است، randomness با seed ثابت است و فقط شمارش نشان می‌دهم، نه زمان. **شبیه‌سازی** است، نه شبکه‌ی واقعی.
 
@@ -81,17 +82,13 @@ metricها: state (یک gauge)، تعداد trip، تعداد رد شدن و fal
 
 در production از کتابخانه استفاده می‌کنم. طبق README، `sony/gobreaker` حالت‌های closed، open و half-open، `MaxRequests` برای half-open، `Timeout` برای open، تابع `ReadyToTrip` و hook به نام `OnStateChange` دارد. README را خواندم و اجرایش نکردم. Hystrix و Resilience4j تا جایی که می‌دانم جایی هستند که این الگو در دنیای Java رایج شد.
 
-## چند نکته‌ی مهم
+## اشتباه‌های رایج در تنظیم breaker
 
 - breaker حتماً fallback یا خطای روشن داشته باشد، وگرنه کاربر فقط شکست سریع‌تر می‌بیند.
 - timeout کلاینت همچنان لازم است؛ breaker فقط بعد از دیدن شکست‌ها باز می‌شود.
 - فقط شکست واقعی وابستگی را بشمارید، نه خطای validation خودتان را.
 - اندازه‌ی pool و آستانه‌ها به load test نیاز دارند؛ اعداد من ساختگی‌اند.
 
-## تمرین
-
-یک قاعده‌ی نرخ شکست روی پنجره‌ی لغزان اضافه کنید و روی سناریوی ناپایدار با قاعده‌ی شکست‌های پشت‌سرهم مقایسه کنید.
-
 ## قدم بعدی
 
-مقاله‌ی بعد «replication و quorum» است.
+بعد، «replication و quorum»: به‌جای محافظت در برابر یک نسخه‌ی بیمار، چند نسخه نگه می‌داریم و تعیین می‌کنیم چندتا باید موافق باشند.

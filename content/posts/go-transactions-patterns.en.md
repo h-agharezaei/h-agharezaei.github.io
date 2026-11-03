@@ -3,13 +3,14 @@ date = '2027-01-19T10:00:00+03:30'
 draft = false
 title = 'Transactions and the repository pattern in Go'
 description = 'Go pgx transactions: rollback, a WithTx helper, a unit of work over repositories, lost updates, SELECT FOR UPDATE, serializable retries and N+1 queries.'
+contentType = 'engineering'
 categories = ["Go"]
 series = ["Go Backend"]
 tags = ["go", "backend", "postgres", "transactions", "pgx", "repository"]
 cover = { image = "/images/covers/go-transactions-patterns.png", alt = "Transactions and the repository pattern in Go", hiddenInSingle = true }
 +++
 
-In the [previous post](/posts/go-postgres-pgx-sqlc/) the orders service got a real Postgres store, but every call was its own little world. Real work often needs two writes that succeed or fail together. This post covers **transactions** in pgx, how to keep them out of the domain code, and the concurrency problems they do and do not solve.
+Debit alice 100, credit carol 100, and let the credit fail on a balance limit: without a transaction the debit is already committed and 100 simply disappears. Real work often needs two writes that succeed or fail together, but in the store from [Postgres with pgx and sqlc](/posts/go-postgres-pgx-sqlc/) every call is its own little world. This post covers **transactions** in pgx, how to keep them out of the domain code, and the concurrency problems they do and do not solve.
 
 > Go 1.26, pgx v5.11.0, a real PostgreSQL 18.3 started by the embedded-postgres module, as before. The demo is a local copy of the previous one, with a second migration adding an `accounts` table (balance must be between 0 and 10000, enforced by two named `CHECK` constraints) and an `order_items` table.
 
@@ -187,7 +188,7 @@ JOIN         orders=20 items=60 queries=1
 
 One query for the orders plus one per order is the N+1 pattern. `WHERE order_id = ANY($1)` with a slice fetches all items at once; a `JOIN` does it in a single statement. Prefer one of these over a loop of queries.
 
-## A few things to watch
+## Costs and limits of transactions
 
 - Keep transactions short; they pin a connection and hold locks.
 - Pick one strategy per operation: row locks (`FOR UPDATE`) or serializable plus retry. Do not mix them casually.
@@ -197,4 +198,4 @@ One query for the orders plus one per order is the N+1 pattern. `WHERE order_id 
 
 ## What's next
 
-Next: concurrency patterns in Go, with a worker pool and errgroup.
+Next is "Concurrency patterns: worker pool and errgroup": the concurrency here was between database clients, and that post moves to concurrency inside the Go process itself.

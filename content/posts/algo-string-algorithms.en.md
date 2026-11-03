@@ -3,23 +3,24 @@ date = '2027-04-28T10:00:00+03:30'
 draft = false
 title = 'String algorithms: KMP and Rabin–Karp'
 description = 'String search in Go: KMP and Rabin–Karp with real comparison counts, spurious hash hits, UTF-8 byte offsets and a test against strings.Index.'
+contentType = 'tutorial'
 categories = ["Algorithms"]
 series = ["Algorithms"]
 tags = ["algorithms", "strings", "kmp", "rabin-karp", "hashing", "go"]
 cover = { image = "/images/covers/algo-string-algorithms.png", alt = "String algorithms: KMP and Rabin–Karp", hiddenInSingle = true }
 +++
 
-After [Greedy algorithms and backtracking](/posts/algo-greedy-backtracking/) we leave choices and look at text. Finding a pattern inside a text looks trivial, yet the naive way can do four times the necessary work. Two classic fixes are the {{< term "kmp-algorithm" "KMP algorithm" >}} and {{< term "rabin-karp" "Rabin–Karp" >}}. Costs are counted as in [Big-O measured](/posts/algo-big-o-measured/); Rabin–Karp leans on [hash tables](/posts/algo-hash-tables/) ideas such as a {{< term "hash-collision" "collision" >}}.
+Finding `aaab` in 10,000 a's and one b costs naive search 39,992 byte comparisons, four times the text length. Two classic fixes are the {{< term "kmp-algorithm" "KMP algorithm" >}} and {{< term "rabin-karp" "Rabin–Karp" >}}. [Greedy algorithms and backtracking](/posts/algo-greedy-backtracking/) searched choices; here we search text. Costs are counted as in [Big-O measured](/posts/algo-big-o-measured/); Rabin–Karp leans on [hash tables](/posts/algo-hash-tables/) ideas such as a {{< term "hash-collision" "collision" >}}.
 
 > Go 1.26, local example, tests with `go test -race`. Machine load was not low, so I publish counts, not timings.
 
 ## Naive search
 
-Slide the pattern over the text and compare byte by byte. My version increments a counter on every byte comparison. Worst case is O(n·m): text `aaaa…ab` (10000 a's and a b), pattern `aaab`.
+Slide the pattern over the text and compare byte by byte. Worst case is O(n·m), as with the text above.
 
 ## KMP: never go back in the text
 
-When a mismatch happens, the part already matched tells us where the next match could start. The **failure function** stores, for each prefix of the pattern, the length of its longest proper prefix that is also its suffix. For `ababaca`:
+On a mismatch, the part already matched tells us where the next match could start. The **failure function** stores, for each prefix of the pattern, the length of its longest proper prefix that is also its suffix. For `ababaca`:
 
 ```
 i       0 1 2 3 4 5 6
@@ -37,7 +38,7 @@ if text[i] == pat[k] { k++ }
 if k == len(pat) { /* match at i-k+1 */ k = fail[k-1] }
 ```
 
-Building the table is O(m) and the search is O(n). Comparison counts from my run (`cmp` counts every byte comparison):
+Comparison counts from my run (`cmp` counts every byte comparison):
 
 ```
 adversarial  n=10001 matches=1 naive=39992 kmp=19998
@@ -93,7 +94,7 @@ A test generates 5000 random texts and patterns over `{a,b}` (seed 7, lengths up
 
 Other tools I only name: the Z-algorithm (same idea as the failure function, computed differently) and suffix arrays (index a text once, then answer many pattern queries).
 
-## A few things to watch
+## Where string search bites
 
 - Check how your language indexes strings: bytes, UTF-16 units or code points.
 - A hash hit is a hint; always verify.
@@ -106,4 +107,4 @@ Make `RabinKarp` search for several patterns of equal length with a map of hashe
 
 ## What's next
 
-Next up: "Bloom filters and consistent hashing".
+"Bloom filters and consistent hashing" ends the series with two more hashing ideas.

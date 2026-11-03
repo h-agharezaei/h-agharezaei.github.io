@@ -3,13 +3,14 @@ date = '2027-01-03T10:00:00+03:30'
 draft = false
 title = 'Building an API with net/http in Go'
 description = 'Build a JSON API with Go net/http: ServeMux patterns, middleware, safe JSON decoding, validation errors, server timeouts, graceful shutdown and httptest.'
+contentType = 'tutorial'
 categories = ["Go"]
 series = ["Go Backend"]
 tags = ["go", "backend", "http", "api", "net-http", "middleware"]
 cover = { image = "/images/covers/go-http-api-stdlib.png", alt = "Building an API with net/http in Go", hiddenInSingle = true }
 +++
 
-In the [previous post](/posts/go-config-logging-errors/) the `orders` service got a typed `Config` loaded from the environment, `slog` with text and JSON handlers, a request ID carried in the context, and one function (`statusOf`) that maps errors to HTTP statuses. The server itself was still minimal: one read timeout, no panic protection, no body limit, no shutdown. Now we build the HTTP layer on top, standard library only. Since Go 1.22 the router understands methods and wildcards, so for a small API I skip frameworks. We used `net/http` in the [URL shortener](/posts/go-mini-project-url-shortener/) too; here we add middleware, safe decoding, timeouts and tests.
+`http.ListenAndServe` uses a zero-value `http.Server`, and zero means no timeout: a client that sends headers one byte at a time can hold a goroutine forever. After [config, structured logging and errors](/posts/go-config-logging-errors/), the `orders` server is still that minimal: one read timeout, no panic protection, no body limit, no shutdown. Since Go 1.22 the router understands methods and wildcards, so for a small API I skip frameworks. We used `net/http` in the [URL shortener](/posts/go-mini-project-url-shortener/) too; here we add middleware, safe decoding, timeouts and tests, standard library only.
 
 > Everything was run with Go 1.26 on macOS (arm64), standard library only. The demo is the previous post's module, evolved. Log lines below have the `time=` field removed.
 
@@ -202,7 +203,7 @@ ok  	example.com/orders/internal/service
 ok  	example.com/orders/internal/transport/http
 ```
 
-## A few things to watch
+## Where net/http surprises you
 
 - The mux's own `404` and `405` are plain text. They still get a request ID and a log line, but if clients expect JSON, wrap them.
 - `WriteTimeout` also covers slow handlers: a long download or stream needs a larger value or `http.ResponseController` deadlines.
@@ -212,4 +213,4 @@ ok  	example.com/orders/internal/transport/http
 
 ## What's next
 
-Next: Postgres with pgx and sqlc in Go, where the in-memory store gives way to a real database.
+Next is "Postgres with pgx and sqlc in Go", because the data still lives in an in-memory map.

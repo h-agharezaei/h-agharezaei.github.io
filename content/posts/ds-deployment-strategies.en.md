@@ -3,13 +3,14 @@ date = '2027-06-09T10:00:00+03:30'
 draft = false
 title = 'Deployment strategies: blue-green and canary'
 description = 'Deployment strategies compared with Go runs on loopback: big-bang, rolling, blue-green and canary with automatic rollback, plus safe schema changes.'
+contentType = 'tutorial'
 categories = ["Distributed"]
 series = ["Distributed Systems"]
 tags = ["distributed-systems", "deployment", "canary", "blue-green", "go"]
 cover = { image = "/images/covers/ds-deployment-strategies.png", alt = "Deployment strategies: blue-green and canary", hiddenInSingle = true }
 +++
 
-[The previous post](/posts/ds-modular-monolith-vs-microservices/) was about how many deployable pieces you have. This one is about how a piece reaches users. Every deploy is an experiment on production; the question is how many users the bad version can hurt before you notice: its {{< term "blast-radius" "blast radius" >}}. Related: [pipeline design](/posts/eng-ci-cd-pipeline-design/), [load balancers](/posts/net-load-balancer-l4-l7/).
+The same 5% bug reached 10,000 requests with a big-bang deploy and 130 with a staged rollout and automatic analysis. Every deploy is an experiment on production; the question is how many users the bad version can hurt before you notice: its {{< term "blast-radius" "blast radius" >}}. The [previous post](/posts/ds-modular-monolith-vs-microservices/) counted deployable pieces. Related: [pipeline design](/posts/eng-ci-cd-pipeline-design/), [load balancers](/posts/net-load-balancer-l4-l7/).
 
 > Honest labelling: this is Go 1.26 on one machine, loopback only. Backends are real HTTP servers behind a small weighted reverse proxy I wrote (`httputil.ReverseProxy`). The "bug" in v2 is deterministic: about 5% of request ids get a 500. I show counts, not timings.
 
@@ -66,7 +67,7 @@ good v2
 step 5: weight=100% canary n=2000 err=0 -> PROMOTED
 ```
 
-The bad version is stopped at step 2 with a blast radius of 130 requests instead of 10,000. Step 1 shows the catch: the test said "fine" with 28 canary requests. That is not evidence of health, it is low {{< term "statistical-power" "statistical power" >}}. The code computes it: with 20 canary requests out of 2,000, the chance of detecting a true 5% error rate is 0.26, and one error in 20 gives p = 0.01, not enough. About 59 canary requests give 80% power. (Routing is by hash, so step 1 got 28, not 20.) Assumptions: the baseline never fails; no correction for repeated looks; I built only an error-rate check, not a latency one.
+The bad version is stopped at step 2. Step 1 shows the catch: the test said "fine" with 28 canary requests. That is not evidence of health, it is low {{< term "statistical-power" "statistical power" >}}. The code computes it: with 20 canary requests out of 2,000, the chance of detecting a true 5% error rate is 0.26, and one error in 20 gives p = 0.01, not enough. About 59 canary requests give 80% power. (Routing is by hash, so step 1 got 28, not 20.) Assumptions: the baseline never fails; no correction for repeated looks; I built only an error-rate check, not a latency one.
 
 ## Shadow traffic and feature flags
 
@@ -94,7 +95,7 @@ This is {{< term "expand-contract" "expand/contract" >}}: add the column, {{< te
 
 In my experience rollback is the right first move while it is cheap and safe, and {{< term "roll-forward" "roll forward" >}} wins once v2 has written data v1 cannot read or a migration dropped something. Watch the {{< term "sli" "SLIs" >}} of your [SLO](/posts/eng-sli-slo-error-budgets/) split by version, or a 1% canary hides in the noise. Argo Rollouts, Flagger, Spinnaker and Kubernetes Deployment strategies automate this; I know them only from documentation.
 
-## A few things to watch
+## Where automated rollouts go blind
 
 - Readiness is not correctness; a rollout needs real metrics.
 - Small canaries are blind: compute the sample size you need.
@@ -107,4 +108,4 @@ Add a latency check with a counted clock to the canary analysis, then try a bug 
 
 ## What's next
 
-The next post is “Capacity estimation”.
+“Capacity estimation”: how many machines does the safely shipped change need?

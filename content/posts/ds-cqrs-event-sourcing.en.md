@@ -3,13 +3,14 @@ date = '2027-05-26T10:00:00+03:30'
 draft = false
 title = 'CQRS and event sourcing'
 description = 'CQRS and event sourcing in Go on a real Postgres: optimistic concurrency, snapshots, upcasting, stale projections, replay, and when not to use it.'
+contentType = 'tutorial'
 categories = ["Distributed"]
 series = ["Distributed Systems"]
 tags = ["distributed-systems", "cqrs", "event-sourcing", "postgres", "go"]
 cover = { image = "/images/covers/ds-cqrs-event-sourcing.png", alt = "CQRS and event sourcing", hiddenInSingle = true }
 +++
 
-[The previous post](/posts/ds-saga-vs-2pc/) coordinated several services with a saga. This one changes what a service stores: not the current state, but the facts that led to it. That is {{< term "event-sourcing" "event sourcing" >}}, and {{< term "cqrs" "CQRS" >}} is its usual companion. See also [transactions and ACID](/posts/db-transactions-acid/), [consistency models](/posts/ds-consistency-models/), [the outbox pattern](/posts/go-outbox-pattern-nats/) and [idempotency in JetStream](/posts/nats-jetstream-idempotency/).
+Store the facts behind a state instead of the state, and "what was this balance on 2027-03-01?" needs no audit table. That is {{< term "event-sourcing" "event sourcing" >}}, and {{< term "cqrs" "CQRS" >}} is its usual companion. Sagas were the [previous post](/posts/ds-saga-vs-2pc/); see also [transactions and ACID](/posts/db-transactions-acid/), [consistency models](/posts/ds-consistency-models/), [the outbox pattern](/posts/go-outbox-pattern-nats/) and [idempotency in JetStream](/posts/nats-jetstream-idempotency/).
 
 > Honest labelling: a Go 1.26 program on one machine against a real PostgreSQL 18.3 on loopback. Randomness is seeded, I show counts, not timings; `go test -race` passes. The "poller schedule" and the "crash" in the last section are simulated.
 
@@ -37,7 +38,7 @@ snapshot/500: version=10123 balance=989607 replayed=123 events
 state at 2027-03-01: version=1416 balance=138314 (replayed 1416 events)
 ```
 
-Same state, 123 events instead of 10,123. The snapshot is a cache, not truth. The last line is a temporal query: replay up to a version (found from `created_at`, which in this demo is one hour per version) and you have the past, with no audit table. Events also give an audit trail for free.
+Same state, 123 events instead of 10,123. The snapshot is a cache, not truth. The last line is a temporal query: replay up to a version (found from `created_at`, which in this demo is one hour per version) and you have the past, with no audit table.
 
 Event shapes change. Version 1 stored `{"amount": 5}` (dollars); version 2 stores `amount_cents` and `currency`. Never edit old events: {{< term "upcasting" "upcast" >}} while reading. Legacy rows inserted by raw SQL:
 
@@ -84,7 +85,7 @@ events=10435 deliveries=13885 distinct=10435 simulated-crashes=69
 
 In my opinion most CRUD apps should not: you pay in complexity, eventual consistency and upcasters forever. A plain table plus an audit table gives history with far less machinery; events earn their place when the history is the domain (ledgers, orders with complex lifecycles). Immutable logs also collide with deletion requests. One known answer is {{< term "crypto-shredding" "crypto-shredding" >}}: encrypt personal fields per person and destroy the key. I did not implement it. Also, a `bigserial` position can become visible out of order under concurrent transactions, so a poller can skip an event; I did not reproduce this.
 
-## A few things to watch
+## Common traps
 
 - Commands validate against state and emit events; handlers must not write state directly.
 - Snapshots and projections are disposable; the events are the truth.
@@ -97,4 +98,4 @@ Add a `daily_seen` table keyed by `(stream_id, version)` and make `daily_totals`
 
 ## What's next
 
-The next post is “Messaging and event-driven architecture”.
+“Messaging and event-driven architecture”: there events move between services, where duplicates and ordering become architecture problems.

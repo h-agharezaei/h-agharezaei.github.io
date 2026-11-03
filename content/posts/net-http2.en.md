@@ -3,13 +3,14 @@ date = '2027-03-13T10:00:00+03:30'
 draft = false
 title = 'HTTP/2 and what changes'
 description = 'HTTP/2 in Go on loopback: ALPN negotiation, 20 concurrent requests over one TCP connection, HPACK header bytes measured, and h2c compared with HTTP/1.1.'
+contentType = 'tutorial'
 categories = ["Networking"]
 series = ["Networking"]
 tags = ["networking", "http2", "tls", "go", "hpack"]
 cover = { image = "/images/covers/net-http2.png", alt = "HTTP/2 and what changes", hiddenInSingle = true }
 +++
 
-In the previous post, [TLS and certificates with openssl](/posts/net-tls-openssl/), the last stop was {{< term "alpn" "ALPN" >}}: the client and server pick the application protocol inside the TLS handshake. Now we see what they pick. HTTP/2 keeps the methods, status codes and headers of [HTTP/1.1](/posts/net-http1-by-hand/), but changes how they travel on the wire. The semantics stay the same, and the framing changes. It runs on one {{< term "tcp" "TCP" >}} connection, see [the TCP/IP model](/posts/net-tcp-ip-model/).
+The same client code sent 20 concurrent requests over 20 TCP connections with HTTP/1.1 and over exactly one with HTTP/2. HTTP/2 keeps the methods, status codes and headers of [HTTP/1.1](/posts/net-http1-by-hand/), but changes how they travel on the wire: the semantics stay the same, and the framing changes. It runs on one {{< term "tcp" "TCP" >}} connection (see [the TCP/IP model](/posts/net-tcp-ip-model/)), and {{< term "alpn" "ALPN" >}}, the last stop of [TLS and certificates with openssl](/posts/net-tls-openssl/), picks it.
 
 > Everything ran on loopback with a throwaway self-signed certificate (SAN `localhost` and `127.0.0.1`) generated inside the demo program; the demo is a local Go example. The machine was busy, so I publish counts and bytes only, no timings.
 
@@ -44,18 +45,18 @@ In the first run the client offered `h2` and `http/1.1`, and the server picked `
 
 HTTP/1.1 answers one request at a time per connection. While a response is slow, the next request on that connection waits, which is {{< term "head-of-line-blocking" "head-of-line blocking" >}}, so clients open several connections. HTTP/2 does {{< term "multiplexing" "multiplexing" >}}: each request is a numbered stream and their frames are interleaved on one connection.
 
-To prove it, the server counts accepted TCP connections, and the `/barrier` handler holds every request until all 20 are in flight at the same time. The client fires 20 goroutines:
+The server counts accepted TCP connections, and the `/barrier` handler holds every request until all 20 are in flight at the same time. The client fires 20 goroutines:
 
 ```
 HTTP/2:   TCP connections=1,  requests in flight at once=20
 HTTP/1.1: TCP connections=20, requests in flight at once=20
 ```
 
-Same work, same client code. With HTTP/1.1 each concurrent request needed its own connection, and with it its own TCP and TLS handshake. Note that Go's HTTP/1.1 transport has no default limit on connections per host; browsers cap it at a small number per host (according to common practice, I did not test that), which is where "domain sharding" tricks came from.
+Same work, same client code. With HTTP/1.1 each concurrent request needed its own connection, and with it its own TCP and TLS handshake. Go's HTTP/1.1 transport has no default limit on connections per host; browsers cap it at a small number per host (according to common practice, I did not test that), which is where "domain sharding" tricks came from.
 
 ## Headers: HPACK
 
-Headers repeat on every request: cookie, user agent, accept. {{< term "hpack" "HPACK" >}} compresses them with a table both sides keep per connection, so a repeated header becomes a small index. I measured it honestly: the server counts the bytes it reads. A client sends 51 sequential `GET`s over one connection, each with a 400-byte cookie plus two more headers. I took the bytes after the first request (which includes the TLS handshake) and counted the next 50:
+Headers repeat on every request: cookie, user agent, accept. {{< term "hpack" "HPACK" >}} compresses them with a table both sides keep per connection, so a repeated header becomes a small index. The server counts the bytes it reads. A client sends 51 sequential `GET`s over one connection, each with a 400-byte cookie plus two more headers. I took the bytes after the first request (which includes the TLS handshake) and counted the next 50:
 
 ```
 HTTP/2:   1953 bytes for 50 requests = 39.1 per request
@@ -85,7 +86,7 @@ It is mostly useful between internal services, for example behind a proxy that a
 - Server push: the HTTP/2 spec has it, but as far as I know browsers have removed or disabled support. I did not test it.
 - `curl --http2`: curl on this Mac is unreliable for TLS checks (see the previous post), so I did not use it.
 
-## A few things to watch
+## Assumptions to check
 
 - Check `resp.Proto` and `r.Proto` in your own services; a proxy in the middle may silently speak HTTP/1.1 to your backend.
 - One connection means one TCP stream: a lost packet stalls all requests on it.
@@ -99,4 +100,4 @@ Change the `/barrier` demo to 300 concurrent requests. How many TCP connections 
 
 ## What's next
 
-The next post is WebSocket.
+Next is "WebSocket", where the server finally gets to speak first.

@@ -3,13 +3,14 @@ date = '2027-02-08T10:00:00+03:30'
 draft = false
 title = 'Trait Object و dyn در Rust'
 description = 'Trait object و dyn در Rust: Box<dyn Trait>، dispatch ایستا و پویا، fat pointer، خطای E0038، downcast با Any و انتخاب بین enum، generics و dyn.'
+contentType = 'tutorial'
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "traits", "dyn", "intermediate"]
 cover = { image = "/images/covers/rust-trait-objects-dyn.fa.png", alt = "Trait Object و dyn در Rust", hiddenInSingle = true }
 +++
 
-در [مقاله‌ی قبل](/fa/posts/rust-nats-async-client/) Worker ِRust پیام‌های یک برنامه‌ی Go را مصرف کرد. پیش‌تر مقاله‌های gRPC با یک سؤال تمام شدند: Rust چطور چندریختی زمان اجرا را بسازد، همان چیزی که در Go با interface مجانی داریم؟ در [جنریک‌ها و trait‌ها](/fa/posts/rust-generics-traits/) dispatch ایستا را دیدیم، جایی که هر نوع مشخص نسخه‌ی خودش از کد را می‌گیرد. این مقاله نیمه‌ی دیگر است: **trait object** که به شکل `dyn Trait` نوشته می‌شود و اجازه می‌دهد یک `Vec` یا یک `HashMap` نوع‌های مختلف را نگه دارد. طرف Go ماجرا در [struct، متد و interface](/fa/posts/go-structs-methods-interfaces/) آمده است.
+یک `Vec<T>` جنریک فقط یک `T` دارد، پس `Square` و `Circle` در یک `Vec` جا نمی‌شوند. Go این را با interface مجانی حل می‌کند و مقاله‌های gRPC هم با همین سؤال تمام شدند: Rust چندریختی زمان اجرا را چطور بسازد؟ در [جنریک‌ها و trait‌ها](/fa/posts/rust-generics-traits/) dispatch ایستا را دیدیم، جایی که هر نوع مشخص نسخه‌ی خودش از کد را می‌گیرد. این مقاله، پس از [کلاینت async NATS JetStream](/fa/posts/rust-nats-async-client/)، نیمه‌ی دیگر است: **trait object** که به شکل `dyn Trait` نوشته می‌شود و اجازه می‌دهد یک `Vec` یا یک `HashMap` نوع‌های مختلف را نگه دارد. طرف Go ماجرا در [struct، متد و interface](/fa/posts/go-structs-methods-interfaces/) آمده است.
 
 > همه‌ی کدها با Rust 1.90 اجرا شدند. ادعایی درباره‌ی کارایی نمی‌کنم؛ فقط اندازه‌ها و خروجی کامپایلر را نشان می‌دهم.
 
@@ -121,7 +122,7 @@ it is a Circle, radius 1
 
 در Go مقدار interface یک جفت است: نوع و pointer به داده. ارجاع `dyn` از نظر ایده شبیه است، ولی Rust می‌خواهد `dyn` را صریح بنویسید و سازگاری با dyn را در زمان کامپایل چک می‌کند.
 
-## چند نکته
+## خطاهای رایج با dyn
 
 - در edition 2021 نام trait به‌تنهایی در جای نوع خطا است؛ `dyn Trait` بنویسید.
 - `Box<dyn Trait>` مالک مقدار روی heap است و `&dyn Trait` قرض می‌گیرد؛ هر کدام که مالکیت لازم دارید.
@@ -137,4 +138,4 @@ it is a Circle, radius 1
 
 ## قدم بعدی
 
-مقاله‌ی بعد: macroها در Rust، کدی که کد می‌نویسد، از جمله `derive` و `println!` که تا حالا استفاده می‌کردیم.
+«ماکروها در Rust»: کدی که کد می‌نویسد، از جمله همان `derive` و `println!` که تا حالا استفاده می‌کردیم.

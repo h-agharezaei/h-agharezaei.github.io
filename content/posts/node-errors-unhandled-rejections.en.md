@@ -3,13 +3,14 @@ date = '2026-12-11T10:00:00+03:30'
 draft = false
 title = 'Errors and unhandled rejections in Node.js'
 description = 'Node.js errors with real runs: Error and cause chains, try/catch limits, EventEmitter errors, unhandled rejection modes and a fatal-error handler.'
+contentType = 'tutorial'
 categories = ["Node.js"]
 series = ["Node.js"]
 tags = ["nodejs", "errors", "unhandled-rejection", "javascript", "error-handling"]
 cover = { image = "/images/covers/node-errors-unhandled-rejections.png", alt = "Errors and unhandled rejections in Node.js", hiddenInSingle = true }
 +++
 
-The previous post, [Promises and async/await in Node.js](/posts/node-promises-async-await/), ended with a rejection nobody handled. Here we look at errors properly: what an error is, where `try/catch` stops working, and what Node does with failures nobody caught. It builds on [the event loop](/posts/node-event-loop/). If you come from Go, [errors as values](/posts/go-functions-defer-errors/) is the other model, compared at the end.
+A `throw` inside a timer callback crashes the process even when the `setTimeout` call sits in a `try/catch`. Where `try/catch` stops working, and what Node does with failures nobody caught, decides whether one bug takes a server down. [Promises and async/await in Node.js](/posts/node-promises-async-await/) ended with an unhandled rejection; this post looks at errors properly, building on [the event loop](/posts/node-event-loop/). If you come from Go, [errors as values](/posts/go-functions-defer-errors/) is the other model, compared at the end.
 
 > Everything was run with Node v20.13.1. The scripts are local examples; outputs are copied from real runs, with file paths and long stack traces shortened.
 
@@ -169,7 +170,7 @@ GET /?id=bug   -> 500 {"error":"internal error","code":"E_INTERNAL"}
 
 In Go, a function returns `error` as an ordinary value and the compiler-visible `if err != nil` makes you handle it at the call site; `panic` is for exceptional bugs. JavaScript throws, so a missing handler is invisible until runtime. Wrapping exists in both: `cause` here, `%w` there.
 
-## A few things to watch
+## Errors that slip through
 
 - Throw `Error` objects (or subclasses), never strings.
 - `try/catch` does not cover callbacks and timers; it does cover `await`.
@@ -177,12 +178,10 @@ In Go, a function returns `error` as an ordinary value and the compiler-visible 
 - Global handlers log and exit non-zero; they do not recover.
 - Map errors to HTTP in one place and hide 5xx messages.
 
-Errors inside streams and `pipeline` are covered in the next post.
-
 ## Exercise
 
 Add a `TimeoutError` to `errors.js` that maps to 504, and prove with `curl` that a handler awaiting a slow call returns it.
 
 ## What's next
 
-The next post is "Streams and backpressure in Node.js".
+"Streams and backpressure in Node.js": errors inside streams and `pipeline` are covered there.

@@ -3,13 +3,14 @@ date = '2027-01-27T10:00:00+03:30'
 draft = false
 title = 'Errors in real apps: thiserror and anyhow'
 description = 'Rust thiserror and anyhow: cut error boilerplate, report errors with context chains, downcast them and map typed errors to HTTP status codes.'
+contentType = 'tutorial'
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "errors", "thiserror", "anyhow", "backend"]
 cover = { image = "/images/covers/rust-thiserror-anyhow.png", alt = "Errors in real apps: thiserror and anyhow", hiddenInSingle = true }
 +++
 
-In the [previous post](/posts/rust-database-sqlx/) the typical source of errors was the database: connection failures, missing rows, constraint violations. Back in [error handling with Result](/posts/rust-error-handling-result/) we wrote the `Display`, `Error` and `From` impls by hand. That is fine for learning, but it is a lot of boilerplate. Two crates remove it: **thiserror** for error types you define, and **anyhow** for code that only needs to report errors. Go has its own answer, sentinel errors and `%w` wrapping, covered in [config, logging and errors in Go](/posts/go-config-logging-errors/).
+Print an `anyhow` error with `{}` and you see one line; print it with `{:?}` and you get the whole `Caused by:` list. Which one lands in your logs decides whether you can later tell why a request failed. In [Databases with SQLx in Rust](/posts/rust-database-sqlx/) the typical source of errors was the database: connection failures, missing rows, constraint violations. Back in [error handling with Result](/posts/rust-error-handling-result/) we wrote the `Display`, `Error` and `From` impls by hand. That is fine for learning, but it is a lot of boilerplate. Two crates remove it: **thiserror** for error types you define, and **anyhow** for code that only needs to report errors. Go has its own answer, sentinel errors and `%w` wrapping, covered in [config, logging and errors in Go](/posts/go-config-logging-errors/).
 
 > Rust 1.90, thiserror 2.0.21, anyhow 1.0.104. Everything below was compiled and run as a local example; outputs are copied from the runs.
 
@@ -211,7 +212,7 @@ fn status_of(err: &ServiceError) -> (u16, String) {
 500 internal error   (log: dial tcp 10.0.0.5:5432: connection refused)
 ```
 
-## A few things to watch
+## Common error-reporting mistakes
 
 - Do not put `anyhow::Error` in the public API of a library. Callers cannot `match` on it, only downcast.
 - `{}` hides the causes. Log with `{:#}` or `{:?}`, or you will lose the reason.
@@ -227,4 +228,4 @@ fn status_of(err: &ServiceError) -> (u16, String) {
 
 ## What's next
 
-Next we move to the async NATS JetStream client in Rust.
+*An async NATS JetStream client in Rust* puts these errors to work: its worker uses a small `thiserror` enum to decide whether a failed message is redelivered or dropped.

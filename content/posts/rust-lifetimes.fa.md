@@ -3,13 +3,14 @@ date = '2026-12-22T10:00:00+03:30'
 draft = false
 title = 'Lifetime در Rust'
 description = 'مفهوم lifetime در Rust با کد قابل اجرا: تابع longest، خطاهای واقعی E0106 و E0597، قواعد elision، struct‌های دارای reference و معنای واقعی T: static.'
+contentType = 'tutorial'
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "lifetimes", "intermediate", "borrowing"]
 cover = { image = "/images/covers/rust-lifetimes.fa.png", alt = "Lifetime در Rust", hiddenInSingle = true }
 +++
 
-در [مقاله‌ی قبل](/fa/posts/rust-generics-traits/) کدی نوشتیم که روی نوع‌های مختلف کار می‌کند. حالا به reference‌ها برمی‌گردیم؛ موضوعی که در [Borrowing و Reference در Rust](/fa/posts/rust-borrowing-references/) دیدیم و بهتر است اول آن را بخوانید. آنجا دیدیم که reference نباید بیشتر از مقدارش عمر کند و گاهی کامپایلر یک «{{< term "lifetime" "lifetime" >}} specifier» می‌خواهد. این مقاله توضیح می‌دهد آن یعنی چه و کِی باید خودتان بنویسیدش.
+تابعی مثل `longest` که یکی از دو reference ورودی‌اش را برمی‌گرداند، کامپایل نمی‌شود: کامپایلر نمی‌داند نتیجه از `x` می‌آید یا از `y` و یک «{{< term "lifetime" "lifetime" >}} specifier» می‌خواهد. این مقاله توضیح می‌دهد آن یعنی چه و کِی باید خودتان بنویسیدش. بعد از کد جنریک [مقاله‌ی قبل](/fa/posts/rust-generics-traits/)، به موضوع [Borrowing و Reference در Rust](/fa/posts/rust-borrowing-references/) برمی‌گردیم که بهتر است اول آن را بخوانید: reference نباید بیشتر از مقدارش عمر کند.
 
 > همه‌ی کدهای زیر با Rust نسخه‌ی 1.90 کامپایل و اجرا شده‌اند و خروجی‌ها و خطاها از همان اجراها کپی شده‌اند.
 
@@ -191,7 +192,7 @@ struct Excerpt {
 
 این نسخه را با همان ترفند scope داخلی که نسخه‌ی borrow‌دار را می‌شکست اجرا کردم و `Call me Ishmael` چاپ می‌کند. هزینه‌اش یک allocation است. استفاده از reference با lifetime نوعی بهینه‌سازی است؛ وقتی دلیل دارید سراغش بروید.
 
-## چند نکته
+## خطاهای رایج با lifetime
 
 - annotation‌های lifetime رابطه را توصیف می‌کنند و هرگز عمر مقدار را بیشتر نمی‌کنند.
 - جایی که elision جواب می‌دهد چیزی ننویسید. فقط وقتی کامپایلر خواست `'a` اضافه کنید.
@@ -207,4 +208,4 @@ struct Excerpt {
 
 ## قدم بعدی
 
-مقاله‌ی بعد درباره‌ی closure و iterator در Rust است: تابع‌هایی که محیط اطرافشان را capture می‌کنند و زنجیره‌های iterator که جای بیشتر حلقه‌ها را می‌گیرند.
+«Closure و Iterator در Rust»: closure متغیرهای اطرافش را capture می‌کند و باید از همین قانون‌ها پیروی کند.

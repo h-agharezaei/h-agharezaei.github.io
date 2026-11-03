@@ -2,6 +2,7 @@
 date = '2027-05-28T10:00:00+03:30'
 draft = false
 title = 'Domain-driven design basics'
+contentType = 'tutorial'
 description = 'Domain-driven design in Go: value objects, an aggregate that guards its invariants, domain events, bounded contexts and an import-checking test.'
 categories = ["Engineering"]
 series = ["Software Engineering"]
@@ -9,7 +10,7 @@ tags = ["ddd", "domain-driven-design", "software-engineering", "go", "architectu
 cover = { image = "/images/covers/eng-ddd-basics.png", alt = "Domain-driven design basics", hiddenInSingle = true }
 +++
 
-The previous post, [Working with legacy code](/posts/eng-legacy-code/), ended at the border between old and new models. {{< term "domain-driven-design" "Domain-driven design" >}} (DDD) is largely about that border. The ideas come from Eric Evans' book "Domain-Driven Design"; Vaughn Vernon's "Implementing Domain-Driven Design" is the practical follow-up. Related: [Project layout and clean architecture in Go](/posts/go-project-layout-clean-architecture/), [Testing in Go](/posts/go-testing-basics/). Opinions are marked; the rest was run.
+In Sales, a `Customer` has an email and a credit limit; in Shipping, a name and an address. That border between models, like the old/new one in [Working with legacy code](/posts/eng-legacy-code/), is largely what {{< term "domain-driven-design" "domain-driven design" >}} (DDD) is about. The ideas come from Eric Evans' book "Domain-Driven Design"; Vaughn Vernon's "Implementing Domain-Driven Design" is the practical follow-up. Related: [Project layout and clean architecture in Go](/posts/go-project-layout-clean-architecture/), [Testing in Go](/posts/go-testing-basics/). Opinions are marked; the rest was run.
 
 > Go 1.26, `go test -race`. The demo is a local example I invented: orders in Sales, recipients in Shipping.
 
@@ -65,13 +66,13 @@ When the save fails, nothing is published. This is an in-memory fake, not a real
 
 ## Bounded contexts
 
-In Sales, `Customer` has an email and a credit limit. In Shipping, `Customer` has a name and an address. These are two types in two packages, and a translator connects them:
+The two `Customer` types live in two packages, and a translator connects them:
 
 ```go
 func FromSales(c sales.Customer, name, address string) shipping.Customer
 ```
 
-That is the {{< term "bounded-context" "bounded context" >}} idea: one model per language, with explicit translation between them. The same shape protects you from an old system, as in the [legacy code](/posts/eng-legacy-code/) post: `FromLegacy` takes an invented row with `CustNm`, `Addr1`, `Addr2` and returns a clean Shipping customer. That is an {{< term "anti-corruption-layer" "anti-corruption layer" >}}; the test logs `{ID:c2 Name:Bob Address:2 Side Rd}`.
+That is the {{< term "bounded-context" "bounded context" >}} idea: one model per language, with explicit translation between them. The same shape protects you from an old system ([legacy code](/posts/eng-legacy-code/)): `FromLegacy` takes an invented row with `CustNm`, `Addr1`, `Addr2` and returns a clean Shipping customer. That is an {{< term "anti-corruption-layer" "anti-corruption layer" >}}; the test logs `{ID:c2 Name:Bob Address:2 Side Rd}`.
 
 **In my opinion** the strategic part (contexts, language, who owns what) is the valuable part of DDD. The tactical patterns are optional. **Event storming**, a workshop where people stick events on a wall to find contexts, is the technique I know for the strategic work; I have not run one for this post.
 
@@ -86,7 +87,7 @@ Layout: `internal/sales/{domain,app,infra}` and `internal/shipping/{domain,acl}`
 
 The real output also listed `net/http/...` sub-packages; I cut them. After reverting, it passes again.
 
-## A few things to watch
+## Where DDD stops paying off
 
 - DDD is overkill for CRUD. A table with a form needs no aggregates.
 - Large aggregates cause contention; keep them small.
@@ -98,4 +99,4 @@ Take one entity in your service. List its rules, move each into a method of the 
 
 ## What's next
 
-The next post is "Monorepo or polyrepo?".
+“Monorepo or polyrepo?”: where those context packages should live.

@@ -3,13 +3,14 @@ date = '2027-04-03T10:00:00+03:30'
 draft = false
 title = 'پروسه و سیگنال'
 description = 'پروسه و سیگنال در Linux با اجرای واقعی: کد خروج 128+N، trap و پاک‌سازی، SIGKILL، zombie، گروه پروسه، SIGPIPE و خاموشی تمیز در Go.'
+contentType = 'tutorial'
 categories = ["Linux"]
 series = ["Linux"]
 tags = ["linux", "processes", "signals", "trap", "shell", "graceful-shutdown"]
 cover = { image = "/images/covers/linux-processes-signals.fa.png", alt = "پروسه و سیگنال", hiddenInSingle = true }
 +++
 
-سروری که وسط درخواست قطع می‌شود، یا اسکریپتی که فایل موقت جا می‌گذارد، معمولاً مشکل سیگنال دارد. این سومین پست سری Linux است، بعد از [سیستم فایل و مجوزها](/fa/posts/linux-filesystem-permissions/) و [پوسته‌ی کاربردی](/fa/posts/linux-shell-practical/). این بار سراغ پروسه‌ها و سیگنال‌هایشان می‌رویم.
+سروری که وسط درخواست قطع می‌شود، یا اسکریپتی که فایل موقت جا می‌گذارد، معمولاً مشکل سیگنال دارد. بعد از [سیستم فایل و مجوزها](/fa/posts/linux-filesystem-permissions/) و [پوسته‌ی کاربردی](/fa/posts/linux-shell-practical/)، نوبت پروسه‌ها و سیگنال‌هاست.
 
 > توضیح صادقانه: همه‌چیز روی **macOS** اجرا شده (Darwin، bash 3.2، Python 3.14، Go 1.26)، نه Linux. `/proc`، `strace`، cgroups و systemd را اجرا نکردم و فهرست سیگنال‌ها روی Linux ممکن است فرق کند. pidها را نشان نمی‌دهم (به‌جایش رابطه‌ها را چاپ می‌کنم).
 
@@ -112,7 +113,7 @@ exit=0
 
 کار ۲ تمام شد، کار ۳ شروع نشد و خروج ۰ بود. با `kill -KILL` همین برنامه بعد از `job 2 start` قطع شد و `137` داد. سرویس واقعی timeout هم می‌خواهد؛ [خاموشی تمیز برای workerهای Go](/fa/posts/go-graceful-shutdown-workers/) و [JetStream از Node.js](/fa/posts/node-nats-jetstream/) را ببینید. زمان‌بند کانتینر و systemd اول TERM و بعد KILL می‌فرستند. هیچ‌کدام را اجرا نکردم.
 
-## چند نکته‌ی مهم
+## جاهایی که خاموشی خراب می‌شود
 
 - اول TERM بفرستید و KILL را آخرین راه بدانید.
 - پاک‌سازی را در `trap ... EXIT` بگذارید.
@@ -125,4 +126,4 @@ exit=0
 
 ## قدم بعدی
 
-پست بعدی «/proc و مشاهده‌ی سیستم» است.
+بعدی «/proc و مشاهده‌ی سیستم» است، برای دیدن داخل پروسه‌های در حال اجرا.

@@ -3,13 +3,14 @@ date = '2027-01-11T10:00:00+03:30'
 draft = false
 title = 'async/await and Tokio in Rust'
 description = 'Rust async/await and Tokio: lazy futures, spawn, join!, select!, timeouts, cancellation, async Mutex and why blocking calls hurt, with real output.'
+contentType = 'tutorial'
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "async", "tokio", "intermediate"]
 cover = { image = "/images/covers/rust-async-tokio.png", alt = "async/await and Tokio in Rust", hiddenInSingle = true }
 +++
 
-In the [previous post](/posts/rust-concurrency-threads/) we used OS threads. Threads are fine for a handful of workers, but a server that waits on thousands of sockets does not want one thread per wait. That is what **async** is for: many tasks share a few threads and yield while they wait. As a Go developer I kept comparing it to goroutines, so I will do that at the end, carefully.
+The OS threads from the [previous post](/posts/rust-concurrency-threads/) are fine for a handful of workers, but a server that waits on thousands of sockets does not want one thread per wait. That is what **async** is for: many tasks share a few threads and yield while they wait. As a Go developer I kept comparing it to goroutines, so I will do that at the end, carefully.
 
 > Everything below was compiled and run with Rust 1.90 and `tokio` 1.54.1 (feature `full`). The timings are measured on my laptop with a 1-minute load average around 2, so read them as rough.
 
@@ -143,7 +144,7 @@ The blocking sleep froze the ticker completely; the first tick came only after i
 
 Certain facts only. Go's scheduler is part of the language runtime, so `go f()` just works; in Rust, async needs a runtime crate such as Tokio. Async functions are "colored": an `async fn` can only be awaited from async code, so the choice spreads through your call graph, while a Go function can be called from a goroutine or not without any change to its signature.
 
-## A few things to watch
+## Where async breaks
 
 - Forgetting `.await` compiles with only a warning; read warnings.
 - Cancellation happens at `.await` points, so cleanup belongs in `Drop`, not after an await.
@@ -159,4 +160,4 @@ Certain facts only. Go's scheduler is part of the language runtime, so `go f()` 
 
 ## What's next
 
-Next is Serde and JSON in Rust: serializing and deserializing structs the way we did with `encoding/json` in Go.
+Serde and JSON in Rust: the services we can now build need to exchange data, and that post covers serializing and deserializing structs the way we did with `encoding/json` in Go.

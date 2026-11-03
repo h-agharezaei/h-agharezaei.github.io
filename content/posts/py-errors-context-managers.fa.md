@@ -3,13 +3,14 @@ date = '2027-02-23T10:00:00+03:30'
 draft = false
 title = 'خطا و context manager در Python'
 description = 'خطا و context manager در Python: try/except/finally، chaining، ExceptionGroup، with، contextlib و ExitStack، همه روی Python 3.14 اجرا شده.'
+contentType = 'tutorial'
 categories = ["Python"]
 series = ["Python"]
 tags = ["python", "beginner", "exceptions", "context-managers"]
 cover = { image = "/images/covers/py-errors-context-managers.fa.png", alt = "خطا و context manager در Python", hiddenInSingle = true }
 +++
 
-در [مقاله‌ی قبل](/fa/posts/py-classes-dataclasses/) کلاس و dataclass ساختیم. حالا می‌پردازیم به این‌که وقتی چیزی خراب می‌شود چه اتفاقی می‌افتد و چطور پاک‌سازی را تضمین کنیم. Python خطا را با exception گزارش می‌کند، برخلاف [خطا به‌عنوان مقدار در Go](/fa/posts/go-functions-defer-errors/): خبری از `if err != nil` نیست و exception در پشته‌ی فراخوانی بالا می‌رود تا کسی آن را بگیرد. Node برای کد synchronous همین مدل را دارد و بخش async را در [خطا و unhandled rejection در Node.js](/fa/posts/node-errors-unhandled-rejections/) دیده‌ایم.
+Python خطا را با exception گزارش می‌کند، برخلاف [خطا به‌عنوان مقدار در Go](/fa/posts/go-functions-defer-errors/): خبری از `if err != nil` نیست و exception در پشته‌ی فراخوانی بالا می‌رود تا کسی آن را بگیرد. Node برای کد synchronous همین مدل را دارد و بخش async را در [خطا و unhandled rejection در Node.js](/fa/posts/node-errors-unhandled-rejections/) دیده‌ایم. در ادامه‌ی [کلاس و dataclass](/fa/posts/py-classes-dataclasses/): در این مسیر چه می‌شود و پاک‌سازی چطور تضمین می‌شود؟
 
 > همه‌چیز با Python 3.14.0 روی macOS اجرا شده است (`python3 --version`). دموها سه اسکریپت محلی هستند و مسیر home حذف شده است.
 
@@ -32,11 +33,11 @@ f(2): try, else, finally  -> from else
 f(0): try, except: division by zero, finally  -> from except
 ```
 
-`else` فقط وقتی اجرا می‌شود که چیزی raise نشده باشد و `finally` همیشه اجرا می‌شود، حتی بعد از `return`. اگر داخل `finally` هم `return` بگذارید، `return` قبلی را از بین می‌برد؛ برای همین Python 3.14 پیغام `SyntaxWarning: 'return' in a 'finally' block` را چاپ می‌کند. این کار را نکنید.
+`else` فقط وقتی اجرا می‌شود که چیزی raise نشده باشد و `finally` همیشه اجرا می‌شود، حتی بعد از `return`. `return` داخل `finally`، `return` قبلی را از بین می‌برد؛ برای همین Python 3.14 پیغام `SyntaxWarning: 'return' in a 'finally' block` را چاپ می‌کند.
 
 ## سلسله‌مراتب و گرفتن دقیق
 
-`FileNotFoundError.__mro__` این را چاپ کرد: `FileNotFoundError, OSError, Exception, BaseException, object`. باریک‌ترین کلاسی را بگیرید که می‌توانید مدیریت کنید؛ `except Exception` فقط در مرز برنامه و آخرین راه است و `except` خالی حتی `KeyboardInterrupt` را هم می‌گیرد. `open("/no/such/file")` خطایی داد که `errno` آن `2` و `filename` آن همان مسیر بود.
+`FileNotFoundError.__mro__` چاپ کرد: `FileNotFoundError, OSError, Exception, BaseException, object`. باریک‌ترین کلاسی را بگیرید که می‌توانید مدیریت کنید؛ `except Exception` فقط در مرز برنامه و آخرین راه است و `except` خالی حتی `KeyboardInterrupt` را هم می‌گیرد. `open("/no/such/file")` خطایی داد که `errno` آن `2` و `filename` آن همان مسیر بود.
 
 دو نوع می‌توانند یک handler مشترک داشته باشند. `except (ValueError, TypeError):` همیشه کار می‌کرد و در 3.14 شکل بدون پرانتز `except ValueError, TypeError:` هم بدون مشکل اجرا شد. نسخه‌های قدیمی‌تر را امتحان نکردم؛ تا جایی که می‌دانم قبل از 3.14 این شکل SyntaxError است.
 
@@ -64,7 +65,7 @@ class AppError(Exception):
         super().__init__(msg); self.code = code
 ```
 
-`AppError("bad", 42)` را raise کردم، با `e.add_note("while loading user 7")` یادداشت اضافه کردم، با `raise` خالی دوباره raise کردم و handler بیرونی این را دید: `42 ['while loading user 7']`. note در traceback هم زیر پیام نشان داده می‌شود.
+`AppError("bad", 42)` را raise کردم، با `e.add_note("while loading user 7")` یادداشت اضافه کردم، با `raise` خالی دوباره raise کردم و handler بیرونی دید: `42 ['while loading user 7']`. note در traceback هم زیر پیام نشان داده می‌شود.
 
 ## ExceptionGroup و except*
 
@@ -86,7 +87,7 @@ types: ['t2']
 
 ## logging و traceback
 
-`logging.exception("lookup failed")` داخل `except` این را لاگ کرد: `ERROR lookup failed` و بعد traceback کامل. به‌جای `print(e)` از آن استفاده کنید، چون `print` پشته را از دست می‌دهد.
+`logging.exception("lookup failed")` داخل `except` لاگ کرد: `ERROR lookup failed` و بعد traceback کامل. از آن به‌جای `print(e)` استفاده کنید که پشته را گم می‌کند.
 
 ## دستور with
 
@@ -120,15 +121,15 @@ def opened(name):
     finally: print("cleanup", name)
 ```
 
-raise داخل `with` این را چاپ کرد: `setup x`، `cleanup x` و بعد handler من اجرا شد. چیزهای دیگری که اجرا کردم: `contextlib.suppress(FileNotFoundError)` دور `os.remove` روی فایل ناموجود (بی‌صدا ادامه داد) و `contextlib.closing(Conn())` که `close()` را صدا زد (`conn closed`).
+raise داخل `with` چاپ کرد: `setup x`، `cleanup x` و بعد handler من اجرا شد. این‌ها را هم اجرا کردم: `contextlib.suppress(FileNotFoundError)` دور `os.remove` روی فایل ناموجود (بی‌صدا ادامه داد) و `contextlib.closing(Conn())` که `close()` را صدا زد (`conn closed`).
 
-برای تعداد متغیر منبع از `ExitStack` استفاده کنید. `r1` و `r2` و `r3` را در یک list comprehension وارد کردم و خروجی‌ها برعکس چاپ شد: `exit r3`، `exit r2`، `exit r1`. با یک فایل واقعی هم امتحان کردم: بعد از بلوک `f.closed` برابر `True` بود، حتی وقتی بدنه `OSError` داد.
+برای تعداد متغیر منبع از `ExitStack` استفاده کنید. `r1` و `r2` و `r3` را در یک list comprehension وارد کردم و خروجی‌ها برعکس چاپ شد: `exit r3`، `exit r2`، `exit r1`. با فایل واقعی هم بعد از بلوک `f.closed` برابر `True` بود، حتی وقتی بدنه `OSError` داد.
 
 ## assert اعتبارسنجی نیست
 
 `assert n > 0, "n must be positive"` در حالت عادی `AssertionError` داد. با `python3 -O` مقدار `__debug__` برابر `False` شد و همان `pay(-1)` بی‌صدا `-1` را برگرداند. پس `assert` را فقط برای invariantهای داخلی بگذارید و ورودی را با `raise ValueError` اعتبارسنجی کنید.
 
-## چند نکته‌ی مهم
+## عادت‌های بد در مدیریت خطا
 
 - exception را باریک بگیرید و هرگز با `except: pass` خفه‌اش نکنید.
 - با `raise X from e` علت را نگه دارید و با `raise` خالی بدون تغییر دوباره raise کنید.
@@ -144,4 +145,4 @@ raise داخل `with` این را چاپ کرد: `setup x`، `cleanup x` و بع
 
 ## قدم بعدی
 
-مقاله‌ی بعدی «type hint و mypy» است.
+قدم بعد: «type hint و mypy»، که بخشی از این خطاها را پیش از اجرا پیدا می‌کند.

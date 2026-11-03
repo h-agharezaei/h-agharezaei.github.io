@@ -3,13 +3,14 @@ date = '2027-03-07T10:00:00+03:30'
 draft = false
 title = 'تزریق و XSS'
 description = 'تزریق SQL، تزریق دستور، path traversal و XSS در یک دموی کوچک Go روی localhost: کد آسیب‌پذیر، رفتار واقعی و راه‌حل هرکدام.'
+contentType = 'tutorial'
 categories = ["Security"]
 series = ["Software Security"]
 tags = ["security", "injection", "xss", "sql-injection", "appsec", "go"]
 cover = { image = "/images/covers/sec-injection-xss.fa.png", alt = "تزریق و XSS", hiddenInSingle = true }
 +++
 
-مقاله‌ی قبلی، [OWASP Top 10 در کد واقعی](/fa/posts/sec-owasp-top10-in-code/)، دسته‌ها را فهرست کرد. این مقاله به خانواده‌ای می‌پردازد که پشت بیشترشان است: ورودی غیرقابل‌اعتماد که با چیزی مخلوط می‌شود که یک مفسر (interpreter) آن را می‌خواند. مفسر می‌تواند Postgres، یک shell، فایل‌سیستم یا مرورگر باشد و باگ همیشه یکی است: داده از یک {{< term "trust-boundary" "مرز اعتماد" >}} (**trust boundary**) رد می‌شود و مثل کد با آن رفتار می‌شود. موضوع باز هم همان API سفارش‌هاست از [ساخت API با net/http در Go](/fa/posts/go-http-api-stdlib/)، این بار با [pgx](/fa/posts/go-postgres-pgx-sqlc/) پشتش.
+کوئری‌ای که با `fmt.Sprintf` ساخته شود، با نام کالای `' OR '1'='1` همه‌ی ردیف‌ها را برمی‌گرداند. shell، فایل‌سیستم و مرورگر هم همین‌طورند: ورودی غیرقابل‌اعتماد که با ورودی یک مفسر (interpreter) مخلوط شود، از {{< term "trust-boundary" "مرز اعتماد" >}} (**trust boundary**) رد می‌شود و کد حساب می‌شود. [OWASP Top 10 در کد واقعی](/fa/posts/sec-owasp-top10-in-code/) این خانواده را فقط فهرست کرد؛ اینجا هرکدام روی همان API سفارش‌ها از [ساخت API با net/http در Go](/fa/posts/go-http-api-stdlib/) و [pgx](/fa/posts/go-postgres-pgx-sqlc/) دمو دارد.
 
 > فقط دفاعی. هرچه می‌بینید یک برنامه‌ی کوچک Go از خودم روی `127.0.0.1` است، روی یک PostgreSQL 18.3 واقعی با دو جدول موقت (`items` و `secrets`) و با Go 1.26. هیچ هدف شخص ثالثی در کار نیست. این برنامه ادامه‌ی دموی مقاله‌ی قبل نیست و جداست. چیزی را در مرورگر آزمایش نکردم.
 
@@ -141,7 +142,7 @@ Set-Cookie: session=demo; Path=/; HttpOnly; Secure; SameSite=Lax
 
 درباره‌ی Node چیزی اجرا نکردم. template literal (`` `<h1>${name}</h1>` ``) اصلاً escape نمی‌کند و مثل `Fprintf` رفتار می‌کند. از موتور قالبی استفاده کنید که پیش‌فرض escape می‌کند و در `pg` از پارامتر (`$1`) استفاده کنید، مثل [Postgres از Node.js با pg](/fa/posts/node-postgres-pg/) و [سرور HTTP با node:http](/fa/posts/node-http-server/).
 
-## چند نکته‌ی مهم
+## دام‌های دفاع
 
 - blocklist ("کوتیشن را حذف کن") شکست می‌خورد؛ به‌جای تمیزکردن، داده را از کد جدا کنید.
 - ورودی کاربر را هرگز در `sh -c` نگذارید؛ به‌جای اجرای برنامه از یک کتابخانه استفاده کنید.
@@ -155,4 +156,4 @@ Set-Cookie: session=demo; Path=/; HttpOnly; Secure; SameSite=Lax
 
 ## قدم بعدی
 
-مقاله‌ی بعدی ذخیره‌ی امن پسورد: argon2 و bcrypt است.
+«ذخیره‌ی امن پسورد: argon2 و bcrypt» فرض می‌کند تزریق موفق شده و کسی جدول `users` را خوانده است.

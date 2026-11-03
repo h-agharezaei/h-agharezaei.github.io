@@ -3,13 +3,14 @@ date = '2027-05-06T10:00:00+03:30'
 draft = false
 title = 'Bloom filter و consistent hashing'
 description = 'Bloom filter و consistent hashing در Go: نرخ مثبت اشتباه اندازه‌گیری‌شده، حافظه، کلیدهای جابه‌جاشده با افزودن node، توازن vnode و rendezvous.'
+contentType = 'tutorial'
 categories = ["Algorithms"]
 series = ["Algorithms"]
 tags = ["algorithms", "bloom-filter", "consistent-hashing", "hashing", "go"]
 cover = { image = "/images/covers/algo-bloom-filter-consistent-hashing.fa.png", alt = "Bloom filter و consistent hashing", hiddenInSingle = true }
 +++
 
-آخرین پست این مجموعه درباره‌ی دو ایده است که روی hash ساخته شده‌اند، همان ترفند [جدول هش از صفر](/fa/posts/algo-hash-tables/). {{< term "bloom-filter" "Bloom filter" >}} با حافظه‌ی خیلی کم جواب می‌دهد «این کلید در مجموعه هست؟» به این قیمت که گاهی اشتباه می‌گوید بله. {{< term "consistent-hashing" "Consistent hashing" >}} تعیین می‌کند کدام سرور صاحب کلید است، طوری که با اضافه‌شدن سرور کلید کمی جابه‌جا شود. پست قبلی [الگوریتم‌های رشته: KMP و Rabin–Karp](/fa/posts/algo-string-algorithms/) بود.
+رفتن از چهار node به پنج با `hash(key) % N` از ۱۰۰٬۰۰۰ کلید ۸۰٬۱۹۴ تا را جابه‌جا کرد و حلقه‌ی hash ۲۲٬۵۸۸ تا را. دو ایده‌ی این پست روی hash ساخته شده‌اند، همان ترفند [جدول هش از صفر](/fa/posts/algo-hash-tables/). {{< term "bloom-filter" "Bloom filter" >}} با حافظه‌ی خیلی کم جواب می‌دهد «این کلید در مجموعه هست؟» به این قیمت که گاهی اشتباه می‌گوید بله. {{< term "consistent-hashing" "Consistent hashing" >}} تعیین می‌کند کدام سرور صاحب کلید است، طوری که با اضافه‌شدن سرور کلید کمی جابه‌جا شود. پست قبلی [الگوریتم‌های رشته: KMP و Rabin–Karp](/fa/posts/algo-string-algorithms/) بود.
 
 > Go 1.26، مثال محلی، تست با `go test -race`. بار ماشین کم نبود، پس شمارش و بایت منتشر می‌کنم، نه زمان. hash: FNV-1a و بعد یک گام اختلاط splitmix64.
 
@@ -40,13 +41,13 @@ cover = { image = "/images/covers/algo-bloom-filter-consistent-hashing.fa.png", 
 counting: after Remove(item-5) Has(item-5) = false  Has(item-6) = true
 ```
 
-در اینجا هر خانه ۸ بیت است به‌جای ۱ بیت.
+اینجا هر خانه ۸ بیت است به‌جای ۱.
 
 کاربرد: جلوی یک جست‌وجوی کند بگذاریدش. جواب «نه» از رفتن به پایگاه داده جلوگیری می‌کند و جلوی cache penetration (کلیدهایی که هرگز وجود ندارند) را در یک cache مثل [محدودسازی نرخ و caching](/fa/posts/go-rate-limiting-caching/) می‌گیرد. گمان می‌کنم پایگاه‌های LSM-tree مثل RocksDB از Bloom filter استفاده می‌کنند تا فایل‌هایی را که کلید را ندارند نخوانند، ولی اینجا بررسی نکردم. افزونه‌ی `bloom` در Postgres را هم بررسی نکردم.
 
 ## Consistent hashing
 
-با `hash(key) % N` تغییر N تقریباً همه‌ی کلیدها را عوض می‌کند. consistent hashing نقطه‌های node ها را روی حلقه‌ای از hash های ۶۴ بیتی می‌گذارد و کلید مال نقطه‌ی بعدی در جهت ساعت است. نقطه‌ها را در یک slice مرتب نگه می‌دارم و با binary search ([جست‌وجوی دودویی و invariant](/fa/posts/algo-binary-search-invariants/)) پیدا می‌کنم و در انتها به ابتدا برمی‌گردم. هر node چند virtual node (vnode) دارد تا سهم‌ها یکنواخت شوند.
+با `hash(key) % N` تغییر N تقریباً همه‌ی کلیدها را عوض می‌کند. consistent hashing نقطه‌های nodeها را روی حلقه‌ای از hashهای ۶۴ بیتی می‌گذارد و کلید مال نقطه‌ی بعدی در جهت ساعت است. نقطه‌ها را در یک slice مرتب نگه می‌دارم و با binary search ([جست‌وجوی دودویی و invariant](/fa/posts/algo-binary-search-invariants/)) پیدا می‌کنم و در انتها به ابتدا برمی‌گردم. هر node چند virtual node (vnode) دارد تا سهم‌ها یکنواخت شوند.
 
 رفتن از ۴ به ۵ node با ۱۰۰٬۰۰۰ کلید:
 
@@ -59,7 +60,7 @@ ring: moved keys that landed on node-4: 22588
 
 mod-N حدود ۸۰٪ را جابه‌جا کرد (حالت ایده‌آل برای node پنجم ۲۰٪ است). حلقه ۲۲٫۶٪ را جابه‌جا کرد و همه‌ی کلیدهای جابه‌جاشده به node جدید رفتند؛ یک تست هم همین را بررسی می‌کند. حذف دوباره‌ی node-4 دقیقاً ۲۲٬۵۸۸ کلیدی را جابه‌جا کرد که روی آن بودند.
 
-توازن روی ۵ node، به‌صورت بیشترین بار تقسیم بر میانگین و انحراف معیار به‌صورت درصدی از میانگین:
+توازن روی ۵ node: بیشترین بار تقسیم بر میانگین و انحراف معیار به‌صورت درصدی از میانگین:
 
 ```
 ring vn=1     2.378  71.5%
@@ -89,9 +90,9 @@ func Rendezvous(nodes []string, key string) string {
 }
 ```
 
-۲۰٬۱۳۷ کلید را جابه‌جا کرد (نزدیک ۲۰٪ ایده‌آل) و بهترین توازن را داشت (۱٫۰۱۰). هزینه‌اش برای هر جست‌وجو O(تعداد node) است، نه O(log نقطه‌ها). برای ده‌ها node خوب است و برای هزاران node بدتر.
+۲۰٬۱۳۷ کلید را جابه‌جا کرد (نزدیک ۲۰٪ ایده‌آل) و بهترین توازن را داشت (۱٫۰۱۰). هزینه‌اش برای هر جست‌وجو O(تعداد node) است، نه O(log نقطه‌ها). برای ده‌ها node خوب است و برای هزاران بدتر.
 
-## چند نکته‌ی مهم
+## محدودیت‌های هر دو
 
 - Bloom filter را باید از قبل برای n اندازه کرد؛ بعد از آن خطا سریع بالا می‌رود.
 - کیفیت hash مهم است: گام اختلاط را اضافه کردم چون FNV خام روی نام‌های شبیه هم ضعیف است.

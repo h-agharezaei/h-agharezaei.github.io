@@ -3,13 +3,14 @@ date = '2027-04-05T10:00:00+03:30'
 draft = false
 title = 'پروفایل، حافظه و خاموشی تمیز در Node.js'
 description = 'پروفایل Node.js: --cpu-prof، heap snapshot، نشت حافظه و OOM واقعی، تأخیر event loop و خاموشی تمیز سرور HTTP با SIGTERM، همه با اجرای واقعی.'
+contentType = 'tutorial'
 categories = ["Node.js"]
 series = ["Node.js"]
 tags = ["nodejs", "profiling", "memory", "heap-snapshot", "graceful-shutdown"]
 cover = { image = "/images/covers/node-profiling-memory-shutdown.fa.png", alt = "پروفایل، حافظه و خاموشی تمیز در Node.js", hiddenInSingle = true }
 +++
 
-در مقاله‌ی قبل، [worker thread و cluster در Node.js](/fa/posts/node-worker-threads-cluster/)، کار را روی چند thread و پروسه پخش کردیم. قبل از اینکه بیشترش کنید، باید بدانید زمان و حافظه واقعاً کجا می‌رود و پروسه می‌تواند بدون از دست دادن درخواست‌ها متوقف شود. این همان داستان [پروفایل Go با pprof](/fa/posts/go-profiling-pprof/) و [خاموشی تمیز Workerها در Go](/fa/posts/go-graceful-shutdown-workers/) است، با زبان Node.js و روی [event loop](/fa/posts/node-event-loop/) و [سرور HTTP](/fa/posts/node-http-server/).
+cacheی که هیچ‌وقت خالی نمی‌شود heap سرور آزمایشی را با ۵۰۰۰۰ درخواست از ۳ به ۳۱ مگابایت رساند. قبل از افزودن thread و پروسه‌ی بیشتر ([worker thread و cluster در Node.js](/fa/posts/node-worker-threads-cluster/))، بدانید زمان و حافظه کجا می‌رود و آیا پروسه بدون از دست دادن درخواست متوقف می‌شود. این همان داستان [پروفایل Go با pprof](/fa/posts/go-profiling-pprof/) و [خاموشی تمیز Workerها در Go](/fa/posts/go-graceful-shutdown-workers/) است، با زبان Node.js و روی [event loop](/fa/posts/node-event-loop/) و [سرور HTTP](/fa/posts/node-http-server/).
 
 > Node نسخه‌ی v20.13.1. اسکریپت‌ها مثال محلی‌اند و خروجی‌ها واقعی. ماشین شلوغ بود، پس تعداد و اندازه می‌آورم نه زمان. heap snapshotها و پروفایل‌ها بعداً پاک شدند. DevTools و `--inspect` را نشان نمی‌دهم و اجرا نکردم.
 
@@ -94,7 +95,7 @@ client: in-flight -> slow done
 
 این دستور پخت **{{< term "graceful-shutdown" "خاموشی تمیز" >}}** است: پذیرش را ببند، بگذار کارهای در حال اجرا تمام شوند، سوکت‌های بی‌کار را ببند و یک timeout سخت نگه دار تا کلاینت گیرکرده جلوی deploy را نگیرد. در Go تابع `http.Server.Shutdown` سه کار اول را برایتان انجام می‌دهد و deadline در `context` نقش timeout را دارد.
 
-## چند نکته‌ی مهم
+## وقتی چیز اشتباهی را اندازه می‌گیرید
 
 - زیر بار واقع‌گرایانه پروفایل بگیرید و هر بار فقط یک چیز را عوض کنید.
 - heap را بعد از GC اجباری بخوانید؛ پیش از آن زباله را اندازه می‌گیرید.
@@ -108,4 +109,4 @@ client: in-flight -> slow done
 
 ## قدم بعدی
 
-مقاله‌ی بعدی «Node.js یا Go؟ هرکدام برای چه کاری» است، آخرین مقاله‌ی سری Node.js.
+«Node.js یا Go؟ هرکدام برای چه کاری» سری را با یک سرویس در هر دو زبان می‌بندد.

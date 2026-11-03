@@ -3,13 +3,14 @@ date = '2027-02-09T10:00:00+03:30'
 draft = false
 title = 'مدل‌سازی تهدید با STRIDE'
 description = 'مدل‌سازی تهدید با STRIDE روی یک API سفارش در Go: نمودار جریان داده، جدول STRIDE، سه دموی واقعی (دست‌کاری، نشت خطا، DoS) و یک الگوی آماده.'
+contentType = 'tutorial'
 categories = ["Security"]
 series = ["Software Security"]
 tags = ["security", "threat-modeling", "stride", "appsec", "go"]
 cover = { image = "/images/covers/sec-threat-modeling-stride.fa.png", alt = "مدل‌سازی تهدید با STRIDE", hiddenInSingle = true }
 +++
 
-این مقاله شروع سری Software Security است. به‌جای اینکه باگ‌ها را یکی‌یکی بعد از وقوع درست کنیم، می‌خواهم راهی برای پیدا کردنشان در همان ابتدا داشته باشیم: {{< term "threat-modeling" "مدل‌سازی تهدید" >}} (**threat modeling**). موضوع ما سرویس `orders` همین وبلاگ است: همان API از [ساخت API با net/http در Go](/fa/posts/go-http-api-stdlib/) که پشتش Postgres ([pgx و sqlc](/fa/posts/go-postgres-pgx-sqlc/)) و NATS JetStream قرار دارد.
+endpoint سفارشی که بدنه را مستقیم در struct بخواند، کتاب ۱۵۰۰ سنتی را ۱ سنت و «paid» ثبت می‌کند. {{< term "threat-modeling" "مدل‌سازی تهدید" >}} (**threat modeling**) راهی است برای پیدا کردن چنین باگ‌هایی در همان ابتدا، نه یکی‌یکی بعد از وقوع. موضوع، سرویس `orders` است: API [ساخت API با net/http در Go](/fa/posts/go-http-api-stdlib/) با Postgres ([pgx و sqlc](/fa/posts/go-postgres-pgx-sqlc/)) و NATS JetStream پشتش.
 
 > فقط دفاعی. همه‌ی دموها برنامه‌ی کوچک Go خودم روی `127.0.0.1` هستند، فقط با کتابخانه‌ی استاندارد و Go 1.26. هیچ‌چیز علیه سیستم دیگران نیست. «خطای دیتابیس» در دموی ۲ متن ساختگی است و از اجرای واقعی Postgres نیامده.
 
@@ -55,7 +56,7 @@ $ curl -s -X POST 127.0.0.1:8101/orders -d '{"sku":"book","qty":1,"price_cents":
 {"id":1,"sku":"book","qty":1,"price_cents":1,"status":"paid"}
 ```
 
-کتابی که ۱۵۰۰ سنت بود شد ۱ سنت و «paid». نسخه‌ی اصلاح‌شده در یک ورودی دوفیلدی (`sku` و `qty`) می‌خواند، قیمت را از کاتالوگ سمت سرور برمی‌دارد و status را خودش می‌گذارد:
+نسخه‌ی اصلاح‌شده در یک ورودی دوفیلدی (`sku` و `qty`) می‌خواند، قیمت را از کاتالوگ سمت سرور برمی‌دارد و status را خودش می‌گذارد:
 
 ```
 $ curl -s -X POST 127.0.0.1:8102/orders -d '{"sku":"book","qty":1,"price_cents":1,"status":"paid"}'
@@ -113,7 +114,7 @@ Top risks (L x I):
 Review date / trigger (new feature, new dependency):
 ```
 
-## چند نکته‌ی مهم
+## زنده نگه داشتن مدل
 
 - با تغییر معماری نمودار را دوباره بکشید؛ مدل کهنه بدتر از نبودن مدل است.
 - تهدید روی جریان‌ها به اندازه‌ی تهدید روی جعبه‌ها واقعی است.
@@ -126,4 +127,4 @@ Review date / trigger (new feature, new dependency):
 
 ## قدم بعدی
 
-مقاله‌ی بعدی «OWASP Top 10 در کد واقعی» است.
+«OWASP Top 10 در کد واقعی»: نام‌های رایج همین تهدیدها و شکلشان در کد Go.

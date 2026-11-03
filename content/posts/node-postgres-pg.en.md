@@ -3,13 +3,14 @@ date = '2027-02-11T10:00:00+03:30'
 draft = false
 title = 'Postgres from Node.js with pg'
 description = 'Postgres from Node.js with pg: Pool, parameters, type surprises, transactions, SQL injection, SQLSTATE errors, timeouts and shutdown, all run for real.'
+contentType = 'tutorial'
 categories = ["Node.js"]
 series = ["Node.js"]
 tags = ["nodejs", "postgres", "pg", "sql", "connection-pool"]
 cover = { image = "/images/covers/node-postgres-pg.png", alt = "Postgres from Node.js with pg", hiddenInSingle = true }
 +++
 
-In the previous post, [Project structure and config in Node.js](/posts/node-project-structure-config/), the database URL came from config. Now we use it. I connect to a real PostgreSQL with `pg` (node-postgres), and compare with [Postgres with pgx and sqlc in Go](/posts/go-postgres-pgx-sqlc/). The transaction helper mirrors [Transactions and the repository pattern in Go](/posts/go-transactions-patterns/).
+`count(*)` comes back from `pg` as a string, so `row.n + 1` gives `301`, not `31`, silently. Using the URL from [Project structure and config in Node.js](/posts/node-project-structure-config/), I connect `pg` (node-postgres) to a real PostgreSQL and compare with [Postgres with pgx and sqlc in Go](/posts/go-postgres-pgx-sqlc/) and, for transactions, [Transactions and the repository pattern in Go](/posts/go-transactions-patterns/).
 
 > Node v20.13.1, `pg` 8.23.1, `pg-cursor` 2.22.1, PostgreSQL 18.3 on loopback, the shared "shop" schema (customers, orders...) with a few rows. Local example scripts; outputs are real. No timings.
 
@@ -27,11 +28,11 @@ console.log(r.rows, r.rowCount, r.fields.map(f => f.name), r.command);
 [ { id: '1', name: 'c1' }, { id: '2', name: 'c2' } ] 2 [ 'id', 'name' ] SELECT
 ```
 
-The result has `rows`, `rowCount`, `fields` and `command`. Note `id` is the string `'1'`.
+Note `id` is the string `'1'`.
 
 ## Type surprises
 
-I selected several types in one query:
+Several types in one query:
 
 ```text
 count   string  30
@@ -42,7 +43,7 @@ int     number  7
 now()   Date
 ```
 
-`bigint`, `numeric`, `count(*)` and `sum` come back as **strings**. JavaScript numbers are doubles, so a bigger-than-2^53 value would be damaged: `9007199254740993::bigint` arrived as `'9007199254740993'`, and `Number()` of it gave `9007199254740992`. The trap is `row.n + 1`: it gave `301`, not `31`. Convert deliberately (`Number(row.n)` when you know it is small, `BigInt` or a string otherwise, or cast in SQL with `count(*)::int`). `timestamptz` becomes a `Date`, and a {{< term "jsonb" "jsonb" >}} column is parsed into a real object (`meta.tags` was `['a', 'b']`, see [JSONB and full-text search](/posts/db-jsonb-fulltext-search/)). pgx in Go scans `bigint` into `int64` directly; here the safe default is a string.
+`bigint`, `numeric`, `count(*)` and `sum` come back as **strings**. JavaScript numbers are doubles, so a bigger-than-2^53 value would be damaged: `9007199254740993::bigint` arrived as `'9007199254740993'`, and `Number()` of it gave `9007199254740992`. Convert deliberately (`Number(row.n)` when you know it is small, `BigInt` or a string otherwise, or cast in SQL with `count(*)::int`). `timestamptz` becomes a `Date`, and a {{< term "jsonb" "jsonb" >}} column is parsed into a real object (`meta.tags` was `['a', 'b']`, see [JSONB and full-text search](/posts/db-jsonb-fulltext-search/)). pgx in Go scans `bigint` into `int64` directly; here the safe default is a string.
 
 ## Pool limits
 
@@ -55,7 +56,7 @@ after release 2 2
 after idle timeout 0 0
 ```
 
-An exhausted pool does not fail at once: the query waits, and after the timeout it throws that error. Without `connectionTimeoutMillis` (default: wait forever) it hangs. A leaked client (no `release()`) looks the same. After release both clients were idle, and with `idleTimeoutMillis: 1000` they were closed.
+An exhausted pool does not fail at once: the query waits, and after the timeout it throws that error. Without `connectionTimeoutMillis` (default: wait forever) it hangs. A leaked client (no `release()`) looks the same. After release both went idle and `idleTimeoutMillis: 1000` closed them.
 
 ## Transactions with a dedicated client
 
@@ -78,7 +79,7 @@ async function withTx(fn) {
 }
 ```
 
-I committed two `paid` orders, then ran a transaction with one valid insert and one with a customer that does not exist:
+I committed two `paid` orders, then ran a transaction with one valid insert and one for a missing customer:
 
 ```text
 paid before 0
@@ -127,8 +128,6 @@ check     | code 23514 | constraint orders_status_check  -> 422 invalid
 syntax    | code 42601 -> unmapped, rethrow
 ```
 
-Unknown codes are rethrown as bugs.
-
 ## Timeouts and the pool error event
 
 With `statement_timeout: 200` the server cancels a slow query, and the connection stays usable:
@@ -154,7 +153,7 @@ For a big result, `pg-cursor` reads in batches instead of loading every row (a 2
 
 For shutdown, `pool.end()` waits for borrowed clients. I started an HTTP server whose handler ran `pg_sleep(1)`, sent a request and then `SIGTERM`. The response `42` still arrived, and the log read `closing server, then pool`, `pool ended, exiting`, exit code 0. This is the pattern from [An HTTP server with node:http](/posts/node-http-server/).
 
-## A few things to watch
+## Where pg data goes wrong
 
 - Always parameters; never concatenate values into SQL.
 - `bigint`, `numeric` and `count(*)` are strings: convert on purpose.
@@ -168,4 +167,4 @@ Write `createOrder(customerId, productId, qty)` that inserts into `orders` and `
 
 ## What's next
 
-The next post is "NATS JetStream from Node.js".
+"NATS JetStream from Node.js": after the database, messaging, the second pillar of a backend.

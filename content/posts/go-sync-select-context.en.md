@@ -3,13 +3,14 @@ date = '2026-11-26T10:00:00+03:30'
 draft = false
 title = 'sync, select and context in Go'
 description = 'Go sync, select and context: protect shared state with Mutex, RWMutex, atomic and Once, wait on channels with select and cancel work, with race output.'
+contentType = 'tutorial'
 categories = ["Go"]
 series = ["Go Fundamentals"]
 tags = ["go", "beginner", "concurrency", "context", "sync", "select"]
 cover = { image = "/images/covers/go-sync-select-context.png", alt = "sync, select and context in Go", hiddenInSingle = true }
 +++
 
-In the [previous post](/posts/go-goroutines-channels/) we started goroutines and talked to them over channels. Two questions were left open: what do we do when goroutines must share memory, and how do we tell a goroutine to stop? This post answers both with the `sync` package, `select` and `context`.
+What do we do when goroutines must share memory, and how do we tell a goroutine to stop? Without the first answer we get races; without the second, goroutines that leak. The [previous post](/posts/go-goroutines-channels/) left both questions open while starting goroutines and talking to them over channels; this one answers them with the `sync` package, `select` and `context`.
 
 > Everything below was run with Go 1.26 on macOS (arm64).
 
@@ -196,7 +197,7 @@ result: user-2 err: <nil>
 
 The channel has buffer 1 so the abandoned goroutine can still finish its send instead of leaking.
 
-## A few things to watch
+## Misusing locks and contexts
 
 - Never copy a `sync.Mutex` after first use; pass the struct by pointer.
 - Keep critical sections short, and don't hold a lock while doing slow I/O.
@@ -212,4 +213,4 @@ The channel has buffer 1 so the abandoned goroutine can still finish its send in
 
 ## What's next
 
-Next up is generics in Go: type parameters, constraints, and when they are worth using.
+"Generics in Go": after concurrency come type parameters and constraints, and when they are actually worth using.

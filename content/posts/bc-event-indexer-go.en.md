@@ -3,15 +3,16 @@ date = '2026-11-20T18:00:00+03:30'
 draft = false
 title = 'Events and building an indexer with Go and Postgres'
 description = 'Event indexer in Go and Postgres: topics and data, header blooms, batched eth_getLogs, idempotent inserts, confirmations and a real reorg on anvil.'
+contentType = 'tutorial'
 categories = ["Blockchain"]
 series = ["Blockchain"]
 tags = ["blockchain", "go", "ethereum", "postgres", "indexer"]
 cover = { image = "/images/covers/bc-event-indexer-go.png", alt = "Events and building an indexer with Go and Postgres", hiddenInSingle = true }
 +++
 
-In [Talking to Ethereum from Rust with alloy](/posts/bc-rust-alloy-client/) the client was Rust. This post goes back to Go: I copied the module from [Talking to Ethereum from Go with go-ethereum](/posts/bc-go-ethereum-client/), with its abigen bindings, and built an {{< term "indexer" "indexer" >}}.
+A node answers "what is in block 5" well and "every DEMO transfer of this address" badly; an exchange needs the second, fast, from its own database. That is the job of an {{< term "indexer" "indexer" >}}. After [the alloy post](/posts/bc-rust-alloy-client/) I went back to Go, copied the module from [the go-ethereum post](/posts/bc-go-ethereum-client/) with its abigen bindings, and built one.
 
-A node answers "what is in block 5" well and "every DEMO transfer of this address" badly; an exchange needs the second, fast, from its own database. The pieces come from earlier posts: Postgres from [Postgres with pgx and sqlc in Go](/posts/go-postgres-pgx-sqlc/), the bloom from [Bloom filters and consistent hashing](/posts/algo-bloom-filter-consistent-hashing/), and reorgs from [Forks, reorgs and the heaviest-chain rule](/posts/bc-forks-reorgs/).
+The pieces come from earlier posts: Postgres from [Postgres with pgx and sqlc in Go](/posts/go-postgres-pgx-sqlc/), the bloom from [Bloom filters and consistent hashing](/posts/algo-bloom-filter-consistent-hashing/), and reorgs from [Forks, reorgs and the heaviest-chain rule](/posts/bc-forks-reorgs/).
 
 > Go 1.27 on macOS (arm64), go-ethereum v1.17.10, pgx v5.11.0, PostgreSQL 18.3 from the `embedded-postgres` module on a free loopback port. A fresh anvil on `127.0.0.1:8545` with the deploy script from the tokens post; the addresses are anvil's public test accounts. Temp paths are written `<tmp>`.
 
@@ -140,7 +141,7 @@ $ go run ./cmd/indexer -pgdir <tmp>/pg -balances
 
 Accounts 2 and 3 are gone from both sides: their DEMO only existed on the abandoned branch.
 
-## A few things to watch
+## Where an indexer goes wrong
 
 - `eth_getLogs` by block number can race with a reorg; compare each log's block hash with the header you stored.
 - As far as I know, hosted RPC providers cap the block range or result count of `eth_getLogs`, each differently; batch, and shrink the batch on errors.
@@ -155,4 +156,4 @@ Accounts 2 and 3 are gone from both sides: their DEMO only existed on the abando
 
 ## What's next
 
-Next post: **HD wallets: BIP-32, BIP-39 and BIP-44 in Rust**.
+Next post: **HD wallets: BIP-32, BIP-39 and BIP-44 in Rust**: where the watched addresses come from.

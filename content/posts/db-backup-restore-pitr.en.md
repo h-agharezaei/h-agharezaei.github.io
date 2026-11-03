@@ -3,13 +3,14 @@ date = '2027-02-25T10:00:00+03:30'
 draft = false
 title = 'Backup, restore and PITR'
 description = 'PostgreSQL backup and restore by hand: logical copy, cold and online base backups, WAL archiving and point-in-time recovery to a named restore point.'
+contentType = 'tutorial'
 categories = ["Databases"]
 series = ["Databases"]
 tags = ["databases", "postgresql", "backup", "pitr", "wal-archiving"]
 cover = { image = "/images/covers/db-backup-restore-pitr.png", alt = "Backup, restore and PITR", hiddenInSingle = true }
 +++
 
-In [the previous post](/posts/db-replication-streaming/) a `DELETE` on the primary showed up on the replica a moment later. A replica protects you from a dead server, not from a bad statement. This post is about the thing that does: a base backup plus an archive of the {{< term "wal" "WAL" >}} from [transactions and ACID](/posts/db-transactions-acid/), which lets you replay history up to a chosen moment. That is {{< term "pitr" "point-in-time recovery" >}} (PITR).
+One `DELETE FROM orders;` with a forgotten `WHERE` removed 651 orders at once. In [Replication with two real instances](/posts/db-replication-streaming/) such a `DELETE` showed up on the replica a moment later: a replica protects you from a dead server, not from a bad statement. This post is about the thing that does: a base backup plus an archive of the {{< term "wal" "WAL" >}} from [transactions and ACID](/posts/db-transactions-acid/), which lets you replay history up to a chosen moment. That is {{< term "pitr" "point-in-time recovery" >}} (PITR).
 
 > Everything ran on a real PostgreSQL 18.3 started from the embedded binaries, with a small database (two tables, 100 customers, 500 orders, about 40 MB on disk). There are no timings. The only `pg_dump` and `pg_basebackup` on this machine are version 17.5, so I did **not** run either successfully. Where I use hand-made equivalents I say so. Temp paths below are replaced by `<archive>`.
 
@@ -125,7 +126,7 @@ Time targets are less exact than names: you need the right clock and time zone. 
 FATAL:  recovery ended before configured recovery target was reached
 ```
 
-## A few things to watch
+## What a real backup needs
 
 - A replica is not a backup: the bad `DELETE` replicates. Keep both.
 - A backup you never restored is a hope. Restore into a scratch instance on a schedule and run a real query.
@@ -139,4 +140,4 @@ Take a base backup of a database you can break. Add two restore points around a 
 
 ## What's next
 
-The next post is Connection pooling and its failure modes.
+Connection pooling and its failure modes: once we know the data can come back, the next question is reaching it at all; every query needs a connection, and connections are limited.

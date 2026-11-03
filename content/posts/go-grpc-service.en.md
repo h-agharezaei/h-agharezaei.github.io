@@ -3,13 +3,14 @@ date = '2027-02-04T10:00:00+03:30'
 draft = false
 title = 'A gRPC service in Go'
 description = 'A gRPC service in Go: proto3 contract, generated code, status codes, interceptors, deadlines, server streaming, metadata, health checks and graceful stop.'
+contentType = 'tutorial'
 categories = ["Go"]
 series = ["Go Backend"]
 tags = ["go", "backend", "grpc", "protobuf", "interceptors", "api"]
 cover = { image = "/images/covers/go-grpc-service.png", alt = "A gRPC service in Go", hiddenInSingle = true }
 +++
 
-In the [previous post](/posts/go-outbox-pattern-nats/) we made sure events leave the service reliably. Now the same `orders` service gets a second front door. We built its REST version in [the net/http post](/posts/go-http-api-stdlib/); here the operations are the same (create, get, list) but the contract is a `.proto` file and the wire is HTTP/2 with binary messages. The domain, service and in-memory store are copied unchanged, plus a `List` method. The error idea from [the config and errors post](/posts/go-config-logging-errors/) returns too: one function maps errors to codes.
+Return a plain `error` from a {{< term "grpc" "gRPC" >}} handler and the client sees `Unknown`; skip the client deadline and a call may wait forever. Those rules start to matter once the `orders` service, whose events [the outbox pattern](/posts/go-outbox-pattern-nats/) made reliable, gets a second front door. We built its REST version in [the net/http post](/posts/go-http-api-stdlib/); here the operations are the same (create, get, list) but the contract is a `.proto` file and the wire is HTTP/2 with binary messages. The domain, service and in-memory store are copied unchanged, plus a `List` method. The error idea from [the config and errors post](/posts/go-config-logging-errors/) returns too: one function maps errors to codes.
 
 > Go 1.26, macOS arm64, protoc 33.4, protoc-gen-go v1.36.11, protoc-gen-go-grpc 1.5.1, grpc-go v1.84.0. Log lines have the timestamp removed. `grpcurl` is not installed on my machine, so every call below comes from a small Go client.
 
@@ -106,7 +107,7 @@ As with HTTP, unknown errors become a fixed message and the detail goes only to 
 
 ## Interceptors
 
-An **interceptor** is {{< term "grpc" "gRPC" >}}'s middleware. A unary one wraps a handler; we need a stream twin for streaming RPCs.
+An **interceptor** is gRPC's middleware. A unary one wraps a handler; we need a stream twin for streaming RPCs.
 
 ```go
 func Recovery(ctx context.Context, req any, info *grpc.UnaryServerInfo, h grpc.UnaryHandler) (resp any, err error) {
@@ -170,7 +171,7 @@ INFO stopped
 
 The call finished normally (`NotFound`, since no order has id `slow`) instead of being cut. `Stop()` would have closed it immediately.
 
-## A few things to watch
+## Rules not to break
 
 - Never reuse or renumber fields; `reserved` them. Adding new fields is the safe change.
 - Plain proto3 scalars cannot say "unset"; use `optional` where it matters.
@@ -180,4 +181,4 @@ The call finished normally (`NotFound`, since no order has id `slow`) instead of
 
 ## What's next
 
-Next: Go and Rust talking over gRPC. The same `.proto` will generate a Rust client, to show what interop looks like in practice.
+Next is "Go and Rust talking over gRPC", because the same `.proto` also generates a Rust client, and that post shows what interop looks like in practice.

@@ -3,13 +3,14 @@ date = '2027-03-18T10:00:00+03:30'
 draft = false
 title = 'پروژه‌ی پایانی Rust: یک سرویس کامل'
 description = 'سرویس سفارش‌ها در Rust با Axum، SQLx، thiserror، tracing و NATS JetStream، همراه با graceful shutdown، تست روی Postgres واقعی و کمبودهای تا production.'
+contentType = 'tutorial'
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "capstone", "axum", "sqlx", "tracing", "nats", "thiserror", "backend"]
 cover = { image = "/images/covers/rust-capstone-service.fa.png", alt = "پروژه‌ی پایانی Rust: یک سرویس کامل", hiddenInSingle = true }
 +++
 
-[مقاله‌ی قبل](/fa/posts/rust-wasm/) درباره‌ی WebAssembly بود. این آخرین مقاله‌ی فنی سری است و چیز تازه‌ای نمی‌سازد: تکه‌های قبلی را در یک سرویس کوچک به نام `orders` به هم وصل می‌کند. API آن همان API نسخه‌ی Go در [ساخت API با net/http در Go](/fa/posts/go-http-api-stdlib/) است: `POST /orders`، `GET /orders/{id}`، `GET /orders`، `/healthz` و `/readyz`. تقسیم به ماژول‌ها از [ماژول، crate و Cargo در Rust](/fa/posts/rust-modules-crates-cargo/) می‌آید و همین ایده در Go در [ساختار پروژه و clean architecture در Go](/fa/posts/go-project-layout-clean-architecture/) آمده است.
+کاراکتر NUL در نام مشتری از validation من رد شد و Postgres نپذیرفتش: کلاینت یک ۵۰۰ کلی گرفت و لاگ علت و شناسه‌ی درخواست را. پس از [Rust و WebAssembly](/fa/posts/rust-wasm/)، این آخرین مقاله‌ی فنی سری چیز تازه‌ای نمی‌سازد: تکه‌های قبلی را در یک سرویس کوچک به نام `orders` به هم وصل می‌کند. API آن همان API نسخه‌ی Go در [ساخت API با net/http در Go](/fa/posts/go-http-api-stdlib/) است: `POST /orders`، `GET /orders/{id}`، `GET /orders`، `/healthz` و `/readyz`. تقسیم به ماژول‌ها از [ماژول، crate و Cargo در Rust](/fa/posts/rust-modules-crates-cargo/) می‌آید و همین ایده در Go در [ساختار پروژه و clean architecture در Go](/fa/posts/go-project-layout-clean-architecture/) آمده است.
 
 > Rust 1.90 با edition 2024، `axum 0.8.9`، `sqlx 0.8.6`، `async-nats 0.50.0`، `tokio 1.54.1` و `tracing-subscriber 0.3.23`. PostgreSQL 18.3 و nats-server 2.15.1 واقعی، هرکدام با یک برنامه‌ی کوچک Go (embedded، بدون Docker) در یک process جدا اجرا شدند و در پایان متوقف شدند. همه‌ی خروجی‌ها از اجرای واقعی است؛ `RUST_LOG` برابر `info` بود و زمان از لاگ‌ها حذف شده است.
 
@@ -30,7 +31,7 @@ orders-service
 └── tests/api.rs
 ```
 
-`main.rs` نازک است و بقیه‌ی کد در کتاب‌خانه (library) می‌ماند تا تست‌های پوشه‌ی `tests/` بتوانند آن را import کنند.
+`main.rs` نازک است و بقیه‌ی کد در کتاب‌خانه می‌ماند تا تست‌های پوشه‌ی `tests/` بتوانند آن را import کنند.
 
 ## کانفیگی که بلند شکست می‌خورد
 
@@ -93,7 +94,7 @@ WARN request{method=POST path=/orders request_id="req-5"}: orders_service::error
 ERROR request{method=POST path=/orders request_id="req-6"}: orders_service::error: request failed error=error returned from database: invalid byte sequence for encoding "UTF8": 0x00
 ```
 
-خطای ۵۰۰ یک شکست واقعی و پیش‌بینی‌نشده است: کاراکتر NUL در نام مشتری از validation من رد می‌شود و Postgres آن را رد می‌کند. کلاینت بدنه‌ی کلی می‌بیند و لاگ هم علت و هم شناسه را دارد. درست کردن validation یک خط است که عمداً نگذاشتم تا همین مسیر دیده شود.
+خطای ۵۰۰ همان شکست واقعیِ NUL است که اول گفتم. درست کردن validation یک خط است که عمداً نگذاشتم تا همین مسیر دیده شود.
 
 ## اول store، بعد event
 
@@ -143,7 +144,7 @@ INFO request{... request_id="req-1"}: ... finished processing request latency=30
 INFO orders_service: stopped
 ```
 
-اتصال تازه در زمان تخلیه جواب نگرفت (`000` کد curl برای «پاسخ HTTP نیامد» است)، درخواست کند با ۲۰۱ تمام شد و process با کد ۰ بسته شد. نسخه‌ی Go این ایده در [خاموش شدن تمیز workerهای Go](/fa/posts/go-graceful-shutdown-workers/) است.
+اتصال تازه هنگام تخلیه جواب نگرفت (`000` کد curl برای «پاسخ HTTP نیامد» است)، درخواست کند با ۲۰۱ تمام شد و process با کد ۰ بسته شد. نسخه‌ی Go این ایده در [خاموش شدن تمیز workerهای Go](/fa/posts/go-graceful-shutdown-workers/) است.
 
 ## تست
 
@@ -158,7 +159,7 @@ test missing_order_is_404 ... ok
 test create_then_get_then_list ... ok
 ```
 
-`cargo clippy --all-targets -- -D warnings` و `cargo fmt --check` هر دو بدون هیچ خروجی گذشتند.
+`cargo clippy --all-targets -- -D warnings` و `cargo fmt --check` هر دو بدون خروجی گذشتند.
 
 ## چه چیزی برای production کم است
 
@@ -168,7 +169,7 @@ test create_then_get_then_list ... ok
 - `sqlx::migrate!` موقع شروع اینجا کافی است، ولی با چند replica به راهبرد واقعی migration نیاز دارید.
 - متریک ندارد، و سمت JetStream (retention، replica، امنیت) در [JetStream در production](/fa/posts/nats-jetstream-production/) است.
 
-## چند نکته‌ی مهم
+## جاهایی که خطا بی‌صدا می‌ماند
 
 - منبع خطا را لاگ کنید و بدنه‌ی کلی برگردانید؛ متن خطای دیتابیس را هیچ‌وقت برای کلاینت نفرستید.
 - رد شدن extractorهای خود Axum (JSON خراب، id غیرعددی) بدنه‌ی متنی خودشان را دارد، نه `AppError`.
@@ -177,4 +178,4 @@ test create_then_get_then_list ... ok
 
 ## قدم بعدی
 
-مقاله‌ی بعد جمع‌بندی پایان سال سری Rust و ۱۴۰۵ است.
+«مرور سری Rust و جمع‌بندی سال ۱۴۰۵» سری را با نقشه‌ی همه‌ی پست‌هایش می‌بندد.

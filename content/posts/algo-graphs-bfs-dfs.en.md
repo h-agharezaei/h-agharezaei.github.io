@@ -3,13 +3,14 @@ date = '2027-03-05T10:00:00+03:30'
 draft = false
 title = 'Graphs: BFS and DFS'
 description = 'Graphs in Go: adjacency list, matrix and edge list with real byte counts, BFS shortest paths, DFS, components, cycles, grids, and O(V+E) proved by counts.'
+contentType = 'tutorial'
 categories = ["Algorithms"]
 series = ["Algorithms"]
 tags = ["algorithms", "graphs", "bfs", "dfs", "go"]
 cover = { image = "/images/covers/algo-graphs-bfs-dfs.png", alt = "Graphs: BFS and DFS", hiddenInSingle = true }
 +++
 
-In the previous post, [Tries and union-find](/posts/algo-tries-union-find/), we asked "are these two things connected?" without ever looking at the path. A {{< term "graph" "graph" >}} lets us ask the harder questions: how far, by which route, is there a loop? Traversal needs a [queue](/posts/algo-stacks-queues-deques/) or a stack, and its cost has two variables, which we measure in the [Big-O](/posts/algo-big-o-measured/) way.
+A maze is a {{< term "graph" "graph" >}}, and a plain queue finds the shortest way out. Graphs answer what [union-find](/posts/algo-tries-union-find/) from the previous post could not: how far, by which route, is there a loop? Traversal needs a [queue](/posts/algo-stacks-queues-deques/) or a stack, and its cost has two variables, measured the [Big-O](/posts/algo-big-o-measured/) way.
 
 > Go 1.26, local example, tests with `go test -race`. The machine load was above 4 when I checked, so I publish no timings, only counts and bytes.
 
@@ -43,14 +44,14 @@ for len(queue) > 0 {
 }
 ```
 
-On a small 8-vertex graph (edges 0-1 0-2 1-3 1-4 2-5 4-6 5-6 6-7):
+On an 8-vertex graph (edges 0-1 0-2 1-3 1-4 2-5 4-6 5-6 6-7):
 
 ```
 BFS dist from 0: [0 1 1 2 2 2 3 4]
 path 0 -> 7: [0 1 4 6 7]
 ```
 
-The path follows `parent` from 7 back to 0, reversed. A test compares BFS distances with Floyd-Warshall on 300 random small graphs (directed and undirected, unreachable vertices included) and the path lengths. It passes.
+The path follows `parent` from 7 back to 0, reversed. A test compares BFS distances with Floyd-Warshall on 300 random small graphs (directed and undirected, unreachable vertices included) and the path lengths, and passes.
 
 ## DFS: as deep as possible
 
@@ -62,11 +63,11 @@ DFS iterative (pushed in order)  : [0 2 5 6 7 4 1 3]
 DFS iterative (pushed reversed)  : [0 1 3 4 6 5 2 7]
 ```
 
-Pushing neighbours in order makes the stack pop the last one first, so the visit order differs. Both are valid; pushing in reverse reproduces the recursive order, checked by a test on 200 random graphs. Go grows goroutine stacks, so a test recurses 1,000,000 deep on a path graph without trouble. In Python the default limit is 1000 frames; I ran a recursive function with n=5000 there and got `RecursionError: maximum recursion depth exceeded`. In Python you would use the explicit stack.
+Pushing neighbours in order makes the stack pop the last one first, so the visit order differs. Both are valid; pushing in reverse reproduces the recursive order, checked by a test on 200 random graphs. Go grows goroutine stacks, so a test recurses 1,000,000 deep on a path graph without trouble. Python's default limit is 1000 frames; a recursive function with n=5000 there gave me `RecursionError: maximum recursion depth exceeded`, so there you would use the explicit stack.
 
 ## What the traversals give you
 
-**Components.** A traversal from every unvisited vertex labels each {{< term "connected-component" "connected component" >}}. On 9 vertices with edges 0-1 1-2 3-4 5-6 6-7 7-5 the output is `components: 4 [0 0 0 1 1 2 2 2 3]`. A test compares the labels with my own small union-find on 200 random graphs, and they agree.
+**Components.** A traversal from every unvisited vertex labels each {{< term "connected-component" "connected component" >}}. On 9 vertices with edges 0-1 1-2 3-4 5-6 6-7 7-5 the output is `components: 4 [0 0 0 1 1 2 2 2 3]`. A test compares the labels with my own small union-find on 200 random graphs; they agree.
 
 **Cycles.** In an undirected graph, meeting a visited vertex that is not the parent edge means a cycle. In a directed graph that is not enough, so DFS uses three colours: white (new), grey (on the current path), black (finished). A cycle exists exactly when an edge reaches a grey vertex.
 
@@ -116,7 +117,7 @@ I made random graphs with E=3V (seed 7), ran BFS from every unvisited vertex and
 
 Each vertex is dequeued once and each edge checked from both ends: exactly V + 2E, so O(V+E). Ten times the graph, ten times the work.
 
-## A few things to watch
+## Traversal bugs
 
 - Mark a vertex visited when you enqueue it, not when you dequeue it, or it can enter the queue many times.
 - BFS distances count edges; with weights it is wrong.
@@ -130,4 +131,4 @@ Add a topological sort: use the three-colour DFS, append each vertex when it tur
 
 ## What's next
 
-Edges with weights break BFS. The next post is "Shortest paths and Dijkstra".
+"Shortest paths and Dijkstra" follows because weighted edges break BFS distances.

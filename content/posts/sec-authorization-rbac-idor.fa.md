@@ -3,13 +3,14 @@ date = '2027-04-09T10:00:00+03:30'
 draft = false
 title = 'مجوزدهی: RBAC و IDOR'
 description = 'مجوزدهی در Go روی localhost: مجوزهای RBAC، رفع IDOR با بررسی مالکیت و 404، ارتقای نقش با mass assignment و تستی که هر route را می‌پاید.'
+contentType = 'tutorial'
 categories = ["Security"]
 series = ["Software Security"]
 tags = ["security", "authorization", "rbac", "idor", "go"]
 cover = { image = "/images/covers/sec-authorization-rbac-idor.fa.png", alt = "مجوزدهی: RBAC و IDOR", hiddenInSingle = true }
 +++
 
-مقاله‌ی قبلی، [OAuth2 و OIDC](/fa/posts/sec-oauth2-oidc/)، با توکنی تمام شد که می‌گوید فراخواننده کیست و چه scopeهایی دارد. این ورودیِ {{< term "authorization" "مجوزدهی" >}} است، نه جواب آن: سرور هنوز باید برای هر تابع و هر شیء تصمیم بگیرد این فراخواننده چه کاری می‌تواند بکند. {{< term "idor" "IDOR" >}} را کوتاه در [OWASP Top 10 در کد واقعی](/fa/posts/sec-owasp-top10-in-code/) نشان دادم؛ اینجا عمیق‌تر می‌شویم، با نقش‌ها، یک باگ mass-assignment و تستی که از هر route نگهبانی می‌کند. سبک API همان [net/http قبلی](/fa/posts/go-http-api-stdlib/) است.
+در نسخه‌ی آسیب‌پذیر این مقاله، alice که فقط viewer است `"role":"admin"` را به `PATCH /users/me` می‌فرستد و admin برمی‌گردد؛ سند bob را هم می‌خواند و پاک می‌کند. توکنش، از همان جنسی که [OAuth2 و OIDC](/fa/posts/sec-oauth2-oidc/) با آن تمام شد، می‌گوید او کیست و چه scopeهایی دارد. این ورودیِ {{< term "authorization" "مجوزدهی" >}} است، نه جواب آن: سرور هنوز باید برای هر تابع و هر شیء تصمیم بگیرد این فراخواننده چه کاری می‌تواند بکند. {{< term "idor" "IDOR" >}} را کوتاه در [OWASP Top 10 در کد واقعی](/fa/posts/sec-owasp-top10-in-code/) نشان دادم؛ اینجا عمیق‌تر می‌شویم، با نقش‌ها، یک باگ mass-assignment و تستی که از هر route نگهبانی می‌کند. سبک API همان [net/http قبلی](/fa/posts/go-http-api-stdlib/) است.
 
 > فقط دفاعی. یک برنامه‌ی کوچک Go 1.26 روی `127.0.0.1`، داده‌ی درون حافظه، کد خودم. احراز هویت به توکن‌های ثابت (`tok-alice`، `tok-bob`، `tok-carol`) ساده شده تا تمرکز روی مجوزدهی بماند. پرچم `-mode vuln|fixed` هر نسخه را می‌سازد. کاربران: alice (viewer)، bob (editor، tenant دیگر) و carol (admin). سند ۱ مال alice و سند ۲ مال bob است.
 
@@ -112,7 +113,7 @@ route را برداشتم و مجموعه‌ی تست دوباره پاس می�
 
 وقتی قاعده‌ها به ویژگی‌ها (مالک، tenant، زمان) یا روابط (عضو تیم یک پوشه) بستگی دارند، RBAC دست‌وپاگیر می‌شود. مدل‌های ABAC (مبتنی بر ویژگی) و ReBAC (مبتنی بر رابطه) این موارد را پوشش می‌دهند. فقط نامشان را می‌آورم؛ هیچ‌کدام را اجرا نکردم.
 
-## چند نکته‌ی مهم
+## چک‌لیست هر route
 
 - مجوزدهی را در سرور و برای هر تابع و هر شیء بررسی کنید. پنهان کردن دکمه بررسی نیست.
 - هویت را از توکن تأییدشده بگیرید، نه از شناسه‌ای در body یا URL.
@@ -126,4 +127,4 @@ route را برداشتم و مجموعه‌ی تست دوباره پاس می�
 
 ## قدم بعدی
 
-مقاله‌ی بعدی «CSRF، CORS و هدرهای امنیتی» است.
+«CSRF، CORS و هدرهای امنیتی» پرسش بعدی را می‌پرسد: آیا درخواست واقعاً از صفحه‌ی خود فراخواننده آمده است.

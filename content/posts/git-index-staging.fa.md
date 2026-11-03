@@ -3,13 +3,14 @@ date = '2026-10-30T10:00:00+03:30'
 draft = false
 title = 'index و staging: سه ناحیه‌ی گیت'
 description = 'index و staging در گیت با اجرای واقعی: working tree، index و HEAD، کدهای status، انواع diff، git add -p، restore، .gitignore و stash.'
+contentType = 'tutorial'
 categories = ["Git"]
 series = ["Git"]
 tags = ["git", "beginner", "staging", "index"]
 cover = { image = "/images/covers/git-index-staging.fa.png", alt = "index و staging: سه ناحیه‌ی گیت", hiddenInSingle = true }
 +++
 
-در [مقاله‌ی قبل](/fa/posts/git-how-git-thinks/) دیدیم که گیت عکس‌ها (snapshot) را به‌شکل object ذخیره می‌کند و اسمشان hash محتواست. این مقاله درباره‌ی مرحله‌ی قبل از ساخته شدن commit است، همان جایی که اکثر تازه‌واردها گیج می‌شوند: چرا اول `git add` و بعد `git commit`؟ جواب این است که گیت دو ناحیه ندارد، سه ناحیه دارد.
+درست بعد از `git add`، `git diff` ساده خالی است و یک فایل در `git status -s` می‌تواند `MM` باشد، یعنی دو نسخه‌ی متفاوت همزمان. هر دو به سؤال آشنای تازه‌واردها برمی‌گردند: چرا اول `git add` و بعد `git commit`؟ چون گیت دو ناحیه ندارد، سه ناحیه دارد، و زیرشان objectهایی است که [مقاله‌ی قبل](/fa/posts/git-how-git-thinks/) نشان داد اسمشان hash محتواست.
 
 > همه‌ی دستورهای زیر با Git نسخه‌ی 2.39.2 در repositoryهای موقت اجرا شده‌اند و خروجی‌ها از همان اجراها کپی شده‌اند.
 
@@ -115,7 +116,7 @@ $ git stash pop
 
 {{< term "stash" "stash" >}} ساده `main.go` تغییریافته را برداشت اما `scratch.txt` (untracked) را جا گذاشت. `git stash -u` هر دو را برداشت و درخت تمیز شد؛ `git stash list` یک ورودی نشان داد و `pop` همه‌چیز را برگرداند.
 
-## چند نکته‌ی مهم
+## غافلگیری‌های staging
 
 - `git commit -a` فقط برای فایل‌های tracked مرحله‌ی staging را رد می‌کند؛ فایل جدید هنوز به `git add` نیاز دارد.
 - `git add -p` فایل‌های untracked را پیشنهاد نمی‌دهد؛ آن‌ها را عادی add کنید.
@@ -131,4 +132,4 @@ $ git stash pop
 
 ## قدم بعدی
 
-در مقاله‌ی بعد: «branch، HEAD و ref: فقط اشاره‌گر».
+مقاله‌ی بعد «branch، HEAD و ref: فقط اشاره‌گر» است، درباره‌ی نام‌هایی که به commitها اشاره می‌کنند.

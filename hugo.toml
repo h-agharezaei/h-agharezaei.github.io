@@ -3,6 +3,20 @@ defaultContentLanguage = 'en'
 defaultContentLanguageInSubdir = false
 theme = 'PaperMod'
 enableRobotsTXT = true
+enableGitInfo = true
+
+# Related posts at the end of each post. The series box already lists the series,
+# so related posts lean on tags to point across series.
+[related]
+  includeNewer = true
+  threshold = 50
+  toLower = true
+  [[related.indices]]
+    name = "tags"
+    weight = 100
+  [[related.indices]]
+    name = "categories"
+    weight = 20
 
 [taxonomies]
   category = "categories"
@@ -79,6 +93,11 @@ enableRobotsTXT = true
     pageRef = "/posts"
     weight = 10
   [[languages.en.menu.main]]
+    identifier = "notes"
+    name = "Notes"
+    pageRef = "/notes"
+    weight = 15
+  [[languages.en.menu.main]]
     identifier = "projects"
     name = "Projects"
     pageRef = "/projects"
@@ -131,6 +150,11 @@ enableRobotsTXT = true
     name = "مقالات"
     pageRef = "/posts"
     weight = 10
+  [[languages.fa.menu.main]]
+    identifier = "notes"
+    name = "یادداشت‌ها"
+    pageRef = "/notes"
+    weight = 15
   [[languages.fa.menu.main]]
     identifier = "projects"
     name = "پروژه‌ها"

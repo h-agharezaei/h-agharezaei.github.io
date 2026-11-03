@@ -3,13 +3,14 @@ date = '2027-05-31T10:00:00+03:30'
 draft = false
 title = 'Logging, auditing and incident response'
 description = 'Security logging in Go: audit fields, redaction tests, log injection, a hash-chained log, detection rules with precision and recall, and a runbook.'
+contentType = 'tutorial'
 categories = ["Security"]
 series = ["Software Security"]
 tags = ["security", "logging", "audit", "incident-response", "go"]
 cover = { image = "/images/covers/sec-logging-audit-incident-response.png", alt = "Logging, auditing and incident response", hiddenInSingle = true }
 +++
 
-The previous post, [Fuzzing to find security bugs](/posts/sec-fuzzing/), looked for bugs before an attacker does. Some get through anyway, and then what matters is whether you can tell what happened. For log mechanics see [Logs and journalctl](/posts/linux-logs-journalctl/).
+A bug got past [Fuzzing to find security bugs](/posts/sec-fuzzing/) and every other check. Can your logs now say who did what to which object, and when? For log mechanics see [Logs and journalctl](/posts/linux-logs-journalctl/).
 
 > Defensive only. My own Go 1.26 code, generated events, documentation-range addresses, invented users. Local example.
 
@@ -96,7 +97,7 @@ Severity: SEV1 customer data or full outage, SEV2 partial impact, SEV3 contained
 
 Tabletop idea (invented): at 03:00 a role change appears on an account whose owner is asleep. Walk the checklist aloud; note the first step nobody knows.
 
-## A few things to watch
+## Before the incident
 
 - Log the actor and decision, never the secret.
 - Structure or escape user input.

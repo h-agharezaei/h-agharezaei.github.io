@@ -3,13 +3,14 @@ date = '2026-12-31T10:00:00+03:30'
 draft = false
 title = 'Heaps and priority queues'
 description = 'Binary heap and priority queue in Go: a generic Heap[T], heapify vs n pushes, top-K of a stream, container/heap with Fix, and a stable scheduler.'
+contentType = 'tutorial'
 categories = ["Algorithms"]
 series = ["Algorithms"]
 tags = ["algorithms", "data-structures", "go", "heap", "priority-queue"]
 cover = { image = "/images/covers/algo-heaps-priority-queues.png", alt = "Heaps and priority queues", hiddenInSingle = true }
 +++
 
-In the previous post, [Stacks, queues and deques](/posts/algo-stacks-queues-deques/), items left in the order they arrived. Often that is wrong: you want the most urgent job, the smallest distance, the biggest score. That is a {{< term "priority-queue" "priority queue" >}}, and almost always it is built on a {{< term "binary-heap" "binary heap" >}}. The heap lives in a plain slice, as in [Dynamic arrays and slices from the inside](/posts/algo-dynamic-arrays/), the container uses [Generics in Go](/posts/go-generics/), and costs are stated in {{< term "big-o" "Big-O" >}} like in [Big-O analysis with real measurements](/posts/algo-big-o-measured/).
+Keeping the 10 largest of a million numbers took 654 comparisons with a structure that never held more than 10 items; sorting everything took about 21 million. Often the order items arrived in, which is what [Stacks, queues and deques](/posts/algo-stacks-queues-deques/) gave us, is wrong: you want the most urgent job, the smallest distance, the biggest score. That is a {{< term "priority-queue" "priority queue" >}}, and almost always it is built on a {{< term "binary-heap" "binary heap" >}}. The heap lives in a plain slice, as in [Dynamic arrays and slices from the inside](/posts/algo-dynamic-arrays/), the container uses [Generics in Go](/posts/go-generics/), and costs are stated in {{< term "big-o" "Big-O" >}} like in [Big-O analysis with real measurements](/posts/algo-big-o-measured/).
 
 > Go 1.26, local example. I publish operation counts (calls to `less`), which are deterministic, and no wall-clock times.
 
@@ -123,7 +124,7 @@ after Remove(d), rest: [a b c e]
 
 Heapify, then pop n times. It is O(n log n) with no extra structure, but in my count it did more comparisons than `sort.Slice`: 3,019,536 against 1,754,793 for 100,000 numbers. I'll cover this properly in the later post "Sorting: quick, merge and heap". And Dijkstra's algorithm, in a later post, will use this heap.
 
-## A few things to watch
+## What a heap does not promise
 
 - A heap is not sorted; only the root is guaranteed.
 - Searching for an arbitrary value is O(n).
@@ -137,4 +138,4 @@ Add `Fix(i int)` to `Heap[T]` and an index map so you can update an item by key.
 
 ## What's next
 
-Binary search and invariants.
+Binary search and invariants: the invariant habit that kept this heap correct, applied where it pays off most.

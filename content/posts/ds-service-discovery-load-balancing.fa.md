@@ -3,13 +3,14 @@ date = '2027-06-01T10:00:00+03:30'
 draft = false
 title = 'service discovery و load balancing'
 description = 'service discovery و load balancing با Go: registry با TTL، پنجره‌ی ورودی کهنه، round robin در برابر power of two choices، health check و herd.'
+contentType = 'tutorial'
 categories = ["Distributed"]
 series = ["Distributed Systems"]
 tags = ["distributed-systems", "service-discovery", "load-balancing", "nats", "go"]
 cover = { image = "/images/covers/ds-service-discovery-load-balancing.fa.png", alt = "service discovery و load balancing", hiddenInSingle = true }
 +++
 
-[مقاله‌ی قبل](/fa/posts/ds-messaging-event-driven/) با سرویس‌هایی تمام شد که از طریق یک bus حرف می‌زنند. در فراخوانی مستقیم اول باید جواب داد «سرویس مقابل الان کجاست؟». این همان {{< term "service-discovery" "service discovery" >}} است. مبانی لایه‌ی ۴ و ۷ در {{< term "load-balancer" "load balancer" >}} در [مقاله‌ی قبلی](/fa/posts/net-load-balancer-l4-l7/) آمده؛ اینجا: چه کسی نشانی‌ها را می‌داند و انتخاب می‌کند.
+instanceی که بدون deregister از کار می‌افتد تا انقضای ثبتش در فهرست می‌ماند و درخواست می‌گیرد. برخلاف bus در [مقاله‌ی قبل](/fa/posts/ds-messaging-event-driven/)، فراخوانی مستقیم اول باید بپرسد «سرویس مقابل الان کجاست؟»: {{< term "service-discovery" "service discovery" >}}. مبانی لایه‌ی ۴ و ۷ در {{< term "load-balancer" "load balancer" >}} در [مقاله‌ی شبکه](/fa/posts/net-load-balancer-l4-l7/) آمده؛ اینجا: چه کسی نشانی‌ها را می‌داند و انتخاب می‌کند.
 
 > برچسب صادقانه: یک ماشین، loopback. در registry، instanceها سرورهای HTTP واقعی روی پورت تصادفی‌اند، ولی ساعت تزریق‌شده است و heartbeat را حلقه‌ی من می‌فرستد. بخش balancing و herd شبیه‌سازی seed‌دار صف‌ها هستند، نه شبکه. فقط شمارش.
 
@@ -19,7 +20,7 @@ cover = { image = "/images/covers/ds-service-discovery-load-balancing.fa.png", a
 
 ## یک registry کوچک و پنجره‌ی کهنگی
 
-`/register` و `/renew` و `/deregister` و `/list`، با انقضا که روی یک ساعت تزریق‌شده چک می‌شود تا تست‌ها قطعی باشند. سه instance هر ۲ tick تمدید می‌کنند؛ instance با نام b در tick شماره‌ی ۱۱ بدون deregister crash می‌کند. client در هر tick سه درخواست روی فهرست می‌فرستد:
+`/register` و `/renew` و `/deregister` و `/list`، با انقضا که روی یک ساعت تزریق‌شده چک می‌شود تا تست‌ها قطعی باشند. سه instance هر ۲ tick تمدید می‌کنند؛ instance b در tick ۱۱ بدون deregister crash می‌کند. client در هر tick سه درخواست روی فهرست می‌فرستد:
 
 ```
 ttl= 3 retry=false stale-ticks= 3 wasted-attempts= 3 user-visible-failures= 3
@@ -43,7 +44,7 @@ least-in-flight  max-queue=  14 avg-queue=   1.18
 power-of-two     max-queue=  19 avg-queue=   1.81
 ```
 
-random و round robin سهم برابر به سرورهای کند می‌دهند که از توان آن‌ها بیشتر است، پس صف بی‌نهایت رشد می‌کند. {{< term "power-of-two-choices" "Power of two choices" >}} دو instance نمونه می‌گیرد و صف کوتاه‌تر را برمی‌دارد: تقریباً به خوبی پرسیدن از همه، با دو عدد به‌جای N. بار کاری ساختگی است: شکل را نشان می‌دهد، نه عددهای شما را.
+random و round robin سهم برابر به سرورهای کند می‌دهند که از توان آن‌ها بیشتر است، پس صف بی‌نهایت رشد می‌کند. {{< term "power-of-two-choices" "Power of two choices" >}} دو instance نمونه می‌گیرد و صف کوتاه‌تر را برمی‌دارد: تقریباً به خوبی پرسیدن از همه، با دو عدد به‌جای N. بار کاری ساختگی است: شکل، نه عددهای شما.
 
 ## balancer کجا زندگی می‌کند
 
@@ -82,7 +83,7 @@ really down from probe 20, need 5 fails: ejected at probe 24
 
 ## herd بعد از restart شدن registry
 
-۵۰۰ instance بعد از restart شدن registry همزمان دوباره ثبت می‌شوند، شبیه‌سازی seed‌دار:
+۵۰۰ instance همزمان دوباره ثبت می‌شوند (شبیه‌سازی seed‌دار):
 
 ```
 spread= 0 ticks: peak registrations in one tick=500
@@ -92,7 +93,7 @@ spread=50 ticks: peak registrations in one tick=16
 
 این همان {{< term "thundering-herd" "thundering herd" >}} است؛ {{< term "jitter" "jitter" >}} تصادفی آن را پخش می‌کند. خود registry هم یک سیستم توزیع‌شده است: Consul و etcd و ZooKeeper طبق مستندات‌شان به سمت consistency می‌روند و Eureka به سمت availability؛ [CAP و PACELC](/fa/posts/ds-cap-pacelc/).
 
-## چند نکته‌ی مهم
+## کجا فهرست سرویس‌ها گمراه می‌کند
 
 - فهرست را راهنما بدانید: timeout و retry روی instance دیگر لازم است.
 - در graceful shutdown ثبت را پاک کنید ([graceful shutdown](/fa/posts/go-graceful-shutdown-workers/))؛ TTL crash را پوشش می‌دهد.
@@ -104,4 +105,4 @@ spread=50 ticks: peak registrations in one tick=16
 
 ## قدم بعدی
 
-مقاله‌ی بعدی «rate limit توزیع‌شده» است.
+«rate limit توزیع‌شده»: replicaها limit تک‌ماشینی را خراب می‌کنند.

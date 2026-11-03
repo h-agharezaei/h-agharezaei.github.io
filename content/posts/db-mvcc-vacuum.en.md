@@ -3,13 +3,14 @@ date = '2026-12-29T10:00:00+03:30'
 draft = false
 title = 'MVCC and VACUUM'
 description = 'PostgreSQL MVCC and VACUUM with real runs: xmin, xmax and ctid, dead tuples, table bloat, VACUUM FULL, and a long transaction that blocks cleanup.'
+contentType = 'tutorial'
 categories = ["Databases"]
 series = ["Databases"]
 tags = ["databases", "postgresql", "mvcc", "vacuum", "bloat"]
 cover = { image = "/images/covers/db-mvcc-vacuum.png", alt = "MVCC and VACUUM", hiddenInSingle = true }
 +++
 
-In the [previous post](/posts/db-isolation-levels-anomalies/) we saw what each isolation level promises. This post shows how PostgreSQL keeps that promise without making readers wait for writers: {{< term "mvcc" "MVCC" >}}, and the cost it leaves behind, which {{< term "vacuum" "VACUUM" >}} pays. It also explains why a table with 200k rows can occupy twice the disk it needs, a problem you may meet from the Go side ([transactions in Go](/posts/go-transactions-patterns/)) without knowing the cause.
+A 200k-row table went from 13 MB to 26 MB after one update of every row, and plain `VACUUM` did not shrink it: a problem you may meet from the Go side ([transactions in Go](/posts/go-transactions-patterns/)) without knowing the cause. The cause is {{< term "mvcc" "MVCC" >}}: how PostgreSQL keeps the promises of [Isolation levels and anomalies](/posts/db-isolation-levels-anomalies/) without making readers wait for writers, and the cost it leaves behind, which {{< term "vacuum" "VACUUM" >}} pays.
 
 > Everything ran on a real PostgreSQL 18.3 with the shared `shop` schema. Small demo tables had autovacuum switched off so nothing cleaned up behind my back. There are no timings. The two-session steps ran from one small Go program, so the order is fixed.
 
@@ -104,7 +105,7 @@ You rarely run VACUUM by hand: {{< term "autovacuum" "autovacuum" >}} does it. A
 
 VACUUM also sets the {{< term "visibility-map" "visibility map" >}} (the second run above: "109 pages set all-visible"), which is what lets an {{< term "index-only-scan" "index-only scan" >}} skip the heap, as in [covering indexes](/posts/db-composite-partial-covering-indexes/).
 
-## A few things to watch
+## Hidden costs of MVCC
 
 - Every update leaves a version behind; a hot table needs VACUUM to keep up.
 - Update only what changed; touching an indexed column rules out HOT.
@@ -117,4 +118,4 @@ Create a 100k-row table, update half of it, and watch `n_dead_tup`, `pg_relation
 
 ## What's next
 
-Next in the series: Locks and deadlocks in the database.
+Locks and deadlocks in the database: MVCC helps readers, but two writers on the same row still wait for each other.

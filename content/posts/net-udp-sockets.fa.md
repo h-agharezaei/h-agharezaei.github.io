@@ -3,13 +3,14 @@ date = '2027-02-03T10:00:00+03:30'
 draft = false
 title = 'UDP و تفاوتش با TCP'
 description = 'UDP در Go روی loopback: مرز datagramها، سقف اندازه، خطای ICMP، یک proxy با از دست رفتن بسته و لایه‌ی stop-and-wait برای قابل‌اعتماد شدن.'
+contentType = 'tutorial'
 categories = ["Networking"]
 series = ["Networking"]
 tags = ["networking", "udp", "sockets", "go", "datagram", "reliability"]
 cover = { image = "/images/covers/net-udp-sockets.fa.png", alt = "UDP و تفاوتش با TCP", hiddenInSingle = true }
 +++
 
-در [پست قبلی](/fa/posts/net-sockets-tcp-from-scratch/) یک سرور TCP نوشتیم و دیدیم جریان بایتی پیام ندارد. {{< term "udp" "UDP" >}} برعکس است: فقط پیام دارد و هیچ قولی نمی‌دهد. هر دو را در [پست مدل TCP/IP](/fa/posts/net-tcp-ip-model/) دیدیم و UDP را در [DNS در عمل](/fa/posts/net-dns-in-practice/) برای DNS به کار بردیم. اینجا روی رابط {{< term "loopback" "loopback" >}} سراغش می‌رویم و بعد تضمین‌های گم‌شده را خودمان می‌سازیم.
+هر read در UDP دقیقاً یک پیام برمی‌گرداند؛ اگر بافر کوچک باشد، بقیه‌اش بی‌صدا دور ریخته می‌شود. {{< term "udp" "UDP" >}} فقط پیام دارد و هیچ قولی نمی‌دهد، برعکسِ جریان TCP در [پست قبلی](/fa/posts/net-sockets-tcp-from-scratch/). هر دو را در [پست مدل TCP/IP](/fa/posts/net-tcp-ip-model/) دیدیم و UDP را در [DNS در عمل](/fa/posts/net-dns-in-practice/) برای DNS به کار بردیم. اینجا روی رابط {{< term "loopback" "loopback" >}} سراغش می‌رویم و بعد تضمین‌های گم‌شده را خودمان می‌سازیم.
 
 > همه‌چیز روی `127.0.0.1` با port تصادفی، Go 1.26 و macOS اجرا شده است. port‌های موقت در خطوط خطا با `PORT` عوض شده‌اند. Linux را اجرا نکردم و ماشین مشغول بود، پس زمان‌بندی نشان نمی‌دهم. دمو یک پوشه‌ی نمونه‌ی محلی است.
 
@@ -25,7 +26,7 @@ pc.WriteTo(buf[:n], addr)        // به همان آدرس جواب بده
 
 ## مرزها حفظ می‌شوند
 
-نتیجه‌ی TCP را یادتان هست که دو write یک read شد؟ اینجا کلاینت `hello\n` و `world\n` را با دو write می‌فرستد، سرور صبر می‌کند تا هر دو در صف باشند و بعد می‌خواند:
+اینجا کلاینت `hello\n` و `world\n` را با دو write می‌فرستد، سرور صبر می‌کند تا هر دو در صف باشند و بعد می‌خواند:
 
 ```
 ReadFrom #1: 6 bytes "hello\n"
@@ -97,9 +98,9 @@ delivered in order: alpha bravo charlie delta echo foxtrot golf hotel
 
 ## پس چرا UDP؟
 
-وقتی قواعد خودتان را می‌خواهید. DNS سؤال و جواب را در یک datagram جا می‌دهد و handshake ندارد. صدا و تصویر زنده بسته‌ی دیررسیده را ترجیحاً دور می‌اندازند تا بسته‌ی کهنه تحویل شود. QUIC، لایه‌ی انتقال زیر HTTP/3، قابل‌اعتمادی را خودش روی UDP می‌سازد؛ اینجا فقط ذکرش می‌کنم و امتحانش نکردم.
+وقتی قواعد خودتان را می‌خواهید. DNS سؤال و جواب را در یک datagram جا می‌دهد و handshake ندارد. صدا و تصویر زنده بسته‌ی دیررسیده را ترجیحاً دور می‌اندازند تا بسته‌ی کهنه تحویل شود. QUIC، لایه‌ی انتقال زیر HTTP/3، قابل‌اعتمادی را خودش روی UDP می‌سازد؛ فقط ذکرش می‌کنم و امتحانش نکردم.
 
-## چند نکته‌ی مهم
+## عادت‌های لازم برای کد UDP
 
 - یک `Write` یک datagram است و یک `Read` هم؛ بافر را به اندازه‌ی کافی بزرگ بگیرید.
 - موفق بودن `Write` چیزی درباره‌ی رسیدن نمی‌گوید.
@@ -113,4 +114,4 @@ delivered in order: alpha bravo charlie delta echo foxtrot golf hotel
 
 ## قدم بعدی
 
-پست بعدی «HTTP/1.1 با دست» است.
+بعدی «HTTP/1.1 با دست» است، جایی که HTTP روی TCP فریم‌بندی را با header حل می‌کند.

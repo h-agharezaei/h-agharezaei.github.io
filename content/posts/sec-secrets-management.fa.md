@@ -3,13 +3,14 @@ date = '2027-04-30T10:00:00+03:30'
 draft = false
 title = 'مدیریت راز و کلید'
 description = 'مدیریت راز در Go: نشت در تاریخچه‌ی git، لاگ، env و ps، اسکنر، بارگذاری fail-closed، تکرار nonce در AES-GCM و رمزنگاری پاکتی با خروجی واقعی.'
+contentType = 'tutorial'
 categories = ["Security"]
 series = ["Software Security"]
 tags = ["security", "secrets", "encryption", "key-management", "git", "go"]
 cover = { image = "/images/covers/sec-secrets-management.fa.png", alt = "مدیریت راز و کلید", hiddenInSingle = true }
 +++
 
-مقاله‌ی قبلی، [TLS و گواهی x509 در عمل](/fa/posts/sec-tls-x509-certificates/)، با «کلید را از مخزن دور نگه دارید» تمام شد. این مقاله درباره‌ی این است که رازها با این حال چطور فرار می‌کنند و چطور باید آن‌ها را بارگذاری و استفاده کرد. روی [پیکربندی، لاگ ساخت‌یافته و خطا در Go](/fa/posts/go-config-logging-errors/) بنا شده است؛ ذخیره‌ی رمز عبور مقاله‌ی جدا دارد، [ذخیره‌ی امن رمز عبور](/fa/posts/sec-password-hashing/)، و کلید امضا در [سشن یا JWT؟](/fa/posts/sec-sessions-vs-jwt/) آمده است.
+یک `config.env` را commit کنید، در commit بعدی پاکش کنید، و `git show HEAD~1:config.env` هنوز پسورد را چاپ می‌کند: working tree تمیز است، تاریخچه نه. [TLS و گواهی x509 در عمل](/fa/posts/sec-tls-x509-certificates/) با «کلید را از مخزن دور نگه دارید» تمام شد؛ این مقاله درباره‌ی این است که رازها با این حال چطور فرار می‌کنند و چطور باید آن‌ها را بارگذاری و استفاده کرد. روی [پیکربندی، لاگ ساخت‌یافته و خطا در Go](/fa/posts/go-config-logging-errors/) بنا شده است؛ ذخیره‌ی رمز عبور مقاله‌ی جدا دارد، [ذخیره‌ی امن رمز عبور](/fa/posts/sec-password-hashing/)، و کلید امضا در [سشن یا JWT؟](/fa/posts/sec-sessions-vs-jwt/) آمده است.
 
 > فقط دفاعی. همه‌ی رازهای زیر آشکارا جعلی‌اند و همه‌چیز محلی با Go 1.26 و git اجرا شد. gitleaks، trufflehog، `git filter-repo`، Vault و KMS ابری را اجرا نکردم و فقط توضیح داده شده‌اند. مسیرها به `<tmp>` کوتاه شده‌اند.
 
@@ -125,7 +126,7 @@ wrong record id (AAD): cipher: message authentication failed
 
 شناسه‌ی رکورد به‌عنوان داده‌ی اضافه از جابه‌جایی متن رمزشده بین ردیف‌ها جلوگیری می‌کند. رازها را با `subtle.ConstantTimeCompare` ({{< term "constant-time-comparison" "مقایسه‌ی زمان‌ثابت" >}}) مقایسه کنید. پاک کردن حافظه در Go قابل اتکا نیست (garbage collector ممکن است مقدارها را کپی کند)، پس قولش را نمی‌دهم.
 
-## چند نکته‌ی مهم
+## مهار آسیب
 
 - بعد از نشت اول بچرخانید؛ حذف commit کافی نیست.
 - هرگز برای راز مقدار پیش‌فرض نگذارید؛ هنگام شروع شکست بخورید.
@@ -139,4 +140,4 @@ wrong record id (AAD): cipher: message authentication failed
 
 ## قدم بعدی
 
-مقاله‌ی بعدی «زنجیره‌ی تأمین و آسیب‌پذیری وابستگی‌ها» است.
+«زنجیره‌ی تأمین و آسیب‌پذیری وابستگی‌ها» از اعتبارنامه‌های خودتان به کدی می‌رسد که خودتان ننوشته‌اید.

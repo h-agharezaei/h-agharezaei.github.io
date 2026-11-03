@@ -4,13 +4,14 @@ draft = false
 title = 'Idempotency and the meaning of exactly-once in JetStream'
 seoTitle = 'JetStream Idempotency and Exactly-Once'
 description = 'What exactly-once really means in NATS JetStream: publish dedup with Nats-Msg-Id and its time window, plus idempotent consumers, with real runs.'
+contentType = 'engineering'
 categories = ["Go"]
 series = ["NATS JetStream"]
 tags = ["go", "nats", "jetstream", "messaging", "idempotency", "exactly-once"]
 cover = { image = "/images/covers/nats-jetstream-idempotency.png", alt = "Idempotency and the meaning of exactly-once in JetStream", hiddenInSingle = true }
 +++
 
-The [previous post](/posts/nats-jetstream-scaling-lag/) ended with an uncomfortable fact: when a worker dies without acking, the message is redelivered, so a job can run twice. People often answer this with "just use exactly-once". In this post I try to find out what that phrase can honestly mean, by testing the pieces JetStream gives us: deduplication at publish time, acks, and an {{< term "idempotency" "idempotent" >}} handler.
+When a worker dies without acking, the message is redelivered, so a job can run twice; the [previous post](/posts/nats-jetstream-scaling-lag/) ended on that uncomfortable fact. People often answer it with "just use exactly-once". Here I test what that phrase can honestly mean, using the pieces JetStream gives us: deduplication at publish time, acks, and an {{< term "idempotency" "idempotent" >}} handler.
 
 > Everything below ran against an embedded `nats-server` v2.15.1 and `nats.go` v1.54.0 on Go 1.26. The outputs are from those runs.
 
@@ -95,7 +96,7 @@ From what I saw, it is a combination, not a switch:
 
 The effect on your data is exactly-once; the delivery is not. I did not test any other JetStream feature that claims to go further, so I am not making claims about them.
 
-## A few things to watch
+## Where duplicates still slip through
 
 - Pick the business ID from the data (order ID), not from the message sequence: stream sequences differ for producer retries, as order A showed.
 - Keep the duplicate window longer than your longest realistic retry period, and remember it costs memory proportional to the number of IDs in it.
@@ -105,4 +106,4 @@ The effect on your data is exactly-once; the delivery is not. I did not test any
 
 ## What's next
 
-Redelivery during a deploy is the most common way to hit all of this. The next post, `go-graceful-shutdown-workers`, covers graceful shutdown for Go workers: context, signals, `Drain`, and finishing in-flight work.
+Redelivery during a deploy is the most common way to hit all of this, which is why Graceful shutdown for Go workers comes next: context, signals, `Drain`, and finishing in-flight work.

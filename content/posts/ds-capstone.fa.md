@@ -3,13 +3,14 @@ date = '2027-06-12T10:00:00+03:30'
 draft = false
 title = 'پروژه‌ی پایانی توزیع‌شده'
 description = 'پروژه‌ی پایانی سیستم توزیع‌شده: یک pipeline سفارش با retry، breaker، saga و رویداد، با invariant checker روی ۲۰۰ campaign تزریق خطا.'
+contentType = 'engineering'
 categories = ["Distributed"]
 series = ["Distributed Systems"]
 tags = ["distributed-systems", "capstone", "fault-injection", "saga", "go", "simulation"]
 cover = { image = "/images/covers/ds-capstone.fa.png", alt = "پروژه‌ی پایانی توزیع‌شده", hiddenInSingle = true }
 +++
 
-[مقاله‌ی قبل](/fa/posts/ds-case-studies/) دو طراحی را مرور کرد. حالا کل سری در یک pipeline سفارش جمع می‌شود و من با {{< term "fault-injection" "تزریق خطا" >}} و checkerی شبیه [Raft](/fa/posts/ds-consensus-raft/) می‌کوشم خرابش کنم.
+در ۲۰۰ campaign {{< term "fault-injection" "تزریق خطا" >}} با ۱۰۰۰۰ سفارش، invariant checker من هیچ نقضی پیدا نکرد. این فقط وقتی ارزش دارد که checker بتواند شکست بخورد، پس هر مکانیزم را هم به‌نوبت خاموش می‌کنم. کل سری، تا [مقاله‌ی قبل](/fa/posts/ds-case-studies/)، در یک pipeline سفارش جمع می‌شود و checker به سبک [Raft](/fa/posts/ds-consensus-raft/) است.
 
 > برچسب صادقانه: Go 1.26 روی یک Mac. campaign با ۲۰۰ seed یک **شبیه‌سازی** است (event loop تک‌thread، ساعت مجازی، شبکه و bus شبیه‌سازی‌شده، همه seed دار، فقط شمارش). یک **اجرای زنده**‌ی جدا هم HTTP واقعی روی loopback و nats-server توکار واقعی دارد. topology ثابت، بدون registry، یک ماشین.
 
@@ -67,11 +68,11 @@ SLI counts over the campaign (no timings):
   attempts that hit the blackholed service=2696, worst retry wave (retries within 25 ms) in any seed=8
 ```
 
-صفر نقض. کلیدها ۱۵۱۷ تکرار پرداخت و ۲۴۹۹ تکرار API را جذب کردند، projection ۵۷۷۷ تکراری را، و ۲۷۱۴ سفارش بعد از crash ادامه یافتند.
+کلیدها ۱۵۱۷ تکرار پرداخت و ۲۴۹۹ تکرار API را جذب کردند، projection ۵۷۷۷ تکراری را، و ۲۷۱۴ سفارش بعد از crash ادامه یافتند.
 
 ## برداشتن مکانیزم‌ها
 
-checkerی که هیچ‌وقت هشدار نمی‌دهد شاید کور باشد، پس هر مکانیزم را به‌نوبت خاموش می‌کنم:
+هر مکانیزم، به‌نوبت خاموش:
 
 ```
 mechanism removed       broken    bad      attempts  blackhole wave  first failing seed per invariant: I:seed(count)
@@ -168,16 +169,12 @@ live run, seed 7: payment service = real HTTP server on loopback behind a fault-
 
 مقاله‌ی Raft، کتاب «Designing Data-Intensive Applications» از Martin Kleppmann، تحلیل‌های Jepsen، «Distributed systems for fun and profit» و کتاب Google SRE. فقط نامشان را می‌آورم، نقل نمی‌کنم.
 
-## چند نکته‌ی مهم
+## حدود این نتیجه
 
 - سقف‌های دیگر برای I6 و I7 جدول دیگری می‌دهد.
 - صفر نقض در ۲۰۰ seed شاهد است، نه اثبات.
 - انبار و ارسال داخل process هستند؛ bus لاگ تمام‌شده را بازپخش می‌کند.
 - اجرای زنده فقط یک seed است.
-
-## تمرین
-
-shipping درخواست را اجرا کند و بعد جوابش را خراب کند. با کلید روشن، invariantی می‌شکند؟ با خاموش؟
 
 ## قدم بعدی
 

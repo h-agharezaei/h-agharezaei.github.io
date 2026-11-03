@@ -3,13 +3,14 @@ date = '2027-04-30T10:00:00+03:30'
 draft = false
 title = 'Managing secrets and keys'
 description = 'Managing secrets in Go: leaks in git history, logs, env and ps, a scanner, fail-closed loading, AES-GCM nonce reuse and envelope encryption.'
+contentType = 'tutorial'
 categories = ["Security"]
 series = ["Software Security"]
 tags = ["security", "secrets", "encryption", "key-management", "git", "go"]
 cover = { image = "/images/covers/sec-secrets-management.png", alt = "Managing secrets and keys", hiddenInSingle = true }
 +++
 
-The previous post, [TLS and x509 certificates in practice](/posts/sec-tls-x509-certificates/), ended with "keep keys out of repositories". This post is about how secrets escape anyway and how to load and use them. It builds on [Config, structured logging and errors in Go](/posts/go-config-logging-errors/); password storage has its own post, [Storing passwords safely](/posts/sec-password-hashing/), and signing keys come up in [Sessions or JWT?](/posts/sec-sessions-vs-jwt/).
+Commit a `config.env`, delete it in the next commit, and `git show HEAD~1:config.env` still prints the password: the working tree is clean, the history is not. [TLS and x509 certificates in practice](/posts/sec-tls-x509-certificates/) ended with "keep keys out of repositories"; this post is about how secrets escape anyway and how to load and use them. It builds on [Config, structured logging and errors in Go](/posts/go-config-logging-errors/); password storage has its own post, [Storing passwords safely](/posts/sec-password-hashing/), and signing keys come up in [Sessions or JWT?](/posts/sec-sessions-vs-jwt/).
 
 > Defensive only. Every secret below is an obvious FAKE, and everything ran locally with Go 1.26 and git. I did not run gitleaks, trufflehog, `git filter-repo`, Vault or a cloud KMS; they are only described. Paths are shortened to `<tmp>`.
 
@@ -125,7 +126,7 @@ wrong record id (AAD): cipher: message authentication failed
 
 The record id as additional data stops ciphertext swapping between rows. Compare secrets with `subtle.ConstantTimeCompare` ({{< term "constant-time-comparison" "constant-time comparison" >}}). Wiping memory in Go is unreliable (the garbage collector may copy values), so I do not promise it.
 
-## A few things to watch
+## Damage control
 
 - After a leak rotate first; deleting a commit is not enough.
 - Never default a secret; fail at startup.
@@ -139,4 +140,4 @@ Add a `--history` flag to the scanner that prints the commit of each finding and
 
 ## What's next
 
-The next post is The supply chain and vulnerable dependencies.
+“The supply chain and vulnerable dependencies” turns from your own credentials to the code you did not write.

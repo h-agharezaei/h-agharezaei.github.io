@@ -3,13 +3,14 @@ date = '2027-02-26T10:00:00+03:30'
 draft = false
 title = 'Futures, Pin and async internals in Rust'
 description = 'Rust async internals: the Future trait, wakers, a hand-written block_on and join, state machine sizes, why Pin exists and cancellation by drop.'
+contentType = 'tutorial'
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "async", "pin", "future", "advanced"]
 cover = { image = "/images/covers/rust-pin-future-internals.png", alt = "Futures, Pin and async internals in Rust", hiddenInSingle = true }
 +++
 
-The [previous post](/posts/rust-performance-criterion/) was about measuring. This one opens the box under [async/await and Tokio](/posts/rust-async-tokio/): what is a future, who calls it, and why does `Pin` show up in every signature? We will build the pieces ourselves with only the standard library, then run the same code under Tokio at the end.
+A Rust future does nothing until someone polls it. So who polls it, and why does `Pin` show up in every signature? After [measuring with Criterion](/posts/rust-performance-criterion/), we open the box under [async/await and Tokio](/posts/rust-async-tokio/). We will build the pieces ourselves with only the standard library, then run the same code under Tokio at the end.
 
 > Everything was compiled and run with Rust 1.90, edition 2024. Output and compiler messages are copied from those runs.
 
@@ -22,7 +23,7 @@ pub trait Future {
 }
 ```
 
-`poll` returns `Poll::Ready(value)` or `Poll::Pending`. A future does nothing until someone polls it. If it returns `Pending`, it must arrange for the **waker** inside `cx` to be called when progress is possible. Here is a future I wrote by hand: it says `Pending` N times, waking itself each time.
+`poll` returns `Poll::Ready(value)` or `Poll::Pending`. If it returns `Pending`, it must arrange for the **waker** inside `cx` to be called when progress is possible. Here is a future I wrote by hand: it says `Pending` N times, waking itself each time.
 
 ```rust
 pub struct CountdownFuture { pub name: &'static str, pub remaining: u32 }
@@ -157,7 +158,7 @@ after scope
 
 My `CountdownFuture` runs unchanged under `tokio::runtime::Builder::new_current_thread().build()?.block_on(...)`, with identical output to my executor (`start`, two pendings, `got a`, `result = 42`). Tokio adds timers, IO and multi-thread scheduling, but the contract is the same `poll` and `Waker`.
 
-## A few things to watch
+## Rules of the Future contract
 
 - Returning `Pending` without arranging a wake-up means the task sleeps forever.
 - Never poll a future again after `Ready`; `async` blocks panic with "resumed after completion".
@@ -170,4 +171,4 @@ Write `yield_now()`: a future that returns `Pending` once (calling `wake_by_ref`
 
 ## What's next
 
-Next is observability in Rust with `tracing`: structured logs and spans for async code.
+*Observability in Rust with tracing*: structured logs and spans to see what happened to one request among interleaved tasks.

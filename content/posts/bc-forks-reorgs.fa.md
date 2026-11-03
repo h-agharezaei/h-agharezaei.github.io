@@ -3,13 +3,14 @@ date = '2026-11-10T18:00:00+03:30'
 draft = false
 title = 'Fork، reorg و قاعده‌ی زنجیره‌ی سنگین‌تر'
 description = 'fork و reorg در Go: درخت بلاک، انتخاب زنجیره با chainwork، برگرداندن UTXO با داده‌ی undo و یک double spend بعد از partition شبکه روی loopback.'
+contentType = 'tutorial'
 categories = ["Blockchain"]
 series = ["Blockchain"]
 tags = ["blockchain", "go", "reorg", "fork-choice", "bitcoin"]
 cover = { image = "/images/covers/bc-forks-reorgs.fa.png", alt = "Fork، reorg و قاعده‌ی زنجیره‌ی سنگین‌تر", hiddenInSingle = true }
 +++
 
-در [پست قبلی](/fa/posts/bc-p2p-gossip/) نودها بلاک gossip می‌کردند، ولی بلاک رقیب tip فقط لاگ می‌شد. دو ماینر ممکن است در یک ارتفاع بلاک پیدا کنند، و یک {{< term "network-partition" "partition شبکه" >}} می‌تواند بگذارد دو گروه مدتی تاریخچه‌ی جدا بسازند. به زبان [CAP و PACELC درست](/fa/posts/ds-cap-pacelc/)، proof of work دسترس‌پذیری را انتخاب می‌کند: هر دو طرف بلاک می‌سازند و تاریخچه‌ی طرف بازنده بعداً برگردانده می‌شود.
+دو ماینر ممکن است در یک ارتفاع بلاک پیدا کنند، و یک {{< term "network-partition" "partition شبکه" >}} می‌تواند بگذارد دو گروه مدتی تاریخچه‌ی جدا بسازند. نودهای [پست قبلی](/fa/posts/bc-p2p-gossip/) بلاک رقیب tip را فقط لاگ می‌کردند. به زبان [CAP و PACELC درست](/fa/posts/ds-cap-pacelc/)، proof of work دسترس‌پذیری را انتخاب می‌کند: هر دو طرف بلاک می‌سازند و تاریخچه‌ی طرف بازنده بعداً برگردانده می‌شود.
 
 در [Proof of Work، difficulty و mining](/fa/posts/bc-proof-of-work-mining/) هر بلاک فیلد `Bits` گرفت و زنجیره جمع کار را نگه داشت؛ حالا همین جمع شاخه‌ی برنده را تعیین می‌کند.
 
@@ -123,7 +124,7 @@ D: tip 3 000f3bde1876, bob 0, mallory 150, pending 0
 
 در proof of work هیچ بلاکی قطعی نیست؛ فقط با انباشته شدن کار روی آن، جایگزین کردنش سخت‌تر می‌شود. این {{< term "probabilistic-finality" "finality احتمالی" >}} است. whitepaper بیت‌کوین نشان می‌دهد مهاجمی با کمتر از نصف توان hash به‌طور نمایی عقب می‌افتد، پس هر {{< term "confirmation" "confirmation" >}} ریسک را کم می‌کند. شش confirmation یک قرارداد رایج برای بیت‌کوین است؛ صرافی‌ها عدد خودشان را برای هر زنجیره و مبلغ تعیین می‌کنند. Bob دید چرا یکی کافی نیست.
 
-## چند نکته‌ی مهم
+## دام‌های reorg
 
 - با chainwork انتخاب کنید، هرگز با ارتفاع.
 - header شاخه‌ی فرعی را فوراً چک کنید و تراکنش‌هایش را هنگام فعال شدن؛ شکست‌ها را علامت بزنید تا فرزندانشان رد شوند.

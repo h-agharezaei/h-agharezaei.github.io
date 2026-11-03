@@ -3,13 +3,14 @@ date = '2026-11-21T18:00:00+03:30'
 draft = false
 title = 'HD wallets: BIP-32, BIP-39 and BIP-44 in Rust'
 description = 'HD wallets in Rust: BIP-39 words to seed, BIP-32 checked against test vectors, BIP-44 Ethereum addresses, watch-only xpub servers and the xpub leak.'
+contentType = 'tutorial'
 categories = ["Blockchain"]
 series = ["Blockchain"]
 tags = ["blockchain", "rust", "hd-wallet", "bip32", "bip39", "ethereum"]
 cover = { image = "/images/covers/bc-hd-wallets-rust.png", alt = "HD wallets: BIP-32, BIP-39 and BIP-44 in Rust", hiddenInSingle = true }
 +++
 
-The previous post, [Events and building an indexer with Go and Postgres](/posts/bc-event-indexer-go/), watched the chain for transfers to known addresses. But where do they come from? In [Keys, ECDSA signatures and addresses on secp256k1](/posts/bc-keys-ecdsa-addresses/) one random key gave one address. An exchange needs an address per user; a random key each means a backup that grows with every signup and a server full of private keys.
+An exchange needs a deposit address per user, like those [the indexer](/posts/bc-event-indexer-go/) watched. One random key per address, as in [the keys post](/posts/bc-keys-ecdsa-addresses/), means a backup that grows with every signup and a server full of private keys.
 
 An {{< term "hd-wallet" "HD wallet" >}} fixes both: one seed, a tree of keys computed from it, and a public half that creates addresses without any private key. It also fits the hot/cold split from [the Binance hack post](/posts/binance-hack-hot-wallet-2026/).
 
@@ -111,7 +112,7 @@ The shape I would use for exchange deposits:
 
 Never hand out an xpub whose normal children are also signed with online; separate them with hardened accounts.
 
-## A few things to watch
+## How keys leak or get lost
 
 - The mnemonic is every private key at once: no logs, screenshots or cloud notes.
 - An xpub reveals every address (privacy) and, with one leaked child key, the parent key.
@@ -127,4 +128,4 @@ Never hand out an xpub whose normal children are also signed with online; separa
 
 ## What's next
 
-Next post: **AMMs and the constant-product formula**.
+Next post: **AMMs and the constant-product formula**, where the series moves to DeFi.

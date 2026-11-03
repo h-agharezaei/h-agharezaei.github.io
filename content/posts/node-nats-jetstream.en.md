@@ -3,13 +3,14 @@ date = '2027-02-27T10:00:00+03:30'
 draft = false
 title = 'NATS JetStream from Node.js'
 description = 'NATS JetStream from Node.js: publish with msgID, durable pull consumers, ack, nak, term, backoff, graceful drain and Go interop, all run for real.'
+contentType = 'tutorial'
 categories = ["Node.js"]
 series = ["Node.js"]
 tags = ["nodejs", "nats", "jetstream", "messaging", "graceful-shutdown"]
 cover = { image = "/images/covers/node-nats-jetstream.png", alt = "NATS JetStream from Node.js", hiddenInSingle = true }
 +++
 
-In the previous post, [Postgres from Node.js with pg](/posts/node-postgres-pg/), we talked to a database. Now the second pillar of a backend: messaging. I use {{< term "jetstream" "JetStream" >}} from Node.js and compare with [A Simple Publisher and Worker with NATS JetStream in Go](/posts/nats-jetstream-go/). The ideas are those of [Retry and Dead-Letter Queues](/posts/nats-jetstream-retry-dlq/), [Idempotency](/posts/nats-jetstream-idempotency/), [Graceful shutdown for Go workers](/posts/go-graceful-shutdown-workers/) and [An async NATS JetStream client in Rust](/posts/rust-nats-async-client/); only the client changes.
+Publish the same message twice with the same `msgID` and {{< term "jetstream" "JetStream" >}} stores it once; skip one ack and the message comes back. Messaging is the second pillar of a backend after the database from [Postgres from Node.js with pg](/posts/node-postgres-pg/). I use JetStream from Node.js and compare with [A Simple Publisher and Worker with NATS JetStream in Go](/posts/nats-jetstream-go/). The ideas are those of [Retry and Dead-Letter Queues](/posts/nats-jetstream-retry-dlq/), [Idempotency](/posts/nats-jetstream-idempotency/), [Graceful shutdown for Go workers](/posts/go-graceful-shutdown-workers/) and [An async NATS JetStream client in Rust](/posts/rust-nats-async-client/); only the client changes.
 
 > Node v20.13.1, `nats` 2.29.3 (its `package.json` asks for Node >= 14). The server is a tiny Go program with an embedded nats-server, run as a separate process on 127.0.0.1. Local example scripts, real outputs, no timings.
 
@@ -103,7 +104,7 @@ The wire format is just bytes plus headers, so the languages do not matter.
 
 Facts I am sure of: nats.go has `js.Publish` and `PullSubscribe` with `Fetch`, and acks are methods on the message (`Ack`, `Nak`, `Term`), as here. In Node everything returns promises and `consume()` is an async iterator; the config keys use the server's snake_case (`max_deliver`, `ack_wait`) and durations are nanoseconds, so use the `nanos()` helper.
 
-## A few things to watch
+## How messages loop or vanish
 
 - Always set a bounded `max_deliver` and a `backoff`; otherwise a broken message loops.
 - `m.ack()` is fire-and-forget; `await m.ackAck()` confirms the server got it.
@@ -117,4 +118,4 @@ Write a handler that publishes a message to `orders.dlq` once `m.info.deliveryCo
 
 ## What's next
 
-The next post is "Input validation with Zod".
+"Input validation with Zod": a payload that arrives from a stream is still untrusted input, and that post deals with it.

@@ -3,13 +3,14 @@ date = '2027-04-22T10:00:00+03:30'
 draft = false
 title = 'Building an API with FastAPI and Pydantic'
 description = 'FastAPI and Pydantic v2: validated parameters and 422 errors, request models, response_model, Depends, sync vs async handlers, lifespan and SIGTERM.'
+contentType = 'tutorial'
 categories = ["Python"]
 series = ["Python"]
 tags = ["python", "fastapi", "pydantic", "api", "validation"]
 cover = { image = "/images/covers/py-fastapi-pydantic.png", alt = "Building an API with FastAPI and Pydantic", hiddenInSingle = true }
 +++
 
-In the [previous post](/posts/py-asyncio/) we learned the event loop; now `async def` handlers run on it. FastAPI builds on {{< term "pydantic" "Pydantic" >}} and reads your {{< term "type-hint" "type hints" >}} ([type hints and mypy](/posts/py-type-hints-mypy/)) to validate input, shape output and generate docs. If you know Zod ([input validation with Zod](/posts/node-validation-zod/)), the model is familiar.
+Send `/items/abc` to an endpoint that expects an integer ID and FastAPI answers with a 422 that says where and why, without running your function at all. That validation comes from your types, and the `async def` handlers run on the event loop from [the previous post](/posts/py-asyncio/). FastAPI builds on {{< term "pydantic" "Pydantic" >}} and reads your {{< term "type-hint" "type hints" >}} ([type hints and mypy](/posts/py-type-hints-mypy/)) to validate input, shape output and generate docs. If you know Zod ([input validation with Zod](/posts/node-validation-zod/)), the model is familiar.
 
 > Python 3.14.0, fastapi 0.162.0, uvicorn 0.54.0, httpx 0.28.1, Pydantic 2.14.1 (so v2), email-validator 2.3.0, in a throwaway `uv` venv. Server on `127.0.0.1`, random port. Demo scripts are local examples. I publish orders and counts, no timings.
 
@@ -115,7 +116,7 @@ A `lifespan` async context manager prints `startup` before `yield` and `shutdown
 
 Zod validates at runtime from a schema you write separately; Pydantic derives validation from type annotations on a class. Go has no built-in struct validation: you check fields by hand or add a library. With `net/http` ([an API with net/http](/posts/go-http-api-stdlib/)) you decode and validate yourself; FastAPI does both from the signature.
 
-## A few things to watch
+## Before real use
 
 - Keep input and output models separate, or a secret field leaks.
 - Pick `def` or `async def` deliberately.
@@ -128,4 +129,4 @@ Add `PATCH /users/{id}` with an optional-field model, a `Depends` that loads the
 
 ## What's next
 
-The next post is "SQLAlchemy and Postgres".
+Next: "SQLAlchemy and Postgres", because this API still has no database.

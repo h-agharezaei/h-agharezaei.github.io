@@ -2,6 +2,7 @@
 date = '2027-06-02T10:00:00+03:30'
 draft = false
 title = 'monorepo یا polyrepo؟'
+contentType = 'engineering'
 description = 'monorepo یا polyrepo در Go: یک تغییر چندبخشی به دو روش، CI فقط برای ماژول‌های اثرپذیر، CODEOWNERS، clone جزئی و ماتریس تصمیم با نظر شخصی.'
 categories = ["Engineering"]
 series = ["Software Engineering"]
@@ -9,7 +10,7 @@ tags = ["monorepo", "polyrepo", "go-workspaces", "ci", "git", "software-engineer
 cover = { image = "/images/covers/eng-monorepo-vs-polyrepo.fa.png", alt = "monorepo یا polyrepo؟", hiddenInSingle = true }
 +++
 
-پست قبلی، [مبانی DDD](/fa/posts/eng-ddd-basics/)، مرزها را درون یک سیستم کشید. سؤال بعدی این است که کدِ پشت این مرزها کجا زندگی کند. در {{< term "monorepo" "monorepo" >}} چند سرویس در یک مخزن‌اند و در {{< term "polyrepo" "polyrepo" >}} هر سرویس مخزن خودش را دارد. مرتبط: [پکیج‌ها و ماژول‌ها](/fa/posts/go-packages-modules/)، [طراحی pipeline برای CI/CD](/fa/posts/eng-ci-cd-pipeline-design/)، [feature flag و trunk-based development](/fa/posts/eng-feature-flags-trunk-based/)، [شاخه‌ها، HEAD و ref‌ها](/fa/posts/git-branches-head-refs/).
+`Format(cents)` را در یک بسته‌ی مشترک به `Format(cents, cur)` تغییر دهید. در {{< term "monorepo" "monorepo" >}} (چند سرویس در یک مخزن) این یک commit است؛ در {{< term "polyrepo" "polyrepo" >}} (هر سرویس یک مخزن) سه pull request، یک tag و بازه‌ای که دو سرویس پول را متفاوت قالب‌بندی می‌کنند. [مبانی DDD](/fa/posts/eng-ddd-basics/) مرزها را درون سیستم کشید؛ پرسش اینجا جای کدِ پشت آن‌هاست. مرتبط: [پکیج‌ها و ماژول‌ها](/fa/posts/go-packages-modules/)، [طراحی pipeline برای CI/CD](/fa/posts/eng-ci-cd-pipeline-design/)، [feature flag و trunk-based development](/fa/posts/eng-feature-flags-trunk-based/)، [شاخه‌ها، HEAD و ref‌ها](/fa/posts/git-branches-head-refs/).
 
 یک سیستم اسباب‌بازی (`orders`، `payments` و `shared` با تابع `Format`) را یک بار در یک مخزن و یک بار در سه مخزن ساختم؛ مخزن‌ها محلی و دورریختنی‌اند (Go 1.26، Git 2.39). **عددها شمارش و بایت‌اند، نه زمان.** نظرها برچسب دارند.
 
@@ -54,11 +55,11 @@ diff 3: shared/money.go     run tests for: ['orders', 'payments', 'shared']
 diff 4: docs/README.md      run tests for: (nothing)
 ```
 
-ابزارهایی مثل Bazel، Nx، Turborepo، Pants و Buck2 برای این کار هستند؛ از آن‌ها استفاده نکردم و ادعایی ندارم.
+ابزارهایی مثل Bazel، Nx، Turborepo، Pants و Buck2 برای این کار هستند؛ استفاده‌شان نکردم و ادعایی ندارم.
 
 ## ۳. مالکیت و دسترسی
 
-فایل {{< term "codeowners" "CODEOWNERS" >}} مسیرها را به تیم‌ها نگاشت می‌کند. matcher کوچک ۱۱ خطی من (آخرین الگوی منطبق برنده است) این را داد: `payments/payments.go -> @team-payments @team-security` و `orders/README.md -> @team-docs`. تا آنجا که می‌دانم GitHub دسترسی خواندن per-directory ندارد، پس «فقط تیم X بخواند» طبیعتاً per-repo است. آزمایشش نکردم؛ مستندات میزبانتان را ببینید.
+فایل {{< term "codeowners" "CODEOWNERS" >}} مسیرها را به تیم‌ها نگاشت می‌کند. خروجی matcher ۱۱ خطی من (آخرین الگوی منطبق برنده است): `payments/payments.go -> @team-payments @team-security` و `orders/README.md -> @team-docs`. تا آنجا که می‌دانم GitHub دسترسی خواندن per-directory ندارد، پس «فقط تیم X بخواند» طبیعتاً per-repo است. آزمایشش نکردم؛ مستندات میزبانتان را ببینید.
 
 ## ۴. مقیاس
 
@@ -87,17 +88,13 @@ monorepo می‌تواند یک نسخه برای همه داشته باشد: س
 
 راه میانه‌ی من: یک مخزن برای هر حوزه‌ی محصول و کتابخانه‌های واقعاً مشترک در مخزن‌های جدا و نسخه‌دار.
 
-## چند نکته‌ی مهم
+## دام‌های هر دو طرف
 
 - `go.work` برای کار محلی است؛ release باید همچنان نسخه‌ی واقعی بگیرد.
 - در ریشه‌ی workspace دستور `go test ./...` شکست می‌خورد («directory prefix . does not contain modules»)؛ پوشه‌ی ماژول‌ها را نام ببرید.
 - پوشه‌ی «shared» که همه ویرایشش می‌کنند نقطه‌ی coupling می‌شود؛ مالک بگذارید.
 - pin کردن drift را پنهان می‌کند؛ bump زمان‌بندی کنید.
 
-## تمرین
-
-ماژول چهارم `reports` را اضافه کنید که به `shared` وابسته است و `affected.py` را طوری گسترش دهید که تغییر در `shared` آن را هم انتخاب کند. بعد فقط `reports/` را عوض کنید و ببینید تنها خودش اجرا می‌شود.
-
 ## قدم بعدی
 
-پست بعدی «برآورد و برنامه‌ریزی» است.
+«برآورد و برنامه‌ریزی»: تغییر polyrepo بالا سه PR پشت‌سرهم خواست؛ برآوردها سر همین وابستگی‌ها خراب می‌شوند.

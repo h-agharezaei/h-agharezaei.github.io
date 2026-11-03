@@ -3,13 +3,14 @@ date = '2026-12-03T18:00:00+03:30'
 draft = false
 title = 'Blockchain capstone with Go and Rust'
 description = 'Blockchain capstone with Go and Rust: a Rust signer holds the HD seed and enforces a policy; the Go exchange backend never sees a private key.'
+contentType = 'engineering'
 categories = ["Blockchain"]
 series = ["Blockchain"]
 tags = ["blockchain", "go", "rust", "ethereum", "exchange", "security"]
 cover = { image = "/images/covers/bc-capstone.png", alt = "Blockchain capstone with Go and Rust", hiddenInSingle = true }
 +++
 
-In the previous post, [Exchange engineering: deposits, withdrawals, confirmations and reorgs](/posts/bc-exchange-deposits-withdrawals/), the Go backend scanned deposits, kept the ledger and signed withdrawals with a key compiled into the binary. Whoever ran code there could sign anything.
+Whoever runs code inside the Go backend of [Exchange engineering: deposits, withdrawals, confirmations and reorgs](/posts/bc-exchange-deposits-withdrawals/) can sign anything: it scans deposits, keeps the ledger and signs withdrawals with a key compiled into the binary.
 
 This last post moves {{< term "key-custody" "key custody" >}} into its own process. A small Rust **signer** holds the seed from [HD wallets: BIP-32, BIP-39 and BIP-44 in Rust](/posts/bc-hd-wallets-rust/); the BC31 backend asks it for addresses and signatures and holds no private key. It is the advice of [the Binance hack post](/posts/binance-hack-hot-wallet-2026/) as running code.
 
@@ -139,18 +140,12 @@ The rescan credited nothing twice, the {{< term "idempotency-key" "idempotency k
 
 As far as I know, and with no product in mind: the key in an {{< term "hsm" "HSM" >}} or split with {{< term "mpc" "MPC" >}}, not in process memory; authenticated transport; human approvals above a threshold, verified by the signer; the audit log shipped off the machine; destination allowlists and delays.
 
-## A few things to watch
+## Signer design rules
 
 - The limit that matters is the signer's; the backend's checks are for users, not attackers.
 - Never offer "sign these bytes". The signer builds the transaction.
 - Policy state must survive restarts.
 - The caller verifies the answer too.
-
-## Exercise
-
-1. Add `sign_sweep(index)`, which can only send to the hot wallet.
-2. Let Go derive deposit addresses from an exported xpub and compare with the signer.
-3. Require an approver's signature above 50 DEMO.
 
 ## The course in one table
 

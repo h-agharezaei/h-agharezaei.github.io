@@ -2,6 +2,7 @@
 date = '2027-06-02T10:00:00+03:30'
 draft = false
 title = 'Monorepo or polyrepo?'
+contentType = 'engineering'
 description = 'Monorepo or polyrepo in Go: one cross-cutting change done both ways, affected-module CI, CODEOWNERS, sparse and partial clones, and a decision matrix.'
 categories = ["Engineering"]
 series = ["Software Engineering"]
@@ -9,7 +10,7 @@ tags = ["monorepo", "polyrepo", "go-workspaces", "ci", "git", "software-engineer
 cover = { image = "/images/covers/eng-monorepo-vs-polyrepo.png", alt = "Monorepo or polyrepo?", hiddenInSingle = true }
 +++
 
-The previous post, [Domain-driven design basics](/posts/eng-ddd-basics/), drew boundaries inside a system. The next question is where the code behind those boundaries lives. A {{< term "monorepo" "monorepo" >}} keeps several services in one repository; a {{< term "polyrepo" "polyrepo" >}} gives each its own. Related: [Packages and modules](/posts/go-packages-modules/), [Designing a CI/CD pipeline](/posts/eng-ci-cd-pipeline-design/), [Feature flags and trunk-based development](/posts/eng-feature-flags-trunk-based/), [Branches, HEAD and refs](/posts/git-branches-head-refs/).
+Change `Format(cents)` to `Format(cents, cur)` in a shared package. In a {{< term "monorepo" "monorepo" >}} (several services, one repository) that is one commit; in a {{< term "polyrepo" "polyrepo" >}} (one repository each) it is three pull requests, one tag, and a window where two services format money differently. [Domain-driven design basics](/posts/eng-ddd-basics/) drew boundaries inside a system; the question here is where the code behind them lives. Related: [Packages and modules](/posts/go-packages-modules/), [Designing a CI/CD pipeline](/posts/eng-ci-cd-pipeline-design/), [Feature flags and trunk-based development](/posts/eng-feature-flags-trunk-based/), [Branches, HEAD and refs](/posts/git-branches-head-refs/).
 
 I built the same toy system twice: `orders`, `payments` and `shared` (a `Format` function), as one repo and as three. Throwaway local repos (Go 1.26, Git 2.39). **Numbers are counts and bytes, never timings.** Opinions are labelled.
 
@@ -87,17 +88,13 @@ A monorepo can use one version for everything: simple, but upgrades move togethe
 
 My middle path: one repo per product area, and truly shared libraries as separate versioned repos.
 
-## A few things to watch
+## Traps on both sides
 
 - `go.work` is for local work; releases must still use real versions.
 - At a workspace root `go test ./...` fails ("directory prefix . does not contain modules"); name the module directories.
 - A "shared" folder that everyone edits becomes the coupling point; have owners.
 - Pinning hides drift: schedule bumps.
 
-## Exercise
-
-Add a fourth module `reports` that depends on `shared` and extend `affected.py` so a change to `shared` also selects it. Then change `reports/` only and confirm that it runs alone.
-
 ## What's next
 
-The next post is "Estimation and planning".
+“Estimation and planning”: the polyrepo change above needed three PRs in sequence, and dependencies like that are where estimates go wrong.

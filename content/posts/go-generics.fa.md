@@ -3,13 +3,14 @@ date = '2026-11-30T10:00:00+03:30'
 draft = false
 title = 'Generics در Go'
 description = 'type parameter، constraint، تابع و type جنریک، type inference و پکیج‌های slices و maps و cmp؛ با خروجی واقعی کامپایلر و توصیه‌ی صادقانه برای استفاده.'
+contentType = 'tutorial'
 categories = ["Go"]
 series = ["Go Fundamentals"]
 tags = ["go", "beginner", "generics", "slices", "maps"]
 cover = { image = "/images/covers/go-generics.fa.png", alt = "Generics در Go", hiddenInSingle = true }
 +++
 
-در [مقاله‌ی قبل](/fa/posts/go-sync-select-context/) با goroutine، channel و context کار کردیم. این مقاله درباره‌ی **generics** است که از Go 1.18 آمده. با آن می‌شود یک تابع یا type نوشت که برای چند type کار کند و کامپایلر باز هم همه‌چیز را چک کند. می‌بینیم چه مشکلی را حل می‌کند، سینتکس constraint چیست، چند تابع و container جنریک می‌نویسیم، سراغ پکیج‌های استاندارد می‌رویم و در آخر می‌گوییم کِی نباید سراغش رفت.
+بدون generics، `Min` برای int و `Min` برای float دو کپی از یک منطق‌اند، و `any` با type assertion هم type safety را از بین می‌برد. **generics**، که از Go 1.18 آمده، این را حل می‌کند: یک تابع یا type که برای چند type کار کند و کامپایلر باز هم همه‌چیز را چک کند. بعد از [sync، select و context](/fa/posts/go-sync-select-context/)، اینجا می‌بینیم سینتکس constraint چیست، چند تابع و container جنریک می‌نویسیم، سراغ پکیج‌های استاندارد می‌رویم و در آخر می‌گوییم کِی نباید سراغش رفت.
 
 > همه‌ی مثال‌ها را با Go 1.26 روی macOS (arm64) اجرا کرده‌ام.
 
@@ -170,7 +171,7 @@ badconstraint/main.go:18:17: User does not satisfy cmp.Ordered (User missing in 
 
 خطا در زمان کامپایل است و همین هدف اصلی است.
 
-## چند نکته‌ی احتیاط
+## چه زمانی سراغ generics نروید
 
 - از کد concrete شروع کنید. اول تابع را برای یک type بنویسید؛ وقتی کاربرد دوم واقعاً آمد جنریکش کنید.
 - اگر فقط رفتار مهم است، معمولاً interface ساده‌تر است. `io.Reader` به type parameter نیازی ندارد.
@@ -186,4 +187,4 @@ badconstraint/main.go:18:17: User does not satisfy cmp.Ordered (User missing in 
 
 ## قدم بعدی
 
-در مقاله‌ی بعد سراغ تست در Go می‌رویم: table-driven test با پکیج `testing`، subtest و benchmark.
+«تست در Go: table-driven و benchmark»: تابع‌های جنریک و کمکی‌ای که نوشتیم به تست نیاز دارند، و آن پست table-driven test، subtest و benchmark را با پکیج `testing` نشان می‌دهد.

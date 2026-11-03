@@ -3,13 +3,14 @@ date = '2026-12-05T10:00:00+03:30'
 draft = false
 title = 'Composite, partial and covering indexes'
 description = 'Composite, partial and covering indexes in PostgreSQL 18: column order, INCLUDE and Index Only Scan, expression indexes, with real EXPLAIN plans.'
+contentType = 'tutorial'
 categories = ["Databases"]
 series = ["Databases"]
 tags = ["databases", "postgresql", "indexes", "explain", "performance"]
 cover = { image = "/images/covers/db-composite-partial-covering-indexes.png", alt = "Composite, partial and covering indexes", hiddenInSingle = true }
 +++
 
-In the [previous post](/posts/db-indexes-btree-explain/) we added single-column indexes and read their plans with `EXPLAIN ANALYZE`. Real queries rarely filter on one column. Next tools: a {{< term "composite-index" "composite index" >}}, a {{< term "partial-index" "partial index" >}}, a {{< term "covering-index" "covering index" >}} and an {{< term "expression-index" "expression index" >}}.
+Two indexes on the same columns in different order: one reads 6 pages, the other 25. Single-column indexes from [B-tree indexes and EXPLAIN ANALYZE](/posts/db-indexes-btree-explain/) are not enough. Next tools: a {{< term "composite-index" "composite index" >}}, a {{< term "partial-index" "partial index" >}}, a {{< term "covering-index" "covering index" >}} and an {{< term "expression-index" "expression index" >}}.
 
 > Everything ran on a real PostgreSQL 18.3 with the shared shop schema (200k orders, 20k customers). Plans come from `EXPLAIN (ANALYZE, BUFFERS, TIMING OFF, SUMMARY OFF)`, trimmed to the lines that matter. I show buffer counts, not milliseconds, because they do not depend on the machine.
 
@@ -75,13 +76,13 @@ without INCLUDE: Bitmap Heap Scan        Buffers: 763 pages
 with INCLUDE:    Index Only Scan         Heap Fetches: 0     Buffers: 9 pages
 ```
 
-Now the classic trap. I updated 20% of the orders and did not vacuum:
+The classic trap: I updated 20% of the orders and did not vacuum:
 
 ```text
 Index Only Scan ...   Heap Fetches: 1200   Buffers: shared hit=1213
 ```
 
-Same node, but 1213 pages. The index cannot tell whether a row is visible to us; the {{< term "visibility-map" "visibility map" >}} says which heap pages are all-visible, and the update cleared those bits. After `VACUUM orders` (see {{< term "vacuum" "VACUUM" >}}) it was `Heap Fetches: 0` and 14 pages. So an Index Only Scan on a frequently updated table depends on vacuum keeping up. Selecting `status`, which is not in the index, turned it back into a Bitmap Heap Scan.
+The index cannot tell whether a row is visible to us; the {{< term "visibility-map" "visibility map" >}} says which heap pages are all-visible, and the update cleared those bits. After `VACUUM orders` (see {{< term "vacuum" "VACUUM" >}}) it was `Heap Fetches: 0` and 14 pages. So an Index Only Scan on a frequently updated table depends on vacuum keeping up. Selecting `status`, which is not in the index, turned it back into a Bitmap Heap Scan.
 
 ## Expression index and non-sargable conditions
 
@@ -108,9 +109,9 @@ One composite `(customer_id, status)` returned the same rows with 23 index buffe
 
 ## Every index has a price
 
-Sizes from `pg_stat_user_indexes` at the end: `orders_pkey` 8792 kB, `orders_cust_status` 2016 kB, `orders_cust_idx` 1856 kB, `orders_status_idx` 1368 kB. Each is written on every insert and update. `orders_cust_idx` is now redundant, since `(customer_id, status)` serves `customer_id` queries too.
+Final sizes from `pg_stat_user_indexes`: `orders_pkey` 8792 kB, `orders_cust_status` 2016 kB, `orders_cust_idx` 1856 kB, `orders_status_idx` 1368 kB. Each is written on every insert and update. `orders_cust_idx` is now redundant, since `(customer_id, status)` serves `customer_id` queries too.
 
-## A few things to watch
+## Rules and traps for multi-column indexes
 
 - Equality columns first, range column last; put the `ORDER BY` column right after the equality ones.
 - A partial index is tiny, but only queries whose `WHERE` implies its predicate can use it.
@@ -124,4 +125,4 @@ Take your slowest query with two filters. Create both column orders, compare `Bu
 
 ## What's next
 
-Sometimes the right index exists and PostgreSQL still ignores it. Next: "The planner and statistics: why an index is not used".
+The planner and statistics: why an index is not used: sometimes the right index exists and PostgreSQL still ignores it.

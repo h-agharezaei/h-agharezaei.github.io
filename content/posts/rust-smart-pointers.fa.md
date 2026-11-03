@@ -3,13 +3,14 @@ date = '2026-12-30T10:00:00+03:30'
 draft = false
 title = 'Smart Pointerها: Box، Rc و RefCell در Rust'
 description = 'Smart pointerها در Rust در عمل: Box برای داده‌ی heap و نوع‌های بازگشتی، Deref و Drop، مالکیت مشترک با Rc، تغییرپذیری درونی با RefCell و شکستن چرخه با Weak.'
+contentType = 'tutorial'
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "smart-pointers", "box", "rc", "refcell", "intermediate"]
 cover = { image = "/images/covers/rust-smart-pointers.fa.png", alt = "Smart Pointerها: Box، Rc و RefCell در Rust", hiddenInSingle = true }
 +++
 
-در [مقاله‌ی قبل](/fa/posts/rust-closures-iterators/) یک `Box<dyn Fn>` برگرداندیم و قول دادیم توضیحش بدهیم. **Smart pointer** ساختاری است که مثل pointer رفتار می‌کند، ولی مالک داده هم هست و وقتی از بین می‌رود کدی اجرا می‌کند. یکی‌اش را از قبل می‌شناسید: `String` و `Vec` مالک حافظه‌ی heap هستند. این مقاله سه تا از پرکاربردترین‌ها را پوشش می‌دهد: `Box`، `Rc` و `RefCell`. روی [ownership](/fa/posts/rust-ownership/) بنا شده است: هر کدام برای جایی وجود دارد که مالکیت و borrow ساده کافی نیست.
+نوع بازگشتی مثل cons list بدون `Box` کامپایل نمی‌شود، چون کامپایلر باید اندازه‌اش را بداند. `Box` را در [مقاله‌ی قبل](/fa/posts/rust-closures-iterators/) به شکل `Box<dyn Fn>` هم دیدیم. **Smart pointer** ساختاری است که مثل pointer رفتار می‌کند، ولی مالک داده است و هنگام از بین رفتن کدی اجرا می‌کند؛ مثل `String` و `Vec`. `Box`، `Rc` و `RefCell` هر کدام برای جایی‌اند که [ownership](/fa/posts/rust-ownership/) و borrow ساده کافی نیست.
 
 > همه‌ی کدهای زیر با Rust نسخه‌ی 1.90 کامپایل و اجرا شده‌اند و خروجی‌ها و پیام‌های کامپایلر از همان اجراها کپی شده‌اند.
 
@@ -168,7 +169,7 @@ drop leaf
 
 وقتی `root` از scope خارج می‌شود حذف می‌شود، با اینکه `leaf` هنوز به آن اشاره دارد، چون فقط یک `Weak` است. بعدش `upgrade()` مقدار `None` می‌دهد.
 
-## چند نکته‌ی مهم
+## چه زمانی سراغشان نروید
 
 - اول مالکیت و borrow ساده را امتحان کنید. این نوع‌ها برای جاهایی‌اند که borrow checker نمی‌تواند ثابت کند، نه راهی برای دور زدنش.
 - `RefCell` خطاها را از زمان کامپایل به زمان اجرا می‌برد. guardهای `borrow_mut` را کوتاه‌عمر نگه دارید یا از `try_borrow_mut` استفاده کنید.
@@ -184,4 +185,4 @@ drop leaf
 
 ## قدم بعدی
 
-در مقاله‌ی بعد سراغ تست‌نویسی و مستندسازی در Rust می‌رویم.
+«تست و مستندسازی در Rust»: هسته‌ی زبان را دیدیم و حالا کد تست و مستند می‌خواهد.

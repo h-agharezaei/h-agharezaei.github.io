@@ -3,19 +3,20 @@ date = '2027-01-10T10:00:00+03:30'
 draft = false
 title = 'Binary search and invariants'
 description = 'Binary search in Go with invariants: LowerBound and UpperBound, real midpoint overflow and off-by-one bugs, exhaustive tests and searching on the answer.'
+contentType = 'tutorial'
 categories = ["Algorithms"]
 series = ["Algorithms"]
 tags = ["algorithms", "binary-search", "go", "invariants", "testing"]
 cover = { image = "/images/covers/algo-binary-search-invariants.png", alt = "Binary search and invariants", hiddenInSingle = true }
 +++
 
-In the previous post, [Heaps and priority queues](/posts/algo-heaps-priority-queues/), I leaned on an invariant to keep the heap correct. {{< term "binary-search" "Binary search" >}} is the algorithm where this habit pays off most: the idea fits in one sentence, yet the code is famous for being written wrong. It works on a sorted slice like in [Dynamic arrays and slices from the inside](/posts/algo-dynamic-arrays/), uses [Generics in Go](/posts/go-generics/), and its cost is the logarithm from [Big-O analysis with real measurements](/posts/algo-big-o-measured/).
+Search for `5` in `[1 3 5]` with a closed interval and the loop condition `lo < hi`, and you get `-1`. The idea of {{< term "binary-search" "binary search" >}} fits in one sentence, yet the code is famous for being written wrong. The cure is the habit that kept the heap correct in [Heaps and priority queues](/posts/algo-heaps-priority-queues/): state an {{< term "invariant" "invariant" >}} first. It works on a sorted slice like in [Dynamic arrays and slices from the inside](/posts/algo-dynamic-arrays/), uses [Generics in Go](/posts/go-generics/), and its cost is the logarithm from [Big-O analysis with real measurements](/posts/algo-big-o-measured/).
 
 > Go 1.26, local example. The machine was busy, so I publish counts (deterministic) and no timings.
 
 ## State the invariant first
 
-An {{< term "invariant" "invariant" >}} is a sentence that stays true on every iteration. I search the half-open interval `[lo, hi)` and write the sentence in the code:
+An invariant is a sentence that stays true on every iteration. I search the half-open interval `[lo, hi)` and write the sentence in the code:
 
 ```go
 // Invariant: a[i] < x for every i < lo; a[i] >= x for every i >= hi.
@@ -126,7 +127,7 @@ n=100000  16   n=1000000 19
 
 Growing n by 1000 adds about 10 steps: the doubling table from the Big-O post, in reverse.
 
-## A few things to watch
+## Rules that prevent off-by-one bugs
 
 - Write the invariant as a comment before the code.
 - Choose `[lo, hi)` or `[lo, hi]` and never mix their conditions.
@@ -140,4 +141,4 @@ Write `Floor` and `Ceil` for a sorted slice of floats, and the exhaustive test a
 
 ## What's next
 
-Sorting: quick, merge and heap.
+Sorting: quick, merge and heap: here the data was already sorted, and next we produce that order.

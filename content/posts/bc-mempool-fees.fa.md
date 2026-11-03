@@ -3,13 +3,14 @@ date = '2026-11-11T18:00:00+03:30'
 draft = false
 title = 'Mempool، کارمزد و انتخاب تراکنش'
 description = 'mempool در Go: پذیرش تراکنش با نرخ کارمزد، ساخت block template با بسته‌ی اجداد، replace-by-fee، بیرون کردن تراکنش ارزان و broadcast دوباره بعد از reorg.'
+contentType = 'tutorial'
 categories = ["Blockchain"]
 series = ["Blockchain"]
 tags = ["blockchain", "go", "mempool", "fees", "bitcoin"]
 cover = { image = "/images/covers/bc-mempool-fees.fa.png", alt = "Mempool، کارمزد و انتخاب تراکنش", hiddenInSingle = true }
 +++
 
-در [پست قبلی](/fa/posts/bc-forks-reorgs/) یک reorg تراکنشی را به `pending` برگرداند، ولی کسی آن را دوباره broadcast نکرد. به‌علاوه کارمزد صفر قبول می‌شد، بلاک همه‌چیز را برمی‌داشت، map سقف نداشت و خرج خروجی تأییدنشده رد می‌شد.
+map `pending` ما کارمزد صفر را قبول می‌کرد، بلاک همه‌چیزش را برمی‌داشت، سقف نداشت و خرج خروجی تأییدنشده را رد می‌کرد؛ reorg [پست قبلی](/fa/posts/bc-forks-reorgs/) هم تراکنشی به آن برگرداند که کسی دوباره broadcastش نکرد.
 
 کارمزد همان ورودی منهای خروجی است، مثل [تراکنش و مدل UTXO](/fa/posts/bc-transactions-utxo/)، و ماینر آن را در coinbase برمی‌دارد ([Proof of Work، difficulty و mining](/fa/posts/bc-proof-of-work-mining/)). ماژول پست قبل را کپی کردم و map را با پکیج {{< term "mempool" "mempool" >}} عوض کردم.
 
@@ -130,7 +131,7 @@ D: tip 3 000b42f2e39f, bob 0, mallory 150, pending 1
 
 دفعه‌ی قبل C و D با `pending 0` تمام کردند. `go test -race ./...` پاس می‌شود، از جمله تستی که reorg در آن فرزند را قبل از والدش برمی‌گرداند.
 
-## چند نکته‌ی مهم
+## قاعده‌های ضروری mempool
 
 - با کارمزد به ازای بایت مرتب کنید و فرزند را همراه اجداد تأییدنشده‌اش بسنجید.
 - جایگزین باید کارمزد هر چیزی را که حذف می‌کند بپردازد.
@@ -144,4 +145,4 @@ D: tip 3 000b42f2e39f, bob 0, mallory 150, pending 1
 
 ## قدم بعدی
 
-پست بعد: **Bitcoin Script: یک مفسر stack کوچک با Rust**.
+پست بعد: **Bitcoin Script: یک مفسر stack کوچک با Rust**. موضوعش معنای «متعلق به Alice» برای یک خروجی است.

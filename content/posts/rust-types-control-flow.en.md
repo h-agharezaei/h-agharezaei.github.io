@@ -3,13 +3,14 @@ date = '2026-11-02T10:00:00+03:30'
 draft = false
 title = 'Types, variables and control flow in Rust'
 description = 'Rust types and control flow: immutable-by-default variables, shadowing, scalar types, tuples, arrays, integer overflow, if, loop, for and match.'
+contentType = 'tutorial'
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "beginner", "types", "control-flow"]
 cover = { image = "/images/covers/rust-types-control-flow.png", alt = "Types, variables and control flow in Rust", hiddenInSingle = true }
 +++
 
-In the [previous post](/posts/rust-getting-started/) we installed Rust, met Cargo and ran a first program. Now we need the basic vocabulary: how to declare variables, which types exist, and how to branch and loop. Coming from Go, most of it will look familiar, but a few defaults are the opposite of what you expect.
+Add 1 to a `u8` that holds 255 and Rust gives two different answers: a debug build panics, a `--release` build silently wraps to 0. In Go, overflow always wraps. That is typical of Rust's basic vocabulary, how to declare variables, which types exist, how to branch and loop: coming from Go, most of it looks familiar, but a few defaults are the opposite of what you expect. If Rust and Cargo are not set up yet, start with [Getting started with Rust](/posts/rust-getting-started/).
 
 > All code below was compiled and run with Rust 1.90 (`rustc 1.90.0`). The outputs are real.
 
@@ -219,7 +220,7 @@ fn main() {
 1 2 Fizz 4 Buzz Fizz 7 8 Fizz Buzz 11 Fizz 13 14 FizzBuzz
 ```
 
-## A few things to watch
+## Beginner traps
 
 - A semicolon on the last line of a function is the classic beginner error; the compiler message points straight at it.
 - Debug and release builds can behave differently on overflow. Use `checked_*` where it matters.
@@ -235,4 +236,4 @@ fn main() {
 
 ## What's next
 
-In the next post, Ownership in Rust, we get to the idea that makes Rust different from Go: who owns a value, what a move is, and how borrowing works.
+Ownership in Rust: the idea that makes Rust different from Go, covering who owns a value, what a move is, and how borrowing works.

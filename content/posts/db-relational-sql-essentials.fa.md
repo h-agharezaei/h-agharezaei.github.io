@@ -3,13 +3,14 @@ date = '2026-11-19T10:00:00+03:30'
 draft = false
 title = 'مدل رابطه‌ای و SQL ضروری'
 description = 'مدل رابطه‌ای و SQL ضروری با خروجی واقعی PostgreSQL 18: کلیدها، join، GROUP BY، تله‌های NULL، CTE و خطاهای constraint با کدهای SQLSTATE.'
+contentType = 'tutorial'
 categories = ["Databases"]
 series = ["Databases"]
 tags = ["databases", "sql", "postgres", "relational", "beginner"]
 cover = { image = "/images/covers/db-relational-sql-essentials.fa.png", alt = "مدل رابطه‌ای و SQL ضروری", hiddenInSingle = true }
 +++
 
-این پست شروع سری Databases است. در پست‌های Go قبلاً از داخل کد با Postgres حرف زدیم، یعنی [Postgres با pgx و sqlc در Go](/fa/posts/go-postgres-pgx-sqlc/) و [تراکنش و الگوی Repository در Go](/fa/posts/go-transactions-patterns/). حالا یک قدم عقب می‌رویم و سمت دیتابیس را درست یاد می‌گیریم، با خود SQL شروع می‌کنیم.
+سؤال «چه کسی هیچ‌کس را معرفی نکرده؟» را با `NOT IN` بپرسید و جواب صفر سطر است، بدون هیچ خطایی، فقط چون subquery یک {{< term "sql-null" "NULL" >}} برمی‌گرداند. بدترین باگ‌های SQL همین شکلی‌اند: query اجرا می‌شود و بی‌صدا جواب غلط می‌دهد. در پست‌های Go از داخل کد با Postgres حرف زدیم، در [Postgres با pgx و sqlc در Go](/fa/posts/go-postgres-pgx-sqlc/) و [تراکنش و الگوی Repository در Go](/fa/posts/go-transactions-patterns/)؛ این سری یک قدم عقب می‌رود و سمت دیتابیس را درست یاد می‌گیرد، با خود SQL شروع می‌کنیم.
 
 > همه‌چیز روی یک PostgreSQL 18.3 واقعی با `psql` و یک دیتاست کوچک دست‌نویس اجرا شده: ۶ مشتری، ۴ محصول، ۵ سفارش. همه‌ی پست‌های این سری از همین schema فروشگاهی («shop») استفاده می‌کنند.
 
@@ -86,7 +87,7 @@ FROM customers c JOIN orders o ON o.customer_id = c.id GROUP BY c.country ORDER 
 
 ## NULL یک مقدار نیست
 
-{{< term "sql-null" "NULL" >}} یعنی نامعلوم، و همه‌ی این‌ها را اجرا کردم:
+NULL یعنی نامعلوم، و همه‌ی این‌ها را اجرا کردم:
 
 ```text
 SELECT NULL = NULL AS eq, NULL IS NULL AS is_null;      -- eq: (empty)   is_null: t
@@ -137,7 +138,7 @@ DETAIL:  Key (id)=(1) is still referenced from table "orders".
 
 کد Go یا Node شما باید روی همین کدها تصمیم بگیرد، نه روی متن پیام.
 
-## چند نکته‌ی مهم
+## تله‌های رایج SQL
 
 - `= NULL` هیچ‌وقت match نمی‌شود؛ از `IS NULL` استفاده کنید. مراقب `NOT IN` با subqueryای که می‌تواند NULL برگرداند باشید.
 - `LIMIT`/`OFFSET` بدون `ORDER BY` پایدار نیست.
@@ -151,4 +152,4 @@ DETAIL:  Key (id)=(1) is still referenced from table "orders".
 
 ## قدم بعدی
 
-بعدی: «طراحی schema و نرمال‌سازی».
+«طراحی schema و نرمال‌سازی»: query درست روی schema بد کمکی نمی‌کند، پس سؤال بعدی این است که خود جدول‌ها چه شکلی باشند.

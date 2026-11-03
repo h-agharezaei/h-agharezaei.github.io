@@ -3,13 +3,14 @@ date = '2026-11-07T18:00:00+03:30'
 draft = false
 title = 'The account model, nonces and replay protection'
 description = 'Account model in Go: balances and nonces per address, replayed and out-of-order transactions rejected, chain ID against cross-chain replay, vs UTXO.'
+contentType = 'tutorial'
 categories = ["Blockchain"]
 series = ["Blockchain"]
 tags = ["blockchain", "go", "ethereum", "nonce", "replay-protection"]
 cover = { image = "/images/covers/bc-account-model-nonce.png", alt = "The account model, nonces and replay protection", hiddenInSingle = true }
 +++
 
-In the [previous post](/posts/bc-transactions-utxo/), in the {{< term "utxo" "UTXO" >}} model, a payment consumed whole outputs. Resending a transaction failed by itself: its input was gone. Ethereum keeps a balance per address instead, and a signed "pay Bob 30" stays valid after it runs. Without extra state, anyone could submit it again. That is a {{< term "replay-attack" "replay attack" >}}, the same problem as a redelivered message in [Idempotency and exactly-once in JetStream](/posts/nats-jetstream-idempotency/), with money attached.
+In Ethereum a signed "pay Bob 30" stays valid after it runs; without extra state, anyone could submit it again. That is a {{< term "replay-attack" "replay attack" >}}, the same problem as a redelivered message in [Idempotency and exactly-once in JetStream](/posts/nats-jetstream-idempotency/), with money attached. The {{< term "utxo" "UTXO" >}} model of the [previous post](/posts/bc-transactions-utxo/) avoided it: a payment consumed whole outputs, so a resend found its input gone. Ethereum keeps per-address balances instead.
 
 I copied last post's `toychain` module and added a package `account`. The blocks still carry UTXO transactions, and the next posts keep it that way: the account model here is a separate state I did not wire into blocks, to compare the two designs.
 
@@ -105,7 +106,7 @@ UTXO keeps 10 outputs for Bob, Alice's change and the miner's coinbase. The acco
 
 In UTXO a {{< term "double-spend" "double spend" >}} is visible from the inputs alone, so independent transactions can be checked separately. In the account model any two transactions touching the same balance must be applied in order. The account model is simpler for wallets, and it is what Ethereum contracts build on.
 
-## A few things to watch
+## Nonce pitfalls
 
 - Put the chain ID and nonce inside the signed bytes; a field outside the sighash protects nothing.
 - Reject or queue nonce gaps, but never apply out of order.

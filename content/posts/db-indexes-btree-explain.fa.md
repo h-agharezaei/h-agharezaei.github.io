@@ -3,13 +3,14 @@ date = '2026-11-29T10:00:00+03:30'
 draft = false
 title = 'ایندکس B-tree و EXPLAIN ANALYZE'
 description = 'ایندکس B-tree در PostgreSQL با پلن‌های واقعی EXPLAIN ANALYZE: تفاوت sequential scan و ایندکس، ارتفاع درخت، index-only scan و هزینه ایندکس روی نوشتن.'
+contentType = 'tutorial'
 categories = ["Databases"]
 series = ["Databases"]
 tags = ["postgresql", "databases", "index", "btree", "explain", "performance"]
 cover = { image = "/images/covers/db-indexes-btree-explain.fa.png", alt = "ایندکس B-tree و EXPLAIN ANALYZE", hiddenInSingle = true }
 +++
 
-در [پست قبل](/fa/posts/db-schema-design-normalization/) schema فروشگاه را طراحی کردیم. حالا ۲۰۰ هزار سفارش داریم و اولین query کند پیدا شده: همه‌ی سفارش‌های یک مشتری. جواب معمول یک {{< term "database-index" "ایندکس" >}} است، ولی بیایید با یک {{< term "query-plan" "query plan" >}} امتحانش کنیم.
+برای ۱۰ سفارش یک مشتری، PostgreSQL کل جدول ۲۰۰ هزار سفارشیِ [طراحی schema و نرمال‌سازی](/fa/posts/db-schema-design-normalization/) را خواند. جواب معمول یک {{< term "database-index" "ایندکس" >}} است که با یک {{< term "query-plan" "query plan" >}} امتحانش می‌کنیم.
 
 > همه‌چیز روی PostgreSQL 18.3 واقعی و با seed کامل (۲۰ هزار مشتری، ۲۰۰ هزار سفارش) اجرا شد. پیش از این پست فقط primary keyها و `customers.email` ایندکس داشتند. از `EXPLAIN (ANALYZE, BUFFERS, TIMING OFF, SUMMARY OFF)` استفاده می‌کنم و به‌جای میلی‌ثانیه، تعداد bufferها (pageهای ۸ کیلوبایتی لمس‌شده) را نشان می‌دهم، چون روی هر ماشینی یکی است.
 
@@ -63,7 +64,7 @@ SELECT * FROM orders ORDER BY id DESC LIMIT 5;
  Limit -> Index Scan Backward using orders_pkey ... Buffers: shared hit=8
 ```
 
-هشت page برای پنج سفارش آخر. همین query روی `created_at` که ایندکس ندارد، یک `Sort` روی `Seq Scan` کامل (۳۳۵۷ page) می‌خواهد. اگر فقط ستون‌های ایندکس‌شده را بخواهید، به جدول هم نیازی نیست:
+همین query روی `created_at` که ایندکس ندارد، یک `Sort` روی `Seq Scan` کامل (۳۳۵۷ page) می‌خواهد. اگر فقط ستون‌های ایندکس‌شده را بخواهید، به جدول هم نیازی نیست:
 
 ```text
 SELECT customer_id FROM orders WHERE customer_id BETWEEN 100 AND 110;
@@ -96,7 +97,7 @@ DETAIL:  Key (email)=(user1@example.com) already exists.
 
 برای پیدا کردن ایندکس‌هایی که هزینه‌شان را می‌دهید ولی استفاده نمی‌شوند، `pg_stat_user_indexes` را ببینید: `idx_scan` تعداد استفاده را می‌شمارد. در اجرای من `customers_email_key` مقدار `idx_scan = 0` و ۱۳۷۶ کیلوبایت حجم داشت. قبل از حذف، مدت طولانی مشاهده کنید.
 
-## چند نکته‌ی مهم
+## خطاهای رایج با EXPLAIN و ایندکس
 
 - `EXPLAIN ANALYZE` را روی داده‌ی واقع‌گرایانه بزنید: روی ۱۰۰۰ ردیف planner همیشه `Seq Scan` می‌خواهد و چیزی یاد نمی‌گیرید.
 - `EXPLAIN ANALYZE` خود query را اجرا می‌کند. `INSERT`، `UPDATE` و `DELETE` را داخل تراکنشی بزنید که rollback می‌شود.
@@ -113,4 +114,4 @@ DETAIL:  Key (email)=(user1@example.com) already exists.
 
 ## قدم بعدی
 
-پست بعدی: «ایندکس ترکیبی، جزئی و پوششی».
+«ایندکس ترکیبی، جزئی و پوششی»: کوئری واقعی کم‌تر روی یک ستون فیلتر می‌کند.

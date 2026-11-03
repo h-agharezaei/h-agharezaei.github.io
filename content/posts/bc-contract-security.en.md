@@ -4,13 +4,14 @@ draft = false
 title = 'Contract security: reentrancy, access control and real incidents'
 seoTitle = 'Contract security: reentrancy and access control'
 description = 'Contract security in Solidity: reentrancy, token callbacks, open initializers, tx.origin and unchecked transfers, attacked in local tests and fixed.'
+contentType = 'tutorial'
 categories = ["Blockchain"]
 series = ["Blockchain"]
 tags = ["blockchain", "solidity", "security", "reentrancy", "foundry", "defi"]
 cover = { image = "/images/covers/bc-contract-security.png", alt = "Contract security: reentrancy, access control and real incidents", hiddenInSingle = true }
 +++
 
-[Oracles and price manipulation](/posts/bc-oracles/) broke a lending market without a bug in the code. This post is about the bugs, each attacked in a local Foundry test against my own code, then fixed. It also answers why `withdraw` in [A first contract with Solidity and Foundry](/posts/bc-solidity-first-contract/) updates storage before sending ETH. [Authorization: RBAC and IDOR](/posts/sec-authorization-rbac-idor/) is the web version of the access control part.
+Why does `withdraw` in [A first contract with Solidity and Foundry](/posts/bc-solidity-first-contract/) update storage before sending ETH? Sending ETH runs the recipient's code, which can call `withdraw` again before the balance is zero. [Oracles and price manipulation](/posts/bc-oracles/) broke a lending market without a bug; this post is about the bugs, each attacked in a local Foundry test against my own code, then fixed. [Authorization: RBAC and IDOR](/posts/sec-authorization-rbac-idor/) is the web version of the access control part.
 
 > Foundry 1.8.7, solc 0.8.38, macOS (arm64). I copied the previous post's project. Deliberately vulnerable contracts live in `test/vulnerable/`, attackers in `test/helpers/`. Teaching code, not audited.
 
@@ -25,7 +26,7 @@ function withdraw() external {
 }
 ```
 
-Sending ETH runs the recipient's `receive()`, which calls `withdraw()` again while the balance is not yet zero. That is {{< term "reentrancy" "reentrancy" >}}. Alice and Bob deposit 5 ETH each, the attacker 1:
+The recipient's `receive()` calls `withdraw()` again before the balance is zero. That is {{< term "reentrancy" "reentrancy" >}}. Alice and Bob deposit 5 ETH each, the attacker 1:
 
 ```
 $ forge test --mt test_VulnerableVaultIsDrained -vv
@@ -141,9 +142,7 @@ Copied into `src/`, the vulnerable contracts were flagged too (`reentrancy-eth`,
 - **Oracle manipulation**: the previous post's attack, seen in public post-mortems of lending protocols.
 - **Key compromise**: as I understand them, several large bridge losses came from stolen validator keys, not contract bugs; see also [the Binance hack](/posts/binance-hack-hot-wallet-2026/).
 
-## A few things to watch
-
-My checklist before a deploy:
+## A pre-deploy checklist
 
 - Checks, effects, interactions in every function, then a lock.
 - Any external call, including a token transfer, can call you back.
@@ -158,4 +157,4 @@ My checklist before a deploy:
 
 ## What's next
 
-Next post: **Gas optimization and upgradeable proxies**.
+**Gas optimization and upgradeable proxies**: safe code still costs gas, and deployed code cannot be patched.

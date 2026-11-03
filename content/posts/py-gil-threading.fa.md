@@ -3,13 +3,14 @@ date = '2027-03-31T10:00:00+03:30'
 draft = false
 title = 'GIL و threading'
 description = 'GIL و threading در Python: قفل چه می‌کند، thread کجا کمک می‌کند، race با lost update در build آزاد از GIL و Lock، Queue و thread pool.'
+contentType = 'tutorial'
 categories = ["Python"]
 series = ["Python"]
 tags = ["python", "gil", "threading", "concurrency", "free-threading"]
 cover = { image = "/images/covers/py-gil-threading.fa.png", alt = "GIL و threading", hiddenInSingle = true }
 +++
 
-در [مقاله‌ی قبل](/fa/posts/py-testing-pytest/) کدمان را تست کردیم؛ حالا هم‌زمانش می‌کنیم. اگر از Go ([goroutine و channel](/fa/posts/go-goroutines-channels/)) یا Node.js ([event loop](/fa/posts/node-event-loop/)) آمده باشید، اولین شگفتی Python همان {{< term "gil" "GIL" >}} است: در CPython استاندارد در هر لحظه فقط یک {{< term "thread" "thread" >}} بایت‌کد Python را اجرا می‌کند. این مقاله با اجراهای واقعی نشان می‌دهد این یعنی چه.
+هشت {{< term "thread" "thread" >}} هر کدام ۲۰۰٬۰۰۰ بار `counter += 1` اجرا کردند: Python 3.14.0 استاندارد هیچ افزایشی را گم نکرد و build 3.14.3 بدون {{< term "gil" "GIL" >}} حدود ۸۵٪ را. نتیجه‌ی اول به این معنا نیست که کد امن است. اگر از Go ([goroutine و channel](/fa/posts/go-goroutines-channels/)) یا Node.js ([event loop](/fa/posts/node-event-loop/)) آمده باشید، همین GIL اولین شگفتی است: در CPython استاندارد در هر لحظه فقط یک thread بایت‌کد Python را اجرا می‌کند. کد را در [پست قبل](/fa/posts/py-testing-pytest/) تست کردیم؛ حالا هم‌زمانش می‌کنیم.
 
 > بیشتر دموها با Python 3.14.0 (`python3 --version`) و با GIL اجرا شد، و برای یک مقایسه Python 3.14.3 آزاد از GIL (`python3.14t`، نصب با `uv python install 3.14t` و بعداً پاک‌شده). `sys._is_gil_enabled()` به ترتیب `True` و `False` چاپ کرد. ماشین زیر بار سنگین بود، پس **هیچ زمانی برای کار CPU** منتشر نمی‌کنم؛ تنها زمانِ این مقاله مربوط به `sleep` است.
 
@@ -28,7 +29,7 @@ sequential, 10 x 0.2s: ~2.0s
 
 ## raceی که GIL جلویش را نمی‌گیرد
 
-{{< term "race-condition" "race condition" >}} به موازی‌بودن نیاز ندارد، فقط یک جابه‌جایی thread بین دو قدم کافی است. ۸ thread گرفتم که هرکدام ۲۰۰٬۰۰۰ بار `counter += 1` می‌زنند، سه بار اجرا:
+{{< term "race-condition" "race condition" >}} به موازی‌بودن نیاز ندارد، فقط یک جابه‌جایی thread بین دو قدم کافی است. آزمایش مقدمه، سه بار اجرا:
 
 ```text
 no lock   run 1: 1600000 expected 1600000
@@ -36,7 +37,7 @@ no lock   run 2: 1600000 expected 1600000
 no lock   run 3: 1600000 expected 1600000
 ```
 
-روی 3.14.0 هیچ update از دست نرفت، و وقتی دستور را به `tmp = counter; counter = tmp + 1` شکستم هم چیزی از دست نرفت. نتیجه نگیرید که امن است: `+=` چند بایت‌کد است و interpreter می‌تواند بینشان thread را عوض کند (فاصله‌ی پیش‌فرض `sys.getswitchinterval()` اینجا ۰٫۰۰۵ ثانیه بود). فقط در اجراهای من اتفاق نیفتاد. همین فایل روی 3.14.3 آزاد از GIL:
+روی 3.14.0 هیچ update از دست نرفت، حتی وقتی دستور را به `tmp = counter; counter = tmp + 1` شکستم. نتیجه نگیرید که امن است: `+=` چند بایت‌کد است و interpreter می‌تواند بینشان thread را عوض کند (فاصله‌ی پیش‌فرض `sys.getswitchinterval()` اینجا ۰٫۰۰۵ ثانیه بود). فقط در اجراهای من اتفاق نیفتاد. همین فایل روی 3.14.3 آزاد از GIL:
 
 ```text
 no lock   run 1: 215326 expected 1600000
@@ -79,9 +80,9 @@ def worker():
 
 ## کوتاه: asyncio، Go و Node
 
-`asyncio` گزینه‌ی سوم است: یک thread، یک {{< term "event-loop" "event loop" >}} و `await`؛ برای تعداد زیاد socket عالی است، مثل Node. goroutine در Go را runtime خودِ Go روی چند thread سیستم‌عامل زمان‌بندی می‌کند، پس کار CPU در goroutine‌ها موازی اجرا می‌شود. `worker_threads` در Node جاوااسکریپت را در thread‌های جدا با event loop مخصوص خودشان اجرا می‌کند؛ [Worker threads و cluster در Node.js](/fa/posts/node-worker-threads-cluster/) را ببینید.
+`asyncio` گزینه‌ی سوم است: یک thread، یک {{< term "event-loop" "event loop" >}} و `await`؛ برای تعداد زیاد socket عالی است، مثل Node. goroutine را runtime خودِ Go روی چند thread سیستم‌عامل زمان‌بندی می‌کند، پس کار CPU در goroutine‌ها موازی اجرا می‌شود. `worker_threads` در Node جاوااسکریپت را در thread‌های جدا با event loop مخصوص خودشان اجرا می‌کند؛ [Worker threads و cluster در Node.js](/fa/posts/node-worker-threads-cluster/) را ببینید.
 
-## چند نکته‌ی مهم
+## کجا thread کم می‌آورد
 
 - thread برای انتظار (شبکه، دیسک، `sleep`)، process برای محاسبه.
 - یک اجرای سالم چیزی درباره‌ی race ثابت نمی‌کند. داده‌ی mutable مشترک را قفل کنید یا با `Queue` ردش کنید.

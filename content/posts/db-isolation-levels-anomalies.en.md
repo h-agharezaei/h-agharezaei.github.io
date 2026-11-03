@@ -3,13 +3,14 @@ date = '2026-12-21T10:00:00+03:30'
 draft = false
 title = 'Isolation levels and anomalies'
 description = 'PostgreSQL isolation levels shown with two real concurrent sessions: non-repeatable reads, phantoms, lost updates, write skew and serialization failures.'
+contentType = 'tutorial'
 categories = ["Databases"]
 series = ["Databases"]
 tags = ["databases", "postgresql", "isolation", "transactions", "concurrency"]
 cover = { image = "/images/covers/db-isolation-levels-anomalies.png", alt = "Isolation levels and anomalies", hiddenInSingle = true }
 +++
 
-In the [previous post](/posts/db-transactions-acid/) we met the "I" of {{< term "acid" "ACID" >}}, isolation, as a promise. This post checks the promise. Each {{< term "isolation-level" "isolation level" >}} allows some odd results and forbids others, and the only way I trust that is to watch two sessions interleave. If you write Go, [go-transactions-patterns](/posts/go-transactions-patterns/) used these levels from code; here we see why.
+Two withdrawals of 10 from a balance of 100 leave 90, with no error anywhere: a {{< term "lost-update" "lost update" >}}, legal at PostgreSQL's default level. [Transactions and ACID](/posts/db-transactions-acid/) introduced the "I" of {{< term "acid" "ACID" >}}, isolation, as a promise; this post checks the promise. Each {{< term "isolation-level" "isolation level" >}} allows some odd results and forbids others, and the only way I trust that is to watch two sessions interleave. If you write Go, [Transactions and the repository pattern in Go](/posts/go-transactions-patterns/) used these levels from code; here we see why.
 
 > Everything ran on a real PostgreSQL 18.3. A small Go program (a local example) opens two connections, **A** and **B**, and runs a fixed list of steps in order, so the output is deterministic. Tables: `accounts(id, balance)` with (1, 100) and (2, 50), `oncall(doctor, on_duty)`, plus the shared `shop` seed.
 
@@ -79,7 +80,7 @@ B> UPDATE accounts SET balance = 90 WHERE id = 1; COMMIT
 final balance -> 90
 ```
 
-Two withdrawals of 10 from 100 should leave 80. The {{< term "lost-update" "lost update" >}} left 90. Two safe versions, both verified to end at 80:
+Two withdrawals of 10 from 100 should leave 80. The lost update left 90. Two safe versions, both verified to end at 80:
 
 - `UPDATE accounts SET balance = balance - 10`: B's UPDATE **waits** for A's lock, then re-reads the committed row and subtracts from 90.
 - `SELECT balance ... FOR UPDATE`: B's SELECT blocked until A committed, then returned 90, and B wrote 80.
@@ -104,7 +105,7 @@ B> COMMIT   -> ERROR: could not serialize access due to read/write dependencies 
 SELECT * FROM oncall  -> alice, false | bob, true
 ```
 
-One transaction was aborted and the rule held. The aborted one did nothing wrong, so the application must **rerun the whole transaction**. That is the retry loop on {{< term "sqlstate" "SQLSTATE" >}} 40001 from [go-transactions-patterns](/posts/go-transactions-patterns/). I did not rerun it here.
+One transaction was aborted and the rule held. The aborted one did nothing wrong, so the application must **rerun the whole transaction**. That is the retry loop on {{< term "sqlstate" "SQLSTATE" >}} 40001 from [Transactions and the repository pattern in Go](/posts/go-transactions-patterns/). I did not rerun it here.
 
 ## What I observed
 
@@ -116,7 +117,7 @@ One transaction was aborted and the rule held. The aborted one did nothing wrong
 | Lost update | seen | error 40001 | not possible (docs) |
 | Write skew | not tested | seen | prevented (40001) |
 
-## A few things to watch
+## Concurrency traps
 
 - READ COMMITTED is the default, and every anomaly above except dirty reads is legal in it. Do not assume more.
 - The lost update at REPEATABLE READ appeared as an error in my run; I only tried the relative `balance - 10` form.
@@ -130,4 +131,4 @@ Reproduce the write skew yourself with two `psql` windows, then try to prevent i
 
 ## What's next
 
-Next: MVCC and VACUUM, the machinery that makes these snapshots possible.
+MVCC and VACUUM: the machinery that makes these snapshots possible.

@@ -3,13 +3,14 @@ date = '2026-11-26T10:00:00+03:30'
 draft = false
 title = 'sync، select و context در Go'
 description = 'حافظه‌ی مشترک را با Mutex و atomic و Once ایمن کنید، با select روی چند channel منتظر بمانید و با context کار را لغو کنید؛ با خروجی واقعی race detector.'
+contentType = 'tutorial'
 categories = ["Go"]
 series = ["Go Fundamentals"]
 tags = ["go", "beginner", "concurrency", "context", "sync", "select"]
 cover = { image = "/images/covers/go-sync-select-context.fa.png", alt = "sync، select و context در Go", hiddenInSingle = true }
 +++
 
-در [مقاله‌ی قبل](/fa/posts/go-goroutines-channels/) goroutine راه انداختیم و از طریق channel با آن‌ها حرف زدیم. دو سؤال باز ماند: وقتی goroutineها مجبورند حافظه‌ی مشترک داشته باشند چه کنیم، و چطور به یک goroutine بگوییم متوقف شود؟ این مقاله جواب هر دو را با پکیج `sync`، دستور `select` و `context` می‌دهد.
+وقتی goroutineها مجبورند حافظه‌ی مشترک داشته باشند چه کنیم، و چطور به یک goroutine بگوییم متوقف شود؟ بدون جواب اولی race داریم و بدون دومی goroutineهایی که leak می‌کنند. [پست قبل](/fa/posts/go-goroutines-channels/) با goroutine و channel این دو سؤال را باز گذاشت؛ اینجا جواب هر دو را با پکیج `sync`، دستور `select` و `context` می‌بینیم.
 
 > همه‌ی مثال‌ها را با Go 1.26 روی macOS (arm64) اجرا کرده‌ام.
 
@@ -196,7 +197,7 @@ result: user-2 err: <nil>
 
 channel بافر ۱ دارد تا goroutine رهاشده بتواند ارسالش را تمام کند و leak نشود.
 
-## چند نکته‌ی احتیاط
+## استفاده‌ی نادرست از قفل و context
 
 - `sync.Mutex` را بعد از اولین استفاده کپی نکنید؛ struct را با اشاره‌گر پاس بدهید.
 - بخش بحرانی را کوتاه نگه دارید و موقع I/O کند قفل را نگه ندارید.
@@ -212,4 +213,4 @@ channel بافر ۱ دارد تا goroutine رهاشده بتواند ارسال
 
 ## قدم بعدی
 
-در مقاله‌ی بعد سراغ generics در Go می‌رویم: type parameter، constraint و اینکه کِی ارزش استفاده دارند.
+«Generics در Go»: بعد از همزمانی نوبت type parameter و constraint است، و اینکه کِی واقعاً ارزش استفاده دارند.

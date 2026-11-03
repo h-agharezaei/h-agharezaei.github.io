@@ -3,13 +3,14 @@ date = '2026-12-06T10:00:00+03:30'
 draft = false
 title = 'کار با فایل، io.Reader/Writer و JSON در Go'
 description = 'خواندن و نوشتن فایل با os و bufio، ترکیب‌پذیری io.Reader و io.Writer و encode و decode کردن JSON با encoding/json، همراه با پیام‌های خطای واقعی.'
+contentType = 'tutorial'
 categories = ["Go"]
 series = ["Go Fundamentals"]
 tags = ["go", "beginner", "json", "io"]
 cover = { image = "/images/covers/go-file-io-json.fa.png", alt = "کار با فایل، io.Reader/Writer و JSON در Go", hiddenInSingle = true }
 +++
 
-در [مقاله‌ی قبل](/fa/posts/go-testing-basics/) تست و benchmark نوشتیم. برنامه‌های واقعی فایل می‌خوانند و با JSON کار می‌کنند؛ این مقاله هر دو را پوشش می‌دهد. ایده‌ی اصلی دو interface خیلی کوچک است، `io.Reader` و `io.Writer`: وقتی آن‌ها را بشناسید، فایل، buffer، اتصال شبکه و خروجی استاندارد همه یک شکل پیدا می‌کنند.
+در Go یک تابع که `io.Writer` می‌گیرد، بدون هیچ تغییری، روی فایل، buffer و stdout می‌نویسد. برنامه‌های واقعی فایل می‌خوانند و با JSON کار می‌کنند و بعد از [تست و benchmark](/fa/posts/go-testing-basics/)، این پست هر دو را پوشش می‌دهد. ایده‌ی اصلی دو interface خیلی کوچک است، `io.Reader` و `io.Writer`: وقتی آن‌ها را بشناسید، فایل، buffer، اتصال شبکه و خروجی استاندارد همه یک شکل پیدا می‌کنند.
 
 > همه‌ی مثال‌ها را با Go 1.26 روی یک مک arm64 اجرا کرده‌ام. فایل‌ها در پوشه‌ای هستند که با `os.MkdirTemp` ساخته شده (در کدها `dir`) و آخر برنامه پاک می‌شود. خروجی‌ها از همان اجرا کپی شده‌اند.
 
@@ -185,7 +186,7 @@ type: json: cannot unmarshal string into Go struct field User.age of type int
 
 این‌ها به ترتیب از `{"name": "x",}` (کامای اضافه)، `{"name": "x"` (ناقص) و `"age":"thirty"` آمده‌اند. آخری ناسازگاری نوع است و نام فیلد را هم می‌گوید.
 
-## چند نکته که باید حواستان باشد
+## جاهایی که خطا بی‌صدا گم می‌شود
 
 - بلافاصله بعد از چک خطای `os.Open`، `defer f.Close()` بنویسید و `sc.Err()` را چک کنید.
 - `Scanner` به‌طور پیش‌فرض حداکثر ۶۴ کیبی‌بایت برای هر خط می‌خواند؛ برای خط‌های بلندتر از `sc.Buffer` استفاده کنید.
@@ -201,4 +202,4 @@ type: json: cannot unmarshal string into Go struct field User.age of type int
 
 ## قدم بعدی
 
-در مقاله‌ی بعد این قطعه‌ها را کنار هم می‌گذاریم و یک ابزار خط فرمان در Go می‌سازیم.
+«ساخت ابزار خط فرمان با Go»: فایل، `io.Reader` و `io.Writer` و JSON همان قطعه‌هایی‌اند که آن پست کنار هم می‌گذارد تا یک ابزار خط فرمان بسازد.

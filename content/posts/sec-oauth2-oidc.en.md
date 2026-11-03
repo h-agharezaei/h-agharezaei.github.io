@@ -3,13 +3,14 @@ date = '2027-04-02T10:00:00+03:30'
 draft = false
 title = 'OAuth2 and OIDC'
 description = 'OAuth2 and OIDC in Go on localhost: Authorization Code flow with PKCE, state, ID token validation with JWKS, scopes and refresh rotation, with real output.'
+contentType = 'tutorial'
 categories = ["Security"]
 series = ["Software Security"]
 tags = ["security", "oauth2", "oidc", "pkce", "jwt", "go"]
 cover = { image = "/images/covers/sec-oauth2-oidc.png", alt = "OAuth2 and OIDC", hiddenInSingle = true }
 +++
 
-The previous post, [Sessions or JWT?](/posts/sec-sessions-vs-jwt/), was about what a server keeps after login. Here the question is who does the login. "Sign in with X" and "let this app read my orders" are both {{< term "oauth2" "OAuth2" >}} and {{< term "oidc" "OpenID Connect" >}}. The short version: OAuth2 is **authorization** (what may this token do), and OIDC adds **authentication** (who logged in) with an ID token. The API on the resource side is the orders API from [Building an API with net/http in Go](/posts/go-http-api-stdlib/).
+A leaked authorization code is useless to a thief without the verifier that only the real client holds: my demo server answers `400 invalid_grant`. The whole flow rests on small checks like that one. [Sessions or JWT?](/posts/sec-sessions-vs-jwt/) was about what a server keeps after login; here the question is who does the login. "Sign in with X" and "let this app read my orders" are both {{< term "oauth2" "OAuth2" >}} and {{< term "oidc" "OpenID Connect" >}}. The short version: OAuth2 is **authorization** (what may this token do), and OIDC adds **authentication** (who logged in) with an ID token. The API on the resource side is the orders API from [Building an API with net/http in Go](/posts/go-http-api-stdlib/).
 
 > Defensive only. Everything ran on `127.0.0.1` in one Go 1.26 stdlib program: an authorization server, a resource server and a client. Tokens are RS256 JWTs I signed by hand with `crypto/rsa`. No real identity provider, no browser, no third-party account. The "user" is logged in and consents automatically, and the client's callback is a printed 302, not a real listener. It is a separate demo.
 
@@ -114,7 +115,7 @@ use rt2 (same family): 400 family revoked
 
 If an old token reappears, either the thief or the owner is using it, so the server revokes the whole family.
 
-## A few things to watch
+## Where OAuth setups go wrong
 
 - Match `redirect_uri` exactly on the server; prefix or wildcard matching invites open-redirect problems.
 - According to RFC 9700 (OAuth 2.0 security best current practice, which I checked for these two points), clients should not use the Implicit grant, and the Resource Owner Password Credentials grant must not be used. Use the code flow with PKCE. I did not run either discouraged flow.
@@ -128,4 +129,4 @@ Add token revocation: a `/revoke` endpoint that marks a refresh token family rev
 
 ## What's next
 
-The next post is Authorization: RBAC and IDOR.
+“Authorization: RBAC and IDOR” follows because a valid token only says who the caller is; what that caller may do with each object is still the server's decision.

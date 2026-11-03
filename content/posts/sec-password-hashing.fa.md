@@ -3,13 +3,14 @@ date = '2027-03-22T10:00:00+03:30'
 draft = false
 title = 'ذخیره‌ی امن پسورد: argon2 و bcrypt'
 description = 'هش کردن پسورد در Go با bcrypt و argon2id: salt، cost، محدودیت ۷۲ بایت، قالب PHC، مقایسه‌ی زمان‌ثابت و rehash هنگام login، با خروجی واقعی.'
+contentType = 'tutorial'
 categories = ["Security"]
 series = ["Software Security"]
 tags = ["security", "passwords", "argon2", "bcrypt", "hashing", "go"]
 cover = { image = "/images/covers/sec-password-hashing.fa.png", alt = "ذخیره‌ی امن پسورد: argon2 و bcrypt", hiddenInSingle = true }
 +++
 
-مقاله‌ی قبلی، [تزریق و XSS](/fa/posts/sec-injection-xss/)، درباره‌ی نفوذ از راه ورودی بود. این مقاله بدترین حالتِ بعد از آن را فرض می‌کند: کسی جدول `users` شما را خوانده است. اگر پسوردها ساده ذخیره شده باشند، همه‌ی حساب‌ها از دست رفته‌اند و چون مردم پسورد را تکرار می‌کنند، حساب‌های سایت‌های دیگر هم. هدف {{< term "password-hashing" "هش کردن پسورد" >}} (**password hashing**) این است که جدول نشت‌کرده هنوز استفاده‌اش گران باشد. زمینه، login همان API سفارش‌هاست از [ساخت API با net/http در Go](/fa/posts/go-http-api-stdlib/)؛ خطاها و لاگ‌ها مطابق [پیکربندی، لاگ ساخت‌یافته و خطا در Go](/fa/posts/go-config-logging-errors/) هستند.
+فرض کنید کسی جدول `users` شما را خوانده است، مثلاً از راه باگی مثل آنچه در [تزریق و XSS](/fa/posts/sec-injection-xss/) دیدیم. اگر پسوردها ساده ذخیره شده باشند، همه‌ی حساب‌ها از دست رفته‌اند و چون مردم پسورد را تکرار می‌کنند، حساب‌های سایت‌های دیگر هم. هدف {{< term "password-hashing" "هش کردن پسورد" >}} (**password hashing**) این است که جدول نشت‌کرده هنوز استفاده‌اش گران باشد. زمینه، login همان API سفارش‌هاست از [ساخت API با net/http در Go](/fa/posts/go-http-api-stdlib/)؛ خطاها و لاگ‌ها مطابق [پیکربندی، لاگ ساخت‌یافته و خطا در Go](/fa/posts/go-config-logging-errors/) هستند.
 
 > فقط دفاعی. این یک برنامه‌ی کوچک Go 1.26 با `golang.org/x/crypto` نسخه‌ی v0.31.0 است که محلی اجرا شد. چیزی را crack نکردم و از هیچ داده‌ی نشت‌کرده‌ی واقعی استفاده نکردم. دمویی جداست و ادامه‌ی دموی قبلی نیست.
 
@@ -98,7 +99,7 @@ func Login(password, stored string, want Params) (ok, rehash bool, err error) {
 
 بررسی می‌کنند که پسورد اشتباه هرگز rehash را فعال نمی‌کند.
 
-## چند نکته‌ی مهم
+## فراتر از تابع هش
 
 - {{< term "pepper" "pepper" >}} (کلید محرمانه بیرون از پایگاه داده که با HMAC وارد می‌شود) وقتی فقط پایگاه داده نشت کند کمک می‌کند. مدیریت کلید اضافه می‌کند؛ آن را توضیح دادم و نساختم.
 - هرگز پسورد یا body درخواست login را لاگ نکنید؛ logger و پیام خطاهایتان را بررسی کنید.
@@ -112,4 +113,4 @@ func Login(password, stored string, want Params) (ok, rehash bool, err error) {
 
 ## قدم بعدی
 
-مقاله‌ی بعدی «session یا JWT؟» است.
+«session یا JWT؟» از جایی شروع می‌شود که login موفق تمام می‌شود: سرور در درخواست بعدی چطور شما را به یاد می‌آورد.

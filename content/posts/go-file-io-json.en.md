@@ -3,13 +3,14 @@ date = '2026-12-06T10:00:00+03:30'
 draft = false
 title = 'Files, io.Reader/Writer and JSON in Go'
 description = 'Go file I/O and JSON: read and write files with os and bufio, see how io.Reader and io.Writer compose, and use encoding/json, with real error messages.'
+contentType = 'tutorial'
 categories = ["Go"]
 series = ["Go Fundamentals"]
 tags = ["go", "beginner", "json", "io"]
 cover = { image = "/images/covers/go-file-io-json.png", alt = "Files, io.Reader/Writer and JSON in Go", hiddenInSingle = true }
 +++
 
-In the [previous post](/posts/go-testing-basics/) we wrote tests and benchmarks. Real programs also read files and talk JSON, so this post covers both. The key idea is two tiny interfaces, `io.Reader` and `io.Writer`: once you see them, files, buffers, network connections and standard output all look the same.
+In Go, a function that takes an `io.Writer` writes to a file, a buffer or stdout without a single change. Real programs read files and talk JSON, and after [tests and benchmarks](/posts/go-testing-basics/), this post covers both. The key idea is two tiny interfaces, `io.Reader` and `io.Writer`: once you see them, files, buffers, network connections and standard output all look the same.
 
 > I ran everything below with Go 1.26 on an arm64 Mac. All files live in a directory made with `os.MkdirTemp` (named `dir` in the snippets) and removed at the end. Outputs are copied from the run.
 
@@ -192,7 +193,7 @@ type: json: cannot unmarshal string into Go struct field User.age of type int
 
 These come from `{"name": "x",}` (trailing comma), `{"name": "x"` (cut off), and `"age":"thirty"`. The last one is a type mismatch and names the field.
 
-## A few things to watch
+## Where errors go silent
 
 - Always `defer f.Close()` right after checking the error from `os.Open`, and check `sc.Err()`.
 - `Scanner` has a default line limit of 64 KiB; for longer lines use `sc.Buffer`.
@@ -208,4 +209,4 @@ These come from `{"name": "x",}` (trailing comma), `{"name": "x"` (cut off), and
 
 ## What's next
 
-Next we will put these pieces together and build a command-line tool in Go.
+"Building a command-line tool in Go": files, `io.Reader`, `io.Writer` and JSON are exactly the pieces that post puts together into a command-line tool.

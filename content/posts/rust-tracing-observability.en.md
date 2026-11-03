@@ -3,13 +3,14 @@ date = '2027-03-04T10:00:00+03:30'
 draft = false
 title = 'Observability in Rust with tracing'
 description = 'Structured events, spans, EnvFilter, JSON output and the lost-span trap with tokio::spawn: how the tracing crate makes async Rust services debuggable.'
+contentType = 'tutorial'
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "tracing", "observability", "async", "logging"]
 cover = { image = "/images/covers/rust-tracing-observability.png", alt = "Observability in Rust with tracing", hiddenInSingle = true }
 +++
 
-The [previous post](/posts/rust-pin-future-internals/) opened up async internals. Now the practical question: when a service runs thousands of tasks at once, how do you see what happened to one request? This post uses the `tracing` crate on the kind of code from [async/await and Tokio](/posts/rust-async-tokio/), and the same ideas apply to a service like the one in [Building an API with Axum](/posts/rust-http-axum-api/). I compare it with `slog` from [Config, structured logging and errors in Go](/posts/go-config-logging-errors/) at the end.
+Three tasks printing with `println!` are enough to lose track: which "done" belongs to which order? Now picture a service with thousands of tasks at once, and someone asking what happened to one request. After [async internals](/posts/rust-pin-future-internals/), this post uses the `tracing` crate on the kind of code from [async/await and Tokio](/posts/rust-async-tokio/), and the same ideas apply to a service like the one in [Building an API with Axum](/posts/rust-http-axum-api/). I compare it with `slog` from [Config, structured logging and errors in Go](/posts/go-config-logging-errors/) at the end.
 
 > Rust 1.90, edition 2024, `tracing 0.1.44`, `tracing-subscriber 0.3.23` (features `env-filter`, `json`), `tokio 1.54.1`. All output below was copied from real runs (colors turned off with `NO_COLOR=1`).
 
@@ -157,7 +158,7 @@ Exporting spans to Jaeger or any OpenTelemetry backend is done by adding another
 
 Compared with Go: `log/slog` gives structured key-value logs and `With` for attaching fields to a logger, but it has no span concept; correlating lines across goroutines means passing a logger or a context yourself. In `tracing`, the span is the carrier.
 
-## A few things to watch
+## tracing traps in async code
 
 - `tokio::spawn` loses the span; use `.instrument(Span::current())`.
 - `#[instrument]` records all arguments with `Debug` by default; use `skip` for secrets and large values.
@@ -171,4 +172,4 @@ Add a `request_id` field to a span around your own handler, spawn a background t
 
 ## What's next
 
-The next post is about the type-state pattern and API design in Rust: encoding valid states in types so wrong usage does not compile.
+*The type-state pattern and API design in Rust* moves one step before any log line: encoding valid states in types so wrong usage does not compile.

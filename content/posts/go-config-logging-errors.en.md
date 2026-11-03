@@ -3,13 +3,14 @@ date = '2026-12-28T10:00:00+03:30'
 draft = false
 title = 'Config, structured logging and errors in Go'
 description = 'Typed config from environment variables, slog with text and JSON handlers and request IDs, and mapping domain errors to HTTP status codes in one place.'
+contentType = 'tutorial'
 categories = ["Go"]
 series = ["Go Backend"]
 tags = ["go", "backend", "slog", "config", "errors"]
 cover = { image = "/images/covers/go-config-logging-errors.png", alt = "Config, structured logging and errors in Go", hiddenInSingle = true }
 +++
 
-In the [previous post](/posts/go-project-layout-clean-architecture/) we built a small `orders` service with a hard-coded `:8080` and a bare `log.Println`. Here we fix both and add the third thing every real service needs: a deliberate policy for errors at the boundary. The code is the same module, standard library only, evolved in place.
+Give a password a `LogValue` method and slog prints `[REDACTED]`; put the same value inside a plain struct, or hand it to `Println`, and it lands in the log. Config, logging and errors are where a service either tells the operator what went wrong or quietly leaks secrets. The `orders` service from [project layout and clean architecture](/posts/go-project-layout-clean-architecture/) still has a hard-coded `:8080` and a bare `log.Println`; here we fix both and add a deliberate policy for errors at the boundary. The code is the same module, standard library only, evolved in place.
 
 > Everything was run with Go 1.26 on macOS (arm64).
 
@@ -161,7 +162,7 @@ X-Request-Id: cbec0bb8
 
 The client learns nothing about the database address, while the log has the whole chain and the same `request_id` that the response header returned. A missing order logs a `WARN` with `"error":"get order 99: order not found"` but answers with just `{"error":"order not found"}`.
 
-## A few things to watch
+## Common error and logging mistakes
 
 - Log an error once, at the boundary. If every layer logs and returns, you get the same failure five times.
 - `%v` instead of `%w` keeps the text but breaks `errors.Is` and `errors.As`.
@@ -171,4 +172,4 @@ The client learns nothing about the database address, while the log has the whol
 
 ## What's next
 
-Next: building an API with net/http in Go.
+Next is "Building an API with net/http in Go", because the server here is still minimal and that post adds middleware, timeouts and tests on top.

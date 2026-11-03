@@ -3,13 +3,14 @@ date = '2026-11-09T10:00:00+03:30'
 draft = false
 title = 'پیدا کردن باگ با git bisect'
 description = 'git bisect با جست‌وجوی دودویی commit خراب‌کننده را پیدا می‌کند، دستی یا کاملاً خودکار با git bisect run، با اجرای واقعی روی ریپوی ۳۰ commitی.'
+contentType = 'tutorial'
 categories = ["Git"]
 series = ["Git"]
 tags = ["git", "bisect", "debugging", "beginner"]
 cover = { image = "/images/covers/git-bisect.fa.png", alt = "پیدا کردن باگ با git bisect", hiddenInSingle = true }
 +++
 
-در [پست قبلی](/fa/posts/git-undo-reflog-revert/) یاد گرفتیم کار انجام‌شده را چطور برگردانیم. حالا سؤال سخت‌تر: چیزی که ماه پیش درست کار می‌کرد امروز خراب است و ۳۰ commit بین این دو نقطه هست. کدام یکی خرابش کرده؟ این یک {{< term "regression" "regression" >}} است و `git bisect` ابزار مناسبش است.
+چیزی که ماه پیش درست کار می‌کرد امروز خراب است و ۳۰ commit بین این دو نقطه هست. کدام یکی خرابش کرده؟ این یک {{< term "regression" "regression" >}} است و `git bisect` با حدود پنج تست جوابش را می‌دهد، به‌جای خواندن دستی تا ۲۹ diff. [برگرداندن کار](/fa/posts/git-undo-reflog-revert/) وقتی ساده است که بدانید کدام commit را revert کنید؛ bisect همان commit را پیدا می‌کند.
 
 > همه‌چیز با Git 2.39 در یک ریپوی دمو‌ی محلی اجرا شده و hashها خروجی واقعی همان اجرا هستند.
 
@@ -99,7 +100,7 @@ exit code ‏125 برای `git bisect run` معنای ویژه دارد: «ای�
 
 `git bisect visualize` commitهای مظنون باقی‌مانده را در یک viewer گرافیکی نشان می‌دهد. چون UI می‌خواهد، اینجا اجرایش نکردم.
 
-## چند نکته‌ی مهم
+## جایی که bisect گمراه می‌کند
 
 - exit codeها: 0 یعنی سالم، از 1 تا 127 به‌جز 125 یعنی خراب، 125 یعنی skip و 128 به بالا bisect را متوقف می‌کند. هر crash با کد بالا اجرا را قطع می‌کند.
 - اسکریپت تست باید در هر commitی که Git checkout می‌کند وجود داشته باشد. مال من در commit اول commit شده؛ فایل untracked بیرون از تاریخچه هم کار می‌کند.

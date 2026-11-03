@@ -3,13 +3,14 @@ date = '2027-02-26T10:00:00+03:30'
 draft = false
 title = 'Future، Pin و درون async در Rust'
 description = 'async fn در Rust واقعاً چیست: trait به نام Future، waker، block_on و join دست‌نویس، اندازه‌ی state machine، دلیل وجود Pin و لغو کار با drop.'
+contentType = 'tutorial'
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "async", "pin", "future", "advanced"]
 cover = { image = "/images/covers/rust-pin-future-internals.fa.png", alt = "Future، Pin و درون async در Rust", hiddenInSingle = true }
 +++
 
-[مقاله‌ی قبل](/fa/posts/rust-performance-criterion/) درباره‌ی اندازه‌گیری بود. این مقاله جعبه‌ی زیر [async/await و Tokio](/fa/posts/rust-async-tokio/) را باز می‌کند: future دقیقاً چیست، چه کسی آن را صدا می‌زند و چرا `Pin` در همه‌ی signatureها دیده می‌شود. قطعه‌ها را فقط با کتاب‌خانه‌ی استاندارد خودمان می‌سازیم و در انتها همان کد را زیر Tokio اجرا می‌کنیم.
+در Rust یک future تا وقتی کسی آن را poll نکند هیچ کاری نمی‌کند. پس چه کسی poll می‌کند و چرا `Pin` در همه‌ی signatureها دیده می‌شود؟ پس از [اندازه‌گیری با Criterion](/fa/posts/rust-performance-criterion/)، جعبه‌ی زیر [async/await و Tokio](/fa/posts/rust-async-tokio/) را باز می‌کنیم. قطعه‌ها را فقط با کتاب‌خانه‌ی استاندارد خودمان می‌سازیم و در انتها همان کد را زیر Tokio اجرا می‌کنیم.
 
 > همه‌ی کدها با Rust نسخه‌ی 1.90 و edition 2024 کامپایل و اجرا شده‌اند. خروجی‌ها و پیام‌های کامپایلر از همان اجراها کپی شده‌اند.
 
@@ -22,7 +23,7 @@ pub trait Future {
 }
 ```
 
-`poll` یا `Poll::Ready(value)` برمی‌گرداند یا `Poll::Pending`. یک future تا وقتی کسی `poll` نکند هیچ کاری نمی‌کند. اگر `Pending` برگرداند، باید ترتیبی بدهد که وقتی پیشرفت ممکن شد، **waker** داخل `cx` صدا زده شود. این future را خودم با دست نوشته‌ام: N بار `Pending` می‌گوید و هر بار خودش را بیدار می‌کند.
+`poll` یا `Poll::Ready(value)` برمی‌گرداند یا `Poll::Pending`. اگر `Pending` برگرداند، باید ترتیبی بدهد که وقتی پیشرفت ممکن شد، **waker** داخل `cx` صدا زده شود. این future را دستی نوشته‌ام: N بار `Pending` می‌گوید و هر بار خودش را بیدار می‌کند.
 
 ```rust
 pub struct CountdownFuture { pub name: &'static str, pub remaining: u32 }
@@ -157,7 +158,7 @@ after scope
 
 `CountdownFuture` من بدون تغییر زیر `tokio::runtime::Builder::new_current_thread().build()?.block_on(...)` اجرا می‌شود و خروجی‌اش با executor خودم یکی است (`start`، دو pending، `got a` و `result = 42`). Tokio تایمر، IO و زمان‌بندی چندthread اضافه می‌کند، ولی قرارداد همان `poll` و `Waker` است.
 
-## چند نکته برای دقت
+## قواعد قرارداد Future
 
 - برگرداندن `Pending` بدون ترتیب دادن یک بیدارسازی یعنی task برای همیشه می‌خوابد.
 - بعد از `Ready` دیگر future را poll نکنید؛ بلوک‌های `async` با پیام "resumed after completion" panic می‌کنند.
@@ -170,4 +171,4 @@ after scope
 
 ## قدم بعدی
 
-مقاله‌ی بعد observability در Rust با `tracing` است: لاگ ساخت‌یافته و span برای کد async.
+«Observability در Rust با tracing»: لاگ ساخت‌یافته و span برای دیدن سرگذشت یک درخواست میان taskهای درهم.

@@ -3,15 +3,16 @@ date = '2026-11-15T10:00:00+03:30'
 draft = false
 title = 'submodule، subtree و worktree'
 description = 'مقایسه‌ی submodule، subtree و worktree در گیت با اجرای واقعی: gitlink، clone ناقص، pointer ناپوش‌شده، subtree split و دو branch همزمان.'
+contentType = 'tutorial'
 categories = ["Git"]
 series = ["Git"]
 tags = ["git", "beginner", "submodule", "subtree", "worktree"]
 cover = { image = "/images/covers/git-submodule-subtree-worktree.fa.png", alt = "submodule، subtree و worktree", hiddenInSingle = true }
 +++
 
-در [مقاله‌ی قبل](/fa/posts/git-hooks-commit-hygiene/) کنترل‌های دور commit را خودکار کردیم. این بار سراغ سمت دیگر کار روزمره با گیت می‌رویم: وقتی repository شما به یک repository دیگر نیاز دارد، و وقتی دو branch را همزمان روی دیسک می‌خواهید. گیت برای این کارها سه ابزار دارد که راحت با هم اشتباه گرفته می‌شوند: **{{< term "submodule" "submodule" >}}**، **{{< term "subtree" "subtree" >}}** و **{{< term "worktree" "worktree" >}}**.
+repositoryای را که **{{< term "submodule" "submodule" >}}** دارد بدون `--recurse-submodules` clone کنید و پوشه‌ی خالی می‌گیرید؛ والد را قبل از submodule پوش کنید و همکارانتان pointerی به commitی می‌گیرند که فقط روی دیسک شماست. بعد از [کنترل‌های دور commit](/fa/posts/git-hooks-commit-hygiene/)، این سمت دیگر کار روزمره است: وقتی repository شما به repository دیگری نیاز دارد یا دو branch را همزمان روی دیسک می‌خواهید. گیت برای این‌ها سه ابزار دارد که راحت با هم قاطی می‌شوند: submodule، **{{< term "subtree" "subtree" >}}** و **{{< term "worktree" "worktree" >}}**.
 
-همین بلاگ هم یکی از آن‌ها را استفاده می‌کند. فایل `.gitmodules` این repo فقط یک ورودی دارد، `themes/PaperMod` که به repository پوسته‌ی PaperMod در GitHub اشاره می‌کند، و `git submodule status` این را چاپ می‌کند: `7d061d5... themes/PaperMod (v8.0-54-g7d061d5)`. یعنی یک commit پین‌شده از کد دیگران.
+این بلاگ هم از یکی از آن‌ها استفاده می‌کند. فایل `.gitmodules` این repo فقط یک ورودی دارد، `themes/PaperMod` که به repository پوسته‌ی PaperMod در GitHub اشاره می‌کند، و `git submodule status` این را چاپ می‌کند: `7d061d5... themes/PaperMod (v8.0-54-g7d061d5)`. یعنی یک commit پین‌شده از کد دیگران.
 
 > همه‌ی دستورها با Git نسخه‌ی 2.39.2 در repositoryهای موقت اجرا شده‌اند و remoteها مسیر محلی بوده‌اند. hashها در هر اجرا فرق می‌کنند، پس مال شما یکی نخواهد بود. برای دمو `protocol.file.allow=always` را در محیط گذاشتم، چون گیت به‌صورت پیش‌فرض submodule با مسیر محلی را مسدود می‌کند. این فقط برای دموی محلی لازم است.
 
@@ -53,7 +54,7 @@ git -C app-plain submodule status
 HEAD detached at 390b441
 ```
 
-این عمدی است: والد یک commit را پین می‌کند، نه یک branch را. اگر آنجا commit بزنید و بعد branch را عوض کنید، commit جدید هیچ branchی ندارد که به آن اشاره کند.
+این عمدی است: والد یک commit را پین می‌کند، نه branch را. اگر آنجا commit بزنید و بعد branch را عوض کنید، commit جدید هیچ branchی ندارد که به آن اشاره کند.
 
 ## جابه‌جا کردن pointer
 
@@ -80,7 +81,7 @@ Errors during submodule fetch:
 pull exit=1
 ```
 
-commit والد معتبر است ولی به commitی اشاره می‌کند که فقط روی دیسک من وجود دارد. قاعده: اول submodule را push کنید، بعد والد را. بعد از اینکه `lib` را push کردم، همان pull و `git submodule update` درست کار کردند.
+commit والد معتبر است ولی به commitی اشاره می‌کند که فقط روی دیسک من وجود دارد. قاعده: اول submodule را push کنید، بعد والد را. بعد از push کردن `lib`، همان pull و `git submodule update` درست کار کردند.
 
 ## subtree: فقط فایل
 
@@ -132,7 +133,7 @@ fatal: 'hotfix' is already checked out at '<tmp>/app-hotfix'
 
 ردیف آخر نظر شخصی من است، نه اندازه‌گیری.
 
-## چند نکته‌ی مهم
+## دام‌های رایج
 
 - همیشه با `--recurse-submodules` clone کنید، یا بعدش `git submodule update --init` بزنید.
 - اول submodule را push کنید، بعد والد را.
@@ -148,4 +149,4 @@ fatal: 'hotfix' is already checked out at '<tmp>/app-hotfix'
 
 ## قدم بعدی
 
-در مقاله‌ی بعد، «workflowهای تیمی و درون packfile»، می‌بینیم تیم‌ها در عمل چطور با branch و pull request کار می‌کنند و گیت objectها را چطور در packfile ذخیره می‌کند.
+مقاله‌ی بعد «workflowهای تیمی و درون packfile» آخرین مقاله‌ی سری است: تیم‌ها چطور با branch و pull request کار می‌کنند و objectها چطور در packfile ذخیره می‌شوند.

@@ -3,13 +3,14 @@ date = '2027-01-29T10:00:00+03:30'
 draft = false
 title = 'KV and Object Store in NATS'
 description = 'Use JetStream as a key-value store and a blob store from Go: revisions, compare-and-swap, watch, TTL, a simple lock, and chunked objects, with real output.'
+contentType = 'tutorial'
 categories = ["Go"]
 series = ["NATS JetStream"]
 tags = ["go", "nats", "jetstream", "kv", "object-store", "messaging"]
 cover = { image = "/images/covers/nats-kv-object-store.png", alt = "KV and Object Store in NATS", hiddenInSingle = true }
 +++
 
-In the [previous post](/posts/nats-jetstream-testing/) we tested JetStream services with an embedded server. This post uses the same trick for something new: JetStream also works as a **key-value store** (KV) and a **blob store** (Object Store). Both are built on streams, so there is nothing extra to run. They are handy for small shared state: feature flags, short-lived locks, [dedup keys](/posts/nats-jetstream-idempotency/), or a file that several services need.
+If your services already use JetStream, you may not need a separate store for small shared state: JetStream also works as a **key-value store** (KV) and a **blob store** (Object Store). Both are built on streams, so there is nothing extra to run, and the embedded server from the [previous post](/posts/nats-jetstream-testing/) is enough. Typical uses: feature flags, short-lived locks, [dedup keys](/posts/nats-jetstream-idempotency/), or a file that several services need.
 
 > Go 1.26, `nats-server` v2.15.1, `nats.go` v1.54.0, using the newer `jetstream` package (it has KV and Object Store). One embedded server in the demo program. The machine was busy, so I only quote rough times.
 
@@ -137,7 +138,7 @@ status: bucket=Files size=671 sealed=false storage=File replicas=1
 
 Delete removes the chunks and leaves a metadata marker.
 
-## A few things to watch
+## Where KV and Object Store fall short
 
 - This is not a database: no queries, no transactions across keys, only per-key revisions. Treat it as small shared state.
 - TTL is a bucket setting here, so use one bucket per lifetime (locks, sessions, config).
@@ -147,4 +148,4 @@ Delete removes the chunks and leaves a metadata marker.
 
 ## What's next
 
-Next: JetStream in production, covering clustering, retention and security.
+All of this ran on one embedded server. JetStream in production: clustering, retention and security covers what changes with three servers and a real environment.

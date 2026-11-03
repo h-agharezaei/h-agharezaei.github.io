@@ -3,13 +3,14 @@ date = '2027-05-17T10:00:00+03:30'
 draft = false
 title = 'اشتباه‌های رایج رمزنگاری'
 description = 'اشتباه‌های رایج رمزنگاری در Go: ECB، تکرار nonce، نبود احراز، math/rand، هش، IV ثابت، رمز XOR و کلید ضعیف، همه با خروجی واقعی.'
+contentType = 'tutorial'
 categories = ["Security"]
 series = ["Software Security"]
 tags = ["security", "cryptography", "encryption", "go", "hmac"]
 cover = { image = "/images/covers/sec-crypto-mistakes.fa.png", alt = "اشتباه‌های رایج رمزنگاری", hiddenInSingle = true }
 +++
 
-مقاله‌ی قبلی، [SSRF و deserialization ناامن](/fa/posts/sec-ssrf-deserialization/)، درباره‌ی اعتماد بیش‌ازحد به ورودی بود. رمزنگاری هم همین‌طور خراب می‌شود: کد کار می‌کند، تست‌ها سبزند و طراحی باز هم شکسته است. [مدیریت راز و کلید](/fa/posts/sec-secrets-management/) AES-GCM، nonce و رمزنگاری پاکتی را پوشش داد و تکرارشان نمی‌کنم. این مقاله فهرست «چه چیزی خراب می‌شود» است. ذخیره‌ی رمز عبور در [ذخیره‌ی امن رمز عبور](/fa/posts/sec-password-hashing/) و گواهی‌ها در [TLS و گواهی x509 در عمل](/fa/posts/sec-tls-x509-certificates/) آمده است.
+۶۴ بایت `A` را بلوک به بلوک با `cipher.Block` رمز کنید؛ هر چهار بلوک متن رمزشده یکسان درمی‌آیند. کد کار می‌کند، تست‌ها سبزند و طراحی باز هم شکسته است؛ رمزنگاری این‌طور خراب می‌شود، شبیه اعتماد بیش‌ازحد به ورودی در [SSRF و deserialization ناامن](/fa/posts/sec-ssrf-deserialization/). [مدیریت راز و کلید](/fa/posts/sec-secrets-management/) AES-GCM، nonce و رمزنگاری پاکتی را پوشش داد و تکرارشان نمی‌کنم. این مقاله فهرست «چه چیزی خراب می‌شود» است. ذخیره‌ی رمز عبور در [ذخیره‌ی امن رمز عبور](/fa/posts/sec-password-hashing/) و گواهی‌ها در [TLS و گواهی x509 در عمل](/fa/posts/sec-tls-x509-certificates/) آمده است.
 
 > فقط دفاعی. همه‌ی کلیدها و جمله‌ها آشکارا جعلی‌اند و همه‌چیز محلی با Go 1.26 و `golang.org/x/crypto` نسخه‌ی v0.31.0 اجرا شد. سراغ پیدا کردن collision در هش یا حمله به چیز واقعی نرفتم. دمو یک `main.go` کوچک و یک تست است که با `go test -race` اجرا شد و موفق بود.
 
@@ -124,7 +125,7 @@ tampered message verify: false
 
 این نظر من است که مستندات پشتوانه‌اش‌اند. بهتر از آن، کتابخانه‌ی سطح بالا (age، `secretbox` در NaCl، Tink؛ فقط نام می‌برم) بگیرید و بازبینی بخواهید.
 
-## چند نکته‌ی مهم
+## چهار قاعده‌ی کوتاه
 
 - از اجزای پایه‌ای طرح شخصی نسازید.
 - هر چه رمز می‌کنید احراز هم بکنید.
@@ -137,4 +138,4 @@ tampered message verify: false
 
 ## قدم بعدی
 
-مقاله‌ی بعدی: امنیت حافظه: C در برابر Rust.
+«امنیت حافظه: C در برابر Rust» یک لایه پایین‌تر می‌رود: کدی که حافظه‌ای را می‌خواند یا می‌نویسد که مال آن نیست.

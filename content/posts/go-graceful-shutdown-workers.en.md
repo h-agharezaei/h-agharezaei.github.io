@@ -3,13 +3,14 @@ date = '2026-12-16T10:00:00+03:30'
 draft = false
 title = 'Graceful shutdown for Go workers'
 description = 'Graceful shutdown for a Go JetStream worker: SIGTERM with signal.NotifyContext, finishing in-flight messages, a shutdown timeout and Drain.'
+contentType = 'engineering'
 categories = ["Go"]
 series = ["NATS JetStream"]
 tags = ["go", "nats", "jetstream", "shutdown", "context", "signals"]
 cover = { image = "/images/covers/go-graceful-shutdown-workers.png", alt = "Graceful shutdown for Go workers", hiddenInSingle = true }
 +++
 
-The [previous post](/posts/nats-jetstream-idempotency/) ended by saying that redelivery during a deploy is the most common way to hit duplicates. A deploy sends your worker a signal and starts a new one. If the old one just dies, whatever it was doing is redelivered later. In this post I test that with real signals and then fix it. If `context` is new to you, read [sync, select and context](/posts/go-sync-select-context/) first.
+A deploy sends your worker a signal and starts a new one. If the old one just dies, whatever it was doing is redelivered later; as the [previous post](/posts/nats-jetstream-idempotency/) noted, that is the most common way to hit duplicates. Here I test that with real signals and then fix it. If `context` is new to you, read [sync, select and context](/posts/go-sync-select-context/) first.
 
 > Everything ran on Go 1.26 with an embedded `nats-server` v2.15.1 and `nats.go` v1.54.0. To send real signals, the demo is one built binary with two modes: `server` (embedded server, a stream `JOBS`, a consumer with `AckWait` of 5 seconds, two published jobs) and `worker`, each in its own process. I send `kill -TERM <pid>` from a shell script. The times are wall-clock, and the number in brackets is the PID.
 
@@ -123,7 +124,7 @@ The worker gave up on time, did not ack, and exited with code 1. The messages ca
 
 A non-zero exit code tells whoever supervises the process that shutdown was not clean, which is why I return 1 on timeout. In Kubernetes, as I understand the documented behavior, a pod gets `SIGTERM`, then after `terminationGracePeriodSeconds` it gets `SIGKILL`, which cannot be caught. I did not run Kubernetes here, and I am not stating any default value. The rule I take from it: set the shutdown timeout lower than the grace period, and the grace period longer than your slowest normal job.
 
-## A few things to watch
+## Shutdown traps
 
 - `Fetch` with `MaxWait` means the loop notices the signal within a second at worst. Keep the wait short.
 - Do not pass the signal context into handlers if you want them to finish. Use a separate context that only the timeout cancels.
@@ -133,4 +134,4 @@ A non-zero exit code tells whoever supervises the process that shutdown was not 
 
 ## What's next
 
-The worker now stops properly, but when something goes wrong we still mostly guess. The next post covers observability for JetStream: metrics, logs and traces.
+The worker now stops properly, but when something goes wrong we still mostly guess. Observability for JetStream: metrics, logs and traces is about replacing that guessing with data.

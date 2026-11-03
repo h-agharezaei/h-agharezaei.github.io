@@ -3,13 +3,14 @@ date = '2027-04-21T10:00:00+03:30'
 draft = false
 title = 'greedy و backtracking'
 description = 'الگوریتم greedy و backtracking در Go: زمان‌بندی بازه‌ها، مسئله‌ی سکه، Huffman، N-Queens و Sudoku با شمارش واقعی گره‌ها و تست.'
+contentType = 'tutorial'
 categories = ["Algorithms"]
 series = ["Algorithms"]
 tags = ["algorithms", "greedy", "backtracking", "huffman", "n-queens", "go"]
 cover = { image = "/images/covers/algo-greedy-backtracking.fa.png", alt = "greedy و backtracking", hiddenInSingle = true }
 +++
 
-در [برنامه‌ریزی پویا ۲: مسئله‌های کلاسیک](/fa/posts/algo-dynamic-programming-2/) با یک جدول همه‌ی گزینه‌ها را بررسی کردیم. دو راهبرد دیگر هم هست: یک انتخاب محلی بکنیم و هرگز به عقب نگاه نکنیم، یا انتخاب‌ها را امتحان کنیم و پس بگیریم. اولی {{< term "greedy-algorithm" "الگوریتم greedy" >}} است و دومی {{< term "backtracking" "backtracking" >}}. هزینه‌ها مثل [Big-O با اندازه‌گیری](/fa/posts/algo-big-o-measured/) شمرده شده‌اند.
+با سکه‌های {1,3,4} و مبلغ ۶، اگر همیشه بزرگ‌ترین سکه را برداریم به 4+1+1 می‌رسیم، در حالی که جواب بهینه 3+3 است: انتخابی که محلی بهترین به نظر می‌رسد می‌تواند غلط باشد. [برنامه‌ریزی پویا ۲: مسئله‌های کلاسیک](/fa/posts/algo-dynamic-programming-2/) با بررسی همه‌ی گزینه‌ها در یک جدول از این خطا دور می‌ماند. دو راهبرد دیگر هم هست: یک انتخاب محلی بکنیم و هرگز به عقب نگاه نکنیم، یا انتخاب‌ها را امتحان کنیم و پس بگیریم. اولی {{< term "greedy-algorithm" "الگوریتم greedy" >}} است و دومی {{< term "backtracking" "backtracking" >}}. هزینه‌ها مثل [Big-O با اندازه‌گیری](/fa/posts/algo-big-o-measured/) شمرده شده‌اند.
 
 > Go 1.26، مثال محلی، تست با `go test -race`. بار ماشین کم نبود، پس شمارش منتشر می‌کنم، نه زمان.
 
@@ -99,7 +100,7 @@ nodes first-empty: 4208   fewest-candidates: 51
 
 pruning و ترتیب‌دهی درخت را کوچک می‌کنند ولی بدترین حالت را نه: N-Queens، Sudoku و مسئله‌های زیرمجموعه در حالت کلی نمایی می‌مانند. اگر زیرمسئله‌ها هم‌پوشان باشند DP، وگرنه backtracking ابزار درست است.
 
-## چند نکته‌ی مهم
+## پیش از اعتماد به یک قاعده‌ی greedy
 
 - greedy اثبات یا تست brute force می‌خواهد؛ یک قاعده‌ی به‌ظاهر معقول کافی نیست.
 - همیشه با brute force روی ورودی‌های تصادفی کوچک مقایسه کنید.
@@ -112,4 +113,4 @@ N-Queens را با bitmask به‌جای سه آرایه‌ی boolean بنویس
 
 ## قدم بعدی
 
-تا اینجا ساختارهایی از عدد و انتخاب را جست‌وجو کردیم. بعدی: «الگوریتم‌های رشته: KMP و Rabin–Karp».
+تا اینجا ساختارهایی از عدد و انتخاب را جست‌وجو کردیم؛ «الگوریتم‌های رشته: KMP و Rabin–Karp» سراغ جست‌وجو در متن می‌رود.

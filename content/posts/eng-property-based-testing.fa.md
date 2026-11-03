@@ -2,6 +2,7 @@
 date = '2027-02-19T10:00:00+03:30'
 draft = false
 title = 'تست خاصیت‌محور'
+contentType = 'tutorial'
 description = 'تست خاصیت‌محور در Go با testing/quick و rapid: shrinking تا کوچک‌ترین مثال نقض، تست مبتنی بر مدل، یک باگ واقعی در Dedupe و fuzzing در Go.'
 categories = ["Engineering"]
 series = ["Software Engineering"]
@@ -9,7 +10,7 @@ tags = ["testing", "property-based-testing", "software-engineering", "go"]
 cover = { image = "/images/covers/eng-property-based-testing.fa.png", alt = "تست خاصیت‌محور", hiddenInSingle = true }
 +++
 
-در [هرم تست و TDD](/fa/posts/eng-testing-pyramid-tdd/) هر تست یک مثال بود: یک ورودی و یک خروجی مورد انتظار. مثال‌ها خوانا هستند ولی فقط حالت‌هایی را می‌سنجند که من به ذهنم رسیده. {{< term "property-based-testing" "تست خاصیت‌محور" >}} قاعده‌ای می‌نویسد که باید برای همه‌ی ورودی‌ها برقرار باشد و ساختن ورودی‌ها را به ماشین می‌سپارد. مبانی `go test` در [تست در Go](/fa/posts/go-testing-basics/) آمده و جدولی که پایین تست می‌کنم از [hash table از صفر](/fa/posts/algo-hash-tables/) است.
+اولین نسخه‌ی `Dedupe` من چهار تست مثالی را پاس کرد و باز هم تکراری نگه می‌داشت؛ یک خاصیت با ورودی `[0 1 0]` آن را گرفت. مثال‌هایی مثل تست‌های [هرم تست و TDD](/fa/posts/eng-testing-pyramid-tdd/) خوانا هستند، ولی فقط حالت‌هایی را می‌سنجند که به ذهن من رسیده. {{< term "property-based-testing" "تست خاصیت‌محور" >}} قاعده‌ای می‌نویسد که باید برای همه‌ی ورودی‌ها برقرار باشد و ساختن ورودی‌ها را به ماشین می‌سپارد. مبانی `go test` در [تست در Go](/fa/posts/go-testing-basics/) آمده و جدولی که پایین تست می‌کنم از [hash table از صفر](/fa/posts/algo-hash-tables/) است.
 
 > دموها با Go 1.26، `go test -race` و `pgregory.net/rapid` نسخه‌ی v1.3.0 اجرا شده‌اند و مثال‌های محلی‌اند.
 
@@ -82,9 +83,9 @@ t.Repeat(map[string]func(*rapid.T){
 
 پیش‌فرض ۱۰۰ حالت برای هر خاصیت است؛ با `-rapid.checks=10000` تست `TestSort` را ۱۰٬۰۰۰ بار اجرا کردم. تا آنجا که می‌دانم rapid هر بار seed تصادفی تازه می‌گیرد، پس یک باگ ممکن است فقط در بعضی اجراها دیده شود. این شبیه یک {{< term "flaky-test" "تست flaky" >}} است ولی باگ واقعی است: seed یا failfile چاپ‌شده را نگه دارید تا بازتولید شود.
 
-{{< term "fuzzing" "fuzzing" >}} خود Go مرتبط ولی متفاوت است: بر اساس coverage هدایت می‌شود و تا وقتی متوقفش کنید ادامه می‌دهد. `go test -fuzz FuzzEncodeDecode -fuzztime 5s` روی رفت‌وبرگشت varint، ۵۱۲٬۵۵۱ اجرا انجام داد و چیزی پیدا نکرد. روی parserها عالی است؛ جنبه‌ی امنیتی‌اش در مقاله‌ی بعدی «Fuzzing to find security bugs» می‌آید. Hypothesis در Python همین ایده است؛ آن را اجرا نکردم.
+{{< term "fuzzing" "fuzzing" >}} خود Go مرتبط ولی متفاوت است: بر اساس coverage هدایت می‌شود و تا وقتی متوقفش کنید ادامه می‌دهد. `go test -fuzz FuzzEncodeDecode -fuzztime 5s` روی رفت‌وبرگشت varint، ۵۱۲٬۵۵۱ اجرا انجام داد و چیزی پیدا نکرد. روی parserها عالی است؛ جنبه‌ی امنیتی‌اش در مقاله‌ای دیگر، «Fuzzing to find security bugs»، می‌آید. Hypothesis در Python همین ایده است؛ آن را اجرا نکردم.
 
-## چند نکته‌ی مهم
+## خاصیتی که واقعاً باگ بگیرد
 
 - نوشتن خاصیت سخت‌ترین بخش است. اگر فقط خود کد را دوباره بنویسد چیزی ثابت نمی‌کند؛ رفت‌وبرگشت، invariant و مدل ساده را ترجیح بدهید.
 - خروجی generator را بسنجید (خالی، تکراری، مقدار بزرگ، یونیکد با `rapid.String()`)، نه فقط این‌که اجرا می‌شود.

@@ -3,13 +3,14 @@ date = '2027-03-09T10:00:00+03:30'
 draft = false
 title = 'connection pool و حالت‌های خرابی'
 description = 'connection pool در PostgreSQL با محدودیت واقعی max_connections و دمو با pgxpool: صف انتظار، connection نشتی، idle in transaction و timeoutها.'
+contentType = 'tutorial'
 categories = ["Databases"]
 series = ["Databases"]
 tags = ["databases", "postgresql", "connection-pooling", "pgxpool", "timeouts"]
 cover = { image = "/images/covers/db-connection-pooling.fa.png", alt = "connection pool و حالت‌های خرابی", hiddenInSingle = true }
 +++
 
-در [پست قبلی](/fa/posts/db-backup-restore-pitr/) مطمئن شدیم می‌توانیم داده را برگردانیم. این پست درباره‌ی رسیدن به خود داده است. هر query یک connection می‌خواهد و PostgreSQL برای هر کدام یک process جدا در سرور می‌سازد، پس تعدادشان محدود است. {{< term "connection-pool" "connection pool" >}} بین کد شما و این محدودیت می‌نشیند. در [Postgres با pgx و sqlc](/fa/posts/go-postgres-pgx-sqlc/) از آن استفاده کردم؛ اینجا عمداً خرابش می‌کنم. به [تراکنش و ACID](/fa/posts/db-transactions-acid/) و [تراکنش در Go](/fa/posts/go-transactions-patterns/) هم وصل است.
+سرور با `max_connections = 10` اتصال دهم را رد کرد: `sorry, too many clients already`. [backup، restore و PITR](/fa/posts/db-backup-restore-pitr/) مطمئن شد داده برمی‌گردد؛ این پست درباره‌ی رسیدن به خود داده است. هر query یک connection می‌خواهد و PostgreSQL برای هر کدام یک process جدا در سرور می‌سازد، پس تعدادشان محدود است. {{< term "connection-pool" "connection pool" >}} بین کد شما و این محدودیت می‌نشیند. در [Postgres با pgx و sqlc](/fa/posts/go-postgres-pgx-sqlc/) از آن استفاده کردم؛ اینجا عمداً خرابش می‌کنم. به [تراکنش و ACID](/fa/posts/db-transactions-acid/) و [تراکنش در Go](/fa/posts/go-transactions-patterns/) هم وصل است.
 
 > همه‌چیز روی یک PostgreSQL 18.3 واقعی روی loopback با `max_connections = 10` و یک برنامه‌ی Go با `pgxpool` (نسخه‌ی pgx 5.11.0) اجرا شد. ماشین شلوغ بود، پس زمان‌سنجی نیست؛ فقط تعداد و خطا.
 
@@ -85,7 +86,7 @@ same connection afterwards: <nil> 1
 
 {{< term "pgbouncer" "PgBouncer" >}} را اجرا نکردم (اینجا در دسترس نیست)، پس این بخش از مستندات آن است نه از اجرا. یک pooler بیرونی اجازه می‌دهد هزاران connection کلاینت چند connection سرور را share کنند. در حالت session هر کلاینت در کل جلسه یک connection سرور نگه می‌دارد. در حالت transaction فقط در طول transaction یکی می‌گیرد که connectionها را خیلی فشرده‌تر استفاده می‌کند، ولی نباید به وضعیت session (`SET`، قفل advisory در سطح session) بین transactionها تکیه کرد.
 
-## چند نکته‌ی مهم
+## بودجه‌ی connection و دام‌هایش
 
 - مجموع اندازه‌ی poolهای همه‌ی سرویس‌ها باید زیر `max_connections` منهای جاهای رزرو بماند.
 - برای `Acquire` و queryها همیشه context با deadline بدهید.

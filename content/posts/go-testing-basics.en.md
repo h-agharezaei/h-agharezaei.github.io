@@ -3,13 +3,14 @@ date = '2026-12-04T10:00:00+03:30'
 draft = false
 title = 'Testing in Go: table-driven tests and benchmarks'
 description = 'Go testing basics: go test flags, table-driven tests with subtests, helpers, coverage, benchmarks with b.Loop and a short look at fuzzing.'
+contentType = 'tutorial'
 categories = ["Go"]
 series = ["Go Fundamentals"]
 tags = ["go", "beginner", "testing", "benchmark"]
 cover = { image = "/images/covers/go-testing-basics.png", alt = "Testing in Go: table-driven tests and benchmarks", hiddenInSingle = true }
 +++
 
-In the [previous post](/posts/go-generics/) we looked at generics. This time we cover something you will use every day: testing. Go ships a test runner and a benchmark tool in the standard library, so there is nothing to install and no framework to pick. By the end you will know how to write table-driven tests, run a single subtest, measure coverage, and compare two implementations with a benchmark.
+Joining 1001 short strings with `+=` was, on one run on my machine, about 28 times slower than `strings.Builder`; you cannot guess a difference like that, any more than you can guess correctness. Go ships a test runner and a benchmark tool in the standard library, so there is nothing to install and no framework to pick. After [generics](/posts/go-generics/), this post covers table-driven tests, running a single subtest, coverage and benchmarks.
 
 > I ran everything below with Go 1.26 on an arm64 Mac (Apple M1). The outputs are copied from those runs.
 
@@ -184,7 +185,7 @@ These numbers are from one run on my machine (arm64 macOS, Go 1.26) and will dif
 
 Go also has built-in fuzzing: a `FuzzXxx(f *testing.F)` function with `f.Add` seeds and `f.Fuzz`, run with `go test -fuzz FuzzReverse -fuzztime 5s`. I tried it on a rune-reversing function with the property "reversing twice returns the input" (skipping invalid UTF-8). It ran about 300,000 executions in 5 seconds and found nothing. A failure would be saved under `testdata/` and replayed by plain `go test`.
 
-## A few things to watch
+## Testing and benchmarking traps
 
 - Forgetting `-count=1` and wondering why nothing reruns: results of unchanged packages are cached.
 - Use `t.Fatal` when later lines depend on an earlier check, `t.Error` when you want to see all failures.
@@ -200,4 +201,4 @@ Go also has built-in fuzzing: a `FuzzXxx(f *testing.F)` function with `f.Add` se
 
 ## What's next
 
-Next we will read and write files, meet `io.Reader` and `io.Writer`, and encode and decode JSON in Go.
+"Files, io.Reader/Writer and JSON in Go": after testing comes code that reads and writes files and works with JSON.

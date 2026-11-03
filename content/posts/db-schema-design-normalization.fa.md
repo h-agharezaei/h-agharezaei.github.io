@@ -3,13 +3,14 @@ date = '2026-11-23T10:00:00+03:30'
 draft = false
 title = 'طراحی schema و نرمال‌سازی'
 description = 'طراحی schema و نرمال‌سازی در PostgreSQL: anomalyهای update، insert و delete را روی یک جدول تخت ببینید و با کلید، قید و نوع داده درستشان کنید.'
+contentType = 'tutorial'
 categories = ["Databases"]
 series = ["Databases"]
 tags = ["databases", "postgresql", "schema-design", "normalization"]
 cover = { image = "/images/covers/db-schema-design-normalization.fa.png", alt = "طراحی schema و نرمال‌سازی", hiddenInSingle = true }
 +++
 
-در [پست قبلی](/fa/posts/db-relational-sql-essentials/) مدل رابطه‌ای و SQL لازم برای کوئری زدن را یاد گرفتیم. حالا سؤالی که پیش از هر کوئری می‌آید: جدول‌ها چه شکلی باشند؟ schema بد سال‌ها آزار می‌دهد. اینجا عمداً با یک جدول بد شروع می‌کنم، خراب شدنش را می‌بینیم و قدم‌به‌قدم درستش می‌کنیم.
+سارا ایمیلش را عوض می‌کند، فقط یکی از سه ردیفش آپدیت می‌شود و دیتابیس دیگر نمی‌داند کدام ایمیل درست است. این باگ schema است، نه query، و schema بد سال‌ها آزار می‌دهد. بعد از [مدل رابطه‌ای و SQL ضروری](/fa/posts/db-relational-sql-essentials/)، سؤال این است که جدول‌ها چه شکلی باشند. عمداً با یک جدول بد شروع می‌کنم و قدم‌به‌قدم درستش می‌کنم.
 
 > همه‌چیز روی یک PostgreSQL 18.3 واقعی و با schema فروشگاهی همین سری اجرا شده است.
 
@@ -106,7 +107,7 @@ America/New_York:  a = 2026-11-23 10:00:00   b = 2026-11-23 05:00:00-05
 
 Enum یا lookup table؟ نوع enum فشرده است ولی تغییرش دردسر دارد. lookup table با foreign key راحت گسترش می‌یابد و می‌تواند ستون اضافه داشته باشد. فروشگاه ما از `CHECK (status IN (...))` استفاده می‌کند که ساده است ولی تغییرش migration می‌خواهد. وقتی مقادیر زیاد عوض می‌شوند من lookup table را انتخاب می‌کنم.
 
-## چند نکته‌ی مهم
+## کی denormalize کنیم و دام‌های دیگر
 
 - فقط بعد از اندازه‌گیری denormalize کنید. موارد موجه به تجربه‌ی من: `total_cents` ذخیره‌شده روی `orders` که هماهنگش نگه می‌دارید، جدول‌های گزارش‌گیری و snapshot تاریخی مثل قیمت لحظه‌ی خرید (`order_items.price_cents`).
 - foreign key خودش روی ستون ارجاع‌دهنده ایندکس نمی‌سازد؛ این موضوع پست بعدی است.
@@ -118,4 +119,4 @@ Enum یا lookup table؟ نوع enum فشرده است ولی تغییرش در�
 
 ## قدم بعدی
 
-پست بعدی «ایندکس B-tree و EXPLAIN ANALYZE» است: اینکه PostgreSQL چطور ردیف‌ها را سریع پیدا می‌کند و چطور plan آن را بخوانیم.
+«ایندکس B-tree و EXPLAIN ANALYZE»: وقتی داده زیاد شد، سؤال بعدی این است که PostgreSQL ردیف‌ها را چطور سریع پیدا می‌کند.

@@ -3,13 +3,14 @@ date = '2026-11-22T10:00:00+03:30'
 draft = false
 title = 'Goroutines and channels in Go'
 description = 'Go goroutines and channels: WaitGroup, buffered and unbuffered channels, deadlocks, a worker pipeline and the race detector, with real program output.'
+contentType = 'tutorial'
 categories = ["Go"]
 series = ["Go Fundamentals"]
 tags = ["go", "beginner", "concurrency", "goroutines", "channels"]
 cover = { image = "/images/covers/go-goroutines-channels.png", alt = "Goroutines and channels in Go", hiddenInSingle = true }
 +++
 
-In the [previous post](/posts/go-packages-modules/) we organised code into packages and modules. Now we get to the feature Go is most known for: concurrency. This post covers {{< term "goroutine" "goroutine" >}}s, `sync.WaitGroup`, {{< term "channel" "channel" >}}s, the deadlock error everyone meets once, a small producer/worker pipeline, and the race detector. Next time we add `sync`, `select` and `context`.
+1000 {{< term "goroutine" "goroutine" >}}s doing an unprotected `count++` end up with numbers like 965 and 970 instead of 1000, and nothing prints an error. In concurrency, the feature Go is most known for, output that looks right proves nothing. After [packages and modules](/posts/go-packages-modules/), this post goes from `sync.WaitGroup` and {{< term "channel" "channel" >}}s to deadlocks, a small pipeline and the race detector.
 
 > Everything below was run with Go 1.26 on macOS (arm64). Outputs that depend on scheduling are marked as such.
 
@@ -206,7 +207,7 @@ exit status 66
 
 The detector found it, and the final count was wrong (853 here, different on each run; plain runs gave 965 and 970). Guarding the increment with a `sync.Mutex` printed `count: 1000` and a clean `-race` run. The pipeline and the other demos were also clean under `-race`.
 
-## A few things to watch
+## Leaks, deadlocks and races
 
 - Always know how a goroutine ends; otherwise it leaks.
 - `wg.Add` before `go`, and `defer wg.Done()` inside.
@@ -222,4 +223,4 @@ The detector found it, and the final count was wrong (853 here, different on eac
 
 ## What's next
 
-Next we cover `sync`, `select` and `context` in Go: mutexes, timeouts, cancellation and how to stop goroutines cleanly.
+"sync, select and context in Go": mutexes and `select` only appeared in passing here; that post adds timeouts and cancellation to stop goroutines cleanly.

@@ -2,6 +2,7 @@
 date = '2027-04-19T10:00:00+03:30'
 draft = false
 title = 'ADRs and documenting decisions'
+contentType = 'tutorial'
 description = 'ADRs and documenting decisions: four records in a Go repo, a checker run on good and broken sets, superseding instead of editing, and an index.'
 categories = ["Engineering"]
 series = ["Software Engineering"]
@@ -9,7 +10,7 @@ tags = ["adr", "documentation", "architecture", "software-engineering", "go"]
 cover = { image = "/images/covers/eng-adr-documentation.png", alt = "ADRs and documenting decisions", hiddenInSingle = true }
 +++
 
-The previous post, [Technical debt](/posts/eng-technical-debt/), ended with a register of things we chose to leave alone. A register says what we decided, not why. Six months later someone asks "why do we poll the outbox?" and the answer is in a chat thread nobody can find. An {{< term "adr" "ADR" >}} (architecture decision record) is a short file in the repo that keeps the why. It is reviewed like code ([Effective code review](/posts/eng-code-review/)), and posts like [API design: versioning and pagination](/posts/eng-api-design-versioning-pagination/) are full of decisions worth recording. Opinions are marked **in my opinion**; the checks and git output were run.
+Six months after a decision someone asks "why do we poll the outbox?", and the answer is in a chat thread nobody can find. The register in [Technical debt](/posts/eng-technical-debt/) records what, not why. An {{< term "adr" "ADR" >}} (architecture decision record) is a short file in the repo that keeps the why. It is reviewed like code ([Effective code review](/posts/eng-code-review/)), and posts like [API design: versioning and pagination](/posts/eng-api-design-versioning-pagination/) are full of decisions worth recording. Opinions are marked **in my opinion**; checks and git output were run.
 
 > Go 1.26. The orders service and its four ADRs are invented, with a fake author and fixed dates in a local demo repo. The decisions are not recommendations.
 
@@ -117,7 +118,7 @@ The tool also generates `docs/adr/README.md` from the files (`adrcheck index doc
 
 ## Why in the repo
 
-History follows the file even after a rename:
+History survives a rename:
 
 ```text
 $ git log --follow --format="%h %ad %s" --date=short -- docs/adr/0002-use-an-outbox-in-postgres.md
@@ -150,7 +151,7 @@ This table is my opinion, not a standard.
 
 Skip it for easily reversible choices (a variable name, a lint rule) and decisions obvious from the code. **In my opinion** the test is: would a new teammate, in a year, plausibly undo this out of ignorance?
 
-## A few things to watch
+## How ADRs lose their value
 
 - An ADR written after the fact tends to justify rather than explain.
 - Do not edit old ADRs "to keep them correct". Supersede.
@@ -163,4 +164,4 @@ Write one ADR for a decision your team made last month, in the template above, w
 
 ## What's next
 
-The next post is "Feature flags and trunk-based development".
+“Feature flags and trunk-based development”: how to keep a change reversible after it ships.

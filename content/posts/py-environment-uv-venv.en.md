@@ -3,13 +3,14 @@ date = '2027-01-08T10:00:00+03:30'
 draft = false
 title = 'The Python environment: venv and uv'
 description = 'Python virtual environments with venv and uv: pip install, requirements.txt, pyproject.toml, uv.lock and uv sync, all shown with real runs.'
+contentType = 'tutorial'
 categories = ["Python"]
 series = ["Python"]
 tags = ["python", "venv", "uv", "pip", "beginner"]
 cover = { image = "/images/covers/py-environment-uv-venv.png", alt = "The Python environment: venv and uv", hiddenInSingle = true }
 +++
 
-This is the first post of a **Python** series for backend engineers who already write Go and Node.js. Before any syntax, we need the part that bites newcomers first: where Python lives on your machine, and where your dependencies go. If you read [Getting started with Go](/posts/go-getting-started/) and [npm, package.json and lockfiles](/posts/node-npm-package-json/), the ideas will feel familiar, only the names change.
+My first attempt to show that a venv isolates packages failed: `requests` imported fine outside it, because my pyenv Python already had it. Leaks like that bite backend engineers coming from Go and Node.js before any syntax does, so this **Python** series starts with where Python lives on your machine, and where your dependencies go. If you read [Getting started with Go](/posts/go-getting-started/) and [npm, package.json and lockfiles](/posts/node-npm-package-json/), the ideas will feel familiar, only the names change.
 
 Everything below was run with Python 3.14.0 and uv 0.10.9 on macOS (arm64), in throwaway directories that I deleted afterwards. Home paths are shown as `<home>`.
 
@@ -76,7 +77,7 @@ One package brought four others, and `pip freeze` lists all of them pinned. Isol
 ModuleNotFoundError: No module named 'cowsay'
 ```
 
-(I first tried `requests` for this check, but it turned out my pyenv Python already had it. That is exactly the kind of leak a venv prevents.)
+(I first tried `requests`, which my base Python already had.)
 
 ## uv
 
@@ -160,7 +161,7 @@ My `requirements.txt` above is a flat list of pins produced by `pip freeze`; it 
 
 See [Packages and modules in Go](/posts/go-packages-modules/) for the Go side.
 
-## A few things to watch
+## Environment traps
 
 - Do not commit `.venv`; do commit `pyproject.toml`, `uv.lock` and `.python-version`.
 - A venv has absolute paths inside, so moving or renaming the folder breaks it. Recreate it instead.

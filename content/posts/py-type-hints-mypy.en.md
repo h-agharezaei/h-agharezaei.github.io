@@ -3,13 +3,14 @@ date = '2027-03-11T10:00:00+03:30'
 draft = false
 title = 'Type hints and mypy'
 description = 'Python type hints and mypy: list[int], X | None, TypedDict, Protocol, PEP 695 generics, real mypy errors, --strict, cast and type: ignore on 3.14.'
+contentType = 'tutorial'
 categories = ["Python"]
 series = ["Python"]
 tags = ["python", "type-hints", "mypy", "typing"]
 cover = { image = "/images/covers/py-type-hints-mypy.png", alt = "Type hints and mypy", hiddenInSingle = true }
 +++
 
-In the [previous post](/posts/py-errors-context-managers/) we handled errors. Here is a way to catch a whole class of them before the program runs. Python is dynamically typed, but you can add {{< term "type-hint" "type hints" >}} and let a {{< term "type-checker" "type checker" >}} such as mypy read them. If you come from [Go's static types](/posts/go-types-control-flow/), the difference is that in Python the hints are optional and the interpreter ignores them. We used [dataclasses](/posts/py-classes-dataclasses/) before; they work well with hints.
+Annotate `def f(a: int) -> int`, call `f('ab')`, and Python prints `abab`: the interpreter stores {{< term "type-hint" "type hints" >}} and ignores them. To catch a whole class of errors like those in [the previous post](/posts/py-errors-context-managers/) before the program runs, a {{< term "type-checker" "type checker" >}} such as mypy has to read them. If you come from [Go's static types](/posts/go-types-control-flow/), in Python the hints are optional. We used [dataclasses](/posts/py-classes-dataclasses/) before; they work well with hints.
 
 > Everything ran on Python 3.14.0 with mypy 2.4.0 (`mypy --version`) in a throwaway venv, since deleted. The demo is four small local files.
 
@@ -69,7 +70,7 @@ print(total_of(['1','2']))
 TypeError: unsupported operand type(s) for +: 'int' and 'str'
 ```
 
-That error came from `sum`, not from the hint. With another function, `def f(a: int) -> int: return a*2`, the call `f('ab')` printed `abab`, and `f.__annotations__` was `{'a': <class 'int'>, 'return': <class 'int'>}`. The hints are stored and nothing more. So run mypy in CI, since nothing else enforces them.
+That error came from `sum`, not from the hint. With another function, `def f(a: int) -> int: return a*2`, the call `f('ab')` printed `abab`, and `f.__annotations__` was `{'a': <class 'int'>, 'return': <class 'int'>}`. So run mypy in CI, since nothing else enforces them.
 
 On 3.14 annotations are evaluated lazily. In `lazy.py` a function used a class defined later in the file as `x: Later`, with no quotes and no `from __future__ import annotations`, and `f.__annotations__` printed the real class `Later`. The future import still works; it makes `__annotations__` hold plain strings (`{'x': 'Later', 'return': 'int'}`).
 
@@ -98,7 +99,7 @@ Hygiene: always write the code (`# type: ignore[assignment]`), keep a reason nea
 
 Go checks types at compile time and you cannot opt out; Python's checking is a separate tool you adopt step by step. Go interfaces are also satisfied structurally, which is exactly what `Protocol` gives Python.
 
-## A few things to watch
+## Rules for adopting hints
 
 - Hints do nothing at run time; wire mypy into CI.
 - Prefer `X | None` and handle the `None` branch.
@@ -114,4 +115,4 @@ Go checks types at compile time and you cannot opt out; Python's checking is a s
 
 ## What's next
 
-The next post is "Testing in Python with pytest".
+Next: "Testing in Python with pytest", because types catch only one class of bugs.

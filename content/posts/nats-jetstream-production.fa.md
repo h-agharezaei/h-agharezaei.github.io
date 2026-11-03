@@ -3,13 +3,14 @@ date = '2027-02-16T10:00:00+03:30'
 draft = false
 title = 'JetStream در پروداکشن: cluster، retention و امنیت'
 description = 'اجرای JetStream با سه replica، تحمل از دست رفتن یک نود، انتخاب سیاست retention و قفل کردن دسترسی با permission و TLS، با اجرای واقعی در Go.'
+contentType = 'engineering'
 categories = ["Go"]
 series = ["NATS JetStream"]
 tags = ["go", "nats", "jetstream", "cluster", "security", "production", "retention"]
 cover = { image = "/images/covers/nats-jetstream-production.fa.png", alt = "JetStream در پروداکشن: cluster، retention و امنیت", hiddenInSingle = true }
 +++
 
-در [مقاله‌ی قبل](/fa/posts/nats-kv-object-store/) از JetStream به‌عنوان KV و ذخیره‌گاه blob استفاده کردیم. این مقاله‌ی آخرِ سری درباره‌ی چیزهایی است که وقتی JetStream از لپ‌تاپ بیرون می‌رود تغییر می‌کنند: یک سرور می‌شود سه سرور، streamها به برنامه‌ی نگهداری نیاز دارند و همه نباید اجازه‌ی publish روی همه‌جا را داشته باشند. مانیتورینگ و تست قبل از پروداکشن لازم‌اند؛ [observability](/fa/posts/nats-jetstream-observability/) و [تست](/fa/posts/nats-jetstream-testing/) را ببینید، و برای خاموش کردن تمیز workerها [graceful shutdown](/fa/posts/go-graceful-shutdown-workers/) را.
+بدون تنظیمات، هر کس به پورت NATS برسد هر کاری می‌تواند بکند. روی لپ‌تاپ این اشکالی ندارد، اما وقتی JetStream از لپ‌تاپ بیرون می‌رود، یک سرور می‌شود سه سرور، streamها به برنامه‌ی نگهداری نیاز دارند و همه نباید اجازه‌ی publish روی همه‌جا را داشته باشند. این مقاله‌ی آخرِ سری درباره‌ی همین تغییرهاست؛ [مقاله‌ی قبل](/fa/posts/nats-kv-object-store/) از JetStream به‌عنوان KV و ذخیره‌گاه blob استفاده کرد. مانیتورینگ و تست قبل از پروداکشن لازم‌اند؛ [observability](/fa/posts/nats-jetstream-observability/) و [تست](/fa/posts/nats-jetstream-testing/) را ببینید، و برای خاموش کردن تمیز workerها [graceful shutdown](/fa/posts/go-graceful-shutdown-workers/) را.
 
 > Go 1.26، `nats-server` نسخه‌ی v2.15.1 و `nats.go` نسخه‌ی v1.54.0. همه‌ی سرورها داخل برنامه‌های نمونه embed شده‌اند و روی localhost اجرا می‌شوند. ماشین بیکار نبود، پس زمان‌بندی نمی‌دهم.
 
@@ -113,7 +114,7 @@ TLS, right CA:        <nil>   (TLS 1.3)
 
 verification را روشن نگه دارید؛ `InsecureSkipVerify` هم وصل می‌شود، ولی اصل کار را از بین می‌برد. NATS برای محیط‌های چند-tenant از nkeys، JWT و accountها هم پشتیبانی می‌کند؛ اینجا امتحانشان نکردم.
 
-## چند نکته که باید حواستان باشد
+## چک‌لیست پیش از راه‌اندازی
 
 - replica نسخه‌ی پشتیبان نیست. publish اشتباه یا purge هم replicate می‌شود.
 - تعداد نودها را فرد بگیرید و برای هر چیز مهمی `Replicas` برابر ۳ بگذارید.
@@ -123,4 +124,4 @@ verification را روشن نگه دارید؛ `InsecureSkipVerify` هم وصل 
 
 ## قدم بعدی
 
-این آخرین مقاله‌ی سری NATS JetStream بود. تقویم به سری Rust برمی‌گردد و مقاله‌ی بعدی unsafe و FFI در Rust است.
+این آخرین مقاله‌ی سری NATS JetStream بود. سری Rust با «Unsafe و FFI در Rust» ادامه پیدا می‌کند، جایی که از بخش امن زبان بیرون می‌رویم تا C را صدا بزنیم و یک کتاب‌خانه‌ی C ABI بسازیم.

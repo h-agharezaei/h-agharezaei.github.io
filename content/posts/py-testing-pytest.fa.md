@@ -3,13 +3,14 @@ date = '2027-03-24T10:00:00+03:30'
 draft = false
 title = 'تست در Python با pytest'
 description = 'تست در Python با pytest: assertion rewriting، fixture، parametrize، monkeypatch، mock و coverage، همه با pytest 9.1.1 روی Python 3.14 اجرا شده.'
+contentType = 'tutorial'
 categories = ["Python"]
 series = ["Python"]
 tags = ["python", "pytest", "testing", "fixtures", "coverage"]
 cover = { image = "/images/covers/py-testing-pytest.fa.png", alt = "تست در Python با pytest", hiddenInSingle = true }
 +++
 
-در [مقاله‌ی قبل](/fa/posts/py-type-hints-mypy/) type hint و mypy را اضافه کردیم؛ type یک دسته از باگ‌ها را می‌گیرد و بقیه را تست. Python خودش `unittest` دارد ولی تقریباً همه از pytest استفاده می‌کنند. pytest یک {{< term "test-runner" "test runner" >}} است که تابع‌های `test_*` را پیدا می‌کند و اجازه می‌دهد `assert` ساده بنویسید. اگر [table-driven test در Go](/fa/posts/go-testing-basics/) را دیده باشید ایده‌ها آشناست، و نگرش کلی به تست را در [هرم تست و TDD](/fa/posts/eng-testing-pyramid-tdd/) نوشته‌ام.
+تستی که خودِ تابع تحت تست را patch کند تا ۹۹۹ برگرداند و ۹۹۹ را assert کند، پاس می‌شود و چیزی را ثابت نمی‌کند. [type hint و mypy](/fa/posts/py-type-hints-mypy/) یک دسته از باگ‌ها را می‌گیرد و تست بقیه را. Python خودش `unittest` دارد ولی تقریباً همه pytest را به کار می‌برند: یک {{< term "test-runner" "test runner" >}} که تابع‌های `test_*` را پیدا می‌کند و اجازه می‌دهد `assert` ساده بنویسید. اگر [table-driven test در Go](/fa/posts/go-testing-basics/) را دیده باشید ایده‌ها آشناست، و نگرش کلی به تست را در [هرم تست و TDD](/fa/posts/eng-testing-pyramid-tdd/) نوشته‌ام.
 
 > همه‌چیز با Python 3.14.0 و pytest 9.1.1 و pytest-cov 7.1.0 (`pytest --version`) در یک venv موقت اجرا شده که حذفش کرده‌ام. دمو یک پکیج کوچک محلی `app/` با پوشه‌ی `tests/` است و مسیر home حذف شده است.
 
@@ -28,11 +29,11 @@ E         {'b': 2} != {'b': 3}
 
 ابزار اندیس و کلید متفاوت را نشان داد. با `-v` یا `-vv` جزئیات بیشتر می‌آید.
 
-یک مشکل واقعی که خودم دیدم: تست‌ها `from app import pricing` داشتند و collection با `ModuleNotFoundError: No module named 'app'` شکست خورد. افزودن `pythonpath = .` به `pytest.ini` آن را حل کرد.
+مشکلی که خودم دیدم: تست‌ها `from app import pricing` داشتند و collection با `ModuleNotFoundError: No module named 'app'` شکست خورد. افزودن `pythonpath = .` به `pytest.ini` آن را حل کرد.
 
 ## Fixture
 
-یک {{< term "fixture" "fixture" >}} چیزی را که تست لازم دارد آماده می‌کند و تست نامش را در پارامترها می‌نویسد. با `yield`، کد بعد از آن teardown است (مثل {{< term "context-manager" "context manager" >}} در [خطا و context manager در Python](/fa/posts/py-errors-context-managers/)). آن‌ها را در `conftest.py` گذاشتم که pytest خودکار بارگذاری می‌کند و همه‌ی تست‌های آن پوشه می‌توانند استفاده کنند:
+یک {{< term "fixture" "fixture" >}} چیزی را که تست لازم دارد آماده می‌کند و تست نامش را در پارامترها می‌نویسد. با `yield`، کد بعد از آن teardown است (مثل {{< term "context-manager" "context manager" >}} در [خطا و context manager در Python](/fa/posts/py-errors-context-managers/)). آن‌ها را در `conftest.py` گذاشتم که pytest خودکار برای همه‌ی تست‌های آن پوشه بارگذاری می‌کند:
 
 ```python
 @pytest.fixture
@@ -48,7 +49,7 @@ def shared():
     print("\n[module fixture teardown]")
 ```
 
-دو تست هر دو را استفاده کردند و لاگی که آخر session چاپ شد این بود:
+دو تست هر دو را استفاده کردند و لاگ آخر session این بود:
 
 ```text
 setup  test_order_a
@@ -61,8 +62,8 @@ fixture با scope تابع برای هر تست اجرا شد، اما با `-s
 
 ## fixtureهای آماده
 
-- `tmp_path`: یک پوشه‌ی موقت تازه. یک فایل JSON آنجا نوشتم و با کد تحت‌تست خواندم.
-- `monkeypatch`: {{< term "monkeypatch" "جایگزینی موقت" >}} که بعد از تست برمی‌گردد. `monkeypatch.setenv("RATE", "2.5")` باعث شد `get_rate()` عدد `2.5` بدهد و تست بعدی بدون آن مقدار پیش‌فرض `1.0` را گرفت.
+- `tmp_path`: یک پوشه‌ی موقت تازه. یک فایل JSON آنجا نوشتم و کد تحت‌تست خواندش.
+- `monkeypatch`: {{< term "monkeypatch" "جایگزینی موقت" >}} که بعد از تست برمی‌گردد. `monkeypatch.setenv("RATE", "2.5")` باعث شد `get_rate()` عدد `2.5` بدهد و تست بعدی پیش‌فرض `1.0` را گرفت.
 - `capsys`: stdout را می‌گیرد. `greet("roham")` دقیقاً `"hello roham\n"` تولید کرد.
 
 ## Parametrize
@@ -105,11 +106,11 @@ with mock.patch("app.service.fetch_user", return_value={"name": "Ana"}) as m:
 m.assert_called_once_with(7)
 ```
 
-تست پاس شد. باید همان‌جایی patch کنید که نام *جست‌وجو می‌شود* (`app.service.fetch_user`) نه جایی که تعریف شده. mock یک {{< term "test-double" "test double" >}} است و تله‌اش over-mocking است: خود `apply_discount` را patch کردم که ۹۹۹ برگرداند و ۹۹۹ را assert کردم. پاس شد و چیزی را تست نکرد. همچنین غلط املایی مثل `m.assert_called_once_wiht(1)` بی‌صدا رد نمی‌شود: `AttributeError ... Did you mean: 'assert_called_once_with'?` داد. فقط لبه‌ها (شبکه، ساعت) را mock کنید، نه منطقی را که می‌خواهید تست کنید.
+تست پاس شد. باید همان‌جایی patch کنید که نام *جست‌وجو می‌شود* (`app.service.fetch_user`) نه جایی که تعریف شده. mock یک {{< term "test-double" "test double" >}} است و تله‌اش over-mocking است، مثل تست ۹۹۹ مقدمه که خود `apply_discount` را patch کرده بود. همچنین غلط املایی مثل `m.assert_called_once_wiht(1)` بی‌صدا رد نمی‌شود: `AttributeError ... Did you mean: 'assert_called_once_with'?` داد. فقط لبه‌ها (شبکه، ساعت) را mock کنید، نه منطقی را که می‌خواهید تست کنید.
 
 ## تست مبتنی بر ویژگی
 
-به‌جای مثال، {{< term "property-based-testing" "property-based testing" >}} یک قاعده می‌گوید و ورودی تولید می‌کند؛ [Property-based testing](/fa/posts/eng-property-based-testing/) را ببینید. ابزار معمول آن Hypothesis است. برای این مقاله آن را نصب و اجرا نکردم، پس خروجی‌ای نشان نمی‌دهم.
+به‌جای مثال، {{< term "property-based-testing" "property-based testing" >}} یک قاعده می‌گوید و ورودی تولید می‌کند؛ [Property-based testing](/fa/posts/eng-property-based-testing/) را ببینید. ابزار معمول آن Hypothesis است. آن را نصب و اجرا نکردم، پس خروجی ندارم.
 
 ## Coverage
 
@@ -122,7 +123,7 @@ TOTAL                23      4    83%
 
 از `pytest --cov=app --cov-report=term-missing`. خط‌های ۲۰ تا ۲۲ در `pricing.py` همان `unused_branch` است که هیچ تستی صدایش نمی‌زند، و خط ۵ در `service.py` همان `fetch_user` واقعی است که همیشه patch کردم. {{< term "code-coverage" "Coverage" >}} می‌گوید چه چیزی اجرا شد، نه این‌که assertها خوب‌اند.
 
-## چند نکته‌ی مهم
+## تله‌های رایج در تست
 
 - تست‌ها به `pythonpath` یا پکیج نصب‌شده نیاز دارند، وگرنه import شکست می‌خورد.
 - نام را همان‌جا patch کنید که استفاده می‌شود.
@@ -138,4 +139,4 @@ TOTAL                23      4    83%
 
 ## قدم بعدی
 
-مقاله‌ی بعدی «GIL و threading» است.
+قدم بعد: «GIL و threading»، جایی که کدِ تست‌شده هم‌زمان می‌شود.

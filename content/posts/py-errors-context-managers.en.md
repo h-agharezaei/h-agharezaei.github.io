@@ -3,13 +3,14 @@ date = '2027-02-23T10:00:00+03:30'
 draft = false
 title = 'Errors and context managers in Python'
 description = 'Python exceptions and context managers: try/except/finally, chaining, ExceptionGroup, with, contextlib and ExitStack, all run on Python 3.14.'
+contentType = 'tutorial'
 categories = ["Python"]
 series = ["Python"]
 tags = ["python", "beginner", "exceptions", "context-managers"]
 cover = { image = "/images/covers/py-errors-context-managers.png", alt = "Errors and context managers in Python", hiddenInSingle = true }
 +++
 
-In the [previous post](/posts/py-classes-dataclasses/) we built classes and dataclasses. Now we look at what happens when things go wrong, and how to guarantee cleanup. Python reports errors with exceptions, unlike [Go's errors as values](/posts/go-functions-defer-errors/): there is no `if err != nil`, an exception travels up the call stack until somebody catches it. Node has the same model for synchronous code, and I covered the async side in [Errors and unhandled rejections in Node.js](/posts/node-errors-unhandled-rejections/).
+Python reports errors with exceptions, unlike [Go's errors as values](/posts/go-functions-defer-errors/): there is no `if err != nil`, an exception travels up the call stack until somebody catches it. Node has the same model for synchronous code, and I covered the async side in [Errors and unhandled rejections in Node.js](/posts/node-errors-unhandled-rejections/). Following [classes and dataclasses](/posts/py-classes-dataclasses/), this post shows what happens on the way up and how cleanup is guaranteed.
 
 > Everything ran with Python 3.14.0 on macOS (`python3 --version`). The demos are three local scripts; home paths are redacted.
 
@@ -32,7 +33,7 @@ f(2): try, else, finally  -> from else
 f(0): try, except: division by zero, finally  -> from except
 ```
 
-`else` runs only when nothing was raised, and `finally` runs always, even after a `return`. A `return` inside `finally` overrides the earlier one, which is why 3.14 prints `SyntaxWarning: 'return' in a 'finally' block` for it. Do not do that.
+`else` runs only when nothing was raised, and `finally` runs always, even after a `return`. A `return` inside `finally` overrides the earlier one, which is why 3.14 prints `SyntaxWarning: 'return' in a 'finally' block` for it.
 
 ## The hierarchy and catching specifically
 
@@ -128,7 +129,7 @@ For a variable number of resources use `ExitStack`. I entered `r1`, `r2`, `r3` i
 
 `assert n > 0, "n must be positive"` raised `AssertionError` normally. Under `python3 -O`, `__debug__` was `False` and the same `pay(-1)` returned `-1` silently. So use `assert` for internal invariants only; validate input with `raise ValueError`.
 
-## A few things to watch
+## Bad habits in error handling
 
 - Catch narrow exceptions; never silence with a bare `except: pass`.
 - Use `raise X from e` to keep the cause, and a bare `raise` to re-raise unchanged.
@@ -144,4 +145,4 @@ For a variable number of resources use `ExitStack`. I entered `r1`, `r2`, `r3` i
 
 ## What's next
 
-The next post is "Type hints and mypy".
+Next: "Type hints and mypy", which catches part of these errors before the program runs.

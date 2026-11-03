@@ -4,13 +4,14 @@ draft = false
 title = 'cgroups and namespaces: the base of containers'
 seoTitle = 'cgroups and namespaces: how containers work'
 description = 'Linux cgroups and namespaces explained from the man pages: how a container is a restricted process, plus two Go programs I only cross-compiled.'
+contentType = 'tutorial'
 categories = ["Linux"]
 series = ["Linux"]
 tags = ["linux", "cgroups", "namespaces", "containers", "go", "macos"]
 cover = { image = "/images/covers/linux-cgroups-namespaces.png", alt = "cgroups and namespaces: the base of containers", hiddenInSingle = true }
 +++
 
-I wrote this on a Mac; nothing here ran on Linux. This is the sixth post of the Linux series, after [systemd: units and timers](/posts/linux-systemd-units-timers/). The question: what is a container, really? The answer comes from the man pages and kernel docs, plus two Go programs that I compiled for Linux and **never ran**. Anything Linux-like below is labelled "illustrative, not captured".
+What is a container, really? The kernel has no such object, only a normal process with two restrictions that decide what it isolates and what it shares with the host. After [systemd: units and timers](/posts/linux-systemd-units-timers/), the answer comes from man pages, kernel docs and two Go programs compiled for Linux but **never run**. Linux-like output is labelled "illustrative, not captured".
 
 > Honest disclaimer: this Mac has no Linux kernel, no VM, and I kept the Docker daemon off. As far as I know, Docker Desktop on a Mac runs containers inside a Linux virtual machine, which is why I could test nothing. The earlier [Docker, CI and deploying a Go service](/posts/go-docker-ci-deploy/) also admitted that it did no real Docker build.
 
@@ -68,7 +69,7 @@ Linux only: namespaces and cgroups do not exist on this OS
 
 Hedged, from documentation: an image is a stack of layers, commonly mounted with {{< term "overlayfs" "overlayfs" >}}, and the runtime switches the process to that root with `pivot_root`. Tools such as Docker, containerd and runc add images, layers and a runtime configuration; as I understand it, the OCI runtime specification defines that configuration. I did not run any of them.
 
-## A few things to watch
+## Isolation limits
 
 - A container is not a VM: it shares the host kernel.
 - Namespaces hide; cgroups limit. You need both.
@@ -81,4 +82,4 @@ On a disposable Linux machine, read `unshare(1)` and try `unshare --uts --pid --
 
 ## What's next
 
-The next post is “Memory, the page cache and the OOM killer”.
+Next: “Memory, the page cache and the OOM killer”, on what happens at `memory.max`.

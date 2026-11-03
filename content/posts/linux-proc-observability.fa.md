@@ -3,13 +3,14 @@ date = '2027-04-10T10:00:00+03:30'
 draft = false
 title = '/proc و مشاهده‌ی سیستم'
 description = 'مشاهده‌ی سیستم با /proc در Linux: فایل‌های مهم، ابزارهای معادل در macOS که اجرا شدند، و برنامه‌ی Go با build tag برای خواندن /proc.'
+contentType = 'tutorial'
 categories = ["Linux"]
 series = ["Linux"]
 tags = ["linux", "proc", "observability", "debugging", "go", "macos"]
 cover = { image = "/images/covers/linux-proc-observability.fa.png", alt = "/proc و مشاهده‌ی سیستم", hiddenInSingle = true }
 +++
 
-«سرور کند است» یا «پروسه نشت دارد» وقتی به درد می‌خورد که بتوانید داخل سیستم در حال اجرا را ببینید. این چهارمین پست سری Linux است، بعد از [پروسه و سیگنال](/fa/posts/linux-processes-signals/). این بار می‌بینیم Linux وضعیتش را چطور نشان می‌دهد و همین واقعیت‌ها را در جاهای دیگر با چه ابزاری می‌شود دید.
+«سرور کند است» یا «پروسه نشت دارد» وقتی به درد می‌خورد که بتوانید داخل سیستم در حال اجرا را ببینید. بعد از [پروسه و سیگنال](/fa/posts/linux-processes-signals/)، می‌بینیم Linux وضعیتش را چطور نشان می‌دهد و همین واقعیت‌ها را جای دیگر با چه ابزاری می‌شود دید.
 
 > توضیح صادقانه: روی این مک هسته‌ی Linux نیست. `/proc` و `/sys` و `strace` و `perf` اینجا وجود ندارند، `free` و `vmstat` هم همین‌طور. بخش‌های علامت‌خورده با **مستندات** از man pageها (`proc(5)` و صفحه‌های فرعی‌اش در man7.org) آمده‌اند، نه از اجرا. هرچه **اجرا شد** روی macOS اجرا شده (Go 1.26، ابزارهای BSD) و شناسه‌ها پنهان شده‌اند.
 
@@ -90,7 +91,7 @@ func procReport() { fmt.Println("not Linux: no /proc here") }
 
 ابزار عمومی ردیابی {{< term "syscall" "فراخوان سیستمی" >}} (**system call**) در Linux همان `strace` است که اجرا نکردم. برای رشد حافظه باید {{< term "rss" "RSS" >}} را دنبال کرد؛ موضوعی که در [پروفایل و حافظه در Node.js](/fa/posts/node-profiling-memory-shutdown/) دیدیم.
 
-## چند نکته‌ی مهم
+## خطا در خواندن عددها
 
 - میانگین بار را با تعداد هسته‌ها مقایسه کنید.
 - واحدها را بررسی کنید: `ru_maxrss` روی macOS بایت و طبق مستندات روی Linux کیلوبایت است.
@@ -104,4 +105,4 @@ func procReport() { fmt.Println("not Linux: no /proc here") }
 
 ## قدم بعدی
 
-پست بعدی «systemd: واحدها و timerها» است.
+بعدی «systemd: واحدها و timerها» است که همین پروسه‌ها را روی سرور اجرا می‌کند.

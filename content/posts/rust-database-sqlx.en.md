@@ -3,13 +3,14 @@ date = '2027-01-23T10:00:00+03:30'
 draft = false
 title = 'Databases with SQLx in Rust'
 description = 'Postgres in Rust with SQLx: PgPool, query_as and FromRow, bind parameters, transactions with automatic rollback, migrations and checked queries.'
+contentType = 'tutorial'
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "sqlx", "postgres", "database", "backend"]
 cover = { image = "/images/covers/rust-database-sqlx.png", alt = "Databases with SQLx in Rust", hiddenInSingle = true }
 +++
 
-In the [previous post](/posts/rust-http-axum-api/) we built an orders API with Axum that kept everything in memory. This post swaps that for Postgres. I wrote a small `OrderStore` for this demo: a struct holding a connection pool, with `create`, `get`, `find`, `list` and a transactional method. It stands alone; plug it into Axum as shared state the same way. I use **SQLx**, an async SQL toolkit that is not an ORM: you write SQL, it handles pooling, parameters and row mapping. The Go counterpart is [Postgres with pgx and sqlc](/posts/go-postgres-pgx-sqlc/).
+SQLx's `query!` macro connects to the database while compiling, so a misspelled column is caught before the program ever runs. Here I replace the in-memory store of the [orders API with Axum](/posts/rust-http-axum-api/) with Postgres. I wrote a small `OrderStore` for this demo: a struct holding a connection pool, with `create`, `get`, `find`, `list` and a transactional method. It stands alone; plug it into Axum as shared state the same way. I use **SQLx**, an async SQL toolkit that is not an ORM: you write SQL, it handles pooling, parameters and row mapping. The Go counterpart is [Postgres with pgx and sqlc](/posts/go-postgres-pgx-sqlc/).
 
 > Rust 1.90, `sqlx` 0.8.6 (features `runtime-tokio`, `postgres`, `migrate`, `macros`), `tokio` 1.54.1, against a real PostgreSQL 18.3 started by a tiny Go launcher with `embedded-postgres` (no Docker), stopped afterwards. The newest sqlx on crates.io, 0.9.0, declares rustc 1.94 as its minimum, so Cargo refused it on my 1.90 and I pinned 0.8.
 
@@ -107,7 +108,7 @@ For CI and Docker builds without a database, `cargo sqlx prepare` runs the check
 
 Both ecosystems keep SQL as SQL. Go's usual path is sqlc: it reads your schema and queries and generates Go code ahead of time, so the compiler checks calls to that code and no database is needed at build time. SQLx's macros check at compile time too, but against a live database, or the committed `.sqlx` cache. Plain `sqlx::query_as` and pgx's `Query` are both unchecked: a typo fails when the query runs.
 
-## A few things to watch
+## Database traps
 
 - Prefer explicit column lists over `SELECT *`; `FromRow` matches names, so extra or renamed columns surface as runtime errors.
 - Commit `.sqlx/` and run `cargo sqlx prepare --check` in CI so the cache cannot go stale.
@@ -121,4 +122,4 @@ Both ecosystems keep SQL as SQL. Go's usual path is sqlc: it reads your schema a
 
 ## What's next
 
-Our `StoreError` is ugly boilerplate. Next: errors in real apps with thiserror and anyhow.
+*Errors in real apps: thiserror and anyhow* removes the ugly boilerplate in our `StoreError`.

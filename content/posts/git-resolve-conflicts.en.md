@@ -3,13 +3,14 @@ date = '2026-11-05T10:00:00+03:30'
 draft = false
 title = 'Resolving conflicts and rerere'
 description = 'Resolve Git merge conflicts step by step: read the markers, abort safely, understand ours vs theirs in merge and rebase, and reuse fixes with rerere.'
+contentType = 'tutorial'
 categories = ["Git"]
 series = ["Git"]
 tags = ["git", "merge-conflict", "rerere", "beginner"]
 cover = { image = "/images/covers/git-resolve-conflicts.png", alt = "Resolving conflicts and rerere", hiddenInSingle = true }
 +++
 
-In the [previous post](/posts/git-merge-vs-rebase/) we compared merge and rebase on two real histories. Both can stop halfway and ask you a question, and that moment scares many beginners. A {{< term "merge-conflict" "conflict" >}} is not an error in your repository. It is Git saying "two people changed the same place, you decide".
+Both [merge and rebase](/posts/git-merge-vs-rebase/) can stop halfway and ask you a question. A {{< term "merge-conflict" "conflict" >}} is not an error in your repository. It is Git saying "two people changed the same place, you decide".
 
 > Everything below was run with Git 2.39.2 on a throwaway repository, and the outputs are copied from those runs.
 
@@ -75,7 +76,7 @@ If you are lost, abort. After `git merge --abort` the status was back to a clean
 | `git merge main` | `status: review` (feature) | `status: published` (main) |
 | `git rebase main` | `status: published` (main) | `status: review` (feature) |
 
-In a merge, "ours" is the branch you are on. In a rebase, Git is building a new history on top of `main`, so "ours" is that growing history and "theirs" is the commit being replayed, which is your own work. So "ours" is the base you build on.
+In a merge, "ours" is the branch you are on. In a rebase, Git is building a new history on top of `main`, so "ours" is that growing history and "theirs" is the commit being replayed, which is your own work.
 
 ## Seeing the base with zdiff3
 
@@ -123,7 +124,7 @@ What it stores: a folder per conflict in `.git/rr-cache`, named by a hash of the
 
 Limits: it matches the same conflicting text, so a changed neighbouring line means a new conflict. It is local to your clone, and it records only content conflicts. If a recorded resolution was wrong, `git rerere forget <path>` is the tool to drop it; I did not verify that step. Mergetools (`git mergetool`) open a visual three-pane editor; I did not run one here.
 
-## A few things to watch
+## Before you commit a resolution
 
 - Never commit the marker lines; search for `<<<<<<<` first.
 - Run your tests after resolving. A clean textual merge can still be wrong semantically.
@@ -137,4 +138,4 @@ Create a repo with two branches changing the same line. Merge and resolve with z
 
 ## What's next
 
-The next post is "Undoing work: reflog, revert and cherry-pick".
+The next post is "Undoing work: reflog, revert and cherry-pick", for when a resolution goes wrong.

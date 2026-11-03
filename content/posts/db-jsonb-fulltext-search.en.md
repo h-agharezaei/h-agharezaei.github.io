@@ -3,13 +3,14 @@ date = '2027-01-14T10:00:00+03:30'
 draft = false
 title = 'JSONB and full-text search'
 description = 'PostgreSQL JSONB and full-text search with real runs: @> and ? operators, GIN index sizes and buffers, tsvector, stemming, Persian text and pg_trgm.'
+contentType = 'tutorial'
 categories = ["Databases"]
 series = ["Databases"]
 tags = ["databases", "postgresql", "jsonb", "full-text-search", "gin"]
 cover = { image = "/images/covers/db-jsonb-fulltext-search.png", alt = "JSONB and full-text search", hiddenInSingle = true }
 +++
 
-In the [previous post](/posts/db-locks-deadlocks/) we looked at locks. Here is a different question: what do you do with data that does not fit neat columns (product attributes, settings), and how do you search text without `LIKE '%...%'` scanning the whole table? PostgreSQL answers both with the {{< term "gin-index" "GIN index" >}}, a cousin of the [B-tree](/posts/db-indexes-btree-explain/) that you already know. Plans are read as in [the planner post](/posts/db-planner-statistics/).
+A search with `ILIKE '%run%'` also matched "runners", and like any `LIKE '%...%'` it read the whole table. Data that does not fit neat columns (product attributes, settings) has the same problem. PostgreSQL answers both with the {{< term "gin-index" "GIN index" >}}, a cousin of the [B-tree](/posts/db-indexes-btree-explain/). Plans are read as in [the planner post](/posts/db-planner-statistics/), and after [locks](/posts/db-locks-deadlocks/) the topic is data shape.
 
 > Everything ran on a real PostgreSQL 18.3. The data is deterministic (`i % n`, no random). The machine was busy, so there are no timings, only buffer counts. The 1000-row `products` table from the shared `shop` schema got an `attrs` column; for index tests I built a 200k-row table, because indexes on 1000 rows prove nothing.
 
@@ -88,7 +89,7 @@ Words are kept whole, the half-space included. A search for `کتاب` did not m
 
 `CREATE EXTENSION pg_trgm` worked here. `similarity('hiking','hikng')` is 0.44444445, and `'kettls' <% body` found the "kettles" rows (10000). A {{< term "trigram" "trigram" >}} GIN index on the text took 11 MB.
 
-## A few things to watch
+## GIN and JSONB surprises
 
 - Index the exact operators you query with; `@>` and `?` need different operator classes.
 - JSONB has no schema. Add `CHECK` constraints for keys you rely on.
@@ -102,4 +103,4 @@ Add a `tags` JSONB array to `products`, find rows containing two tags with `@>`,
 
 ## What's next
 
-Next in the series: Zero-downtime migrations.
+Zero-downtime migrations: on a live table, building an index can freeze the application.

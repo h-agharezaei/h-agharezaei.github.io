@@ -3,13 +3,14 @@ date = '2027-05-14T10:00:00+03:30'
 draft = false
 title = 'شبکه در Linux: ip، ss و nftables'
 description = 'شبکه در Linux از روی man pageها: خواندن ip و ss، hookهای nftables و قوانین پیش‌فرض‌بستهٔ سرور، همراه با linter و parser فایل /proc/net/tcp با Go.'
+contentType = 'tutorial'
 categories = ["Linux"]
 series = ["Linux"]
 tags = ["linux", "networking", "iproute2", "ss", "nftables", "firewall", "go", "macos"]
 cover = { image = "/images/covers/linux-networking-ip-ss-nftables.fa.png", alt = "شبکه در Linux: ip، ss و nftables", hiddenInSingle = true }
 +++
 
-این را روی یک مک نوشتم؛ هیچ‌چیز اینجا روی Linux اجرا نشده است. این نهمین پست سری Linux است، بعد از [I/O و epoll](/fa/posts/linux-io-epoll/). حالا سوکت‌ها دست کرنل‌اند؛ چطور آن‌ها را ببینیم و تصمیم بگیریم کدام بسته‌ها به آن‌ها برسد؟ واقعیت‌ها از man pageها و مستندات کرنل است؛ متن Linux‌مانند با عبارت «نمونه‌ی تصویری، ضبط‌نشده» علامت خورده و فقط آدرس‌های مستندات دارد. پیش‌زمینه: [آدرس‌دهی IP و زیرشبکه](/fa/posts/net-addressing-subnets/) و [TCP: دست‌دهی و حالت‌های اتصال](/fa/posts/net-tcp-handshake-states/).
+حالا که سوکت‌ها دست کرنل‌اند، چطور آن‌ها را ببینیم و تصمیم بگیریم کدام بسته‌ها به آن‌ها برسد؟ اشتباه در بخش دوم روی SSH بیرونتان می‌اندازد. مثل [I/O و epoll](/fa/posts/linux-io-epoll/)، این را روی مک نوشتم، نه Linux. واقعیت‌ها از man pageها و مستندات کرنل است؛ متن Linux‌مانند با «نمونه‌ی تصویری، ضبط‌نشده» علامت خورده و فقط آدرس‌های مستندات دارد. پیش‌زمینه: [آدرس‌دهی IP و زیرشبکه](/fa/posts/net-addressing-subnets/) و [TCP: دست‌دهی و حالت‌های اتصال](/fa/posts/net-tcp-handshake-states/).
 
 ## ip: آدرس، مسیر، همسایه
 
@@ -102,7 +103,7 @@ FAIL: no 'ct state established,related accept' in input chain
 
 کانتینرها با {{< term "namespace" "namespace" >}} شبکه پشته‌ی شبکه‌ی خودشان را می‌گیرند، [cgroup و namespace](/fa/posts/linux-cgroups-namespaces/) را ببینید. طبق man pageهای ip-netns و ip-link، `ip netns add net0` یکی می‌سازد و `ip link add ... type veth` یک جفت {{< term "veth" "veth" >}} می‌سازد: دو رابط مجازی که مثل کابل به هم وصل‌اند؛ یک سر را با `ip link set ... netns net0` به namespace ببرید. اجرا نشد.
 
-## چند نکته‌ی مهم
+## احتیاط با فایروال
 
 - از default drop شروع کنید، ولی کنسول خارج از باند نگه دارید: قانون غلط روی SSH شما را بیرون می‌اندازد.
 - اول `iif "lo"` و established/related را اجازه بدهید، وگرنه سرویس‌های محلی و پاسخ‌ها خراب می‌شوند.
@@ -116,4 +117,4 @@ FAIL: no 'ct state established,related accept' in input chain
 
 ## قدم بعدی
 
-پست بعدی «SSH و کلیدها» است.
+بعدی «SSH و کلیدها» است، اولین قربانی یک قانون غلط.

@@ -3,19 +3,20 @@ date = '2026-12-23T10:00:00+03:30'
 draft = false
 title = 'stack، queue و deque'
 description = 'stack، queue و deque در Go: پیاده‌سازی جنریک با slice و ring buffer، تله‌ی q = q[1:]، شمارش allocation و چهار کاربرد واقعی با خروجی.'
+contentType = 'tutorial'
 categories = ["Algorithms"]
 series = ["Algorithms"]
 tags = ["algorithms", "data-structures", "go", "stack", "queue", "deque"]
 cover = { image = "/images/covers/algo-stacks-queues-deques.fa.png", alt = "stack، queue و deque", hiddenInSingle = true }
 +++
 
-در مقاله‌ی قبلی، [hash table از صفر](/fa/posts/algo-hash-tables/)، ساختاری ساختیم که با کلید چیزها را پیدا می‌کند. stack و queue برعکس‌اند: عمداً دسترسی را محدود می‌کنند و همین محدودیت آن‌ها را سریع و ساده برای استدلال می‌کند. روی آرایه‌هایی که در [آرایه‌ی پویا و slice از درون](/fa/posts/algo-dynamic-arrays/) دیدیم سوارند و جایگزین مبتنی بر node در [لیست پیوندی و چرا کم‌کاربرد است](/fa/posts/algo-linked-lists/) بررسی شد. کد از [Generics در Go](/fa/posts/go-generics/) استفاده می‌کند.
+۱۰۰۰ اشاره‌گر به مقدارهای ۱ کیلوبایتی را در slice صف کنید، ۹۹۰ تا را با `q = q[1:]` خارج کنید و garbage collection اجباری بزنید: عنصرهای خارج‌شده هنوز زنده‌اند. {{< term "queue" "queue" >}} وسوسه‌انگیز نشت حافظه دارد. {{< term "stack" "stack" >}} و queue عمداً دسترسی را محدود می‌کنند، برعکس جست‌وجو با کلید در [hash table از صفر](/fa/posts/algo-hash-tables/)، و همین آن‌ها را سریع و ساده برای استدلال می‌کند، اگر ذخیره‌سازی زیرشان درست باشد. روی آرایه‌هایی که در [آرایه‌ی پویا و slice از درون](/fa/posts/algo-dynamic-arrays/) دیدیم سوارند و جایگزین مبتنی بر node در [لیست پیوندی و چرا کم‌کاربرد است](/fa/posts/algo-linked-lists/) بررسی شد. کد از [Generics در Go](/fa/posts/go-generics/) استفاده می‌کند.
 
 > Go 1.26، macOS arm64، مثال محلی. همه‌ی اعداد زیر تعداد یا اندازه‌اند، نه زمان، پس به load ماشین بستگی ندارند. تست‌ها با `go test -race` سبز هستند.
 
 ## سه نوع کوچک
 
-{{< term "stack" "stack" >}} آخرین‌ورودی-اولین‌خروجی است. slice کارش را کامل انجام می‌دهد: push همان `append` است و pop آخرین عنصر را برمی‌دارد.
+stack آخرین‌ورودی-اولین‌خروجی است. slice کارش را کامل انجام می‌دهد: push همان `append` است و pop آخرین عنصر را برمی‌دارد.
 
 ```go
 func (s *Stack[T]) Pop() (T, bool) {
@@ -31,7 +32,7 @@ func (s *Stack[T]) Pop() (T, bool) {
 }
 ```
 
-{{< term "queue" "queue" >}} اولین‌ورودی-اولین‌خروجی است و {{< term "deque" "deque" >}} اجازه‌ی push و pop از هر دو سر را می‌دهد. هر دو در یک {{< term "ring-buffer" "ring buffer" >}} جا می‌شوند: آرایه‌ی ثابت، یک اندیس `head` و یک شمارنده، و موقعیت‌ها با `%` دور می‌زنند. وقتی آرایه پر شد دو برابر می‌شود.
+queue اولین‌ورودی-اولین‌خروجی است و {{< term "deque" "deque" >}} اجازه‌ی push و pop از هر دو سر را می‌دهد. هر دو در یک {{< term "ring-buffer" "ring buffer" >}} جا می‌شوند: آرایه‌ی ثابت، یک اندیس `head` و یک شمارنده، و موقعیت‌ها با `%` دور می‌زنند. وقتی آرایه پر شد دو برابر می‌شود.
 
 ```go
 func (d *Deque[T]) PushBack(v T) {
@@ -55,7 +56,7 @@ func (d *Deque[T]) PopFront() (T, bool) {
 }
 ```
 
-`Queue[T]` پوشش نازکی است که فقط `Enqueue` و `Dequeue` را نشان می‌دهد. تست‌ها deque را روی ۵۰۰۰ عملیات تصادفی با یک مدل slice مقایسه می‌کنند و ترتیب FIFO را حین رشد بررسی می‌کنند.
+`Queue[T]` پوشش نازکی است که فقط `Enqueue` و `Dequeue` را نشان می‌دهد. تست‌ها deque را روی ۵۰۰۰ عملیات تصادفی با یک مدل slice مقایسه و ترتیب FIFO را حین رشد بررسی می‌کنند.
 
 ## تله‌ی `q = q[1:]`
 
@@ -67,21 +68,21 @@ start      len 8 cap 8
 5 enqueues len 8 cap 8 (reallocated)
 ```
 
-reslice ابتدا را جلو می‌برد و capacity هم کم می‌شود، پس جای جلوی آرایه از دست می‌رود. بدتر اینکه عنصرهای قدیمی هنوز توسط {{< term "backing-array" "backing array" >}} نگه داشته می‌شوند. ۱۰۰۰ اشاره‌گر به مقدارهای ۱ کیلوبایتی وارد کردم، ۹۹۰ تا را خارج کردم، garbage collection اجباری زدم و `HeapAlloc` را خواندم:
+reslice ابتدا را جلو می‌برد و capacity هم کم می‌شود، پس جای جلوی آرایه از دست می‌رود. بدتر اینکه عنصرهای قدیمی هنوز توسط {{< term "backing-array" "backing array" >}} نگه داشته می‌شوند. در آزمایش بالا بعد از garbage collection اجباری `HeapAlloc` را خواندم:
 
 ```
 990 of 1000 items popped with q = q[1:]: ~1000 KB still live
 same, but q[0] = nil before reslicing:   ~0 KB still live
 ```
 
-عنصرهای خارج‌شده تا زمان جایگزین شدن آرایه زنده ماندند. پاک کردن خانه قبل از reslice مشکل را حل می‌کند (`Pop` من همین کار را می‌کند). بعد ۱۰۰۰۰۰ جفت ورود/خروج اجرا کردم که هیچ‌وقت بیش از ۵ عنصر منتظر نبود:
+عنصرهای خارج‌شده تا جایگزین شدن آرایه زنده ماندند. پاک کردن خانه قبل از reslice مشکل را حل می‌کند (`Pop` من همین کار را می‌کند). بعد ۱۰۰۰۰۰ جفت ورود/خروج اجرا کردم که هیچ‌وقت بیش از ۵ عنصر منتظر نبود:
 
 ```
 slice queue: new arrays allocated = 25000
 ring queue: cap = 8 copies = 4
 ```
 
-queue مبتنی بر slice تقریباً هر ۴ عملیات یک آرایه‌ی تازه می‌سازد؛ ring buffer روی capacity برابر ۸ می‌ماند و فقط یک بار ۴ عنصر کپی کرد.
+queue مبتنی بر slice تقریباً هر ۴ عملیات یک آرایه‌ی تازه می‌سازد؛ ring buffer روی capacity ۸ می‌ماند و فقط یک بار ۴ عنصر کپی کرد.
 
 ## allocation و رشد سرشکن
 
@@ -115,13 +116,13 @@ n=1000000  cap=1048576  copies=1048572  copies/n=1.05
 "a)"               balanced=false pos=1
 ```
 
-**undo/redo** با دو stack. ویرایش جدید باید stack مربوط به redo را خالی کند:
+**undo/redo** با دو stack. ویرایش جدید باید stack redo را خالی کند:
 
 ```
 "hello world" undo "hello" undo "" redo "hello" type ! then redo "hello!"
 ```
 
-**پیمایش سطح‌به‌سطح** یک درخت کوچک با queue (ایده‌ی پشت {{< term "bfs" "جست‌وجوی breadth-first" >}}). مقدار `size := q.Len()` در ابتدای هر دور دقیقاً یک سطح است:
+**پیمایش سطح‌به‌سطح** یک درخت کوچک با queue (ایده‌ی پشت {{< term "bfs" "جست‌وجوی breadth-first" >}}). `size := q.Len()` در ابتدای هر دور دقیقاً یک سطح است:
 
 ```
 levels: [[1] [2 3] [4 5 6] [7]]
@@ -141,7 +142,7 @@ n=100000 decreasing: pushes 100000 pops 100000
 
 channel بافردار Go خودش یک queue از نوع FIFO و امن برای concurrency است ([Goroutine و Channel در Go](/fa/posts/go-goroutines-channels/))؛ بین goroutineها از آن استفاده کنید و از نوع‌های این مقاله وقتی فقط یک goroutine به داده دست می‌زند. این نوع‌ها برای استفاده‌ی هم‌زمان امن نیستند. طبق مستندات، `std::collections::VecDeque` در Rust یک ring buffer قابل رشد است؛ آن را اینجا اجرا نکردم.
 
-## چند نکته‌ی مهم
+## باگ‌هایی که در queue پنهان می‌شوند
 
 - هنگام pop خانه را پاک کنید، وگرنه garbage collector نمی‌تواند مقدار را آزاد کند.
 - `q = q[1:]` برای queueهای کوتاه‌عمر خوب است، برای queueهای دائمی نه.
@@ -155,4 +156,4 @@ channel بافردار Go خودش یک queue از نوع FIFO و امن برا�
 
 ## قدم بعدی
 
-heap و priority queue
+heap و priority queue: وقتی آیتم‌ها باید به ترتیب فوریت بیرون بروند، نه ورود.

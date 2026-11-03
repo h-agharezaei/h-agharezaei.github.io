@@ -3,13 +3,14 @@ date = '2027-04-13T10:00:00+03:30'
 draft = false
 title = 'Node.js or Go? When to use which'
 description = 'Node.js or Go for a backend service? The same HTTP service built twice and compared on size, memory and crash behaviour, plus a decision table.'
+contentType = 'analysis'
 categories = ["Node.js"]
 series = ["Node.js"]
 tags = ["nodejs", "go", "comparison", "backend"]
 cover = { image = "/images/covers/node-vs-go-when-to-use.png", alt = "Node.js or Go? When to use which", hiddenInSingle = true }
 +++
 
-This is the last post of the Node.js series. The [previous one](/posts/node-profiling-memory-shutdown/) was about profiling, memory and shutdown. Now the question I get most: Node.js or Go? I use both at work, so this is one person's view with some evidence. I built the same small service twice, with no frameworks, in Node 20.13.1 and Go 1.26, following my posts on [`node:http`](/posts/node-http-server/) and [`net/http`](/posts/go-http-api-stdlib/). The code is a local demo.
+A crash bug I added on purpose took my whole Node service down; in its Go twin a similar bug cost one request and the server kept serving. Node.js or Go is the question I get most, and this last post of the series answers it with one small experiment. The [previous post](/posts/node-profiling-memory-shutdown/) was about profiling, memory and shutdown. I use both at work, so this is one person's view with some evidence. I built the same small service twice, with no frameworks, in Node 20.13.1 and Go 1.26, following my posts on [`node:http`](/posts/node-http-server/) and [`net/http`](/posts/go-http-api-stdlib/). The code is a local demo.
 
 ## The same service twice
 
@@ -73,17 +74,13 @@ Node runs your JavaScript on one thread, and the [event loop](/posts/node-event-
 | Streaming and proxying | both are good; Node streams need care with [backpressure](/posts/node-streams-backpressure/) |
 | Many long-lived connections | both work; Go is simpler to reason about |
 
-## A few things to watch
+## Where this comparison falls short
 
 - My table is opinion. The numbers above come from one machine and one tiny service.
 - Memory at startup is not memory under your real load.
 - Language choice rarely beats database, network and design quality.
 - Team skill usually decides faster than any benchmark.
 - Pin the Node and Go versions in your own comparison.
-
-## Exercise
-
-Add a `GET /sum?n=...` endpoint that does the work in a worker thread in Node. Then compare its behaviour with the Go version while a `/primes` request is running, using counts or response order, not guesses.
 
 ## What's next
 

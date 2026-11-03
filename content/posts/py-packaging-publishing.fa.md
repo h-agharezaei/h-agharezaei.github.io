@@ -3,13 +3,14 @@ date = '2027-05-07T10:00:00+03:30'
 draft = false
 title = 'بسته‌بندی و انتشار پروژه‌ی Python'
 description = 'بسته‌بندی Python با uv: چیدمان src، pyproject.toml، uv build، محتوای wheel، entry point، نصب editable، twine check و نسخه‌بندی.'
+contentType = 'tutorial'
 categories = ["Python"]
 series = ["Python"]
 tags = ["python", "packaging", "uv", "pyproject", "wheel"]
 cover = { image = "/images/covers/py-packaging-publishing.fa.png", alt = "بسته‌بندی و انتشار پروژه‌ی Python", hiddenInSingle = true }
 +++
 
-در [مقاله‌ی قبل](/fa/posts/py-sqlalchemy-postgres/) از Python با Postgres حرف زدیم. کد وقتی برای دیگران مفید می‌شود که نصب‌شدنی باشد. در این مقاله یک بسته‌ی کوچک می‌سازیم، داخل خروجی `uv build` را نگاه می‌کنیم و آن را در یک محیط تمیز نصب می‌کنیم. این مقاله ادامه‌ی [محیط Python: venv و uv](/fa/posts/py-environment-uv-venv/) است و از [type hint و mypy](/fa/posts/py-type-hints-mypy/) هم استفاده می‌کند.
+در چیدمان flat، `import flatpkg` در ریشه‌ی پروژه بدون نصب موفق می‌شود، پس ممکن است تست‌ها روی نسخه‌ی کاری اجرا شوند، نه روی بسته‌ی نصب‌شده. کد وقتی برای دیگران مفید می‌شود که نصب‌شدنی باشد، چه مثل [پست قبل](/fa/posts/py-sqlalchemy-postgres/) با Postgres کار کند چه نه. این‌جا یک بسته‌ی کوچک می‌سازیم، داخل خروجی `uv build` را نگاه می‌کنیم و آن را در یک محیط تمیز نصب می‌کنیم. این مقاله ادامه‌ی [محیط Python: venv و uv](/fa/posts/py-environment-uv-venv/) است و از [type hint و mypy](/fa/posts/py-type-hints-mypy/) هم استفاده می‌کند.
 
 > uv 0.10.9، Python 3.14.0، build backend به نام `uv_build`، در یک پوشه‌ی موقت. **هیچ چیزی جایی آپلود نشد**: اعتبارنامه‌ی PyPI ندارم، پس انتشار اجرا نشد و فقط توصیفش می‌کنم. دمو یک نمونه‌ی محلی است.
 
@@ -91,7 +92,7 @@ PEP 440 با `packaging.version` بررسی شد: `1.0.0a1`، `1.0.0rc1` و `1.0
 
 بسته‌های npm از `package.json` استفاده می‌کنند ([npm و package.json](/fa/posts/node-npm-package-json/)). ماژول‌های Go ([package و module](/fa/posts/go-packages-modules/)) با import path از سیستم کنترل نسخه گرفته می‌شوند و artifact ساخت جدا ندارند. Python یک wheel ساخته‌شده توزیع می‌کند، به‌علاوه‌ی sdist.
 
-## چند نکته‌ی مهم
+## پیش از انتشار
 
 - از چیدمان src استفاده کنید تا تست‌ها کد نصب‌شده را بزنند.
 - `uv.lock` را برای کتابخانه منتشر نکنید.
@@ -104,4 +105,4 @@ PEP 440 با `packaging.version` بررسی شد: `1.0.0a1`، `1.0.0rc1` و `1.0
 
 ## قدم بعدی
 
-مقاله‌ی بعد «ابزار خط فرمان و اسکریپت‌نویسی با Python» است.
+قدم بعد: «ابزار خط فرمان و اسکریپت‌نویسی با Python»، که برنامه‌ی پشت entry pointی مثل همین را می‌نویسد.

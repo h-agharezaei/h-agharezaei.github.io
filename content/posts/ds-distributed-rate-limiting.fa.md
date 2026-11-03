@@ -3,19 +3,20 @@ date = '2027-06-03T10:00:00+03:30'
 draft = false
 title = 'rate limit توزیع‌شده'
 description = 'rate limit توزیع‌شده با Go: چرا N limiter محلی بیش از حد می‌پذیرند، مقایسه‌ی الگوریتم‌های پنجره‌ای، limiter دقیق با CAS روی NATS KV و حالت‌های خرابی.'
+contentType = 'engineering'
 categories = ["Distributed"]
 series = ["Distributed Systems"]
 tags = ["distributed-systems", "rate-limiting", "nats", "kv", "go"]
 cover = { image = "/images/covers/ds-distributed-rate-limiting.fa.png", alt = "rate limit توزیع‌شده", hiddenInSingle = true }
 +++
 
-[مقاله‌ی قبل](/fa/posts/ds-service-discovery-load-balancing/) درخواست‌ها را بین چند replica پخش کرد. این کار limitی را که روی یک ماشین درست کار می‌کرد خراب می‌کند: token bucket تک‌پردازه‌ی [rate limit و cache در Go](/fa/posts/go-rate-limiting-caching/) حالا N بار وجود دارد. اینجا «۱۰۰ در ثانیه» باید در کل ناوگان ۱۰۰ باشد.
+روی هر کدام از ۱۰ replica یک {{< term "token-bucket" "token bucket" >}} با ۱۰۰ req/s بگذارید و تصادفی مسیریابی کنید: هر ۱۹۹۲۲ درخواست پذیرفته می‌شود. bucket تک‌پردازه‌ی [rate limit و cache در Go](/fa/posts/go-rate-limiting-caching/) حالا N بار وجود دارد، ولی «۱۰۰ در ثانیه» باید در کل ناوگان ۱۰۰ باشد. این پخش درخواست‌ها کار [مقاله‌ی قبل](/fa/posts/ds-service-discovery-load-balancing/) بود.
 
 > صادقانه: جز بخش NATS همه‌چیز **شبیه‌سازی** Go 1.26 با seed ثابت روی یک ماشین است و شمارش نشان می‌دهم، نه زمان. بخش NATS واقعی است: nats-server توکار روی loopback. Redis را اجرا نکردم.
 
 ## N limiter محلی
 
-چهار کلاینت هرکدام حدود ۵۰۰ req/s به‌مدت ۱۰ ثانیه می‌فرستند. هر replica برای هر کلاینت {{< term "token-bucket" "token bucket" >}} خودش را دارد: ۱۰۰ req/s و burst برابر ۱۰. مجموع ایده‌آل حدود ۴۰۴۰ است.
+چهار کلاینت هرکدام حدود ۵۰۰ req/s به‌مدت ۱۰ ثانیه می‌فرستند. هر replica برای هر کلاینت token bucket خودش را دارد: ۱۰۰ req/s و burst برابر ۱۰. مجموع ایده‌آل حدود ۴۰۴۰ است.
 
 ```
 N=1  sticky=true  offered=19875 allowed=4036
@@ -99,16 +100,12 @@ full-jitter backoff (100 ms, cap 8 s)  attempts=  2358 peak-retries-per-100ms=27
 
 **عدالت و هزینه.** با limit سراسری ۱۰۰۰، tenantی که ۵۰۰۰ درخواست فرستاد ۸۹۸ گرفت و سه tenant با ۲۰۰ درخواست فقط ۳۳ تا ۳۶. سقف ۳۰۰ برای هر tenant نتیجه را ۳۰۰ و ۲۰۰ و ۲۰۰ و ۲۰۰ کرد؛ پس limit سلسله‌مراتبی. برای ۳۰۰ درخواست read (هزینه ۱) و write (هزینه ۵)، limit تعدادی ۱۰۰ هزینه‌ی ۲۰۸ را پذیرفت و بودجه‌ی ۱۰۰ فقط ۴۴ درخواست.
 
-## چند نکته‌ی مهم
+## تصمیم‌هایی که باید زود گرفت
 
 - limit را در یک نقطه بررسی کنید، وگرنه N برابر می‌شود.
 - پیش از خاموشی fail open یا closed را برای هر endpoint تعیین کنید.
 - `Retry-After` بفرستید.
 
-## تمرین
-
-در آزمایش عدالت، برای هر tenant یک سطح کاربر اضافه کنید و بررسی کنید هیچ سقفی رد نمی‌شود.
-
 ## قدم بعدی
 
-مقاله‌ی بعد: «تست خرابی با تزریق خطا».
+«تست خرابی با تزریق خطا»: آنجا خرابی‌هایی مثل retry storm به کلاینت واقعی تزریق می‌شوند.

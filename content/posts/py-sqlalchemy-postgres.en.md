@@ -3,13 +3,14 @@ date = '2027-05-01T10:00:00+03:30'
 draft = false
 title = 'SQLAlchemy and Postgres'
 description = 'SQLAlchemy 2.1 with Postgres: Core text(), ORM Session, N+1 counted for real, pool limits, IntegrityError, isolation, Alembic and async, all run.'
+contentType = 'tutorial'
 categories = ["Python"]
 series = ["Python"]
 tags = ["python", "sqlalchemy", "postgres", "alembic", "orm"]
 cover = { image = "/images/covers/py-sqlalchemy-postgres.png", alt = "SQLAlchemy and Postgres", hiddenInSingle = true }
 +++
 
-In the [previous post](/posts/py-fastapi-pydantic/) the API had no database. Here we add one. SQLAlchemy has two layers: Core (SQL as Python, with bound parameters) and the {{< term "orm" "ORM" >}} on top. If you used `pg` from Node ([Postgres from Node.js](/posts/node-postgres-pg/)) or pgx in Go ([Postgres with pgx and sqlc](/posts/go-postgres-pgx-sqlc/)), think of Core as the driver and the ORM as an optional extra.
+Loading 4 customers and their orders through the {{< term "orm" "ORM" >}} ran 5 queries by default, one for the customers and one per customer, and nothing in the Python code shows it. The API from [the previous post](/posts/py-fastapi-pydantic/) had no database, so before adding one it pays to see what SQLAlchemy does underneath. It has two layers: Core (SQL as Python, with bound parameters) and the ORM on top. If you used `pg` from Node ([Postgres from Node.js](/posts/node-postgres-pg/)) or pgx in Go ([Postgres with pgx and sqlc](/posts/go-postgres-pgx-sqlc/)), think of Core as the driver and the ORM as an optional extra.
 
 > Python 3.14.0, SQLAlchemy 2.1.6, psycopg 3.3.6 (`[binary]`, bundled libpq 18.0.6), Alembic 1.20.1, greenlet 3.5.6, real PostgreSQL 18.3 on `127.0.0.1`, throwaway venv. Ports replaced by `<port>`. I publish counts, not timings.
 
@@ -119,7 +120,7 @@ INSERT INTO alembic_version (version_num) VALUES ('15ffbe55f27f') ...;
 
 With sqlc you write SQL and get generated, type-checked Go functions; the ORM does the reverse, generating SQL from objects. Either way a connection pool and parameter binding sit underneath.
 
-## A few things to watch
+## What to count and review
 
 - Count queries in tests; lazy loading hides N+1.
 - Rollback after an error before reusing a session.
@@ -132,4 +133,4 @@ Add an `order_items` table and a migration. Load customers with their orders and
 
 ## What's next
 
-The next post is "Packaging and publishing a Python project".
+Next: "Packaging and publishing a Python project", because code becomes useful to others only once it can be installed.

@@ -3,13 +3,14 @@ date = '2027-04-18T10:00:00+03:30'
 draft = false
 title = 'systemd: units and timers'
 description = 'systemd units and timers for a Go worker: service anatomy, SIGTERM then SIGKILL, timers versus cron, hardening, and a unit linter that ran for real.'
+contentType = 'tutorial'
 categories = ["Linux"]
 series = ["Linux"]
 tags = ["linux", "systemd", "timers", "services", "go", "devops"]
 cover = { image = "/images/covers/linux-systemd-units-timers.png", alt = "systemd: units and timers", hiddenInSingle = true }
 +++
 
-Sooner or later your Go or Node.js program has to run on a server: start at boot, restart after a crash, stop cleanly, run every night. On most Linux distributions {{< term "systemd" "systemd" >}} does that. This is the fifth post of the Linux series, after [/proc and observing the system](/posts/linux-proc-observability/).
+Sooner or later your Go or Node.js program has to run on a server: start at boot, restart after a crash, stop cleanly, run every night. On most Linux distributions {{< term "systemd" "systemd" >}} does that. It follows [/proc and observing the system](/posts/linux-proc-observability/) in the Linux series.
 
 > I wrote this on a Mac; nothing here ran on Linux. systemd, `systemctl` and `journalctl` do not exist on this machine, and Docker stayed off. Facts come from the freedesktop.org man pages (systemd.service, systemd.timer, systemd.exec, systemd.kill, systemd.time). What ran is marked **ran**: a Python linter, and a Go program that was only cross-compiled for Linux and never executed.
 
@@ -101,7 +102,7 @@ bad/cleanup.timer: 2 finding(s)
 
 It is a toy next to `systemd-analyze verify`, which I could not run. I skipped an OnCalendar evaluator because I could not test it against real systemd.
 
-## A few things to watch
+## Unit file traps
 
 - `After=` does not start anything; combine it with `Wants=` or `Requires=`.
 - Without a SIGTERM handler every stop ends in SIGKILL after the timeout.
@@ -115,4 +116,4 @@ On a Linux machine, install the example worker as a service, run `systemctl stop
 
 ## What's next
 
-The next post is “cgroups and namespaces: the base of containers”.
+Next: “cgroups and namespaces: the base of containers”, how the kernel limits what a service can see and use.

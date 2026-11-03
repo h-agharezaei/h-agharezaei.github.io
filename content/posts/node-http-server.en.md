@@ -3,13 +3,14 @@ date = '2026-12-27T10:00:00+03:30'
 draft = false
 title = 'An HTTP server with node:http'
 description = 'An HTTP server with node:http, real runs: routing by hand, JSON body limits with 413, timeouts, keep-alive, graceful shutdown and node:test.'
+contentType = 'tutorial'
 categories = ["Node.js"]
 series = ["Node.js"]
 tags = ["nodejs", "http", "node-http", "graceful-shutdown", "node-test"]
 cover = { image = "/images/covers/node-http-server.png", alt = "An HTTP server with node:http", hiddenInSingle = true }
 +++
 
-In the previous post, [Streams and backpressure in Node.js](/posts/node-streams-backpressure/), we saw that data moves in chunks. An HTTP server is the first place that matters: the request and the response are streams. Here we build a small orders API with only the standard library, the same shape as [Building an API with net/http in Go](/posts/go-http-api-stdlib/). It leans on [the event loop](/posts/node-event-loop/), [async/await](/posts/node-promises-async-await/) and [error handling](/posts/node-errors-unhandled-rejections/).
+Reject an oversized body by destroying the request and the client never sees your 413: curl just gets an empty reply. An HTTP server is where the chunked data from [Streams and backpressure in Node.js](/posts/node-streams-backpressure/) starts to matter, because the request and the response are streams. Here we build a small orders API with only the standard library, the same shape as [Building an API with net/http in Go](/posts/go-http-api-stdlib/). It leans on [the event loop](/posts/node-event-loop/), [async/await](/posts/node-promises-async-await/) and [error handling](/posts/node-errors-unhandled-rejections/).
 
 > Node v20.13.1. The code is a local example (`app.js`, `main.js`, a few demo scripts); all outputs are copied from real runs on loopback.
 
@@ -136,7 +137,7 @@ Three tests (health, create-then-get, and the 404/405/400/413 cases) with `fetch
 
 Go's `ServeMux` (since Go 1.22) gives you patterns like `GET /orders/{id}`, `PathValue`, and automatic 405 with an `Allow` header; here I wrote all of that by hand. Go has `http.MaxBytesReader` for the body limit and `Server.Shutdown` for the drain. Go runs each request in its own goroutine; Node handles all requests on one thread, so a blocking handler stalls every client.
 
-## A few things to watch
+## Before it goes to production
 
 - Always `.catch` an async handler; a rejection must become a 500, not a crash.
 - Cap the body size, and answer before you destroy the socket.
@@ -149,4 +150,4 @@ Add `DELETE /orders/:id` (204, or 404) and a test that deletes an order and then
 
 ## What's next
 
-The next post is "Building an API with Fastify".
+"Building an API with Fastify": everything written by hand here, from routing to validation and shutdown, is handed to a framework there.

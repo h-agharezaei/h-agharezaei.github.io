@@ -3,13 +3,14 @@ date = '2027-02-24T10:00:00+03:30'
 draft = false
 title = 'صدا زدن Rust از Go با FFI'
 description = 'یک کتاب‌خانه‌ی static با Rust می‌سازیم، با cgo به برنامه‌ی Go لینک می‌کنیم و رشته، byte slice، struct، panic و ownership را در مرز دو زبان بررسی می‌کنیم.'
+contentType = 'tutorial'
 categories = ["Go", "Rust"]
 series = ["Go + Rust"]
 tags = ["go", "rust", "ffi", "cgo", "interop", "intermediate"]
 cover = { image = "/images/covers/go-calls-rust-ffi.fa.png", alt = "صدا زدن Rust از Go با FFI", hiddenInSingle = true }
 +++
 
-[مقاله‌ی قبلی این سری](/fa/posts/go-rust-grpc-interop/) Go و Rust را از راه شبکه و با gRPC به هم وصل کرد. این مقاله راه درون‌پردازه‌ای است: یک باینری، Rust که به‌شکل کتاب‌خانه کامپایل شده، و Go که آن را از طریق **C ABI** و با **cgo** صدا می‌زند. کتاب‌خانه همان crate به نام `ffi-lib` از [مقاله‌ی Unsafe و FFI در Rust](/fa/posts/rust-unsafe-ffi/) است که `add`، `greet`، `free_string`، `checksum`، `point_length` و `point_scale` را پشت هدر دست‌نویس `ffi_lib.h` export می‌کند. آن را بدون تغییر برداشتم. درباره‌ی pointerها: [مقاله‌ی pointerها](/fa/posts/go-pointers-memory/).
+panic در تابع Rustی که Go صدایش می‌زند کل پردازه را abort می‌کند. این بهای راه درون‌پردازه‌ای است، برخلاف [gRPC در پست قبلی](/fa/posts/go-rust-grpc-interop/): یک باینری، Rust که به‌شکل کتاب‌خانه کامپایل شده، و Go که آن را از طریق **C ABI** و با **cgo** صدا می‌زند. کتاب‌خانه همان crate به نام `ffi-lib` از [مقاله‌ی Unsafe و FFI در Rust](/fa/posts/rust-unsafe-ffi/) است که `add`، `greet`، `free_string`، `checksum`، `point_length` و `point_scale` را پشت هدر دست‌نویس `ffi_lib.h` export می‌کند. آن را بدون تغییر برداشتم. درباره‌ی pointerها: [مقاله‌ی pointerها](/fa/posts/go-pointers-memory/).
 
 > Go 1.26، Rust 1.90، macOS (arm64)، `CGO_ENABLED=1` و `cc` سیستم. همه‌چیز به‌صورت محلی اجرا شده است.
 
@@ -143,7 +144,7 @@ load ماشین بالای 3 بود، پس benchmark نگرفتم و عددی ن
 - **gRPC**: پردازه‌های جدا، قرارداد typed، deploy مستقل. هزینه‌اش یک hop شبکه و encoding است.
 - **wasm**: guest در sandbox است و حافظه‌ی خطی خودش را دارد، پس داده کپی می‌شود و یک runtime لازم است.
 
-## چند نکته
+## دردسرهای مرز Go و Rust
 
 - حافظه را با allocator سازنده‌اش آزاد کنید: `C.free` برای `CString`، `free_string` برای `greet`.
 - بعد از فراخوانی pointer Go را در C نگه ندارید و حافظه‌ی Go حاوی pointer Go را پاس ندهید.
@@ -157,4 +158,4 @@ load ماشین بالای 3 بود، پس benchmark نگرفتم و عددی ن
 
 ## قدم بعدی
 
-بعدی: Futures، Pin و درون async در Rust.
+بعدی: «Future، Pin و درون async در Rust»، درباره‌ی این‌که `async fn` واقعاً چیست.

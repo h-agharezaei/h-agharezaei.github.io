@@ -3,13 +3,14 @@ date = '2027-06-07T10:00:00+03:30'
 draft = false
 title = 'Safe scripting and cron'
 description = 'Safe shell scripting and cron on macOS: quoting, set -e traps, atomic writes, a mkdir lock and a Go cron parser with tests.'
+contentType = 'tutorial'
 categories = ["Linux"]
 series = ["Linux"]
 tags = ["linux", "shell", "cron", "scripting", "locking", "go"]
 cover = { image = "/images/covers/linux-scripting-cron-safely.png", alt = "Safe scripting and cron", hiddenInSingle = true }
 +++
 
-This is the last post of the Linux series. After [strace and perf](/posts/linux-strace-perf/) we know how to look inside a running process; now we stop the small scripts around our services from breaking at 3 a.m. It builds on [the practical shell](/posts/linux-shell-practical/), [processes and signals](/posts/linux-processes-signals/) (for `trap`) and [systemd units and timers](/posts/linux-systemd-units-timers/).
+An empty variable turns `$dir/*` into `/*`, and a failed `cd` does not stop a script: bugs like these break the small scripts around our services at 3 a.m. After [strace and perf](/posts/linux-strace-perf/), this last Linux post builds on [the practical shell](/posts/linux-shell-practical/), [processes and signals](/posts/linux-processes-signals/) (for `trap`) and [systemd units and timers](/posts/linux-systemd-units-timers/).
 
 > Honest disclaimer: everything ran on **macOS** (`/bin/sh`, `/bin/bash` 3.2, BSD tools). `flock`, `timeout` and `shellcheck` are not installed (`command -v` printed nothing), so I did not run them. I never touched my real crontab. Dangerous patterns were only `echo`ed or run in a throwaway directory.
 
@@ -117,7 +118,7 @@ $ sh template.sh missing.log
 ... cannot read missing.log                                    (exit 1, temp and lock removed)
 ```
 
-## A few things to watch
+## Before scheduling a script
 
 - Absolute paths, a set `PATH`, and a least-privilege user; see [the filesystem and permissions](/posts/linux-filesystem-permissions/).
 - Never put secrets in the script or the crontab line; see [managing secrets](/posts/sec-secrets-management/).
@@ -131,4 +132,4 @@ Start `lock.sh` twice, then `kill -9` the holder and start a third copy; read th
 
 ## What's next
 
-The Linux series ends here. Next comes the Distributed Systems series, starting with “Why distributed systems are hard” ([link](/posts/ds-why-distributed-is-hard/)). Not covered: everything came from a Mac, so I ran no real Linux kernel, containers or systemd; Linux-specific parts come from documentation and are labelled.
+The Linux series ends here; the Distributed Systems series starts with “Why distributed systems are hard” ([link](/posts/ds-why-distributed-is-hard/)). Not covered: everything came from a Mac, so I ran no real Linux kernel, containers or systemd; Linux-specific parts come from documentation and are labelled.

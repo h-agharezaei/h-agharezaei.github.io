@@ -3,15 +3,16 @@ date = '2026-11-18T18:00:00+03:30'
 draft = false
 title = 'Talking to Ethereum from Go with go-ethereum'
 description = 'go-ethereum from Go: chain ID, balances in wei, a signed EIP-1559 transaction, abigen token calls, a decoded custom error and nonces for concurrent sends.'
+contentType = 'tutorial'
 categories = ["Blockchain"]
 series = ["Blockchain"]
 tags = ["blockchain", "go", "ethereum", "go-ethereum", "erc20"]
 cover = { image = "/images/covers/bc-go-ethereum-client.png", alt = "Talking to Ethereum from Go with go-ethereum", hiddenInSingle = true }
 +++
 
-In [Tokens: ERC-20 and ERC-721](/posts/bc-erc20-erc721/) I deployed `DemoToken` to anvil and moved it with `cast`. A backend does the same from code: a deposit watcher, a payout worker, an exchange. This post does it from Go with {{< term "go-ethereum" "go-ethereum" >}}, the library behind the geth client.
+A deposit watcher, a payout worker or an exchange does from code what `cast` did by hand in [the tokens post](/posts/bc-erc20-erc721/), and meets problems the shell hides: concurrent senders, and balances a `float64` rounds. This post does it from Go with {{< term "go-ethereum" "go-ethereum" >}}, the library behind the geth client.
 
-Under the hood every call is {{< term "json-rpc" "JSON-RPC" >}} over HTTP, like the API of the toy node in [Part one wrap-up: a small full node in Go](/posts/bc-toy-node-go/). Nonces come back from [The account model, nonces and replay protection](/posts/bc-account-model-nonce/), now with a real node.
+Under the hood every call is {{< term "json-rpc" "JSON-RPC" >}} over HTTP, like the API of [the toy node](/posts/bc-toy-node-go/). Nonces come back from [the account model post](/posts/bc-account-model-nonce/), now with a real node.
 
 > Go 1.27 on macOS (arm64), go-ethereum v1.17.10, Foundry 1.8.7. A fresh anvil on `127.0.0.1:8545` with the deploy script from the previous post, so the token is at the same address. The private keys in the code are anvil's public test keys: never use them anywhere real.
 
@@ -174,7 +175,7 @@ mined: 6 txs; account 0 nonce now: 11
 
 Same nonce, different value: the node sees four attempts to replace one transaction without a higher fee. With the manager, nonce 6 arrived last and the node still mined all five in order. The manager only works if it is the only sender for that key; several processes need one place to hand out nonces.
 
-## A few things to watch
+## Common client mistakes
 
 - Keep amounts as `*big.Int` from RPC to database. Account 0's balance above becomes 9999997683290179895296 as a `float64`.
 - `PendingNonceAt` is a snapshot of the node's view, not a reservation.
@@ -189,4 +190,4 @@ Same nonce, different value: the node sees four attempts to replace one transact
 
 ## What's next
 
-Next post: **Talking to Ethereum from Rust with alloy**.
+Next post: **Talking to Ethereum from Rust with alloy**: the same steps, side by side.

@@ -3,13 +3,14 @@ date = '2027-01-06T10:00:00+03:30'
 draft = false
 title = 'ساخت API با Fastify'
 description = 'ساخت API با Fastify و اجرای واقعی: اعتبارسنجی با JSON Schema، hook، plugin، یک error handler، لاگ pino، تست با inject() و خاموشی تمیز.'
+contentType = 'tutorial'
 categories = ["Node.js"]
 series = ["Node.js"]
 tags = ["nodejs", "fastify", "api", "json-schema", "pino"]
 cover = { image = "/images/covers/node-fastify-api.fa.png", alt = "ساخت API با Fastify", hiddenInSingle = true }
 +++
 
-در مقاله‌ی قبل، [سرور HTTP با node:http](/fa/posts/node-http-server/)، routing، محدودیت حجم بدنه و تبدیل خطا را دستی نوشتیم. اینجا همان API کوچک سفارش (`GET /health`، `GET /orders/:id`، `POST /orders` با ذخیره‌ی درون‌حافظه) را با Fastify می‌سازم و با [ساخت API با net/http در Go](/fa/posts/go-http-api-stdlib/) مقایسه می‌کنم.
+یک route در Fastify با `additionalProperties: false` به بدنه‌ی دارای فیلد اضافه هم 200 داد و فیلد بی‌صدا حذف شد. اینجا API دست‌نویس [سرور HTTP با node:http](/fa/posts/node-http-server/) (`GET /health`، `GET /orders/:id`، `POST /orders`، درون‌حافظه) را با Fastify می‌سازم و با [ساخت API با net/http در Go](/fa/posts/go-http-api-stdlib/) مقایسه می‌کنم.
 
 > Node نسخه‌ی v20.13.1، Fastify نسخه‌ی 5.12.7 (و pino نسخه‌ی 10.4.0). کد یک مثال محلی است (`app.js`، `main.js` و `app.test.js`)؛ همه‌ی خروجی‌ها از اجرای واقعی روی loopback کپی شده‌اند. `inject()` در Fastify اول با `ERR_REQUIRE_ESM` از کار افتاد: تازه‌ترین `light-my-request` یک `cookie` فقط-ESM می‌آورد که Node 20.13 نمی‌تواند با `require()` بارگذاری کند. نسخه‌ی `light-my-request` را با `overrides` در npm روی 6.6.0 ثابت کردم و همه‌ی اجراهای زیر با همین است.
 
@@ -35,7 +36,7 @@ app.post('/orders', {
 200 {"item":"book","qty":1}
 ```
 
-درخواست سوم فیلد اضافه‌ی `"extra": true` داشت و `additionalProperties: false` هم بود، ولی 200 گرفت و فیلد بی‌صدا حذف شد. پیش‌فرض Fastify حذف فیلد ناشناس است، نه رد.
+درخواست سوم همان فیلد اضافه‌ی `"extra": true` را داشت: پیش‌فرض Fastify حذف فیلد ناشناس است، نه رد.
 
 response schema برعکس کار می‌کند: handler شیئی با فیلد `secretNote` برگرداند، اما `GET /orders/:id` فقط `{"id":"c298b17c","item":"pen","qty":3}` فرستاد. serialize فقط همان چیزی را نگه می‌دارد که schema فهرست کرده است.
 
@@ -128,7 +129,7 @@ server exit code: 0
 
 performance را اندازه نگرفتم و ادعایی ندارم.
 
-## چند نکته‌ی مهم
+## پیش‌فرض‌هایی که غافلگیر می‌کنند
 
 - فیلدهای ناشناس بدنه به‌طور پیش‌فرض حذف می‌شوند، نه رد.
 - schema یک قرارداد است: response schema بنویسید تا فیلد داخلی بیرون نرود.
@@ -141,4 +142,4 @@ performance را اندازه نگرفتم و ادعایی ندارم.
 
 ## قدم بعدی
 
-مقاله‌ی بعدی «تست در Node.js با node:test» است.
+«تست در Node.js با node:test»: `inject()` تست را ارزان کرد؛ حالا خود test runner.

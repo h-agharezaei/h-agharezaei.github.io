@@ -3,13 +3,14 @@ date = '2026-11-01T10:00:00+03:30'
 draft = false
 title = 'branch، HEAD و ref: فقط اشاره‌گر'
 description = 'branch در گیت یک فایل ۴۱ بایتی است: HEAD، tag و remote-tracking branch همه ref هستند. با اجرای واقعی، detached HEAD و بازیابی commit گم‌شده.'
+contentType = 'tutorial'
 categories = ["Git"]
 series = ["Git"]
 tags = ["git", "beginner", "branches", "refs", "head"]
 cover = { image = "/images/covers/git-branches-head-refs.fa.png", alt = "branch، HEAD و ref: فقط اشاره‌گر", hiddenInSingle = true }
 +++
 
-در [مقاله‌ی قبل](/fa/posts/git-index-staging/) مسیر یک تغییر را از working tree به index و بعد مخزن دنبال کردیم. حالا سؤال این است که همه‌ی این {{< term "commit" "commitها" >}} از کجا آویزان‌اند. branch سنگین به نظر می‌رسد چون می‌گوییم «به branch برو» و «branch را کپی کن»، اما در گیت {{< term "git-branch" "branch" >}} فقط یک نام است که به یک commit اشاره می‌کند.
+فایل `.git/refs/heads/main` را باز کنید و کل branch را می‌بینید: ۴۰ کاراکتر hex به‌علاوه‌ی یک خط جدید. branch سنگین به نظر می‌رسد چون می‌گوییم «به branch برو» و «branch را کپی کن»، اما در گیت {{< term "git-branch" "branch" >}} فقط یک نام است که به یک {{< term "commit" "commit" >}} اشاره می‌کند. برای همین ساختنش هزینه‌ای ندارد و branch پاک‌شده را معمولاً می‌شود برگرداند. [مقاله‌ی قبل](/fa/posts/git-index-staging/) مسیر یک تغییر را از working tree و index تا مخزن دنبال کرد؛ این مقاله می‌پرسد این commitها از کجا آویزان‌اند.
 
 > همه‌ی اجراهای زیر با Git نسخه‌ی 2.39.2 در یک پوشه‌ی موقت انجام شده‌اند. شناسه‌ی commitها مال همان اجراست و روی سیستم شما فرق می‌کند.
 
@@ -167,7 +168,7 @@ Deleted branch wip (was 75edf86).
 
 `-d` قبول نمی‌کند چون پاک کردن اشاره‌گر commit را بی‌صاحب می‌کند. `-D` اجبار می‌کند و شناسه‌ای که چاپ می‌شود راه برگشت شماست (`git branch wip 75edf86`).
 
-## چند نکته‌ی مهم
+## دام‌های اشاره‌گرها
 
 - پاک کردن branch یعنی پاک کردن اشاره‌گر، نه commit؛ ولی commitهای بی‌صاحب تا ابد نمی‌مانند.
 - در detached HEAD بدون دادن نام branch به کار commit نزنید.

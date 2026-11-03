@@ -3,13 +3,14 @@ date = '2026-11-22T10:00:00+03:30'
 draft = false
 title = 'Goroutine و Channel در Go'
 description = 'آشنایی عملی با همزمانی در Go: goroutine، WaitGroup، channel بافردار و بدون بافر، deadlock، یک pipeline با worker و race detector، با خروجی واقعی.'
+contentType = 'tutorial'
 categories = ["Go"]
 series = ["Go Fundamentals"]
 tags = ["go", "beginner", "concurrency", "goroutines", "channels"]
 cover = { image = "/images/covers/go-goroutines-channels.fa.png", alt = "Goroutine و Channel در Go", hiddenInSingle = true }
 +++
 
-در [مقاله‌ی قبل](/fa/posts/go-packages-modules/) کد را به package و module تقسیم کردیم. حالا به ویژگی‌ای می‌رسیم که Go بیشتر با آن شناخته می‌شود: همزمانی. در این مقاله {{< term "goroutine" "goroutine" >}}، `sync.WaitGroup`، {{< term "channel" "channel" >}}، خطای deadlock که هرکسی یک بار می‌بیند، یک pipeline کوچک با producer و worker و در آخر race detector را می‌بینیم. مقاله‌ی بعد سراغ `sync`، `select` و `context` می‌رود.
+۱۰۰۰ {{< term "goroutine" "goroutine" >}} که بدون محافظت `count++` می‌کنند، به‌جای ۱۰۰۰ عددهایی مثل ۹۶۵ و ۹۷۰ می‌دهند و هیچ خطایی چاپ نمی‌شود. در همزمانی، ویژگی‌ای که Go بیشتر با آن شناخته می‌شود، خروجیِ درست‌نما چیزی را ثابت نمی‌کند. بعد از [package و module](/fa/posts/go-packages-modules/)، اینجا از `sync.WaitGroup` و {{< term "channel" "channel" >}} تا deadlock، یک pipeline کوچک و race detector را می‌بینیم.
 
 > همه‌ی مثال‌ها را با Go 1.26 روی macOS (arm64) اجرا کرده‌ام. خروجی‌هایی که به زمان‌بندی بستگی دارند، مشخص شده‌اند.
 
@@ -206,7 +207,7 @@ exit status 66
 
 detector آن را پیدا کرد و شمارش نهایی هم غلط بود (اینجا ۸۵۳ و در هر اجرا فرق می‌کند؛ اجرای معمولی ۹۶۵ و ۹۷۰ داد). با محافظت `count++` توسط `sync.Mutex`، خروجی `count: 1000` شد و اجرای `-race` تمیز بود. pipeline و بقیه‌ی demoها هم زیر `-race` تمیز بودند.
 
-## چند نکته‌ی احتیاط
+## نشت، deadlock و race
 
 - همیشه بدانید یک goroutine چطور تمام می‌شود، وگرنه نشت می‌کند.
 - `wg.Add` قبل از `go` و `defer wg.Done()` داخل goroutine.
@@ -222,4 +223,4 @@ detector آن را پیدا کرد و شمارش نهایی هم غلط بود (
 
 ## قدم بعدی
 
-در مقاله‌ی بعد درباره‌ی `sync`، `select` و `context` در Go می‌نویسم: mutex، timeout، لغو (cancellation) و اینکه goroutineها را چطور تمیز متوقف کنیم.
+«sync، select و context در Go»: mutex و `select` را اینجا فقط گذرا دیدیم؛ آن پست با timeout و لغو (cancellation) نشان می‌دهد goroutineها را چطور تمیز متوقف کنیم.

@@ -3,13 +3,14 @@ date = '2026-11-06T18:00:00+03:30'
 draft = false
 title = 'تراکنش و مدل UTXO'
 description = 'تراکنش UTXO در Go: ورودی، خروجی، sighash، txid، coinbase و کارمزد، همراه با رد شدن double spend، امضای جعلی و خرج بیش از موجودی.'
+contentType = 'tutorial'
 categories = ["Blockchain"]
 series = ["Blockchain"]
 tags = ["blockchain", "go", "utxo", "transactions", "bitcoin"]
 cover = { image = "/images/covers/bc-transactions-utxo.fa.png", alt = "تراکنش و مدل UTXO", hiddenInSingle = true }
 +++
 
-در [پست قبلی](/fa/posts/bc-keys-ecdsa-addresses/) پکیج `wallet` را ساختیم که یک hash سی‌ودو بایتی را امضا می‌کند. بلاک‌های [Merkle tree و اثبات عضویت](/fa/posts/bc-merkle-trees-proofs/) هنوز بایت خام مثل `"alice -> bob: 10"` دارند که هر کسی می‌تواند بنویسد. این پست آن‌ها را با تراکنش واقعی عوض می‌کند: سکه مال کیست، چه کسی اجازه‌ی خرجش را دارد و نود چه چیزی را چک می‌کند. این مدل بیت‌کوین است، مدل {{< term "utxo" "UTXO" >}}. تراکنش دیتابیس در [تراکنش و ACID](/fa/posts/db-transactions-acid/) چیز دیگری است که فقط اسمش یکی است.
+بلاک‌های [Merkle tree و اثبات عضویت](/fa/posts/bc-merkle-trees-proofs/) هنوز بایت خام مثل `"alice -> bob: 10"` دارند که هر کسی می‌تواند بنویسد. پکیج `wallet` [پست قبلی](/fa/posts/bc-keys-ecdsa-addresses/) یک hash سی‌ودو بایتی را امضا می‌کند، پس این پست آن رشته‌ها را با تراکنش واقعی عوض می‌کند: سکه مال کیست، چه کسی اجازه‌ی خرجش را دارد و نود چه چیزی را چک می‌کند. این مدل بیت‌کوین است، مدل {{< term "utxo" "UTXO" >}}. تراکنش دیتابیس در [تراکنش و ACID](/fa/posts/db-transactions-acid/) چیز دیگری است که فقط اسمش یکی است.
 
 ماژول `toychain` پست Merkle را کپی کردم و پکیج `wallet` را هم داخلش به‌عنوان `wallet/` کپی کردم تا همه یک ماژول باشد. یک helper هم به `wallet` اضافه کردم: `AddressBytes` که آدرس خام ۲۰ بایتی را می‌دهد.
 
@@ -138,7 +139,7 @@ ok  	toychain/chain	0.413s
 ok  	toychain/wallet	(cached)
 ```
 
-## چند نکته‌ی مهم
+## دام‌های اعتبارسنجی
 
 - هر چیزی را که مهم است امضا کنید. هر چه بیرون sighash باشد را هر کسی می‌تواند عوض کند.
 - کارمزد را ورودی منهای خروجی حساب کنید و overflow را چک کنید.

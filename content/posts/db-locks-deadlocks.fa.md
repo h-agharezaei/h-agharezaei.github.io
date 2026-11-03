@@ -3,13 +3,14 @@ date = '2027-01-04T10:00:00+03:30'
 draft = false
 title = 'قفل و deadlock در دیتابیس'
 description = 'قفل و deadlock در PostgreSQL با اجرای واقعی دو session: قفل ردیف، pg_locks، lock_timeout، یک deadlock واقعی و راه‌حلش، صف SKIP LOCKED و ALTER TABLE.'
+contentType = 'tutorial'
 categories = ["Databases"]
 series = ["Databases"]
 tags = ["databases", "postgresql", "locks", "deadlock", "concurrency"]
 cover = { image = "/images/covers/db-locks-deadlocks.fa.png", alt = "قفل و deadlock در دیتابیس", hiddenInSingle = true }
 +++
 
-در [پست قبلی](/fa/posts/db-mvcc-vacuum/) {{< term "mvcc" "MVCC" >}} اجازه داد خواننده‌ها و نویسنده‌ها از کنار هم رد شوند. دو نویسنده روی یک ردیف نمی‌توانند: دومی باید صبر کند. این انتظار یک {{< term "lock" "قفل" >}} است و بیشتر ماجراهای «دیتابیس گیر کرده» قفلی است که کسی آزادش نکرده. این پست عمداً session‌ها را گیر می‌اندازد، نشان می‌دهد چه کسی جلوی چه کسی را گرفته و با تله‌های کلاسیک تمام می‌شود. پایه‌اش [تراکنش و ACID](/fa/posts/db-transactions-acid/) و [سطح‌های ایزولاسیون](/fa/posts/db-isolation-levels-anomalies/) است.
+یک تراکنش باز که فقط جدول را خوانده، به‌علاوه‌ی یک `ALTER TABLE` منتظر پشتش، کافی است تا یک `SELECT` ساده هم رد شود. بیشتر ماجراهای «دیتابیس گیر کرده» همین‌اند: {{< term "lock" "قفل" >}}ی که کسی آزادش نکرده. {{< term "mvcc" "MVCC" >}} در [MVCC و VACUUM](/fa/posts/db-mvcc-vacuum/) خواننده‌ها و نویسنده‌ها را از کنار هم رد کرد؛ دو نویسنده روی یک ردیف اما باید صبر کنند. پایه‌اش [تراکنش و ACID](/fa/posts/db-transactions-acid/) و [سطح‌های ایزولاسیون](/fa/posts/db-isolation-levels-anomalies/) است.
 
 > همه‌چیز روی یک PostgreSQL 18.3 واقعی اجرا شد. دو یا سه session را یک برنامه‌ی کوچک Go با ترتیب ثابت اجرا کرد، پس هر نتیجه قطعی است. ماشین مشغول بود، پس زمان‌سنجی نیست.
 
@@ -109,7 +110,7 @@ S3: plain SELECT with lock_timeout 300ms -> ERROR: canceling statement due to lo
 
 یک {{< term "advisory-lock" "advisory lock" >}} عددی را که خودتان انتخاب می‌کنید قفل می‌کند. A کلید 42 را گرفت؛ `pg_try_advisory_lock(42)` در B مقدار `false` داد. بعد از آزاد شدن توسط A مقدار `true` شد.
 
-## چند نکته‌ی مهم
+## چطور گیر نیفتیم
 
 - تراکنش را کوتاه نگه دارید؛ قفل‌ها تا commit یا rollback می‌مانند.
 - برای migration `lock_timeout` و برای اپلیکیشن `idle_in_transaction_session_timeout` بگذارید.
@@ -122,4 +123,4 @@ deadlock را در دو پنجره‌ی `psql` بازتولید کنید و با
 
 ## قدم بعدی
 
-پست بعدی این سری: JSONB و جست‌وجوی متنی.
+«JSONB و جست‌وجوی متنی»: بعد از هم‌زمانی، نوبت شکل داده است.

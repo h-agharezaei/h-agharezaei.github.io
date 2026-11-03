@@ -3,13 +3,14 @@ date = '2027-01-04T10:00:00+03:30'
 draft = false
 title = 'Locks and deadlocks in the database'
 description = 'PostgreSQL locks and deadlocks with real two-session runs: row locks, pg_locks, lock_timeout, a real deadlock and its fix, SKIP LOCKED queues, ALTER TABLE.'
+contentType = 'tutorial'
 categories = ["Databases"]
 series = ["Databases"]
 tags = ["databases", "postgresql", "locks", "deadlock", "concurrency"]
 cover = { image = "/images/covers/db-locks-deadlocks.png", alt = "Locks and deadlocks in the database", hiddenInSingle = true }
 +++
 
-In the [previous post](/posts/db-mvcc-vacuum/) {{< term "mvcc" "MVCC" >}} let readers and writers pass each other. Two writers on the same row cannot: the second one has to wait. That wait is a {{< term "lock" "lock" >}}, and most "the database is stuck" incidents are a lock somebody forgot to release. This post makes sessions block each other on purpose, shows how to see who blocks whom, and ends with the classic traps. It builds on [transactions and ACID](/posts/db-transactions-acid/) and [isolation levels](/posts/db-isolation-levels-anomalies/).
+One open transaction that only read a table, plus an `ALTER TABLE` waiting behind it, is enough to make even a plain `SELECT` fail. Most "the database is stuck" incidents look like this: a {{< term "lock" "lock" >}} somebody forgot to release. In [MVCC and VACUUM](/posts/db-mvcc-vacuum/), {{< term "mvcc" "MVCC" >}} let readers and writers pass each other, but two writers on the same row cannot: the second one has to wait. This post builds on [transactions and ACID](/posts/db-transactions-acid/) and [isolation levels](/posts/db-isolation-levels-anomalies/).
 
 > Everything ran on a real PostgreSQL 18.3. Two or three sessions were driven by one small Go program in a fixed order, so each result is deterministic. Process ids differ per run. The machine was busy, so there are no timings.
 
@@ -109,7 +110,7 @@ A harmless read was refused, because it queued behind the waiting `ALTER`. On a 
 
 An {{< term "advisory-lock" "advisory lock" >}} locks a number you pick. A took key 42; B's `pg_try_advisory_lock(42)` returned `false`. After A unlocked, it returned `true`.
 
-## A few things to watch
+## How not to get stuck
 
 - Keep transactions short; locks last until commit or rollback.
 - Set `lock_timeout` for migrations and `idle_in_transaction_session_timeout` for apps.
@@ -122,4 +123,4 @@ Reproduce the deadlock in two `psql` windows, then fix it with ordering. Then op
 
 ## What's next
 
-Next in the series: JSONB and full-text search.
+JSONB and full-text search: after concurrency, the shape of the data.

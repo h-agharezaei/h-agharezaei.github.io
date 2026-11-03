@@ -3,13 +3,14 @@ date = '2027-05-22T10:00:00+03:30'
 draft = false
 title = 'امنیت حافظه: C در برابر Rust'
 description = 'امنیت حافظه در C، Go و Rust: خارج از محدوده، use-after-free، double free، سرریز و data race، با خروجی واقعی sanitizer و کامپایلر.'
+contentType = 'analysis'
 categories = ["Security"]
 series = ["Software Security"]
 tags = ["security", "memory-safety", "c", "rust", "sanitizers"]
 cover = { image = "/images/covers/sec-memory-safety-c-vs-rust.fa.png", alt = "امنیت حافظه: C در برابر Rust", hiddenInSingle = true }
 +++
 
-مقاله‌ی قبلی، [اشتباه‌های رایج رمزنگاری](/fa/posts/sec-crypto-mistakes/)، درباره‌ی ابزارهای سالمی بود که غلط به کار می‌روند. این مقاله یک لایه پایین‌تر است: کدی که حافظه‌ای را می‌خواند یا می‌نویسد که مال آن نیست. {{< term "memory-safety" "امنیت حافظه" >}} یعنی این اتفاق نمی‌افتد. پایه‌های سمت Rust در [Ownership در Rust](/fa/posts/rust-ownership/)، [قرض‌گیری و ارجاع در Rust](/fa/posts/rust-borrowing-references/) و [Unsafe و FFI در Rust](/fa/posts/rust-unsafe-ffi/) آمده و سمت Go در [اشاره‌گرها و مدل حافظه در Go](/fa/posts/go-pointers-memory/).
+در C اشاره‌گری را free کنید و بعد از رویش بخوانید؛ build معمولی به‌جای ۴۲ که ذخیره شده بود `4` چاپ می‌کند، با کد خروج ۰ تمام می‌شود و کامپایلر هم هشداری نمی‌دهد: داده‌ی غلط بدون crash. {{< term "memory-safety" "امنیت حافظه" >}} یعنی کد نتواند حافظه‌ای را بخواند یا بنویسد که مال آن نیست. [اشتباه‌های رایج رمزنگاری](/fa/posts/sec-crypto-mistakes/) درباره‌ی ابزارهای سالمی بود که غلط به کار می‌روند؛ این یک لایه پایین‌تر است. پایه‌های سمت Rust در [Ownership در Rust](/fa/posts/rust-ownership/)، [قرض‌گیری و ارجاع در Rust](/fa/posts/rust-borrowing-references/) و [Unsafe و FFI در Rust](/fa/posts/rust-unsafe-ffi/) آمده و سمت Go در [اشاره‌گرها و مدل حافظه در Go](/fa/posts/go-pointers-memory/).
 
 > فقط دفاعی. برنامه‌های کوچک خودم هستند که هر کدام عمداً یک نوع باگ را نشان می‌دهند؛ روی macOS arm64 با Apple clang 21، rustc 1.90 و Go 1.26 اجرا شدند. بدون payload و بدون بهره‌برداری. کد دمو محلی است.
 
@@ -90,17 +91,13 @@ Go در زمان اجرا bounds را چک می‌کند: `panic: runtime error:
 
 بلوک `unsafe` در Rust جایی را نشان می‌دهد که کامپایلر بررسی را کنار می‌گذارد، پس بازبین می‌داند کجا را ببیند. Miri و `cargo geiger` را اجرا نکردم و فقط به‌عنوان ابزار بررسی یا شمارش کد unsafe نامشان را می‌آورم. چیزهای دیگری که اجرا نکردم: سخت‌افزار CHERI، Fil-C و sanitizer در CI. آمار صنعتی را هم راستی‌آزمایی نکردم، پس عددی نقل نمی‌کنم.
 
-## چند نکته‌ی مهم
+## آنچه اجراها نشان دادند
 
 - هشدارها هیچ‌کدام از این چهار مورد را نگرفتند؛ sanitizerها همه را گرفتند.
 - جواب غلط بی‌صدا (`4`) بدتر از crash است.
 - build ریلیز در Rust پیش‌فرض روی سرریز wrap می‌کند.
 - `unsafe` قولی است که شما می‌دهید، نه کلیدی برای سریع‌تر شدن.
 
-## تمرین
-
-یک تابع C بنویسید که رشته‌ای را در بافر کوچک کپی کند، آن را خراب کنید و با ASan پیدا کنید. بعد به Rust ببریدش و ببینید چه خطایی می‌گیرید.
-
 ## قدم بعدی
 
-مقاله‌ی بعدی: fuzzing برای پیدا کردن باگ امنیتی.
+«fuzzing برای پیدا کردن باگ امنیتی» ماشین را به جست‌وجوی ورودی‌های بدی می‌فرستد که چنین باگ‌هایی را فعال می‌کنند.

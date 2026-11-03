@@ -3,13 +3,14 @@ date = '2026-11-27T18:00:00+03:30'
 draft = false
 title = 'MEV and transaction ordering'
 description = 'MEV on a local anvil: a Go searcher sandwiches a pending swap, then a real minAmountOut and a deadline stop it, plus how anvil orders transactions.'
+contentType = 'tutorial'
 categories = ["Blockchain"]
 series = ["Blockchain"]
 tags = ["blockchain", "go", "ethereum", "mev", "defi", "go-ethereum"]
 cover = { image = "/images/covers/bc-mev-ordering.png", alt = "MEV and transaction ordering", hiddenInSingle = true }
 +++
 
-[Gas optimization and upgradeable proxies](/posts/bc-gas-optimization-proxies/) was about what a transaction costs. This one is about when it runs. Whoever builds a block picks the order, and order changes results: in [AMMs and the constant-product formula](/posts/bc-amm-constant-product/) the same 10,000 USDX swap paid 90.66 or 63.95 DEMO depending on what ran first. The value someone can capture by choosing, inserting or leaving out transactions is called {{< term "mev" "MEV" >}} (maximal extractable value).
+In [AMMs and the constant-product formula](/posts/bc-amm-constant-product/) the same 10,000 USDX swap paid 90.66 or 63.95 DEMO depending on what ran first, and whoever builds a block picks that order. The value someone can capture by choosing, inserting or leaving out transactions is called {{< term "mev" "MEV" >}} (maximal extractable value). [Gas optimization and upgradeable proxies](/posts/bc-gas-optimization-proxies/) was about what a transaction costs; this one is about when it runs.
 
 In [The mempool, fees and transaction selection](/posts/bc-mempool-fees/) my own miner sorted by fee rate. Here I read a real node's {{< term "mempool" "pending pool" >}} from Go, with the client code of [Talking to Ethereum from Go with go-ethereum](/posts/bc-go-ethereum-client/). Everything runs against my own contracts on a local anvil, to see why the protections exist.
 
@@ -125,7 +126,7 @@ A swap that waits can run later, at a worse moment. I sent one with `-deadline 6
 
 The back-run moved the price back. {{< term "arbitrage" "Arbitrage" >}} between two pools does the same and keeps DEX prices in line. {{< term "liquidation" "Liquidations" >}} from [Lending, collateral and liquidation](/posts/bc-lending-liquidation/) are MEV too: the bonus goes to whoever is first, and without them bad debt grows.
 
-## A few things to watch
+## Before you sign a swap
 
 - Never sign a swap with `minAmountOut = 0`; derive it from a fresh quote.
 - Keep deadlines in minutes, not hours.
@@ -139,4 +140,4 @@ The back-run moved the price back. {{< term "arbitrage" "Arbitrage" >}} between 
 
 ## What's next
 
-Next post: **Proof of stake, BFT and finality**.
+**Proof of stake, BFT and finality**: after who orders a block, who builds it and when it is final.

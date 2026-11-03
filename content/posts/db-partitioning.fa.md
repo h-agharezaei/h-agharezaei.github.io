@@ -3,13 +3,14 @@ date = '2027-01-30T10:00:00+03:30'
 draft = false
 title = 'partitioning جدول‌ها'
 description = 'partitioning جدول در PostgreSQL با اجرای واقعی: range partition، partition pruning در EXPLAIN، قانون primary key، DETACH و ATTACH و جایی که کمکی نمی‌کند.'
+contentType = 'tutorial'
 categories = ["Databases"]
 series = ["Databases"]
 tags = ["databases", "postgresql", "partitioning", "performance"]
 cover = { image = "/images/covers/db-partitioning.fa.png", alt = "partitioning جدول‌ها", hiddenInSingle = true }
 +++
 
-در [پست قبلی](/fa/posts/db-zero-downtime-migrations/) یک جدول زنده را بدون توقف تغییر دادیم. این پست درباره‌ی جدولی است که آن‌قدر بزرگ شده که نمی‌شود با آن مثل یک تکه رفتار کرد. {{< term "partitioning" "Partitioning" >}} یک جدول منطقی را به چند جدول فیزیکی کوچک‌تر تقسیم می‌کند. در دو وضعیت کمک می‌کند: کوئری‌هایی که فقط به یک تکه از داده دست می‌زنند و حذف ارزان داده‌ی قدیمی. همه‌چیز را سریع‌تر نمی‌کند و شواهد زیر نشان می‌دهد هزینه‌اش کجاست. پایه‌اش [ایندکس و EXPLAIN](/fa/posts/db-indexes-btree-explain/) و [planner و آمار](/fa/posts/db-planner-statistics/) است.
+روی جدولی که با {{< term "partitioning" "partitioning" >}} به ۱۴ پارتیشن ماهانه تقسیم شده، کوئری روی یک ماه ۱۲۶ buffer خواند و کوئری بدون کلید پارتیشن ۱٬۶۷۹. Partitioning یک جدول منطقی را به چند جدول فیزیکی کوچک‌تر تقسیم می‌کند و در دو وضعیت کمک می‌کند: کوئری‌هایی که فقط به یک تکه از داده دست می‌زنند و حذف ارزان داده‌ی قدیمی. همه‌چیز را سریع‌تر نمی‌کند. بعد از [migration بدون downtime](/fa/posts/db-zero-downtime-migrations/)، پایه‌اش [ایندکس و EXPLAIN](/fa/posts/db-indexes-btree-explain/) و [planner و آمار](/fa/posts/db-planner-statistics/) است.
 
 > همه‌چیز روی یک PostgreSQL 18.3 واقعی اجرا شد. جدول `orders` فروشگاه (۲۰۰٬۰۰۰ ردیف، از 2025-01-01 تا 2026-02-05) در یک جدول partitioned کپی شد. اسکن موازی را خاموش کردم تا planها کوتاه بمانند و زمان‌سنجی نیست، فقط تعداد buffer. time zone برابر UTC بود.
 
@@ -100,7 +101,7 @@ DEBUG:  partition constraint for table "orders_p_2025_01" is implied by existing
 DEBUG:  verifying table "orders_p_default"
 ```
 
-بدون `CHECK`، PostgreSQL جدولِ در حال attach را verify (اسکن) کرد و با آن اسکن حذف شد. پارتیشن default را باز هم اسکن کرد. جدولی که ردیفی خارج از بازه دارد رد می‌شود: `ERROR: partition constraint of relation "bad" is violated by some row`.
+بدون `CHECK`، PostgreSQL جدولِ در حال attach را verify (اسکن) کرد؛ با `CHECK` این اسکن حذف شد. پارتیشن default را باز هم اسکن کرد. جدولی که ردیفی خارج از بازه دارد رد می‌شود: `ERROR: partition constraint of relation "bad" is violated by some row`.
 
 ## LIST و HASH
 
@@ -118,7 +119,7 @@ filter on id only         312             16989
 
 حتی کوئری با pruning در ۵۰۰ پارتیشن حدود هشت برابر buffer planning گرفت و کوئری بدون کلید حدود پنجاه برابر. اینها شمارش روی جدول خالی است، نه زمان. نظر خودم: وقتی partition کنید که داده‌ی قدیمی را بر اساس تاریخ حذف می‌کنید یا بیشتر کوئری‌ها کلید را دارند، تعداد را در حد دهها نگه دارید و فقط چون جدول بزرگ است partition نکنید. یک ایندکس اغلب بیشتر کمک می‌کند.
 
-## چند نکته‌ی مهم
+## پیش از partition کردن
 
 - primary key و هر ایندکس یکتا باید کلید پارتیشن را داشته باشد.
 - برای ردیف‌های خارج از همه‌ی بازه‌ها برنامه (یا default partition) داشته باشید.
@@ -132,4 +133,4 @@ filter on id only         312             16989
 
 ## قدم بعدی
 
-پست بعدی این سری: replication با دو instance واقعی.
+«replication با دو instance واقعی»: جهت دیگر، یعنی نسخه‌ی دوم از کل سرور.

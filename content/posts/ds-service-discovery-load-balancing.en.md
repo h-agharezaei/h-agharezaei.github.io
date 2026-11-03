@@ -3,13 +3,14 @@ date = '2027-06-01T10:00:00+03:30'
 draft = false
 title = 'Service discovery and load balancing'
 description = 'Service discovery and load balancing in Go: a TTL registry, the stale-entry window, round robin vs power of two choices, health checks and herds.'
+contentType = 'tutorial'
 categories = ["Distributed"]
 series = ["Distributed Systems"]
 tags = ["distributed-systems", "service-discovery", "load-balancing", "nats", "go"]
 cover = { image = "/images/covers/ds-service-discovery-load-balancing.png", alt = "Service discovery and load balancing", hiddenInSingle = true }
 +++
 
-[The previous post](/posts/ds-messaging-event-driven/) ended with services talking through a bus. With direct calls you must first answer "where is the other service right now?". That is {{< term "service-discovery" "service discovery" >}}. The layer 4 and layer 7 basics of a {{< term "load-balancer" "load balancer" >}} are in [the earlier post](/posts/net-load-balancer-l4-l7/); here: who knows the addresses and who picks one.
+A crashed instance that never deregistered gets requests until its registration expires. Unlike the bus of the [previous post](/posts/ds-messaging-event-driven/), direct calls must first ask "where is the other service right now?": {{< term "service-discovery" "service discovery" >}}. The layer 4 and 7 basics of a {{< term "load-balancer" "load balancer" >}} are in [the networking post](/posts/net-load-balancer-l4-l7/); here: who knows the addresses and who picks one.
 
 > Honest labelling: one machine, loopback only. Instances in the registry demo are real HTTP servers on random ports, but the clock is injected and heartbeats come from my loop. The balancing and herd parts are seeded simulations of queues, not networks. Counts, no timings.
 
@@ -58,7 +59,7 @@ Envoy, Istio and Linkerd are the usual names; not run here.
 
 ## NATS: discovery without a registry
 
-With a {{< term "queue-group" "queue group" >}} on an embedded nats-server (random port), three responders and 30 requests:
+With a {{< term "queue-group" "queue group" >}} on an embedded nats-server, three responders and 30 requests:
 
 ```
 30 requests, 3 responders: r1=17 r2=2 r3=11
@@ -82,7 +83,7 @@ really down from probe 20, need 5 fails: ejected at probe 24
 
 ## The herd after a registry restart
 
-500 instances re-register at once after the registry restarts, as a seeded simulation:
+500 instances re-register at once (seeded simulation):
 
 ```
 spread= 0 ticks: peak registrations in one tick=500
@@ -92,7 +93,7 @@ spread=50 ticks: peak registrations in one tick=16
 
 This is the {{< term "thundering-herd" "thundering herd" >}}; random {{< term "jitter" "jitter" >}} spreads it. The registry is itself a distributed system: Consul, etcd and ZooKeeper favour consistency, Eureka favours availability (per their docs); see [CAP and PACELC](/posts/ds-cap-pacelc/).
 
-## A few things to watch
+## Where the service list misleads
 
 - Treat the list as a hint: always have timeouts and a retry elsewhere.
 - Deregister on graceful shutdown ([graceful shutdown](/posts/go-graceful-shutdown-workers/)); TTL only covers crashes.
@@ -105,4 +106,4 @@ Add a `weight` to each instance and make power of two choices compare queue divi
 
 ## What's next
 
-The next post is “Distributed rate limiting”.
+“Distributed rate limiting”: replicas break a single-machine limit.

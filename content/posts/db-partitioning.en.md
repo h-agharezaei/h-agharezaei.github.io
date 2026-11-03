@@ -3,13 +3,14 @@ date = '2027-01-30T10:00:00+03:30'
 draft = false
 title = 'Table partitioning'
 description = 'PostgreSQL table partitioning with real runs: range partitions, pruning in EXPLAIN, primary key rules, DETACH and ATTACH, and when it does not help.'
+contentType = 'tutorial'
 categories = ["Databases"]
 series = ["Databases"]
 tags = ["databases", "postgresql", "partitioning", "performance"]
 cover = { image = "/images/covers/db-partitioning.png", alt = "Table partitioning", hiddenInSingle = true }
 +++
 
-In the [previous post](/posts/db-zero-downtime-migrations/) we changed a live table without stopping it. This post is about a table that is simply too big to treat as one piece. {{< term "partitioning" "Partitioning" >}} splits one logical table into smaller physical ones. It helps in two situations: queries that touch one slice of the data, and removing old data cheaply. It does not make everything faster, and the evidence below shows where it costs you. It builds on [indexes and EXPLAIN](/posts/db-indexes-btree-explain/) and [the planner and statistics](/posts/db-planner-statistics/).
+On a table split by {{< term "partitioning" "partitioning" >}} into 14 monthly partitions, a query on one month read 126 buffers, and one without the partition key 1,679. Partitioning splits one logical table into smaller physical ones, and helps in two situations: queries that touch one slice of the data, and removing old data cheaply. It does not make everything faster. Following [Zero-downtime migrations](/posts/db-zero-downtime-migrations/), it builds on [indexes and EXPLAIN](/posts/db-indexes-btree-explain/) and [the planner and statistics](/posts/db-planner-statistics/).
 
 > Everything ran on a real PostgreSQL 18.3 with the shop `orders` table (200,000 rows, 2025-01-01 to 2026-02-05), copied into a partitioned table. Parallel scans were turned off to keep plans short, and there are no timings, only buffer counts. The session time zone was UTC.
 
@@ -118,7 +119,7 @@ filter on id only         312             16989
 
 Even a pruned query paid about eight times more planning buffers at 500 partitions, and a query without the key paid about fifty times more. These are counts on empty tables, not timings. My judgment: partition when you drop old data by date or most queries carry the key, keep the count in the tens, and do not partition a table just because it is big. An index often does more.
 
-## A few things to watch
+## Before you partition
 
 - The primary key and every unique index must include the partition key.
 - Always have a plan (or a default partition) for rows outside every range.
@@ -132,4 +133,4 @@ Partition a copy of `order_items` or `orders` by `HASH (customer_id)`, then comp
 
 ## What's next
 
-Next in the series: Replication with two real instances.
+Replication with two real instances: the other direction, a second copy of the whole server.

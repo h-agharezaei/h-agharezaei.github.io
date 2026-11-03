@@ -4,13 +4,14 @@ draft = false
 title = 'Exchange engineering: deposits, withdrawals, confirmations and reorgs'
 seoTitle = 'Exchange deposits, withdrawals and reorgs in Go'
 description = 'Exchange deposits and withdrawals in Go and Postgres: a deposit state machine, a double-entry ledger, a real reorg, idempotency keys and fee bumps.'
+contentType = 'engineering'
 categories = ["Blockchain"]
 series = ["Blockchain"]
 tags = ["blockchain", "go", "ethereum", "postgres", "exchange"]
 cover = { image = "/images/covers/bc-exchange-deposits-withdrawals.png", alt = "Exchange engineering: deposits, withdrawals, confirmations and reorgs", hiddenInSingle = true }
 +++
 
-The previous post, [Zero-knowledge proof basics in Rust](/posts/bc-zero-knowledge-rust/), was cryptography. This one is plain backend work: turning chain events into balances, and balances back into transactions.
+A deposit can appear in a block and vanish in a {{< term "chain-reorganization" "reorg" >}} before it is credited; a withdrawal request can arrive twice at once; a signed withdrawal can get stuck. After the cryptography of [Zero-knowledge proof basics in Rust](/posts/bc-zero-knowledge-rust/), this is plain backend work: turning chain events into balances, and balances back into transactions.
 
 I copied the module from [Events and building an indexer with Go and Postgres](/posts/bc-event-indexer-go/), grew its indexer into a deposit scanner and added a ledger and withdrawals. Addresses come from [HD wallets: BIP-32, BIP-39 and BIP-44 in Rust](/posts/bc-hd-wallets-rust/), signing and nonces from [Talking to Ethereum from Go with go-ethereum](/posts/bc-go-ethereum-client/). This is a teaching design, not a complete exchange, and says nothing about any real exchange's internals.
 
@@ -26,7 +27,7 @@ Topics: [][]common.Hash{{transferTopic}, nil, topicTo}, // Transfer(any, ours)
 
 ## Deposit states and the ledger
 
-A deposit is a small {{< term "state-machine" "state machine" >}}: `seen` when the log first appears, `pending` while it has fewer than N {{< term "confirmation" "confirmations" >}}, `credited` at N, and `orphaned` if a {{< term "chain-reorganization" "reorg" >}} removes it first:
+A deposit is a small {{< term "state-machine" "state machine" >}}: `seen` when the log first appears, `pending` while it has fewer than N {{< term "confirmation" "confirmations" >}}, `credited` at N, and `orphaned` if a reorg removes it first:
 
 ```go
 var allowed = map[string][]string{
@@ -165,19 +166,13 @@ $ cast nonce $HOT
 
 No code for this part. {{< term "sweeping" "Sweeping" >}} moves deposits from many addresses into exchange wallets; for an ERC-20 each deposit address first needs ETH for gas. The hot wallet holds only what withdrawals need soon; a {{< term "cold-wallet" "cold wallet" >}} keeps the rest and refills it by manually approved transfers. [The Binance hack post](/posts/binance-hack-hot-wallet-2026/) shows why whatever can ask the hot wallet to sign matters as much as its key.
 
-## A few things to watch
+## Rules that keep the ledger right
 
 - Credit only at N, and still keep an alert for a reorg deeper than N; never reverse credited money automatically.
 - One process owns a hot wallet's nonces. A manual `cast send` from the same key breaks the counter.
 - Persist the signed transaction before broadcasting; a retry must resend, not re-sign.
 - The ledger total must be zero; also reconcile it with on-chain balances.
 
-## Exercise
-
-1. Add a reconciliation command: hot wallet plus deposit addresses on-chain versus `user:*` plus `withdrawals:pending`.
-2. Trigger the failure path: make a withdrawal revert on-chain and show the reservation released.
-3. Credit large deposits only after a higher N.
-
 ## What's next
 
-Next post: **Blockchain capstone with Go and Rust**.
+**Blockchain capstone with Go and Rust**: it moves this backend's signing key into a separate signer.

@@ -2,6 +2,7 @@
 date = '2027-02-19T10:00:00+03:30'
 draft = false
 title = 'Property-based testing'
+contentType = 'tutorial'
 description = 'Property-based testing in Go with testing/quick and rapid: shrinking to a minimal counterexample, model-based tests, a real Dedupe bug and Go fuzzing.'
 categories = ["Engineering"]
 series = ["Software Engineering"]
@@ -9,7 +10,7 @@ tags = ["testing", "property-based-testing", "software-engineering", "go"]
 cover = { image = "/images/covers/eng-property-based-testing.png", alt = "Property-based testing", hiddenInSingle = true }
 +++
 
-In [The test pyramid and TDD](/posts/eng-testing-pyramid-tdd/) every test was an example: one input, one expected output. Examples are easy to read, but they only check the cases I thought of. {{< term "property-based-testing" "Property-based testing" >}} states a rule that must hold for all inputs and lets the machine invent the inputs. The basics of `go test` are in [Testing in Go](/posts/go-testing-basics/), and the table I test below is from [A hash table from scratch](/posts/algo-hash-tables/).
+My first `Dedupe` passed four hand-written example tests and still kept duplicates; one property caught it with the input `[0 1 0]`. Examples like those in [The test pyramid and TDD](/posts/eng-testing-pyramid-tdd/) are easy to read, but they only check the cases I thought of. {{< term "property-based-testing" "Property-based testing" >}} states a rule that must hold for all inputs and lets the machine invent the inputs. The basics of `go test` are in [Testing in Go](/posts/go-testing-basics/), and the table I test below is from [A hash table from scratch](/posts/algo-hash-tables/).
 
 > Demos ran on Go 1.26 with `go test -race` and `pgregory.net/rapid` v1.3.0, as local examples.
 
@@ -84,7 +85,7 @@ The default is 100 cases per property; `-rapid.checks=10000` ran `TestSort` 10,0
 
 Go's own {{< term "fuzzing" "fuzzing" >}} is related but different: coverage-guided and runs until stopped. `go test -fuzz FuzzEncodeDecode -fuzztime 5s` on the varint round trip did 512,551 executions and found nothing. It shines on parsers; the security angle comes in a later post, “Fuzzing to find security bugs”. Python's Hypothesis is the same idea; I did not run it.
 
-## A few things to watch
+## Writing properties that catch bugs
 
 - Writing the property is the hard part. If it just re-implements the code, it proves nothing; prefer round trips, invariants and a simple model.
 - Check what your generator produces (empty, duplicates, huge values, unicode via `rapid.String()`), not only that it runs.

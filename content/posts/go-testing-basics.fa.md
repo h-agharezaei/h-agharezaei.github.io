@@ -3,13 +3,14 @@ date = '2026-12-04T10:00:00+03:30'
 draft = false
 title = 'تست در Go: table-driven و benchmark'
 description = 'نوشتن تست با پکیج testing: فلگ‌های go test، تست‌های table-driven با subtest، helper، coverage، benchmark با b.Loop و نگاهی کوتاه به fuzzing.'
+contentType = 'tutorial'
 categories = ["Go"]
 series = ["Go Fundamentals"]
 tags = ["go", "beginner", "testing", "benchmark"]
 cover = { image = "/images/covers/go-testing-basics.fa.png", alt = "تست در Go: table-driven و benchmark", hiddenInSingle = true }
 +++
 
-در [مقاله‌ی قبل](/fa/posts/go-generics/) با generics آشنا شدیم. این بار سراغ چیزی می‌رویم که هر روز لازمش دارید: تست. Go ابزار اجرای تست و benchmark را در کتاب‌خانه‌ی استاندارد دارد؛ پس چیزی نصب نمی‌کنید و لازم نیست بین فریم‌ورک‌ها انتخاب کنید. تا آخر مقاله می‌دانید چطور تست **table-driven** بنویسید، فقط یک subtest را اجرا کنید، coverage بگیرید و دو پیاده‌سازی را با benchmark مقایسه کنید.
+چسباندن ۱۰۰۱ رشته‌ی کوتاه با `+=` در یک اجرا روی ماشین من حدود ۲۸ برابر کندتر از `strings.Builder` بود؛ چنین فرقی را، مثل درستیِ کد، با حدس نمی‌شود فهمید. Go ابزار اجرای تست و benchmark را در کتاب‌خانه‌ی استاندارد دارد؛ پس چیزی نصب نمی‌کنید و لازم نیست بین فریم‌ورک‌ها انتخاب کنید. بعد از [generics](/fa/posts/go-generics/)، اینجا تست **table-driven**، اجرای یک subtest، coverage و benchmark را می‌بینیم.
 
 > همه‌ی مثال‌ها را با Go 1.26 روی یک مک arm64 (Apple M1) اجرا کرده‌ام و خروجی‌ها از همان اجراها کپی شده‌اند.
 
@@ -184,7 +185,7 @@ BenchmarkConcatBuilder-8   	  296140	      3936 ns/op	    5368 B/op	      10 all
 
 Go fuzzing هم دارد: تابع `FuzzXxx(f *testing.F)` با seedهای `f.Add` و `f.Fuzz`، که با `go test -fuzz FuzzReverse -fuzztime 5s` اجرا می‌شود. من آن را روی تابعی که rune‌های رشته را برعکس می‌کند و با خاصیت «دوبار برعکس کردن همان ورودی را برمی‌گرداند» (با رد کردن UTF-8 نامعتبر) امتحان کردم. در ۵ ثانیه حدود ۳۰۰ هزار اجرا انجام شد و چیزی پیدا نکرد. اگر شکستی پیدا شود زیر `testdata/` ذخیره و با `go test` ساده دوباره اجرا می‌شود.
 
-## چند نکته که باید حواستان باشد
+## دام‌های تست و benchmark
 
 - اگر `-count=1` را فراموش کنید و تعجب کنید چرا چیزی دوباره اجرا نمی‌شود: نتیجه‌ی پکیج‌های بدون تغییر cache می‌شود.
 - وقتی خط‌های بعدی به چک قبلی وابسته‌اند `t.Fatal`، و وقتی می‌خواهید همه‌ی شکست‌ها را ببینید `t.Error` بزنید.
@@ -200,4 +201,4 @@ Go fuzzing هم دارد: تابع `FuzzXxx(f *testing.F)` با seedهای `f.Ad
 
 ## قدم بعدی
 
-در مقاله‌ی بعد سراغ خواندن و نوشتن فایل می‌رویم، با `io.Reader` و `io.Writer` آشنا می‌شویم و JSON را در Go encode و decode می‌کنیم.
+«کار با فایل، io.Reader/Writer و JSON در Go»: بعد از تست، نوبت کدی است که فایل می‌خواند و می‌نویسد و با JSON کار می‌کند.

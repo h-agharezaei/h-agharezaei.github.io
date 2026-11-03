@@ -3,13 +3,14 @@ date = '2027-04-18T10:00:00+03:30'
 draft = false
 title = 'systemd: واحدها و timerها'
 description = 'systemd برای سرویس Go: ساختار unit، SIGTERM و بعد SIGKILL، مقایسه‌ی timer با cron، سخت‌سازی و یک linter واقعاً اجراشده برای unitها.'
+contentType = 'tutorial'
 categories = ["Linux"]
 series = ["Linux"]
 tags = ["linux", "systemd", "timers", "services", "go", "devops"]
 cover = { image = "/images/covers/linux-systemd-units-timers.fa.png", alt = "systemd: واحدها و timerها", hiddenInSingle = true }
 +++
 
-دیر یا زود برنامه‌ی Go یا Node.js شما باید روی سرور اجرا شود: با بوت بالا بیاید، بعد از کرش دوباره راه بیفتد، تمیز متوقف شود و هر شب کاری انجام دهد. در بیشتر توزیع‌های Linux این کار با {{< term "systemd" "systemd" >}} انجام می‌شود. این پنجمین پست سری Linux است، بعد از [/proc و مشاهده‌ی سیستم](/fa/posts/linux-proc-observability/).
+دیر یا زود برنامه‌ی Go یا Node.js شما باید روی سرور اجرا شود: با بوت بالا بیاید، بعد از کرش دوباره راه بیفتد، تمیز متوقف شود و هر شب کاری انجام دهد. در بیشتر توزیع‌های Linux این کار با {{< term "systemd" "systemd" >}} انجام می‌شود. این پست ادامه‌ی [/proc و مشاهده‌ی سیستم](/fa/posts/linux-proc-observability/) است.
 
 > این پست را روی مک نوشتم؛ هیچ چیزش روی Linux اجرا نشد. systemd و `systemctl` و `journalctl` روی این دستگاه وجود ندارند و Docker خاموش ماند. واقعیت‌ها از man pageهای freedesktop.org آمده‌اند (systemd.service، systemd.timer، systemd.exec، systemd.kill، systemd.time). فقط آنچه **اجرا شد** واقعاً اجرا شده: یک linter پایتون و یک برنامه‌ی Go که فقط برای Linux cross-compile شد و هرگز اجرا نشد.
 
@@ -101,7 +102,7 @@ bad/cleanup.timer: 2 finding(s)
 
 این در برابر `systemd-analyze verify` اسباب‌بازی است و آن را نتوانستم اجرا کنم. ارزیاب OnCalendar را ننوشتم چون نمی‌توانستم با systemd واقعی آزمایشش کنم.
 
-## چند نکته‌ی مهم
+## دام‌های unit file
 
 - `After=` چیزی را راه نمی‌اندازد؛ با `Wants=` یا `Requires=` ترکیبش کنید.
 - بدون handler برای SIGTERM هر توقف بعد از timeout با SIGKILL تمام می‌شود.
@@ -115,4 +116,4 @@ bad/cleanup.timer: 2 finding(s)
 
 ## قدم بعدی
 
-پست بعدی «cgroup و namespace: پایه‌ی کانتینر» است.
+بعدی «cgroup و namespace: پایه‌ی کانتینر» است: کرنل چطور دید و مصرف یک سرویس را محدود می‌کند.

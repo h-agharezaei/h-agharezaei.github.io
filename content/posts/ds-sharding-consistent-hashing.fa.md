@@ -3,13 +3,14 @@ date = '2027-05-15T10:00:00+03:30'
 draft = false
 title = 'sharding و consistent hashing'
 description = 'sharding و consistent hashing: انحراف shard key، hot key، hash slot، شبیه‌سازی migration با crash و hash partition واقعی در Postgres.'
+contentType = 'tutorial'
 categories = ["Distributed"]
 series = ["Distributed Systems"]
 tags = ["distributed-systems", "sharding", "consistent-hashing", "partitioning", "go", "postgres"]
 cover = { image = "/images/covers/ds-sharding-consistent-hashing.fa.png", alt = "sharding و consistent hashing", hiddenInSingle = true }
 +++
 
-[مقاله‌ی قبل](/fa/posts/ds-replication-quorum/) همان داده را روی چند node کپی کرد. این به دسترس‌پذیری و خواندن کمک می‌کند، ولی هر node هنوز همه‌چیز را نگه می‌دارد و همه‌ی نوشتن‌ها را می‌گیرد. وقتی حجم داده یا نرخ نوشتن از یک ماشین بیشتر شود به {{< term "sharding" "sharding" >}} نیاز دارید: هر کلید روی یک shard زندگی می‌کند. مبانی ring را از [Bloom filter و consistent hashing](/fa/posts/algo-bloom-filter-consistent-hashing/) تکرار نمی‌کنم؛ کد ring آن را کپی کردم و رویش ساختم.
+هر node در یک cluster تکثیرشده هنوز همه‌ی داده را نگه می‌دارد و همه‌ی نوشتن‌ها را می‌گیرد. [replication](/fa/posts/ds-replication-quorum/) به دسترس‌پذیری و خواندن کمک می‌کند، ولی وقتی حجم داده یا نرخ نوشتن از یک ماشین بیشتر شود به {{< term "sharding" "sharding" >}} نیاز دارید: هر کلید روی یک shard زندگی می‌کند. مبانی ring را از [Bloom filter و consistent hashing](/fa/posts/algo-bloom-filter-consistent-hashing/) تکرار نمی‌کنم؛ کد ring آن را کپی کردم و رویش ساختم.
 
 > صادقانه: بخش ۱ تا ۴ **شبیه‌سازی** با Go 1.26 روی یک ماشین است، با randomness ثابت (seed) و فقط شمارش، نه زمان. shardها map درون حافظه‌اند، نه شبکه. بخش ۵ یک Postgres 18.3 واقعی است، ولی روی یک node.
 
@@ -44,7 +45,7 @@ range همسایه‌ها را کنار هم نگه می‌دارد (برای ra
   16384 slots        moved  19898 keys (19.9%) = 3276 whole slots of 16384
 ```
 
-{{< term "consistent-hashing" "Consistent hashing" >}} حدود یک‌پنجم را جابه‌جا می‌کند. طراحی با {{< term "hash-slot" "hash slot" >}} تقریباً همین‌قدر جابه‌جا می‌کند، اما به شکل دیگر: کلید همیشه به `hash(key) mod 16384` می‌رسد و یک جدول slotها را به node‌ها می‌دهد. افزودن node کل slotها را دوباره تخصیص می‌دهد، پس می‌شود آن‌ها را یکی‌یکی جابه‌جا، ردیابی و تکرار کرد. تا آنجا که از مستندات می‌دانم Redis Cluster از ۱۶۳۸۴ slot استفاده می‌کند و Kafka کل partitionها را به brokerها می‌دهد؛ هیچ‌کدام را اینجا بررسی نکردم. طبق تجربه‌ی من، جدول slot از ring راحت‌تر اداره می‌شود، چون پاسخ «چه چیزی جابه‌جا می‌شود» صریح است.
+{{< term "consistent-hashing" "Consistent hashing" >}} حدود یک‌پنجم را جابه‌جا می‌کند. طراحی با {{< term "hash-slot" "hash slot" >}} تقریباً همین‌قدر جابه‌جا می‌کند، اما متفاوت: کلید همیشه به `hash(key) mod 16384` می‌رسد و یک جدول slotها را به node‌ها می‌دهد. افزودن node کل slotها را دوباره تخصیص می‌دهد، پس می‌شود آن‌ها را یکی‌یکی جابه‌جا، ردیابی و تکرار کرد. تا آنجا که از مستندات می‌دانم Redis Cluster از ۱۶۳۸۴ slot استفاده می‌کند و Kafka کل partitionها را به brokerها می‌دهد؛ هیچ‌کدام را اینجا بررسی نکردم. طبق تجربه‌ی من، جدول slot از ring راحت‌تر اداره می‌شود، چون پاسخ «چه چیزی جابه‌جا می‌شود» صریح است.
 
 ## ۳. جابه‌جایی shard بدون گم‌شدن کلید
 
@@ -87,7 +88,7 @@ CREATE TABLE events (... user_id int NOT NULL, created_at timestamptz NOT NULL, 
 
 با `created_at > ...` پلن یک `Append` روی هر چهار partition است. یعنی {{< term "partition-pruning" "partition pruning" >}} فقط روی `user_id`؛ خواندن پلن را در [ایندکس B-tree و EXPLAIN ANALYZE](/fa/posts/db-indexes-btree-explain/) ببینید. این {{< term "partitioning" "partitioning" >}} روی یک node است: همان دیسک، همان CPU، همان نقطه‌ی خرابی. پخش partitionها بین nodeها کار `postgres_fdw` یا Citus است؛ فقط اسم می‌برم و اجرایشان نکردم.
 
-## چند نکته‌ی مهم
+## جایی که sharding دردسر می‌شود
 
 - shard key را از روی کوئری‌هایتان انتخاب کنید؛ عوض کردنش یعنی جابه‌جایی همه‌چیز.
 - بزرگ‌ترین کلید را بسنجید نه میانگین را: max/mean عدد مهم است.
@@ -100,4 +101,4 @@ cutover را جلوتر از verify ببرید تا شبیه‌سازی عمدا
 
 ## قدم بعدی
 
-مقاله‌ی بعد «consensus و Raft» است.
+بعد، «consensus و Raft»: چند node چطور با وجود خرابی بعضی‌شان روی یک مقدار توافق می‌کنند.

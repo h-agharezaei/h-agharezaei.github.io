@@ -2,6 +2,7 @@
 date = '2027-05-03T10:00:00+03:30'
 draft = false
 title = 'طراحی pipeline برای CI/CD'
+contentType = 'engineering'
 description = 'طراحی pipeline برای CI/CD در Go: مرحله‌های مرتب، آستانه‌ی coverage، build تکرارپذیر، deploy آبی/سبز با rollback و workflow بررسی‌شده.'
 categories = ["Engineering"]
 series = ["Software Engineering"]
@@ -9,7 +10,7 @@ tags = ["ci-cd", "pipeline", "github-actions", "software-engineering", "go", "de
 cover = { image = "/images/covers/eng-ci-cd-pipeline-design.fa.png", alt = "طراحی pipeline برای CI/CD", hiddenInSingle = true }
 +++
 
-پست قبل، [feature flag و trunk-based development](/fa/posts/eng-feature-flags-trunk-based/)، با «pipeline‌ای که با هر merge اجرا می‌شود» تمام شد. این همان pipeline است. {{< term "ci" "CI" >}} هر تغییر را ادغام و بررسی می‌کند؛ continuous delivery یعنی `main` همیشه آماده‌ی انتشار است؛ continuous deployment یعنی بدون دخالت انسان منتشر هم می‌شود. مرتبط: [تست در Go](/fa/posts/go-testing-basics/)، [هرم تست و TDD](/fa/posts/eng-testing-pyramid-tdd/) و [Docker، CI و deploy سرویس Go](/fa/posts/go-docker-ci-deploy/). نظرها مشخص شده‌اند؛ بقیه اجرا شده است.
+یکی از deployهای پایین عمداً آدرس listen خراب دارد: health check شکست می‌خورد، `current` روی release قبلی می‌ماند و pipeline قرمز می‌شود. pipeline باید این را به نتیجه‌ای عادی تبدیل کند، و روال trunk-based در [feature flag و trunk-based development](/fa/posts/eng-feature-flags-trunk-based/) به pipelineی وابسته است که با هر merge اجرا شود. {{< term "ci" "CI" >}} هر تغییر را ادغام و بررسی می‌کند؛ continuous delivery یعنی `main` همیشه آماده‌ی انتشار است؛ continuous deployment یعنی بدون دخالت انسان منتشر هم می‌شود. مرتبط: [تست در Go](/fa/posts/go-testing-basics/)، [هرم تست و TDD](/fa/posts/eng-testing-pyramid-tdd/) و [Docker، CI و deploy سرویس Go](/fa/posts/go-docker-ci-deploy/). نظرها مشخص شده‌اند؛ بقیه اجرا شده است.
 
 > Go 1.26. دمو نمونه‌ی محلی است: سرویس کوچک، `scripts/ci.sh` و `scripts/deploy.sh` در repoی git با نویسنده‌ی جعلی. workflow‌ی GitHub Actions روی GitHub **اجرا نشد**.
 
@@ -86,17 +87,13 @@ deploy: health check FAILED on blue, rollback: current stays -> releases/green
 
 `ci.yml` یک job به نام `test` با matrix نسخه‌ی Go و cache در `actions/setup-go@v5` دارد، `permissions: contents: read`، یک گروه `concurrency` که اجراهای قدیمی را لغو می‌کند، و job‌ی `deploy` با `needs: test` در `environment: production` (که می‌توان برایش reviewer اجباری تنظیم کرد) و `secrets.DEPLOY_TOKEN`. `actionlint` نسخه‌ی v1.7.7 آن را پذیرفت؛ با غلط املایی در `needs` گزارش داد `job "deploy" needs job "tset" which does not exist`. job‌ی deploy فقط طرح است: باید باینری را بین jobها هم منتقل کند. طبق توصیه‌ی امنیتی GitHub، actionهای شخص ثالث را به commit SHA کامل pin کنید؛ من برای خوانایی از tag اصلی استفاده کردم.
 
-## چند نکته‌ی مهم
+## آنچه pipeline نباید جا بیندازد
 
 - secretها در مخزن secret خود CI هستند، نه در repo و نه در log.
 - مرحله‌ی deploy را idempotent بنویسید تا اجرای دوباره امن باشد.
 - {{< term "smoke-test" "smoke test" >}} را حذف نکنید؛ تست‌های واحد سبز هم می‌توانند باینری‌ای را بفرستند که بالا نمی‌آید.
 - تعریف pipeline کد است: review‌اش کنید.
 
-## تمرین
-
-مرحله‌ای اضافه کنید که اگر `gofmt -l` فایلی نشان داد شکست بخورد، بعد عمداً آن را خراب کنید و توقف pipeline را ببینید.
-
 ## قدم بعدی
 
-پست بعدی «SLI، SLO و error budget» است.
+«SLI، SLO و error budget»: pipeline سبز می‌گوید release بالا آمد؛ پرسش بعدی این است که کاربران واقعاً خوب سرویس می‌گیرند یا نه.

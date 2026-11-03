@@ -3,13 +3,14 @@ date = '2027-02-12T10:00:00+03:30'
 draft = false
 title = 'Rate limit و cache در Go'
 description = 'Rate limit و cache در Go: محافظت از API با token bucket برای هر کلاینت و پاسخ 429، سپس سریع کردن GetOrder با cache، singleflight و سقف LRU.'
+contentType = 'engineering'
 categories = ["Go"]
 series = ["Go Backend"]
 tags = ["go", "backend", "rate-limiting", "caching", "singleflight", "middleware"]
 cover = { image = "/images/covers/go-rate-limiting-caching.fa.png", alt = "Rate limit و cache در Go", hiddenInSingle = true }
 +++
 
-[مقاله‌ی قبل](/fa/posts/go-grpc-service/) به سرویس `orders` یک در ورودی gRPC داد. سرویسی که در دسترس است باید از مشتری‌هایش هم جان سالم به در ببرد: یک کلاینت پرسر و صدا نباید سهم بقیه را بخورد و یک سفارش پربازدید نباید هزار بار در ثانیه به دیتابیس برسد. این مقاله هر دو محافظ را به نسخه‌ی REST از [مقاله‌ی net/http](/fa/posts/go-http-api-stdlib/) اضافه می‌کند: یک middleware برای rate limit در زنجیره‌اش و یک cache جلوی `GetOrder`. کد، کپی همان نمونه است به‌علاوه‌ی متد `Pay` که برای invalidation لازم داریم.
+سرویسی که در دسترس است باید از مشتری‌هایش هم جان سالم به در ببرد: یک کلاینت پرسر و صدا نباید سهم بقیه را بخورد و یک سفارش پربازدید نباید هزار بار در ثانیه به دیتابیس برسد. هر دو محافظ را به نسخه‌ی REST از [مقاله‌ی net/http](/fa/posts/go-http-api-stdlib/) اضافه می‌کنم، نه به [در ورودی gRPC](/fa/posts/go-grpc-service/): یک middleware برای rate limit و یک cache جلوی `GetOrder`. کد همان نمونه است، به‌علاوه‌ی متد `Pay` برای invalidation.
 
 > Go 1.26 روی macOS (arm64)، نسخه‌ی `golang.org/x/time` v0.16.0، `golang.org/x/sync` v0.24.0 و `golang-lru/v2` v2.0.7.
 
@@ -125,7 +126,7 @@ keys oldest to newest: [a d e] len: 3
 
 `a` ماند چون خواندنش آن را تازه کرد.
 
-## چند نکته
+## کجا این محافظ‌ها می‌شکنند
 
 - cache یعنی معاوضه با تازگی. TTL بلندتر یعنی load کمتر و داده‌ی کهنه‌ی بیشتر؛ روی نوشتن‌هایی که خودتان کنترل می‌کنید invalidate کنید و برای تغییرهای دیگر TTL را بدترین حالت بدانید.
 - invalidation می‌تواند با load کندی که زودتر شروع شده رقابت کند و بعد از `Delete` مقدار قدیمی را برگرداند. این را بازتولید نکردم؛ TTL را کوتاه نگه دارید تا شبکه‌ی ایمنی باشد.
@@ -134,4 +135,4 @@ keys oldest to newest: [a d e] len: 3
 
 ## قدم بعدی
 
-مقاله‌ی بعد: پروفایل کردن Go با pprof، تا به‌جای حدس زدن ببینیم زمان و حافظه واقعاً کجا می‌روند.
+قدم بعدی «پروفایلینگ با pprof در Go» است، تا به‌جای حدس ببینیم زمان و حافظه واقعاً کجا می‌روند.

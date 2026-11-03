@@ -3,15 +3,16 @@ date = '2026-11-15T18:00:00+03:30'
 draft = false
 title = 'A first contract with Solidity and Foundry'
 description = 'A first Solidity contract with Foundry: a small ETH vault, its storage layout, a deploy to a local anvil chain, cast calls, a revert and the gas used.'
+contentType = 'tutorial'
 categories = ["Blockchain"]
 series = ["Blockchain"]
 tags = ["blockchain", "ethereum", "solidity", "foundry", "evm"]
 cover = { image = "/images/covers/bc-solidity-first-contract.png", alt = "A first contract with Solidity and Foundry", hiddenInSingle = true }
 +++
 
-In the previous post, [Inside the EVM: stack, memory, storage and gas with a tiny Rust interpreter](/posts/bc-evm-internals-rust/), I ran hand-written bytecode. Nobody writes contracts that way. This post writes a real {{< term "smart-contract" "smart contract" >}} in {{< term "solidity" "Solidity" >}}, compiles it, looks at what the compiler produced, and runs it on a local chain.
+A failed transaction still lands in a block and its sender still pays; seeing that needs a real contract, not the hand-written bytecode of [the previous post](/posts/bc-evm-internals-rust/). This post writes a {{< term "smart-contract" "smart contract" >}} in {{< term "solidity" "Solidity" >}}, compiles it, inspects the compiler output and runs it on a local chain.
 
-The tool is {{< term "foundry" "Foundry" >}}: `forge` builds and tests, `anvil` is a local Ethereum node, `cast` talks to it from the shell. Its tests are written in Solidity too, which matters for the next post. If you read [The account model, nonces and replay protection](/posts/bc-account-model-nonce/), a contract is one more kind of account: one with code and its own storage.
+The tool is {{< term "foundry" "Foundry" >}}: `forge` builds and tests, `anvil` is a local Ethereum node, `cast` talks to it from the shell. Its tests are written in Solidity too, which matters for the next post. If you read [the account model post](/posts/bc-account-model-nonce/), a contract is one more kind of account: one with code and its own storage.
 
 > Foundry 1.8.7 on macOS (arm64); `forge` picked and downloaded solc 0.8.38 for `pragma ^0.8.24`. Local example code, anvil on `127.0.0.1` only. Addresses below are anvil's public test accounts, known to everyone and never funded on a real network.
 
@@ -217,7 +218,7 @@ $ cast storage $V 0
 0x000000000000000000000001f39fd6e51aad88f6f4ce6ab8827279cfffb92266
 ```
 
-## A few things to watch
+## First-contract traps
 
 - Storage layout is the contract's on-disk format. Reordering state variables changes which slot is which; it matters once proxies enter the picture.
 - A view call through `cast call` can succeed where a transaction would fail; the receipt `status` is the truth.

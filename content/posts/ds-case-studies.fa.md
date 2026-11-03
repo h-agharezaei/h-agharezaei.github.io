@@ -3,13 +3,14 @@ date = '2027-06-11T10:00:00+03:30'
 draft = false
 title = 'case study: rate limiter و سامانه‌ی اعلان'
 description = "case study طراحی rate limiter و سامانه‌ی اعلان: نیازمندی، برآورد و شکست‌ها، با نسخه‌ی کوچک Go برای هر کدام که با بار seed دار اجرا شد."
+contentType = 'engineering'
 categories = ["Distributed"]
 series = ["Distributed Systems"]
 tags = ["distributed-systems", "system-design", "rate-limiting"]
 cover = { image = "/images/covers/ds-case-studies.fa.png", alt = "case study: rate limiter و سامانه‌ی اعلان", hiddenInSingle = true }
 +++
 
-[مقاله‌ی قبل](/fa/posts/ds-capacity-estimation/) حساب‌وکتاب را داد. این مقاله سری را روی دو سؤال کلاسیک مصاحبه می‌برد و از هر کدام نسخه‌ای کوچک می‌سازد تا ادعاها بررسی شده باشند.
+از دو سؤال کلاسیک مصاحبه، rate limiter و سامانه‌ی اعلان، نسخه‌ای کوچک در Go ساختم تا ادعاها بررسی شوند: یک پنجره‌ی crash باعث شد ۴ از ۱۰۰ اعلان دو بار ارسال شود و فقط کلید خود provider آن را بست. حساب‌وکتاب از [مقاله‌ی قبل](/fa/posts/ds-capacity-estimation/) می‌آید.
 
 > برچسب صادقانه: یک ماشین. «نودها» shardهای درون‌پروسه‌اند، شبکه loopback است، senderها ساختگی‌اند، store در حافظه است (یک mutex نقش transaction را بازی می‌کند) و NATS توکار است. عددهای ترافیک فرضی‌اند، بارها seed دارند، شمارش چاپ می‌کنم نه زمان.
 
@@ -107,19 +108,15 @@ retry با {{< term "exponential-backoff" "exponential backoff" >}} و jitter ا
 | crash‌ی relay بعد از publish | JetStream ردیف‌های دوباره‌منتشرشده را دور می‌ریزد |
 | NATS خاموش | اجرا نکردم؛ ردیف‌ها در outbox می‌مانند |
 
-ردیف اول crash همان لبه‌ی اجتناب‌ناپذیر {{< term "at-least-once-delivery" "at-least-once" >}} است ([idempotency](/fa/posts/nats-jetstream-idempotency/)): فقط کلید خود provider آن را می‌بندد. در اجرای breaker همه به DLQ می‌روند چون provider برنمی‌گردد؛ سامانه‌ی واقعی باید پارک کند. موفقیت ۹۸٫۰٪ شد، کمتر از هدف ۹۹٪؛ طبق تجربه‌ی من راهش provider دوم است، نه retry بیشتر. اگر پاسخ کند را «لاین high خالی» بخواند، ترتیب لاین‌ها می‌شکند.
+ردیف اول crash همان لبه‌ی اجتناب‌ناپذیر {{< term "at-least-once-delivery" "at-least-once" >}} است ([idempotency](/fa/posts/nats-jetstream-idempotency/)). در اجرای breaker همه به DLQ می‌روند چون provider برنمی‌گردد؛ سامانه‌ی واقعی باید پارک کند. موفقیت ۹۸٫۰٪ شد، کمتر از هدف ۹۹٪؛ طبق تجربه‌ی من راهش provider دوم است، نه retry بیشتر. اگر پاسخ کند را «لاین high خالی» بخواند، ترتیب لاین‌ها می‌شکند.
 
-## چند نکته‌ی مهم
+## درس‌های مشترک دو طراحی
 
 - عددها شبیه‌سازی یا فرضی‌اند.
 - fail open یا closed را پیش از حادثه انتخاب کنید.
 - ترجیحات را هنگام ارسال بررسی کنید.
 - تکرارها را در provider هم بشمارید.
 - سن قدیمی‌ترین پیام را ببینید ([observability](/fa/posts/nats-jetstream-observability/)).
-
-## تمرین
-
-وضعیت `delivered` را با webhookهای شبیه‌سازی‌شده‌ی دیر یا تکراری یا گمشده اضافه کنید.
 
 ## قدم بعدی
 

@@ -3,19 +3,20 @@ date = '2027-05-19T10:00:00+03:30'
 draft = false
 title = 'پردازش داده‌ی کوچک با csv و sqlite3'
 description = 'پردازش داده با csv و sqlite3 در Python: quoting، BOM، حافظه‌ی streaming، درج دسته‌ای، پارامتر، ایندکس، EXPLAIN و حالت WAL.'
+contentType = 'tutorial'
 categories = ["Python"]
 series = ["Python"]
 tags = ["python", "csv", "sqlite", "sqlite3", "data"]
 cover = { image = "/images/covers/py-data-csv-sqlite.fa.png", alt = "پردازش داده‌ی کوچک با csv و sqlite3", hiddenInSingle = true }
 +++
 
-در [مقاله‌ی قبل](/fa/posts/py-cli-scripts/) ابزار خط فرمان نوشتیم. خیلی از اسکریپت‌های واقعی بعدش یک کار دیگر هم می‌کنند: CSV‌ای را که کسی فرستاده می‌خوانند و به یک سؤال درباره‌اش جواب می‌دهند. کتابخانه‌ی استاندارد برای این کار کافی است. این مقاله `csv` و `sqlite3` را روی فایلی با ۲۰۰٬۰۰۰ ردیف به کار می‌برد و برای streaming از [generator](/fa/posts/py-functions-generators/) استفاده می‌کند. با [فایل و JSON در Go](/fa/posts/go-file-io-json/) مقایسه کنید.
+فایل تست من ۲۲۵٬۰۰۶ خط فیزیکی دارد ولی ۲۰۰٬۰۰۰ ردیف، و split ساده رویش خراب می‌شود. خیلی از اسکریپت‌های واقعی، مثل ابزارهای خط فرمان [پست قبل](/fa/posts/py-cli-scripts/)، CSV‌ای را که کسی فرستاده می‌خوانند و به سؤالی درباره‌اش جواب می‌دهند. کتابخانه‌ی استاندارد برای این کار کافی است. این پست `csv` و `sqlite3` را روی همین فایل به کار می‌برد و برای streaming از [generator](/fa/posts/py-functions-generators/) استفاده می‌کند. با [فایل و JSON در Go](/fa/posts/go-file-io-json/) مقایسه کنید.
 
 > Python 3.14.0، SQLite 3.54.0 (از `sqlite3.sqlite_version`)، فقط کتابخانه‌ی استاندارد، در یک پوشه‌ی موقت. سفارش‌ها ساختگی‌اند (random با seed ثابت). ماشین مشغول بود (load حدود ۳)، پس **زمان‌بندی** منتشر نمی‌کنم، فقط تعداد و بایت. pandas اینجا نصب نیست و اجرایش نکردم. دمو یک نمونه‌ی محلی است.
 
 ## خواندن درست CSV
 
-فایل `orders.csv` را با `csv.writer` ساختم: ستون‌های `id, customer, sku, qty, price, ts` و ۱۰٬۶۷۳٬۰۰۰ بایت. بعضی مشتری‌ها `Smith, John`، `Anne "Ace" Lee` و اسمی با خط جدید هستند. فایل ۲۲۵٬۰۰۶ خط فیزیکی دارد ولی ۲۰۰٬۰۰۰ ردیف. split ساده خراب می‌کند:
+فایل `orders.csv` را با `csv.writer` ساختم: ستون‌های `id, customer, sku, qty, price, ts` و ۱۰٬۶۷۳٬۰۰۰ بایت. بعضی مشتری‌ها `Smith, John`، `Anne "Ace" Lee` و اسمی با خط جدید هستند. split ساده خراب می‌کند:
 
 ```text
 split: 7 ['7', '"Smith', ' John"', 'SKU-001', '2', '19.99', '2027-01-01T10:00:00']
@@ -60,7 +61,7 @@ with db:
     db.executemany("INSERT INTO orders VALUES (?,?,?,?,?,?)", gen())
 ```
 
-یعنی ۲۰۰٬۰۰۰ ردیف و یک commit؛ `PRAGMA journal_mode` مقدار پیش‌فرض `delete` را نشان داد. روش کند، commit برای هر ردیف است: با ۲٬۰۰۰ ردیف می‌شود ۲٬۰۰۰ commit که هرکدام یک نوشتن پایدار روی دیسک را اجبار می‌کند. commitها را شمردم و به خاطر load زمان نگرفتم. هر commit یک sync دیسک است و فرق بزرگ است، ولی عددی نقل نمی‌کنم.
+یعنی ۲۰۰٬۰۰۰ ردیف و یک commit؛ `PRAGMA journal_mode` مقدار پیش‌فرض `delete` را نشان داد. روش کند، commit برای هر ردیف است: با ۲٬۰۰۰ ردیف می‌شود ۲٬۰۰۰ commit که هرکدام یک نوشتن پایدار روی دیسک را اجبار می‌کند. commitها را شمردم و به خاطر load زمان نگرفتم؛ فرق بزرگ است، ولی عددی نقل نمی‌کنم.
 
 ## bind کردن پارامتر
 
@@ -121,7 +122,7 @@ SKU-018,12299
 
 یک فایل SQLite به‌عنوان فرمت فایل اپلیکیشن هم رایج است. وقتی چند نویسنده، شبکه یا نقش‌ها لازم شد، به Postgres بروید ([SQLAlchemy و Postgres](/fa/posts/py-sqlalchemy-postgres/)).
 
-## چند نکته‌ی مهم
+## خطاهای رایج با CSV و SQLite
 
 - روی هر فایل CSV از `newline=""` و encoding صریح استفاده کنید.
 - همه‌ی مقدارهای CSV رشته‌اند؛ تبدیلشان کنید.
@@ -135,4 +136,4 @@ SKU-018,12299
 
 ## قدم بعدی
 
-مقاله‌ی بعدی «صدا زدن Rust از Python با ctypes و PyO3» است.
+قدم بعد: «صدا زدن Rust از Python با ctypes و PyO3»، برای حلقه‌های داغی که در Python کندند.

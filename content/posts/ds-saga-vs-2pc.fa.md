@@ -3,13 +3,14 @@ date = '2027-05-23T10:00:00+03:30'
 draft = false
 title = 'saga یا 2PC؟'
 description = 'saga یا commit دو فازی: شبیه‌سازی 2PC که block می‌شود، PREPARE TRANSACTION واقعی در Postgres و sagaهای سفارش با جبران که کامل بررسی شده‌اند.'
+contentType = 'engineering'
 categories = ["Distributed"]
 series = ["Distributed Systems"]
 tags = ["distributed-systems", "saga", "two-phase-commit", "transactions", "go", "postgres"]
 cover = { image = "/images/covers/ds-saga-vs-2pc.fa.png", alt = "saga یا 2PC؟", hiddenInSingle = true }
 +++
 
-[مقاله‌ی قبل](/fa/posts/ds-consensus-raft/) روی یک log توافق کرد. سفارش به چند سرویس می‌رسد (موجودی، پرداخت، ارسال) و هیچ log واحدی همه را پوشش نمی‌دهد. دو جواب هست: {{< term "two-phase-commit" "commit دو فازی" >}} (2PC) که atomicity را نگه می‌دارد، و {{< term "saga" "saga" >}} که ایزولاسیون را کنار می‌گذارد. ببینید [ACID](/fa/posts/db-transactions-acid/)، [outbox](/fa/posts/go-outbox-pattern-nats/)، [idempotency](/fa/posts/nats-jetstream-idempotency/) و [retry](/fa/posts/ds-timeouts-retries-backoff/).
+یک سفارش واقعی به چند سرویس می‌رسد (موجودی، پرداخت، ارسال) و هیچ log واحدی، مثل log [مقاله‌ی قبل](/fa/posts/ds-consensus-raft/)، همه را پوشش نمی‌دهد. دو جواب هست: {{< term "two-phase-commit" "commit دو فازی" >}} (2PC) که atomicity را نگه می‌دارد، و {{< term "saga" "saga" >}} که ایزولاسیون را کنار می‌گذارد. ببینید [ACID](/fa/posts/db-transactions-acid/)، [outbox](/fa/posts/go-outbox-pattern-nats/)، [idempotency](/fa/posts/nats-jetstream-idempotency/) و [retry](/fa/posts/ds-timeouts-retries-backoff/).
 
 > صادقانه: بخش‌های 2PC و saga **شبیه‌سازی** در Go 1.26 روی یک ماشین‌اند: ساعت و شبکه شبیه‌سازی‌شده (تأخیر ۱ تا ۳ tick با seed ثابت) و سرویس‌ها داخل یک process. بدون زمان‌سنجی. بخش ۲ یک PostgreSQL 18.3 واقعی روی loopback است با `psql`.
 
@@ -109,19 +110,15 @@ PENDING view (status exposed only when the saga ends): reads that showed 'charge
 | Complexity | در پروتکل | در جبران‌های شما |
 | Coupling | منابع سازگار با 2PC | هر سرویس با API |
 
-به تجربه‌ی من saga به سرویس‌های جدا می‌خورد و 2PC به چند database که خودتان کنترل می‌کنید. Percolator و Spanner برای نداشتن coordinator تکی، 2PC را روی گروه‌های consensus اجرا می‌کنند؛ فقط نامشان را می‌آورم. TCC (try-confirm-cancel) یک saga است که «try»اش رزرو است.
+به تجربه‌ی من saga به سرویس‌های جدا می‌خورد و 2PC به چند database تحت کنترل خودتان. Percolator و Spanner برای نداشتن coordinator تکی، 2PC را روی گروه‌های consensus اجرا می‌کنند؛ فقط نام می‌برم. TCC (try-confirm-cancel) یک saga است که «try»اش رزرو است.
 
-## چند نکته‌ی مهم
+## جایی که saga خراب می‌شود
 
 - نیت را پیش از call و نتیجه را بعد از آن در log بنویسید؛ crash در فاصله‌ی این دو است.
 - جبران rollback نیست: refund یک واقعیت تازه است؛ ایمیل برگشت‌پذیر نیست.
 - قدمی را که نمی‌شود برگرداند یا شکست نمی‌خورد آخر بگذارید.
 - eventهای saga را با outbox منتشر کنید، وگرنه گم می‌شوند.
 - شبیه‌سازی partition ندارد.
-
-## تمرین
-
-ارسال را اول بگذارید. کدام جبران‌ها گران می‌شوند، و checker هنوز صفر violation نشان می‌دهد؟
 
 ## قدم بعدی
 

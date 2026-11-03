@@ -2,6 +2,7 @@
 date = '2027-03-26T10:00:00+03:30'
 draft = false
 title = 'طراحی API: نسخه‌بندی و pagination'
+contentType = 'engineering'
 description = 'طراحی API در Go: offset pagination ردیف را تکرار یا حذف می‌کند و cursor نه؛ تغییر افزایشی در برابر شکننده و هدر Sunset، با اجرای واقعی.'
 categories = ["Engineering"]
 series = ["Software Engineering"]
@@ -9,7 +10,7 @@ tags = ["api-design", "pagination", "versioning", "software-engineering", "go"]
 cover = { image = "/images/covers/eng-api-design-versioning-pagination.fa.png", alt = "طراحی API: نسخه‌بندی و pagination", hiddenInSingle = true }
 +++
 
-بعد از [code review مؤثر](/fa/posts/eng-code-review/) سراغ چیزی می‌رویم که reviewerها بعداً به‌سختی درستش می‌کنند: شکل یک API عمومی. وقتی کلاینت‌ها به آن وابسته شدند، هر اشتباه یک migration است. دو تصمیم بیشتر از همه گاز می‌گیرند: فهرست‌ها چطور {{< term "pagination" "صفحه‌بندی" >}} شوند و API در گذر زمان چطور عوض شود. سرور همان `net/http` ساده است، به سبک [ساخت API با net/http](/fa/posts/go-http-api-stdlib/)؛ یک سرور کوچک تازه نوشتم با ۲۵۰ سفارش در حافظه. نظرها با **به نظر من** مشخص شده‌اند و بقیه با curl روی `127.0.0.1` اجرا شده‌اند.
+صفحه‌ی ۱ یک فهرست جدیدترین‌اول را بگیرید، یک سفارش بسازید و صفحه‌ی ۲ را بگیرید: سفارش ۱۵۱ دو بار می‌آید. اگر به‌جایش یکی را حذف کنید، ۱۵۱ هرگز دیده نمی‌شود. هیچ [code review](/fa/posts/eng-code-review/)ی این را بعد از انتشار درست نمی‌کند؛ بخشی از شکل یک API عمومی است. وقتی کلاینت‌ها به آن وابسته شدند، هر اشتباه یک migration است. دو تصمیم بیشتر از همه گاز می‌گیرند: فهرست‌ها چطور {{< term "pagination" "صفحه‌بندی" >}} شوند و API در گذر زمان چطور عوض شود. سرور همان `net/http` ساده است، به سبک [ساخت API با net/http](/fa/posts/go-http-api-stdlib/)؛ یک سرور کوچک تازه نوشتم با ۲۵۰ سفارش در حافظه. نظرها با **به نظر من** مشخص شده‌اند و بقیه با curl روی `127.0.0.1` اجرا شده‌اند.
 
 ## offset pagination و تله‌اش
 
@@ -102,16 +103,12 @@ Sunset: Wed, 31 Dec 2031 23:59:59 GMT
 
 pagination فقط می‌خواند و تکرارش امن است. برای POSTها یک کلید از سمت کلاینت بپذیرید تا retry دو سفارش نسازد؛ ایده همان {{< term "idempotency" "idempotency" >}} در [idempotency در JetStream](/fa/posts/nats-jetstream-idempotency/) است. اینجا نساختمش.
 
-## چند نکته‌ی مهم
+## اشتباه‌هایی که به migration تبدیل می‌شوند
 
 - برای هر فهرستی که حین خواندن بزرگ یا عوض می‌شود keyset بگیرید؛ offset فقط برای فهرست کوچک و ثابت.
 - معنای یک فیلد را در جا عوض نکنید؛ فیلد تازه اضافه کنید.
 - deprecation بدون تاریخ و جانشین شایعه است.
 
-## تمرین
-
-دو سناریو را روی endpoint فهرست خودتان اجرا کنید: بین صفحه‌ی ۱ و ۲ یک ردیف درج و یکی حذف کنید. آیا idای تکرار یا گم می‌شود؟ اگر بله، بنویسید نسخه‌ی keyset بر چه اساسی مرتب می‌کرد.
-
 ## قدم بعدی
 
-پست بعدی «OpenAPI و قرارداد API» است.
+«OpenAPI و قرارداد API»: این تصمیم‌ها فقط وقتی پابرجا می‌مانند که قرارداد نوشته و با پاسخ‌های واقعی سنجیده شود.

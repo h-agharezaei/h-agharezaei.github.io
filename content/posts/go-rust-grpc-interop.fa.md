@@ -3,13 +3,14 @@ date = '2027-02-06T10:00:00+03:30'
 draft = false
 title = 'ارتباط Go و Rust با gRPC'
 description = 'یک فایل proto، یک سرور Go و یک سرور Rust با tonic که هرکدام را زبان دیگر صدا می‌زند: فیلد optional، status code، metadata، deadline و استریم.'
+contentType = 'tutorial'
 categories = ["Go", "Rust"]
 series = ["Go + Rust"]
 tags = ["go", "rust", "grpc", "protobuf", "interop", "tonic"]
 cover = { image = "/images/covers/go-rust-grpc-interop.fa.png", alt = "ارتباط Go و Rust با gRPC", hiddenInSingle = true }
 +++
 
-[مقاله‌ی قبلی این سری](/fa/posts/go-vs-rust-when-to-use/) دو زبان را مقایسه کرد. این یکی آن‌ها را وادار به همکاری می‌کند، و همین‌جاست که gRPC به کار می‌آید: قرارداد یک فایل `.proto` است و فرقی نمی‌کند پشت هر سر کدام زبان باشد. سرویس orders را از [مقاله‌ی gRPC در Go](/fa/posts/go-grpc-service/) بدون تغییر برمی‌داریم (همان proto، همان سرور و کلاینت Go) و Rust را در هر دو سمت اضافه می‌کنیم: کلاینتی که سرور Go را صدا می‌زند و سروری که کلاینت Go صدایش می‌زند. سمت Rust از [async و Tokio](/fa/posts/rust-async-tokio/) استفاده می‌کند؛ اگر [مقاله‌ی axum](/fa/posts/rust-http-axum-api/) و [مقاله‌ی thiserror](/fa/posts/rust-thiserror-anyhow/) را خوانده باشید، handlerها آشنا به نظر می‌رسند.
+وقتی سرویس Go و سرویس Rust باید همدیگر را صدا بزنند، gRPC کار را ساده می‌کند: قرارداد یک فایل `.proto` است و فرقی نمی‌کند پشت هر سر کدام زبان باشد. بعد از [مقایسه‌ی دو زبان](/fa/posts/go-vs-rust-when-to-use/)، حالا آن‌ها را به همکاری وامی‌داریم. سرویس orders را از [مقاله‌ی gRPC در Go](/fa/posts/go-grpc-service/) بدون تغییر برمی‌داریم (همان proto، همان سرور و کلاینت Go) و Rust را در هر دو سمت اضافه می‌کنیم: کلاینتی که سرور Go را صدا می‌زند و سروری که کلاینت Go صدایش می‌زند. سمت Rust از [async و Tokio](/fa/posts/rust-async-tokio/) استفاده می‌کند؛ اگر [مقاله‌ی axum](/fa/posts/rust-http-axum-api/) و [مقاله‌ی thiserror](/fa/posts/rust-thiserror-anyhow/) را خوانده باشید، handlerها آشنا به نظر می‌رسند.
 
 > Go 1.26، Rust 1.90، macOS (arm64)، grpc-go v1.84.0، protoc 33.4، protoc-gen-go v1.36.11، protoc-gen-go-grpc 1.6.1، tonic 0.14.6، prost 0.14.4، tokio 1.54.1 و protox 0.10.0. همه‌چیز روی یک ماشین و به‌صورت محلی اجرا شده است.
 
@@ -124,7 +125,7 @@ get id="slow" grpc-timeout=Some("299991u")
 
 کلاینت Rust متد `Request::set_timeout` دارد. روی سرور Go، فراخوانیِ کند `Cancelled | Timeout expired` برگرداند، نه `DeadlineExceeded`: کلاینت tonic timeout خودش را به `Cancelled` نگاشت می‌کند. پیش از ساختن alert روی code، این نگاشت را بررسی کنید.
 
-## چند نکته که باید حواستان باشد
+## دام‌های مرز دو زبان
 
 - یک `.proto` نگه دارید و هر دو سمت را در CI دوباره تولید کنید؛ فایل‌های کپی‌شده از هم دور می‌شوند.
 - `optional` حضور را می‌گوید، نه معنا را. معنای مقدارهای خالی را مستند کنید.
@@ -134,4 +135,4 @@ get id="slow" grpc-timeout=Some("299991u")
 
 ## قدم بعدی
 
-سری Rust با trait object و `dyn` ادامه پیدا می‌کند، یعنی راه Rust برای چندریختی در زمان اجرا، که در Go با interface رایگان گرفته بودیم.
+سری Rust با «Trait Object و dyn در Rust» ادامه پیدا می‌کند، یعنی راه Rust برای چندریختی در زمان اجرا، که در Go با interface رایگان گرفته بودیم.

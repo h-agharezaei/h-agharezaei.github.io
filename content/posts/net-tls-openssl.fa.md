@@ -3,13 +3,14 @@ date = '2027-03-01T10:00:00+03:30'
 draft = false
 title = 'TLS و گواهی با openssl'
 description = 'TLS و گواهی با openssl روی loopback: ساخت CA، امضای گواهی با SAN، خواندن خطاهای verify، TLS 1.2 و 1.3، ALPN و mutual TLS.'
+contentType = 'tutorial'
 categories = ["Networking"]
 series = ["Networking"]
 tags = ["networking", "tls", "openssl", "certificates", "mtls", "security"]
 cover = { image = "/images/covers/net-tls-openssl.fa.png", alt = "TLS و گواهی با openssl", hiddenInSingle = true }
 +++
 
-در پست قبلی، [HTTP/1.1 با دست](/fa/posts/net-http1-by-hand/)، درخواست‌های HTTP را روی یک socket ساده تایپ کردیم و هر کسی در مسیر می‌توانست آنها را بخواند. {{< term "tls" "TLS" >}} این مشکل را حل می‌کند: اتصال را رمزنگاری می‌کند و هویت سرور را ثابت می‌کند. بیشتر دردسر TLS به رمزنگاری برنمی‌گردد، به گواهی و پیام‌های خطاست. پس کل زنجیره را خودمان با `openssl` می‌سازیم، عمداً خرابش می‌کنیم و هر خطا را می‌خوانیم. این پست روی [مدل TCP/IP](/fa/posts/net-tcp-ip-model/) و [اتصال‌های TCP](/fa/posts/net-tcp-handshake-states/) سوار است.
+بیشتر دردسر {{< term "tls" "TLS" >}} به رمزنگاری برنمی‌گردد، به گواهی و پیام‌های خطاست. TLS اتصال را رمزنگاری می‌کند و هویت سرور را ثابت می‌کند؛ بدون آن، درخواست‌های [HTTP/1.1 با دست](/fa/posts/net-http1-by-hand/) از یک socket ساده می‌گذرند که هر کسی در مسیر می‌تواند بخواندش. پس کل زنجیره را خودمان با `openssl` می‌سازیم، عمداً خرابش می‌کنیم و هر خطا را می‌خوانیم. این پست روی [مدل TCP/IP](/fa/posts/net-tcp-ip-model/) و [اتصال‌های TCP](/fa/posts/net-tcp-handshake-states/) سوار است.
 
 > همه‌چیز روی `127.0.0.1` و با فایل‌های موقت در یک پوشه‌ی temp (`<tmp>`) اجرا شد، پس چیز شخصی در خروجی نیست. از `/opt/homebrew/bin/openssl` (نسخه‌ی OpenSSL 3.6.4) استفاده کردم؛ `/usr/bin/openssl` مک LibreSSL 3.3.6 است و گزینه‌هایش فرق دارد. پورت را `PORT` نوشته‌ام. بدون root امکان capture بسته نبود.
 
@@ -138,7 +139,7 @@ server: depth=0 CN=demo-client   verify return:1
 
 برگ، دو میانی و یک ریشه. سیستم شما به ریشه اعتماد دارد و سرور بقیه را می‌فرستد.
 
-## چند نکته‌ی مهم
+## اشتباه‌های رایج با گواهی
 
 - همیشه SAN بگذارید و برای آدرس IP مدخل `IP:` اضافه کنید.
 - خطای verify را با `-k` یا خاموش کردن بررسی «درست» نکنید؛ CA را اضافه کنید.
@@ -152,4 +153,4 @@ server: depth=0 CN=demo-client   verify return:1
 
 ## قدم بعدی
 
-پست بعدی «HTTP/2 و فرق‌هایش» است. در سری‌ای دیگر «TLS and x509 certificates in practice» را عملی‌تر می‌بینیم.
+بعدی «HTTP/2 و فرق‌هایش» است، همان پروتکلی که ALPN بالا انتخاب کرد. در سری‌ای دیگر «TLS and x509 certificates in practice» را عملی‌تر می‌بینیم.

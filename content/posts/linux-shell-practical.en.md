@@ -3,13 +3,14 @@ date = '2027-03-19T10:00:00+03:30'
 draft = false
 title = 'The practical shell: pipes, redirects and xargs'
 description = 'Shell pipes, redirects and xargs with real runs: exit codes, pipefail, quoting pitfalls, find -print0 and process substitution, tested on macOS.'
+contentType = 'tutorial'
 categories = ["Linux"]
 series = ["Linux"]
 tags = ["linux", "shell", "bash", "pipes", "redirects", "xargs"]
 cover = { image = "/images/covers/linux-shell-practical.png", alt = "The practical shell: pipes, redirects and xargs", hiddenInSingle = true }
 +++
 
-This is the first post of the Linux series, and it starts where I spend most of my day: the shell. Pipes, redirects and `xargs` turn small tools into one-off programs, and a few quoting rules decide whether they are safe. The same tools help when we debug sockets, as in [the TCP server post](/posts/net-sockets-tcp-from-scratch/).
+`ls -1 $f` on `my report.txt` fails twice, and `false | true` reports success. Rules like these decide whether a one-off shell command is safe, so the Linux series starts here. The same tools help when we debug sockets, as in [the TCP server post](/posts/net-sockets-tcp-from-scratch/).
 
 > Honest disclaimer: I wrote this on **macOS**, which has a BSD userland and no Linux kernel. All output below is real macOS output (`/bin/sh`, and `/bin/bash` 3.2.57 for the bash parts). I did not run anything on Linux, and `shellcheck` is not installed here, so I did not run it. Where GNU differs I quote the man page or say so. Home paths were replaced by `<home>`.
 
@@ -106,7 +107,7 @@ The fix is NUL separators: `find . -name '*.txt' -print0 | xargs -0 ls -1` liste
 - `sed -i 's/x/y/' file` failed with `command c expects \ followed by text`, because BSD `sed` wants a suffix argument: `sed -i '' ...` worked. GNU `sed -i` takes the suffix attached, so portable scripts avoid `-i` or use a temp file.
 - Empty input: per the macOS man page, GNU `xargs` runs the command once even with empty input and offers `-r` to stop that. Here `printf '' | xargs echo ran` printed nothing, and `-r` is accepted for compatibility.
 
-## A few things to watch
+## Common shell traps
 
 - Quote `"$var"` and `"$@"` by default.
 - Use `-print0`/`-0` for file names, never `find | xargs` bare.
@@ -120,4 +121,4 @@ Create `x y.log` and two more `.log` files. Count their lines with `find ... -pr
 
 ## What's next
 
-The next post is “The filesystem and permissions”.
+Next: “The filesystem and permissions”, because every script touches files.

@@ -3,13 +3,14 @@ date = '2027-05-29T10:00:00+03:30'
 draft = false
 title = 'پیام‌رسانی و معماری رویدادمحور'
 description = 'معماری رویدادمحور با Go و NATS: command و event، fan-out، envelope، consumer خودتوان، ترتیب، تغییر schema و محدودکردن حلقه‌ها.'
+contentType = 'tutorial'
 categories = ["Distributed"]
 series = ["Distributed Systems"]
 tags = ["distributed-systems", "messaging", "event-driven", "nats", "go"]
 cover = { image = "/images/covers/ds-messaging-event-driven.fa.png", alt = "پیام‌رسانی و معماری رویدادمحور", hiddenInSingle = true }
 +++
 
-[مقاله‌ی قبل](/fa/posts/ds-cqrs-event-sourcing/) با event به عنوان راهی برای انتقال state تمام شد. این مقاله نگاه معماری به پیام‌رسانی است. طرز کار JetStream در [سری NATS](/fa/posts/nats-jetstream-retry-dlq/) آمده و اینجا تکرارش نمی‌کنم.
+در اجرای من ۵۰ event به ۵۹ اثر جانبی رسید: سیستم رویدادمحور فراخوانی ساده را با تکرار، به‌هم‌ریختگی ترتیب، تغییر schema و حلقه عوض می‌کند. [مقاله‌ی قبل](/fa/posts/ds-cqrs-event-sourcing/) با event برای انتقال state تمام شد؛ طرز کار JetStream در [سری NATS](/fa/posts/nats-jetstream-retry-dlq/) آمده است.
 
 > برچسب صادقانه: همه‌چیز روی یک ماشین است، سرویس‌ها goroutine‌اند و «شبکه» loopback به یک nats-server توکار است. الگوها را نشان می‌دهد، نه شبکه‌ی واقعی را. فقط شمارش.
 
@@ -36,7 +37,7 @@ JetStream work queue, 3 workers  : 10 10 10
 
 ## choreography یا orchestration
 
-سه سرویس goroutine (orders و payments و shipping) با یک {{< term "event-envelope" "event envelope" >}} حرف می‌زنند: id و type و time و source و نسخه‌ی schema و correlation id و causation id و data. CloudEvents استاندارد چنین envelope ای است؛ مال من شبیه آن است، نه منطبق. در {{< term "choreography" "choreography" >}} هر سرویس به یک event واکنش نشان می‌دهد. ردیابی یک correlation id:
+سه سرویس goroutine (orders، payments و shipping) با یک {{< term "event-envelope" "event envelope" >}} حرف می‌زنند: id، type، time، source، نسخه‌ی schema، correlation id، causation id و data. CloudEvents استاندارد چنین envelope ای است؛ مال من شبیه آن است، نه منطبق. در {{< term "choreography" "choreography" >}} هر سرویس به یک event واکنش نشان می‌دهد. ردیابی یک correlation id:
 
 ```
 orders    publish OrderPlaced       id=evt-1 corr=corr-42 cause=-
@@ -51,7 +52,7 @@ causation id زنجیره را بازسازی می‌کند و correlation id آ
 
 ## at-least-once و consumer خودتوان
 
-۵۰ event را به یک consumer در JetStream با ack wait برابر ۳۰۰ms فرستادم. handler در حدود ۲۰٪ تحویل‌های اول بعد از اثر جانبی و قبل از ack «crash» می‌کند (seed ثابت، تکرارپذیر).
+۵۰ event را به یک consumer در JetStream با ack wait برابر ۳۰۰ms فرستادم. handler در حدود ۲۰٪ تحویل‌های اول بعد از اثر جانبی و قبل از ack «crash» می‌کند (seed ثابت).
 
 ```
 events=50 deliveries=59 redelivered=9
@@ -62,7 +63,7 @@ side effects without dedupe=59, with dedupe table=50
 
 ## ترتیب
 
-JetStream ترتیب را فقط داخل یک stream نگه می‌دارد. وقتی یک ack گم شود، redelivery آن را می‌شکند. سه event با نسخه‌های v1 created و v2 paid و v3 shipped برای یک سفارش، و v2 بار اول ack نشده:
+JetStream ترتیب را فقط داخل یک stream نگه می‌دارد. وقتی یک ack گم شود، redelivery آن را می‌شکند. سه event با نسخه‌های v1 created، v2 paid و v3 shipped برای یک سفارش، و v2 بار اول ack نشده:
 
 ```
 arrived v1 created  delivery#1 applied-by-version-check=true
@@ -107,9 +108,9 @@ max hops=5    handled=5 dropped-by-hop-limit=1 killed-by-switch=false
 
 {{< term "poison-message" "poison message" >}} مشکل خواهر آن است: تعداد تحویل را محدود کنید و به یک {{< term "dlq" "dead-letter queue" >}} بفرستید ([retry و DLQ](/fa/posts/nats-jetstream-retry-dlq/)).
 
-## چند نکته‌ی مهم
+## دام‌های پیام‌رسانی
 
-- فرض کنید تکرار و بههم‌ریختگی ترتیب هست؛ با id تکراری‌زدایی و نسخه‌ها را مقایسه کنید.
+- فرض کنید تکرار و به‌هم‌ریختگی ترتیب هست؛ با id تکراری‌زدایی و نسخه‌ها را مقایسه کنید.
 - correlation id و causation id را از روز اول در هر envelope بگذارید.
 - حلقه‌ها و retryها را با hops یا TTL محدود کنید.
 - طبق تجربه‌ی من، اگر یک تیم هر دو طرف را دارد و یک فراخوانی ساده کافی است، سراغ event-driven نروید؛ جداسازی می‌خرید که شاید لازم نباشد.
@@ -122,4 +123,4 @@ event ای به نام `PaymentFailed` به choreography اضافه کنید ت�
 
 ## قدم بعدی
 
-مقاله‌ی بعدی «service discovery و load balancing» است.
+«service discovery و load balancing»: فراخوانی مستقیم، برخلاف bus، اول باید بداند سرویس مقابل کجاست.

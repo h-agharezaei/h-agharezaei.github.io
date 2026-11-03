@@ -3,13 +3,14 @@ date = '2027-06-08T10:00:00+03:30'
 draft = false
 title = 'modular monolith یا microservice؟'
 description = 'modular monolith در برابر microservice با Go: یک ماژول را پشت HTTP می‌بریم و خطاهای تازه، hop، بایت و transaction ازدست‌رفته را می‌شماریم.'
+contentType = 'engineering'
 categories = ["Distributed"]
 series = ["Distributed Systems"]
 tags = ["distributed-systems", "microservices", "modular-monolith", "architecture", "go"]
 cover = { image = "/images/covers/ds-modular-monolith-vs-microservices.fa.png", alt = "modular monolith یا microservice؟", hiddenInSingle = true }
 +++
 
-[مقاله‌ی قبل](/fa/posts/ds-fault-injection-testing/) به سیستم خطا تزریق کرد. این مقاله می‌پرسد آیا باید مرزهای شبکه‌ی بیشتری بسازیم تا خطا در آن‌ها تزریق شود. یک دامنه‌ی کوچک (orders و inventory و billing) را به شکل {{< term "modular-monolith" "modular monolith" >}} ساختم، بعد inventory را پشت HTTP بردم و شمردم چه عوض شد. پیش‌زمینه: [bounded context](/fa/posts/eng-ddd-basics/) و [ساختار پروژه](/fa/posts/go-project-layout-clean-architecture/).
+بردن یک ماژول پشت HTTP کد فراخواننده را عوض نکرد و تست‌ها سبز ماندند، ولی ۱۸۸ واحد دوبار رزرو شد. هر مرز شبکه جای تازه‌ای برای خطاهای [مقاله‌ی قبل](/fa/posts/ds-fault-injection-testing/) است. یک دامنه‌ی کوچک (orders و inventory و billing) را به شکل {{< term "modular-monolith" "modular monolith" >}} ساختم، بعد inventory را پشت HTTP بردم و شمردم چه عوض شد. پیش‌زمینه: [bounded context](/fa/posts/eng-ddd-basics/) و [ساختار پروژه](/fa/posts/go-project-layout-clean-architecture/).
 
 > برچسب صادقانه: «سرویس» یک goroutine روی listener حلقه‌ی بازگشتی است، نه ماشین جدا. خطاهای شبکه از یک wrapper با seed ثابت می‌آید که خودم نوشتم (شبیه‌سازی)، و جدول latency هم شبیه‌سازی است. فقط شمارش، بدون زمان‌سنجی. قضاوت‌هایی که «طبق تجربه‌ی من» دارند نظر شخصی‌اند.
 
@@ -101,17 +102,13 @@ hops=5 end-to-end p50= 212.5 ms p99= 326.1 ms p99/p50=1.53  chains with >=1 hop 
 
 تا جایی که یادم است «MonolithFirst» از Martin Fowler از شروع با مونولیت دفاع می‌کند؛ دیگران می‌گویند سرویس زودهنگام انضباط می‌آورد. نظر من: ماژولار شروع کنید، در درزی جدا کنید که با درد اثبات شده (مقیاس، تیم، قابلیت اطمینان)، به سرویس داده‌ی خودش را بدهید و هرگز دیتابیس را مشترک نکنید، و تدریجی بروید ([strangler](/fa/posts/eng-legacy-code/)).
 
-## چند نکته‌ی مهم
+## پیش از جداکردن یک ماژول
 
 - مرزها را با تست اجبار کنید، نه با حسن‌نیت.
 - جداکردن، پیش از اولین درخواست idempotency key و timeout و compensation می‌خواهد.
 - portها را درشت نگه دارید: یک فراخوانی برای هر use case.
 - شبیه‌سازی شکل پدیده را نشان می‌دهد، نه عدد production.
 
-## تمرین
-
-`Release` را هم ۱۰٪ مواقع fail کنید و ببینید چند retry orphanها را روی صفر نگه می‌دارد.
-
 ## قدم بعدی
 
-مقاله‌ی بعدی «روش‌های استقرار: blue-green و canary» است.
+«روش‌های استقرار: blue-green و canary»: با قطعه‌های بیشتر، سؤال بعدی این است که هر قطعه چطور بی‌خطر به کاربر می‌رسد.

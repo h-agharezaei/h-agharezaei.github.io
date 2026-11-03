@@ -3,15 +3,16 @@ date = '2026-11-28T18:00:00+03:30'
 draft = false
 title = 'Proof of Stake، BFT و finality'
 description = 'proof of stake و finality از نوع BFT با Go: انتخاب proposer با وزن stake، رأی امضاشده‌ی prevote و precommit، quorum دو سوم و slashing برای امضای دوگانه.'
+contentType = 'tutorial'
 categories = ["Blockchain"]
 series = ["Blockchain"]
 tags = ["blockchain", "go", "proof-of-stake", "bft", "finality"]
 cover = { image = "/images/covers/bc-proof-of-stake-bft.fa.png", alt = "Proof of Stake، BFT و finality", hiddenInSingle = true }
 +++
 
-پست قبلی، [MEV و ترتیب تراکنش‌ها](/fa/posts/bc-mev-ordering/)، می‌پرسید چه کسی تراکنش‌های داخل بلاک را مرتب می‌کند. این پست: چه کسی بلاک را می‌سازد و کی قطعی می‌شود؟
+در [Proof of Work، difficulty و mining](/fa/posts/bc-proof-of-work-mining/) هر رأی برق خرج داشت و [Fork، reorg و قاعده‌ی زنجیره‌ی سنگین‌تر](/fa/posts/bc-forks-reorgs/) هزینه‌اش را نشان داد: هیچ بلاکی قطعی نیست. پس چه کسی بلاک را می‌سازد و کی قطعی می‌شود؟ [MEV و ترتیب تراکنش‌ها](/fa/posts/bc-mev-ordering/) فقط می‌پرسید چه کسی تراکنش‌های داخل بلاک را مرتب می‌کند.
 
-در [Proof of Work، difficulty و mining](/fa/posts/bc-proof-of-work-mining/) هر رأی برق خرج داشت. [Fork، reorg و قاعده‌ی زنجیره‌ی سنگین‌تر](/fa/posts/bc-forks-reorgs/) هزینه‌اش را نشان داد: هیچ بلاکی قطعی نیست. {{< term "proof-of-stake" "Proof of Stake" >}} به‌جای انرژی سوزانده‌شده پول قفل‌شده می‌گذارد. هر {{< term "validator" "validator" >}} stake می‌سپارد، وزن رأی‌اش همان stake است و تقلب اثبات‌شده بخشی از آن را می‌سوزاند.
+{{< term "proof-of-stake" "Proof of Stake" >}} به‌جای انرژی سوزانده‌شده پول قفل‌شده می‌گذارد. هر {{< term "validator" "validator" >}} stake می‌سپارد، وزن رأی‌اش همان stake است و تقلب اثبات‌شده بخشی از آن را می‌سوزاند.
 
 رأی‌گیری consensus مقاوم در برابر {{< term "byzantine-fault" "خطای بیزانسی" >}} است. در [consensus و Raft](/fa/posts/ds-consensus-raft/) نودها crash می‌کردند ولی دروغ نمی‌گفتند؛ اینجا بعضی دروغ می‌گویند.
 
@@ -111,7 +112,7 @@ runs=972 conflicting(byz<1/3)=0 conflicting(byz>=1/3)=68 commits with >=1/3 offl
 
 طبق مستندات اتریوم، تا جایی که فهمیده‌ام، هر دو ترکیب شده‌اند: یک {{< term "fork-choice-rule" "قاعده‌ی fork choice" >}} (LMD-GHOST) سر زنجیره را انتخاب می‌کند و Casper FFG وقتی دو سوم stake به checkpointهای epoch رأی بدهد آن‌ها را finalize می‌کند. کلاینت اتریوم اجرا نکردم.
 
-## چند نکته‌ی مهم
+## safety روی چه فرض‌هایی ایستاده
 
 - quorum یعنی بیش از دو سوم stake، نه نودها.
 - safety فرض می‌کند stake بیزانسی زیر یک سوم است؛ بالاتر از آن مدرک فقط بعد از اتفاق متقلب‌ها را نشان می‌دهد.
@@ -124,4 +125,4 @@ round دوم با locking بسازید: کسی که A را precommit کرده ب
 
 ## قدم بعدی
 
-پست بعدی: **Layer 2 و rollupها: optimistic و ZK**.
+**Layer 2 و rollupها: optimistic و ZK**: بلاک قطعی، بلاک بزرگ‌تر نیست.

@@ -3,13 +3,14 @@ date = '2027-04-12T10:00:00+03:30'
 draft = false
 title = 'Dynamic programming 2: classic problems'
 description = 'Dynamic programming in Go: LCS, edit distance, 0/1 knapsack and LIS with real tables, reconstructed answers and a Persian rune-vs-byte check.'
+contentType = 'tutorial'
 categories = ["Algorithms"]
 series = ["Algorithms"]
 tags = ["algorithms", "dynamic-programming", "lcs", "edit-distance", "knapsack", "go"]
 cover = { image = "/images/covers/algo-dynamic-programming-2.png", alt = "Dynamic programming 2: classic problems", hiddenInSingle = true }
 +++
 
-In [Dynamic programming 1: the idea and memoization](/posts/algo-dynamic-programming-1/) we cached subproblems top-down. Here we fill tables bottom-up for four classics and, more importantly, walk the table backwards to recover the actual answer, not just its size. Counting follows [Big-O measured](/posts/algo-big-o-measured/); [binary search](/posts/algo-binary-search-invariants/) shows up in the last problem.
+One table below says `kitten` and `sitting` are 3 edits apart; walking it backwards says which 3. For four classics I fill tables bottom-up and walk them back to recover the actual answer, not just its size. [Dynamic programming 1: the idea and memoization](/posts/algo-dynamic-programming-1/) cached subproblems top-down. Counting follows [Big-O measured](/posts/algo-big-o-measured/); [binary search](/posts/algo-binary-search-invariants/) shows up in the last problem.
 
 > Go 1.26, local example, tests with `go test -race`. Machine load was high, so I publish counts, not timings.
 
@@ -89,7 +90,7 @@ bytes : 8 8 distance 2
 runes : 4 4 distance 1 [sub س->ک keep ل keep ا keep م]
 ```
 
-By bytes the distance is 2; by {{< term "rune" "runes" >}} it is 1. Note that with some letter pairs (س and ع share their first byte) bytes would accidentally give the right answer, which makes this bug easy to miss. The generic functions take `[]T`, so `[]rune(s)` fixes it. I did not handle combining marks or normalisation.
+By bytes the distance is 2; by {{< term "rune" "runes" >}} it is 1. With some letter pairs (س and ع share their first byte) bytes would accidentally give the right answer, which makes this bug easy to miss. The generic functions take `[]T`, so `[]rune(s)` fixes it. I did not handle combining marks or normalisation.
 
 ## Tests
 
@@ -110,7 +111,7 @@ A `go test -race` test uses fixed seed 42 and 300 random cases per problem (leng
 
 Knapsack is pseudo-polynomial: C is a number, not an input size. Filling a table in dependency order is a [topological order](/posts/algo-topological-sort/) of the subproblem DAG.
 
-## A few things to watch
+## Table DP traps
 
 - Reconstruction needs the table; the memory-saving versions lose it.
 - Loop direction in 1-D tables decides the problem you solve.
@@ -123,4 +124,4 @@ Reconstruct the LIS itself in O(n log n) by storing predecessor indices. Then do
 
 ## What's next
 
-DP checks every option. Sometimes one local choice is enough, and sometimes you must undo choices. The next post is "Greedy algorithms and backtracking".
+"Greedy algorithms and backtracking" follows: DP checks every option, but sometimes one local choice is enough, and sometimes you must undo choices.

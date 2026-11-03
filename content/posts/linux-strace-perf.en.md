@@ -3,13 +3,14 @@ date = '2027-06-04T10:00:00+03:30'
 draft = false
 title = 'strace and perf for troubleshooting'
 description = 'strace and perf from the man pages: reading syscall lines and errno, -c summaries, perf stat and record, plus a Go trace parser run on invented lines.'
+contentType = 'tutorial'
 categories = ["Linux"]
 series = ["Linux"]
 tags = ["linux", "strace", "perf", "troubleshooting", "syscalls", "flame-graph", "go", "macos"]
 cover = { image = "/images/covers/linux-strace-perf.png", alt = "strace and perf for troubleshooting", hiddenInSingle = true }
 +++
 
-I wrote this on a Mac; nothing here ran on Linux. `strace` and `perf` are Linux-only, so I could not run either. This is the thirteenth post of the Linux series, after [Logs and journalctl](/posts/linux-logs-journalctl/). Facts come from the strace(1), ptrace(2), perf-stat(1), perf-record(1) man pages and the kernel sysctl docs; Linux-looking text is labelled "illustrative, not captured". Related: [I/O and epoll](/posts/linux-io-epoll/).
+When a process fails vaguely or hangs and [the logs](/posts/linux-logs-journalctl/) do not say why, `strace` shows its requests to the kernel and `perf` shows where its time goes. Both are Linux-only, so on this Mac I ran neither. Facts come from the strace(1), ptrace(2), perf-stat(1), perf-record(1) man pages and the kernel sysctl docs; Linux-looking text is labelled "illustrative, not captured". Related: [I/O and epoll](/posts/linux-io-epoll/).
 
 ## What strace shows
 
@@ -80,7 +81,7 @@ Access is restricted. The kernel docs say `perf_event_paranoid` defaults to 2, w
 
 I did not run `dtruss` or `fs_usage`, which need root. `/usr/bin/time -l` on the summarizer reported a 4816896-byte maximum resident set (macOS; it varies).
 
-## A few things to watch
+## When a trace misleads
 
 - strace changes timing and can hide races.
 - Read the first failure, not the last: later errors are often consequences.
@@ -93,4 +94,4 @@ On a throwaway Linux VM, run `strace -f -tt -T -o out.txt` on a short command, t
 
 ## What's next
 
-The next post is “Safe scripting and cron”.
+Last in the series: “Safe scripting and cron”, for the scripts around these services.

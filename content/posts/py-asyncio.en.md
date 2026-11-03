@@ -3,13 +3,14 @@ date = '2027-04-14T10:00:00+03:30'
 draft = false
 title = 'asyncio in Python'
 description = 'asyncio in Python: coroutines vs tasks, TaskGroup, cancellation and timeouts, a blocking call that freezes it, Queue, Semaphore and a TCP echo server.'
+contentType = 'tutorial'
 categories = ["Python"]
 series = ["Python"]
 tags = ["python", "asyncio", "concurrency", "async", "taskgroup"]
 cover = { image = "/images/covers/py-asyncio.png", alt = "asyncio in Python", hiddenInSingle = true }
 +++
 
-In the [previous post](/posts/py-multiprocessing/) we used processes for CPU work. For waiting on sockets, `asyncio` is the third option next to threads (see [the GIL and threading](/posts/py-gil-threading/)). If you know Node.js ([the event loop](/posts/node-event-loop/), [promises and async/await](/posts/node-promises-async-await/)) most of it will feel familiar; the differences are where it gets interesting.
+A ticker task that should tick every 10 ms got zero ticks while another task called `time.sleep(0.5)`: one blocking call stopped everything. That is the deal with `asyncio`: everything shares one thread and switches only at `await`. For waiting on sockets it is the third option, next to threads (see [the GIL and threading](/posts/py-gil-threading/)) and the processes we used for CPU work in [the previous post](/posts/py-multiprocessing/). If you know Node.js ([the event loop](/posts/node-event-loop/), [promises and async/await](/posts/node-promises-async-await/)) most of it will feel familiar; the differences are where it gets interesting.
 
 > Python 3.14.0, standard library only. The machine was heavily loaded, so I publish counts, orderings and booleans, **no timings**. Demo scripts are local examples.
 
@@ -107,7 +108,7 @@ Port 0 lets the OS pick a free port. Five clients connected at once with `gather
 
 One thread served all five connections. Compare it with [a TCP server from scratch](/posts/net-sockets-tcp-from-scratch/).
 
-## A few things to watch
+## asyncio traps
 
 - Never call blocking code (`time.sleep`, `requests`, heavy CPU) in a coroutine; use `to_thread` or a process pool.
 - Always `await` coroutines; read the `never awaited` warning.

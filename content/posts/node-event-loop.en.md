@@ -3,13 +3,14 @@ date = '2026-11-11T10:00:00+03:30'
 draft = false
 title = 'The Node.js event loop'
 description = 'The Node.js event loop explained with real runs: phases, nextTick vs promises vs timers, blocking, microtask starvation and the libuv thread pool.'
+contentType = 'tutorial'
 categories = ["Node.js"]
 series = ["Node.js"]
 tags = ["nodejs", "event-loop", "javascript", "async", "libuv"]
 cover = { image = "/images/covers/node-event-loop.png", alt = "The Node.js event loop", hiddenInSingle = true }
 +++
 
-This post opens the Node.js series. If you write Node.js code in production, the most useful mental model is the {{< term "event-loop" "event loop" >}}: your JavaScript runs on one thread, and everything that waits (timers, sockets, files) is handed to the system and comes back as a callback. If you come from Go, compare it with [goroutines and channels](/posts/go-goroutines-channels/) and the [Go scheduler](/posts/go-scheduler-gc-internals/): there the runtime spreads your code over many threads, here your JavaScript does not run in parallel.
+In Node.js a 10 ms timer can wait 200 ms, just because a synchronous loop is in front of it. The reason is the {{< term "event-loop" "event loop" >}}, the most useful mental model if you write Node.js code in production: your JavaScript runs on one thread, and everything that waits (timers, sockets, files) is handed to the system and comes back as a callback. If you come from Go, compare it with [goroutines and channels](/posts/go-goroutines-channels/) and the [Go scheduler](/posts/go-scheduler-gc-internals/): there the runtime spreads your code over many threads, here your JavaScript does not run in parallel.
 
 > Everything below was run with Node v20.13.1. Scripts are local examples; outputs are copied from real runs.
 
@@ -134,7 +135,7 @@ min lag < 100ms: true
 
 Absolute values are machine-dependent, so I only show the comparison. In production, export the p99 of this histogram as a metric.
 
-## A few things to watch
+## What stalls the loop
 
 - Never run heavy synchronous work (big JSON parsing, `*Sync` fs calls, CPU loops) in a request handler.
 - `process.nextTick` and recursive microtasks can starve I/O and timers.
@@ -147,4 +148,4 @@ Write a script with a `setInterval` of 50 ms and a synchronous loop of 300 ms st
 
 ## What's next
 
-The next post is "Modules: ESM and CommonJS".
+"Modules: ESM and CommonJS": now that we know how code runs, the next question is how Node finds and loads it.

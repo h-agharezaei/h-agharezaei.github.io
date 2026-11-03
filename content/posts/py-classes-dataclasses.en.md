@@ -3,13 +3,14 @@ date = '2027-02-07T10:00:00+03:30'
 draft = false
 title = 'Classes and dataclasses in Python'
 description = 'Python classes and dataclasses for Go and Node.js developers: properties, dunder methods, slots, MRO, Protocol and enum, all run on Python 3.14.'
+contentType = 'tutorial'
 categories = ["Python"]
 series = ["Python"]
 tags = ["python", "beginner", "classes", "dataclasses"]
 cover = { image = "/images/covers/py-classes-dataclasses.png", alt = "Classes and dataclasses in Python", hiddenInSingle = true }
 +++
 
-In the [previous post](/posts/py-functions-generators/) we wrote functions, closures and generators. Now we group data and behavior: classes. Coming from Go, the closest thing to a struct with methods is [Go's structs and methods](/posts/go-structs-methods-interfaces/), and I compare with it only where I am sure.
+A list defined on a class is shared by every instance: two separate accounts both print `[3, 7]`. Building on the functions from [the previous post](/posts/py-functions-generators/), classes group data and behavior. Coming from Go, the closest thing is [Go's structs and methods](/posts/go-structs-methods-interfaces/), and I compare with it only where I am sure.
 
 > Everything ran with Python 3.14.0 on macOS (`python3 --version`). The demos are three local scripts. Byte counts are specific to this machine and version.
 
@@ -44,7 +45,7 @@ print(a.bank, b.bank, Account.bank)
 Mine Demo Demo
 ```
 
-`self` is explicit: it is just the first parameter. A `@classmethod` gets the class (an alternative constructor), a `@staticmethod` gets nothing. The gotcha: `history` lives on the class, so both accounts share one list. Assigning `a.bank` creates an instance attribute and leaves the class untouched. Put mutable state in `__init__`.
+`self` is explicit: it is just the first parameter. A `@classmethod` gets the class (an alternative constructor), a `@staticmethod` gets nothing. Assigning `a.bank` creates an instance attribute and leaves the class untouched. Put mutable state in `__init__`.
 
 ## Properties
 
@@ -151,7 +152,7 @@ class Status(Enum):
 
 `Status("active")` gives `Status.ACTIVE`, `.name` is `ACTIVE`, `.value` is `active`, and `Status("nope")` raises `ValueError: 'nope' is not a valid Status`.
 
-## A few things to watch
+## Where classes surprise you
 
 - Mutable class attributes are shared. Create lists and dicts in `__init__` or with `default_factory`.
 - Define `__eq__` and you lose `__hash__` unless you define it too.
@@ -167,4 +168,4 @@ class Status(Enum):
 
 ## What's next
 
-The next post is "Errors and context managers in Python".
+Next: "Errors and context managers in Python", where custom exceptions are classes too.

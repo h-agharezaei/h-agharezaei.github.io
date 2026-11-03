@@ -4,6 +4,7 @@ draft = false
 title = 'A Simple Publisher and Worker with NATS JetStream in Go'
 seoTitle = 'Publisher and Worker with NATS JetStream in Go'
 description = 'Building a pair of Go services with Docker Compose and NATS JetStream that process messages through a durable consumer.'
+contentType = 'tutorial'
 categories = ["Go"]
 series = ["NATS JetStream"]
 tags = ["go", "nats", "jetstream", "messaging"]
@@ -109,4 +110,4 @@ Then open the NATS dashboard at `http://localhost:8222/`. To see the durable con
 
 ## Next steps
 
-This example is intentionally simple. For real workloads I want to dig into retry policy and `MaxDeliver`, dead-lettering, multiple workers on one consumer, and monitoring processing lag.
+This example is intentionally simple. Real workloads need more: retry policy and `MaxDeliver`, dead-lettering, multiple workers on one consumer, and monitoring processing lag. The first two are the subject of Retry and Dead-Letter Queues in NATS JetStream with Go, because this worker acks everything and has no plan for a message that keeps failing.

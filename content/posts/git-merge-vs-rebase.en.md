@@ -3,13 +3,14 @@ date = '2026-11-03T10:00:00+03:30'
 draft = false
 title = 'Merge or rebase? Two real histories'
 description = 'Git merge vs rebase with real output: merge commits, fast-forward, changing hashes, the golden rule, force-with-lease, pull --rebase and squash.'
+contentType = 'tutorial'
 categories = ["Git"]
 series = ["Git"]
 tags = ["git", "merge", "rebase", "beginner"]
 cover = { image = "/images/covers/git-merge-vs-rebase.png", alt = "Merge or rebase? Two real histories", hiddenInSingle = true }
 +++
 
-In the [previous post](/posts/git-branches-head-refs/) we saw that a branch is only a pointer to a commit. That makes the next question easy to state: when two branches have gone separate ways, how do you bring them back together? Git gives two answers, {{< term "merge" "merge" >}} and {{< term "rebase" "rebase" >}}. Both end with the same files, but they leave different histories behind.
+When two branches have gone separate ways, how do you bring them back together? Git gives two answers, {{< term "merge" "merge" >}} and {{< term "rebase" "rebase" >}}. Both end with the same files, but they leave different histories behind: after a merge the old hashes survive, after a rebase every replayed commit has a new one, and that difference is what decides whether a force push hurts your teammates. A branch is only a pointer to a commit ([previous post](/posts/git-branches-head-refs/)), so the question is where those pointers end up.
 
 > Everything below ran with Git 2.39.2 in temp repos. I fixed the commit dates so the hashes are reproducible. Paths in the output are shortened.
 
@@ -125,7 +126,7 @@ This table is my opinion, not a rule:
 | A branch others also push to | merge, never rebase |
 | Fixing my last few local commits | rebase |
 
-## A few things to watch
+## The cost of rewriting history
 
 - Rebase rewrites history. After it, `git push` needs a force, so use `--force-with-lease`.
 - A rebase conflict is solved per replayed commit, which can mean solving the same area several times.
@@ -138,4 +139,4 @@ Make a repo with a diverged `main` and `feature`. Merge it, then `git reset --ha
 
 ## What's next
 
-The next post is "Resolving conflicts and rerere".
+The next post is "Resolving conflicts and rerere": both can stop on a conflict, the case this post left untested.

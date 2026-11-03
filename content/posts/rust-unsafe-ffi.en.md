@@ -3,13 +3,14 @@ date = '2027-02-18T10:00:00+03:30'
 draft = false
 title = 'Unsafe and FFI in Rust'
 description = 'Rust unsafe and FFI: what unsafe allows, wrapping it in a safe API, calling C from Rust and exposing a C-ABI library (cdylib, staticlib) to C.'
+contentType = 'tutorial'
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "unsafe", "ffi", "c", "intermediate"]
 cover = { image = "/images/covers/rust-unsafe-ffi.png", alt = "Unsafe and FFI in Rust", hiddenInSingle = true }
 +++
 
-The [previous post](/posts/rust-macros/) was about macros. This one is about the escape hatch: `unsafe`. Everything we have learned so far ([ownership](/posts/rust-ownership/), [smart pointers](/posts/rust-smart-pointers/)) is what safe Rust guarantees for you. `unsafe` is how you say "I will uphold those guarantees myself" when the compiler cannot check them, mostly to talk to C. Go has the same idea in its `unsafe` package with `unsafe.Pointer`, as a [pointer post](/posts/go-pointers-memory/) readers may know. Here we build a tiny C-ABI library and link a C program to it.
+In Rust, `unsafe` does not turn off the borrow checker; it only unlocks five extra operations. After [macros](/posts/rust-macros/), it is time for that escape hatch. Everything we have learned so far ([ownership](/posts/rust-ownership/), [smart pointers](/posts/rust-smart-pointers/)) is what safe Rust guarantees for you. `unsafe` is how you say "I will uphold those guarantees myself" when the compiler cannot check them, mostly to talk to C. Go has the same idea in its `unsafe` package with `unsafe.Pointer`, as a [pointer post](/posts/go-pointers-memory/) readers may know. Here we build a tiny C-ABI library and link a C program to it.
 
 > Everything below was compiled and run with Rust 1.90, edition 2024, on macOS. The demo lives in two local crates: `unsafe-demo` and `ffi-lib`.
 
@@ -56,7 +57,7 @@ zeroed = 0, 1.0f32 bits = 0x3f800000
 
 `*const T` and `*mut T` are raw pointers. Creating one is safe (I made one from the address `0x1234` without `unsafe`); only dereferencing is not, because nobody checked it points to valid memory. Raw pointers have no lifetimes or borrow rules, and may be null.
 
-An important point: `unsafe` does **not** turn off the borrow checker. It only unlocks those five operations. Ordinary references inside an `unsafe` block are still checked:
+Ordinary references inside an `unsafe` block are still checked:
 
 ```rust
 let mut v = vec![1, 2, 3];
@@ -188,7 +189,7 @@ Linking the `.dylib` with `-lffi_lib` gave the same output. This library stays u
 
 For checking real `unsafe` code, use Miri (an interpreter that detects UB) and sanitizers (AddressSanitizer and friends). Both need a nightly toolchain, so I did not run them here.
 
-## A few things to watch
+## Rules at the unsafe boundary
 
 - `unsafe` does not disable the borrow checker; it moves responsibility for five operations to you.
 - Keep `unsafe` blocks tiny, and put a `// SAFETY:` comment on each.
@@ -203,4 +204,4 @@ For checking real `unsafe` code, use Miri (an interpreter that detects UB) and s
 
 ## What's next
 
-Next: performance and benchmarking with Criterion in Rust.
+*Performance and benchmarking with Criterion in Rust*: now that it works, how fast is it?

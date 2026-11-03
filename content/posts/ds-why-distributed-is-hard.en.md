@@ -3,13 +3,14 @@ date = '2027-04-15T10:00:00+03:30'
 draft = false
 title = 'Why distributed systems are hard'
 description = 'Why distributed systems are hard: partial failure, retries, clock skew and slow nodes, shown with seeded Go simulations and one real loopback demo.'
+contentType = 'tutorial'
 categories = ["Distributed"]
 series = ["Distributed Systems"]
 tags = ["distributed-systems", "go", "partial-failure", "clocks", "failure-detection"]
 cover = { image = "/images/covers/ds-why-distributed-is-hard.png", alt = "Why distributed systems are hard", hiddenInSingle = true }
 +++
 
-This is the first post of a new series about distributed systems. I have used queues, replicas and RPC for years, and most of my worst bugs came from the same few facts, so I want to start by naming them. Earlier posts touched them from one side: [idempotency in JetStream](/posts/nats-jetstream-idempotency/), [the outbox pattern](/posts/go-outbox-pattern-nats/) and [replication](/posts/db-replication-streaming/). Here is the map.
+A client calls `Withdraw(10)` and gets a timeout. Did the money move? From the client's side there is no way to know. I have used queues, replicas and RPC for years, and most of my worst bugs came from a few facts like this one, so this series starts by naming them. Earlier posts touched them from one side: [idempotency in JetStream](/posts/nats-jetstream-idempotency/), [the outbox pattern](/posts/go-outbox-pattern-nats/) and [replication](/posts/db-replication-streaming/). Here is the map.
 
 > Honest labelling: sections 1, 2, 4 and 6 are **simulations** in one process with seeded randomness (Go 1.26). A simulated network is not a real one; the numbers show the shape of the problem, not production rates. Section 5 uses real processes and real TCP, but only on loopback. I show counts, never timings.
 
@@ -109,7 +110,7 @@ requests with a 100 ms deadline that time out: healthy 2.1%, slow(5x) 52.5%
 
 A short timeout flags healthy nodes; a long one detects death late. Worse, at 500 ms the slow node is never suspected, yet over half its requests miss a 100 ms deadline. That is a {{< term "gray-failure" "gray failure" >}}: in my experience, harder than a clean crash.
 
-## A few things to watch
+## Where intuition fails
 
 - A timeout means "unknown", not "failed".
 - Retries need idempotency, or they multiply damage.
@@ -123,4 +124,4 @@ Change the seed and the loss rates in `pickFate`. Does the mismatch grow linearl
 
 ## What's next
 
-The next post is “CAP and PACELC, correctly”.
+“CAP and PACELC, correctly” comes next: once the network can split, it names what you give up when it does.

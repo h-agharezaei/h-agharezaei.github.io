@@ -3,13 +3,14 @@ date = '2026-11-07T10:00:00+03:30'
 draft = false
 title = 'برگرداندن کار: reflog، revert و cherry-pick'
 description = 'برگرداندن کار در Git با reflog، reset، revert و cherry-pick: اثر هر دستور، نجات از hard reset و چیزهایی که Git نمی‌تواند برگرداند.'
+contentType = 'tutorial'
 categories = ["Git"]
 series = ["Git"]
 tags = ["git", "beginner", "reflog", "revert", "cherry-pick"]
 cover = { image = "/images/covers/git-undo-reflog-revert.fa.png", alt = "برگرداندن کار: reflog، revert و cherry-pick", hiddenInSingle = true }
 +++
 
-در [مقاله‌ی قبل](/fa/posts/git-resolve-conflicts/) conflictها را حل کردیم. حالا سؤالی که هر برنامه‌نویسی دیر یا زود می‌پرسد: «یک دستور زدم و کارم پرید. برمی‌گردد؟» بیشتر وقت‌ها بله، چون Git تقریباً هیچ چیز را بلافاصله پاک نمی‌کند. فقط باید بدانید سراغ کدام ابزار بروید.
+`git reset --hard HEAD~2` را بزنید و دو commit از `git log` ناپدید می‌شوند. این لحظه‌ای است که هر برنامه‌نویسی دیر یا زود به آن می‌رسد: «یک دستور زدم و کارم پرید. برمی‌گردد؟» بیشتر وقت‌ها بله، چون Git تقریباً هیچ چیز را بلافاصله پاک نمی‌کند؛ استثنا کاری است که هرگز commit نشده. فقط باید بدانید سراغ کدام ابزار بروید، چه خرابی از یک reset آمده باشد و چه از [حل یک conflict](/fa/posts/git-resolve-conflicts/) که درست پیش نرفته.
 
 > همه‌ی دستورهای زیر با Git نسخه‌ی 2.39.2 در یک repository آزمایشی اجرا شده‌اند و خروجی‌ها از همان اجراها کپی شده‌اند.
 
@@ -139,7 +140,7 @@ dangling commit 0b1fb07a5e6289f46c88e2cd5ceaf064d9e01737
 
 با `git branch rescue 0b1fb07` برگشت. طبق مستندات، ورودی‌های reflog اگر reachable باشند بعد از ۹۰ روز و اگر نباشند بعد از ۳۰ روز منقضی می‌شوند (`gc.reflogExpire` و `gc.reflogExpireUnreachable`) و `git gc` بعد از آن می‌تواند objectها را پاک کند. این را خودم امتحان نکردم.
 
-## چند نکته‌ی مهم
+## قواعد نجات
 
 - پیش از `reset --hard` حتماً `git status` بزنید. کار commit‌نشده قابل بازیابی نیست.
 - commitهایی را که push کرده‌اید amend یا reset نکنید؛ آنجا از `revert` استفاده کنید.
@@ -153,4 +154,4 @@ dangling commit 0b1fb07a5e6289f46c88e2cd5ceaf064d9e01737
 
 ## قدم بعدی
 
-مقاله‌ی بعدی «پیدا کردن باگ با git bisect» است.
+مقاله‌ی بعدی «پیدا کردن باگ با git bisect» است؛ برگرداندن یک commit ساده است، سخت‌تر پیدا کردن همان commitی است که چیزی را خراب کرده.

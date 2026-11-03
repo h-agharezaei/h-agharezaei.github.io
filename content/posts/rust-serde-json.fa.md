@@ -3,13 +3,14 @@ date = '2027-01-15T10:00:00+03:30'
 draft = false
 title = 'Serde و JSON در Rust'
 description = 'کار با serde و serde_json در Rust: derive کردن Serialize و Deserialize، attributeهای rename و default، سه شکل enum، Value و json! و پیام‌های خطای واقعی.'
+contentType = 'tutorial'
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "serde", "json", "intermediate"]
 cover = { image = "/images/covers/rust-serde-json.fa.png", alt = "Serde و JSON در Rust", hiddenInSingle = true }
 +++
 
-در [مقاله‌ی قبل](/fa/posts/rust-async-tokio/) کد async را با Tokio اجرا کردیم. تقریباً هر سرویسی که I/O دارد، JSON هم حرف می‌زند؛ برای همین این مقاله درباره‌ی **serde** است، چارچوب استاندارد serialization در Rust. اگر نسخه‌ی Go را خوانده باشید، یعنی [کار با فایل، io.Reader/Writer و JSON در Go](/fa/posts/go-file-io-json/)، ساختار این مقاله آشنا به نظر می‌رسد و برای مقایسه از همان payload مربوط به `User` استفاده کرده‌ام.
+serde یک enum را بسته به یک attribute به سه شکل متفاوت JSON می‌نویسد و در حالت untagged، variant ‏`Cancelled` فقط `null` می‌شود؛ انتخابی که مستقیم وارد قرارداد API هر سرویسی می‌شود که JSON حرف می‌زند. این مقاله پس از [async/await و Tokio در Rust](/fa/posts/rust-async-tokio/) سراغ **serde**، چارچوب استاندارد serialization در Rust، می‌رود. اگر [کار با فایل، io.Reader/Writer و JSON در Go](/fa/posts/go-file-io-json/) را خوانده باشید، ساختارش آشناست و همان payload ‏`User` را برای مقایسه به کار برده‌ام.
 
 > همه‌چیز را با Rust نسخه‌ی 1.90، `serde` نسخه‌ی 1.0.229 (با feature به نام `derive`) و `serde_json` نسخه‌ی 1.0.154 اجرا کرده‌ام. خروجی‌ها از اجرای واقعی کپی شده‌اند.
 
@@ -41,7 +42,7 @@ struct User {
 User { name: "Roham", age: 30, email: Some("r@example.com"), tags: ["rust", "backend"], password: "" }
 ```
 
-`skip` فیلد `password` را در هر دو جهت حذف می‌کند و موقع خواندن مقدارش از `Default` می‌آید، پس نوعش باید `Default` داشته باشد. `default` اجازه می‌دهد `tags` در ورودی نباشد. نبودنِ فیلد `Option` هم مشکلی ندارد. برای فایل و stream از `to_writer(File::create(..)?, &u)` و `from_reader(BufReader::new(File::open(..)?))` استفاده کنید؛ هر دو در اجرای من درست رفت‌وبرگشت کردند. فایل را در `BufReader` بپیچید، چون `from_reader` خواندن‌های کوچک زیادی انجام می‌دهد.
+`skip` فیلد `password` را در هر دو جهت حذف می‌کند و موقع خواندن مقدارش از `Default` می‌آید. `default` اجازه می‌دهد `tags` در ورودی نباشد. نبودنِ فیلد `Option` هم مشکلی ندارد. برای فایل و stream از `to_writer(File::create(..)?, &u)` و `from_reader(BufReader::new(File::open(..)?))` استفاده کنید؛ هر دو در اجرای من درست رفت‌وبرگشت کردند. فایل را در `BufReader` بپیچید، چون `from_reader` خواندن‌های کوچک زیادی انجام می‌دهد.
 
 ## تغییر نام، flatten و alias
 
@@ -69,7 +70,7 @@ struct Order {
 
 ## enum: سه شکل
 
-اینجا جایی است که serde خیلی‌ها را غافلگیر می‌کند. سه variant یکسان (`Created { id }`، `Paid { id, amount }` و `Cancelled`) و سه attribute:
+سه variant یکسان (`Created { id }`، `Paid { id, amount }` و `Cancelled`) و سه attribute:
 
 ```text
 default:    {"Created":{"id":1}}   {"Paid":{"id":1,"amount":9.5}}   "Cancelled"
@@ -153,7 +154,7 @@ fn id_from_str_or_num<'de, D: Deserializer<'de>>(d: D) -> Result<u64, D::Error> 
 {"id":true} -> error: data did not match any variant of untagged enum StrOrNum at line 1 column 11
 ```
 
-## چند نکته که باید حواستان باشد
+## دام‌های serde
 
 - شکل enum را آگاهانه انتخاب کنید؛ پیش‌فرض چیزی نیست که بیشتر کلاینت‌های REST انتظار دارند.
 - `skip` برای deserialize به `Default` روی نوع فیلد نیاز دارد.
@@ -169,4 +170,4 @@ fn id_from_str_or_num<'de, D: Deserializer<'de>>(d: D) -> Result<u64, D::Error> 
 
 ## قدم بعدی
 
-در مقاله‌ی بعد با Axum در Rust یک API می‌سازیم و از همین نوع‌ها برای بدنه‌ی درخواست و پاسخ استفاده می‌کنیم.
+«ساخت API با Axum در Rust»، چون همین نوع‌ها آنجا بدنه‌ی درخواست و پاسخ می‌شوند.

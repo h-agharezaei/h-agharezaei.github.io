@@ -3,13 +3,14 @@ date = '2026-11-05T10:00:00+03:30'
 draft = false
 title = 'حل conflict و rerere'
 description = 'حل conflict در Git قدم‌به‌قدم: خواندن marker‌ها، abort امن، فرق ours و theirs در merge و rebase، و استفاده‌ی دوباره از حل‌ها با rerere.'
+contentType = 'tutorial'
 categories = ["Git"]
 series = ["Git"]
 tags = ["git", "merge-conflict", "rerere", "beginner"]
 cover = { image = "/images/covers/git-resolve-conflicts.fa.png", alt = "حل conflict و rerere", hiddenInSingle = true }
 +++
 
-در [مقاله‌ی قبل](/fa/posts/git-merge-vs-rebase/) merge و rebase را روی دو تاریخچه‌ی واقعی مقایسه کردیم. هر دو ممکن است وسط کار بایستند و از شما سؤال بپرسند، و همین لحظه بسیاری از مبتدی‌ها را می‌ترساند. **{{< term "merge-conflict" "Conflict" >}}** خطای repository شما نیست. Git می‌گوید «دو نفر یک جا را عوض کرده‌اند، تو تصمیم بگیر».
+[merge و rebase](/fa/posts/git-merge-vs-rebase/) هر دو می‌توانند وسط کار بایستند و سؤال بپرسند. **{{< term "merge-conflict" "Conflict" >}}** خطای repository شما نیست. Git می‌گوید «دو نفر یک جا را عوض کرده‌اند، تو تصمیم بگیر».
 
 > همه‌ی دستورهای زیر با Git نسخه‌ی 2.39.2 روی یک repository آزمایشی اجرا شده‌اند و خروجی‌ها از همان اجراها کپی شده‌اند.
 
@@ -75,7 +76,7 @@ git commit
 | `git merge main` | `status: review` (feature) | `status: published` (main) |
 | `git rebase main` | `status: published` (main) | `status: review` (feature) |
 
-در merge، «ours» شاخه‌ای است که رویش هستید. در rebase، Git روی `main` تاریخچه‌ی جدید می‌سازد، پس «ours» همان تاریخچه‌ی در حال ساخته شدن است و «theirs» commitی است که دوباره اجرا می‌شود، یعنی کار خودتان. پس «ours» پایه‌ای است که رویش می‌سازید.
+در merge، «ours» شاخه‌ای است که رویش هستید. در rebase، Git روی `main` تاریخچه‌ی جدید می‌سازد، پس «ours» همان تاریخچه‌ی در حال ساخته شدن است و «theirs» commitی است که دوباره اجرا می‌شود، یعنی کار خودتان.
 
 ## دیدن base با zdiff3
 
@@ -123,7 +124,7 @@ Automatic merge failed; fix conflicts and then commit the result.
 
 محدودیت‌ها: فقط وقتی کار می‌کند که متن conflict همان باشد، پس تغییر یک خط کناری یعنی conflict جدید. فقط در clone شما ذخیره می‌شود و فقط conflict محتوایی را ثبت می‌کند. اگر حل ثبت‌شده غلط بود، `git rerere forget <path>` آن را پاک می‌کند؛ این مرحله را تأیید نکردم. ابزار `git mergetool` یک ویرایشگر گرافیکی سه‌پنجره‌ای باز می‌کند؛ اینجا اجرایش نکردم.
 
-## چند نکته‌ی مهم
+## پیش از commit کردن حل
 
 - خط‌های marker را هرگز commit نکنید؛ قبلش `<<<<<<<` را جست‌وجو کنید.
 - بعد از حل، تست‌ها را اجرا کنید. merge متنیِ تمیز هم می‌تواند از نظر معنایی غلط باشد.
@@ -137,4 +138,4 @@ Automatic merge failed; fix conflicts and then commit the result.
 
 ## قدم بعدی
 
-مقاله‌ی بعدی «برگرداندن کار: reflog، revert و cherry-pick» است.
+مقاله‌ی بعدی «برگرداندن کار: reflog، revert و cherry-pick» است، برای وقتی که حلی خراب از آب درمی‌آید.

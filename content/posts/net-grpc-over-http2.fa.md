@@ -3,13 +3,14 @@ date = '2027-04-01T10:00:00+03:30'
 draft = false
 title = 'gRPC روی HTTP/2'
 description = 'gRPC روی HTTP/2 و loopback: هدرها و trailerهای واقعی، پیشوند ۵ بایتی پیام، grpc-timeout، کدهای وضعیت، یک اتصال و GOAWAY.'
+contentType = 'tutorial'
 categories = ["Networking"]
 series = ["Networking"]
 tags = ["networking", "grpc", "http2", "protobuf", "go", "deadline"]
 cover = { image = "/images/covers/net-grpc-over-http2.fa.png", alt = "gRPC روی HTTP/2", hiddenInSingle = true }
 +++
 
-در [پست قبل](/fa/posts/net-websocket/) یک اتصال را به کانال پیام تبدیل کردیم. {{< term "grpc" "gRPC" >}} راه دیگری می‌رود: داخل {{< term "http" "HTTP" >}}/2 می‌ماند، مثل [HTTP/2 و آنچه عوض می‌شود](/fa/posts/net-http2/)، و چند قاعده رویش اضافه می‌کند. [سرویس gRPC در Go](/fa/posts/go-grpc-service/) و [Go و Rust روی gRPC](/fa/posts/go-rust-grpc-interop/) سمت API را گفتند؛ اینجا فقط بایت‌ها را نگاه می‌کنم.
+هر فراخوانی {{< term "grpc" "gRPC" >}} وضعیت {{< term "http" "HTTP" >}} برابر 200 برمی‌گرداند، حتی برای سفارش ناموجود؛ نتیجه‌ی واقعی در trailer می‌آید. برخلاف [WebSocket](/fa/posts/net-websocket/)، gRPC داخل HTTP/2 می‌ماند ([HTTP/2 و فرق‌هایش](/fa/posts/net-http2/)) و چند قاعده رویش اضافه می‌کند. [سرویس gRPC در Go](/fa/posts/go-grpc-service/) و [Go و Rust روی gRPC](/fa/posts/go-rust-grpc-interop/) سمت API را گفتند؛ اینجا فقط بایت‌ها را نگاه می‌کنم.
 
 > همه‌چیز روی `127.0.0.1` با port تصادفی (چاپ نشده)، Go 1.26، macOS و grpc-go نسخه‌ی v1.84.0 اجرا شد. کد {{< term "protobuf" "protobuf" >}} همان قرارداد `orders` پست قبلی است (کپی شده)، با یک سرور کوچک تازه. Linux، grpc-web و load balancing را اجرا نکردم. ماشین مشغول بود، پس تعداد دارم و زمان‌سنجی ندارم.
 
@@ -39,7 +40,7 @@ request body bytes: 00 00 00 00 04 0a 02 6f 31
 
 ## کلاینت واقعی چه می‌فرستد
 
-حالا همان فراخوانی از کلاینت معمولی grpc-go، در حالی که سمت سرور بایت‌های دریافتی را ثبت و رمزگشایی می‌کرد:
+همان فراخوانی از کلاینت معمولی grpc-go، به شکلی که سمت سرور ثبت و رمزگشایی شد:
 
 ```
 HEADERS stream=1 end_stream=false
@@ -58,7 +59,7 @@ DATA stream=1 end_stream=true len=9
 
 ## کدهای وضعیت
 
-وضعیت HTTP همیشه 200 است. نتیجه‌ی واقعی `grpc-status` در trailer است. سفارش ناموجود یک پاسخ **Trailers-Only** بود: یک فریم HEADERS با `end_stream=true` که هم بخش HTTP و هم وضعیت را دارد:
+نتیجه‌ی واقعی `grpc-status` در trailer است. سفارش ناموجود یک پاسخ **Trailers-Only** بود: یک فریم HEADERS با `end_stream=true` که هم بخش HTTP و هم وضعیت را دارد:
 
 ```
 HEADERS stream=1 end_stream=true
@@ -107,7 +108,7 @@ HEADERS stream=1 end_stream=true
 
 سرور اول یک {{< term "goaway" "GOAWAY" >}} می‌فرستد که چیزی را محدود نمی‌کند، بعد یک رفت‌وبرگشت PING و بعد GOAWAY دوم که stream شماره‌ی ۱ را آخرین streamی اعلام می‌کند که پردازش می‌شود. stream در حال اجرا تمام شد، هر ۵ پیام رسید و فراخوانی تازه بعدش `Unavailable` گرفت. همان ایده‌ی [graceful shutdown برای workerهای Go](/fa/posts/go-graceful-shutdown-workers/) است.
 
-## چند نکته‌ی مهم
+## جاهایی که فراخوانی gRPC خراب می‌شود
 
 - در کلاینت همیشه deadline بگذارید؛ بدون آن فراخوانی می‌تواند تا ابد منتظر بماند.
 - وضعیت را از trailer بخوانید، نه از وضعیت HTTP.
@@ -120,4 +121,4 @@ HEADERS stream=1 end_stream=true
 
 ## قدم بعدی
 
-پست بعدی «load balancer لایه‌ی ۴ و ۷» است.
+بعدی «load balancer لایه‌ی ۴ و ۷» است، چون ۷۱ فراخوانی روی یک اتصال، load balancing را عوض می‌کند.

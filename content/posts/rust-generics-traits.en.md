@@ -3,13 +3,14 @@ date = '2026-12-12T10:00:00+03:30'
 draft = false
 title = 'Generics and traits in Rust'
 description = 'Rust generics and traits: generic functions and structs, default methods, trait bounds, impl Trait, operator overloading, monomorphization, orphan rule.'
+contentType = 'tutorial'
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "beginner", "generics", "traits"]
 cover = { image = "/images/covers/rust-generics-traits.png", alt = "Generics and traits in Rust", hiddenInSingle = true }
 +++
 
-In the [previous post](/posts/rust-modules-crates-cargo/) we split code into modules and crates. Now we write code that works for many types at once. In Rust that takes two ideas: **generics** (code parameterized over a type) and **traits** (a named set of behavior a type can have). You have already used both without naming them: `Option<T>` is generic, and `Display` and `Debug` are traits.
+A generic `largest` without a trait bound does not compile, even if you never call it with a bad type: Rust checks a generic body against what its bounds promise. After modules and crates in the [previous post](/posts/rust-modules-crates-cargo/), writing code for many types at once takes two ideas: **generics** (code parameterized over a type) and **traits** (a named set of behavior a type can have). You have already used both without naming them: `Option<T>` is generic, and `Display` and `Debug` are traits.
 
 > Everything below was compiled and run with Rust 1.90. Outputs and compiler messages are copied from those runs.
 
@@ -153,7 +154,7 @@ The compiler's hint is the usual fix: wrap the type in your own struct (the newt
 
 In Go, an interface is satisfied structurally: any type with the right methods fits, with no declaration (see [Generics in Go](/posts/go-generics/) for constraints). In Rust the link is explicit: you write `impl Trait for Type`, and the orphan rule says where that line may live. Both use interface-like sets of behavior as generic constraints.
 
-## A few things to watch
+## Trait traps
 
 - Without a bound, you can do almost nothing with a `T`; add bounds as the compiler asks.
 - `impl Trait` in return position means one concrete type, not "any type".
@@ -168,4 +169,4 @@ In Go, an interface is satisfied structurally: any type with the right methods f
 
 ## What's next
 
-In the next post we meet lifetimes in Rust, which explain what those `&T` references are allowed to point to and for how long.
+Lifetimes in Rust explains what those `&T` references are allowed to point to and for how long.

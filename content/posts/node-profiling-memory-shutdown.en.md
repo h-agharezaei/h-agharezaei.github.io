@@ -4,13 +4,14 @@ draft = false
 title = 'Profiling, memory and graceful shutdown in Node.js'
 seoTitle = 'Profiling, memory and shutdown in Node.js'
 description = 'Profiling Node.js: --cpu-prof, heap snapshots, a real memory leak and OOM, event loop delay, then a clean SIGTERM shutdown of an HTTP server.'
+contentType = 'tutorial'
 categories = ["Node.js"]
 series = ["Node.js"]
 tags = ["nodejs", "profiling", "memory", "heap-snapshot", "graceful-shutdown"]
 cover = { image = "/images/covers/node-profiling-memory-shutdown.png", alt = "Profiling, memory and graceful shutdown in Node.js", hiddenInSingle = true }
 +++
 
-In the previous post, [Worker threads and cluster in Node.js](/posts/node-worker-threads-cluster/), we spread work over several threads and processes. Before you add more of them, find out where the time and the memory actually go, and make sure the process can stop without dropping requests. This is the Go story of [Profiling Go with pprof](/posts/go-profiling-pprof/) and [Graceful shutdown for Go workers](/posts/go-graceful-shutdown-workers/), told in Node.js terms, on top of the [event loop](/posts/node-event-loop/) and the [HTTP server](/posts/node-http-server/).
+A cache that never evicts grew a test server's heap from 3 MB to 31 MB over 50000 requests. Before adding more of the threads and processes from [Worker threads and cluster in Node.js](/posts/node-worker-threads-cluster/), find out where time and memory go, and make sure the process can stop without dropping requests. This is the Go story of [Profiling Go with pprof](/posts/go-profiling-pprof/) and [Graceful shutdown for Go workers](/posts/go-graceful-shutdown-workers/), told in Node.js terms, on top of the [event loop](/posts/node-event-loop/) and the [HTTP server](/posts/node-http-server/).
 
 > Node v20.13.1. Local example scripts, real outputs. The machine was busy, so I publish counts and sizes, not timings. Heap snapshots and profiles were deleted afterwards. DevTools and `--inspect` are not shown; I did not run them.
 
@@ -95,7 +96,7 @@ The in-flight request finished, but its keep-alive socket stayed open afterwards
 
 That is the {{< term "graceful-shutdown" "graceful shutdown" >}} recipe: stop accepting, let in-flight work end, close idle sockets, and keep a hard timeout so a stuck client cannot block a deploy. Go's `http.Server.Shutdown` does the first three for you; a `context` deadline plays the role of the timeout.
 
-## A few things to watch
+## Measuring the wrong thing
 
 - Profile under realistic load, and change one thing at a time.
 - Read the heap after a forced GC; before it, you measure garbage.
@@ -109,4 +110,4 @@ Add `/leak` to your server from the HTTP post, load it with a script, take two h
 
 ## What's next
 
-The next post is "Node.js or Go? When to use which", the last of the Node.js series.
+"Node.js or Go? When to use which" closes the series by building the same service in both.

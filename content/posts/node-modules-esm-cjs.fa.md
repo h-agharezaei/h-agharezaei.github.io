@@ -3,6 +3,7 @@ date = '2026-11-21T10:00:00+03:30'
 draft = false
 title = 'ماژول‌ها: ESM و CommonJS'
 description = 'ESM و CommonJS در Node.js با اجرای واقعی: انتخاب سیستم ماژول، interop، خطای ERR_REQUIRE_ESM، نگاشت exports، cache و import چرخه‌ای.'
+contentType = 'tutorial'
 categories = ["Node.js"]
 series = ["Node.js"]
 tags = ["nodejs", "modules", "esm", "commonjs", "javascript"]
@@ -105,7 +106,7 @@ live binding در `export let count` هم دیده می‌شود: importکنند
 
 `import fs from 'fs'` و `'node:fs'` یک شیء‌اند (`true`). پیشوند، ماژول‌های داخلی را صریح می‌کند و برای `node:test` اجباری است: `require('test')` خطای `MODULE_NOT_FOUND` داد و `require('node:test')` کار کرد.
 
-## چند نکته‌ی مهم
+## جاهایی که interop می‌شکند
 
 - برای هر پروژه یک سیستم انتخاب کنید و `"type"` را صریح بنویسید. این نظر شخصی من است: کد جدید با ESM و `.cjs` فقط جایی که ابزاری لازم دارد.
 - importهای نام‌دار از CommonJS را قطعی فرض نکنید؛ اگر مطمئن نیستید از import پیش‌فرض استفاده کنید.
@@ -118,4 +119,4 @@ live binding در `export let count` هم دیده می‌شود: importکنند
 
 ## قدم بعدی
 
-مقاله‌ی بعدی «npm، package.json و قفل وابستگی» است.
+«npm، package.json و قفل وابستگی»: ماژول‌های خودمان را دیدیم، حالا نوبت پکیج‌هایی است که از بیرون می‌آیند و نسخه‌شان باید قفل شود.

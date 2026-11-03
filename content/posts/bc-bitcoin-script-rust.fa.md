@@ -3,13 +3,14 @@ date = '2026-11-12T18:00:00+03:30'
 draft = false
 title = 'Bitcoin Script: یک مفسر stack کوچک با Rust'
 description = 'Bitcoin Script با Rust: یک مفسر stack کوچک که قفل P2PKH را با HASH160 و OP_CHECKSIG باز می‌کند، همراه با کلید اشتباه، امضای دست‌کاری‌شده و OP_RETURN.'
+contentType = 'tutorial'
 categories = ["Blockchain"]
 series = ["Blockchain"]
 tags = ["blockchain", "rust", "bitcoin", "bitcoin-script", "interpreter"]
 cover = { image = "/images/covers/bc-bitcoin-script-rust.fa.png", alt = "Bitcoin Script: یک مفسر stack کوچک با Rust", hiddenInSingle = true }
 +++
 
-پست قبلی، [Mempool، کارمزد و انتخاب تراکنش](/fa/posts/bc-mempool-fees/)، درباره‌ی این بود که کدام تراکنش‌ها وارد بلاک می‌شوند. حالا سؤال این است: «متعلق به Alice» یعنی چه؟
+«متعلق به Alice» برای یک خروجی یعنی چه؟ پست قبلی، [Mempool، کارمزد و انتخاب تراکنش](/fa/posts/bc-mempool-fees/)، درباره‌ی ورود تراکنش‌ها به بلاک بود؛ این یکی درباره‌ی حق خرج یک سکه است.
 
 در [تراکنش و مدل UTXO](/fa/posts/bc-transactions-utxo/) زنجیره‌ی آزمایشی ما با یک قاعده‌ی ثابت در کد جواب داد: هر {{< term "utxo" "UTXO" >}} یک آدرس نگه می‌دارد و نود چک می‌کند که کلید عمومی ورودی به آن hash شود و امضا درست باشد. در بیت‌کوین هر خروجی یک برنامه‌ی کوچک دارد، یعنی اسکریپت قفل (`scriptPubKey`)، و خرج‌کننده اسکریپت باز کردن را می‌دهد (`scriptSig`، یا witness در خروجی‌های SegWit). اگر اجرای هر دو به true برسد، سکه جابه‌جا می‌شود. اسم این زبان {{< term "bitcoin-script" "Bitcoin Script" >}} است.
 
@@ -114,7 +115,7 @@ test p2pkh_spends_and_rejects_other_sighash ... ok
 test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
 ```
 
-## چند نکته‌ی مهم
+## ظرافت‌های Script
 
 - امضای بد یک مقدار است (false)، نه خطا. stack نهایی را چک کنید، نه فقط «خطا نداشت».
 - نبودن حلقه یعنی نود قبل از اجرای اسکریپت بدترین هزینه را می‌داند.
@@ -128,4 +129,4 @@ test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; fini
 
 ## قدم بعدی
 
-پست بعد: **جمع‌بندی بخش اول: یک نود کامل کوچک با Go**.
+پست بعد: **جمع‌بندی بخش اول: یک نود کامل کوچک با Go**. نودها را از پروسه‌ی دمو به دیسک می‌برد.

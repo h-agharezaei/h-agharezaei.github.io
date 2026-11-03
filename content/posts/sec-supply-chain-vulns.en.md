@@ -3,13 +3,14 @@ date = '2027-05-05T10:00:00+03:30'
 draft = false
 title = 'The supply chain and vulnerable dependencies'
 description = 'Software supply chain security with real runs in Go, npm and Python: go.sum, npm audit, lockfile hashes, install scripts and pip-audit.'
+contentType = 'tutorial'
 categories = ["Security"]
 series = ["Software Security"]
 tags = ["security", "supply-chain", "dependencies", "go", "npm", "python"]
 cover = { image = "/images/covers/sec-supply-chain-vulns.png", alt = "The supply chain and vulnerable dependencies", hiddenInSingle = true }
 +++
 
-The previous post, [Managing secrets and keys](/posts/sec-secrets-management/), kept your own credentials safe. This one is about code you did not write. Most of what an orders service runs, like the one in [Building an API with net/http in Go](/posts/go-http-api-stdlib/), is a {{< term "transitive-dependency" "transitive dependency" >}} you never read. That is the {{< term "software-supply-chain" "software supply chain" >}}. Background: [Packages and modules](/posts/go-packages-modules/), [npm, package.json and lockfiles](/posts/node-npm-package-json/) and [The Python environment: venv and uv](/posts/py-environment-uv-venv/).
+Edit one file of a dependency in the Go module cache and `go mod verify` answers `dir has been modified`. Checks like that matter because most of what an orders service runs, like the one in [Building an API with net/http in Go](/posts/go-http-api-stdlib/), is a {{< term "transitive-dependency" "transitive dependency" >}} you never read. That is the {{< term "software-supply-chain" "software supply chain" >}}: [Managing secrets and keys](/posts/sec-secrets-management/) protected your own credentials; this post is about code you did not write. Background: [Packages and modules](/posts/go-packages-modules/), [npm, package.json and lockfiles](/posts/node-npm-package-json/) and [The Python environment: venv and uv](/posts/py-environment-uv-venv/).
 
 > Defensive only. Everything ran in throwaway projects with private caches, which I deleted afterwards. No exploit details and nothing against third parties. Advisory output is as returned on 2026-10-27.
 
@@ -129,7 +130,7 @@ jinja2 2.11.2  PYSEC-2026-1473 3.1.3
 | npm | exact + lockfile | `npm ci` | `npm audit` |
 | Python | `--generate-hashes` | `--require-hashes` | `pip-audit` |
 
-## A few things to watch
+## What a scanner does not tell you
 
 - A scanner shows known advisories only; no findings is not proof of safety.
 - `npm audit fix --force` can cross a major version. Read before applying.
@@ -142,4 +143,4 @@ Take one of your services, run its ecosystem's scanner, and write a one-page pol
 
 ## What's next
 
-The next post is SSRF and unsafe deserialization.
+“SSRF and unsafe deserialization” moves from code you did not write to input you did not write: a URL, or a blob of bytes.

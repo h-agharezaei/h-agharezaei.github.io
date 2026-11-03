@@ -3,13 +3,14 @@ date = '2027-03-15T10:00:00+03:30'
 draft = false
 title = 'اعتبارسنجی ورودی با Zod'
 description = 'اعتبارسنجی ورودی با Zod در Node.js: parse و safeParse، شکل واقعی خطاها، coerce، strict، refine، transform و پاسخ 400 در مرز HTTP، همه با اجرای واقعی.'
+contentType = 'tutorial'
 categories = ["Node.js"]
 series = ["Node.js"]
 tags = ["nodejs", "zod", "validation", "security", "http"]
 cover = { image = "/images/covers/node-validation-zod.fa.png", alt = "اعتبارسنجی ورودی با Zod", hiddenInSingle = true }
 +++
 
-در مقاله‌ی قبل، [NATS JetStream از Node.js](/fa/posts/node-nats-jetstream/)، گفتم payload هنوز ورودی غیرقابل‌اعتماد است. همین درباره‌ی هر body در [سرور HTTP با node:http](/fa/posts/node-http-server/) هم درست است. هر چیزی که از یک **{{< term "trust-boundary" "مرز اعتماد" >}}** رد می‌شود باید یک بار و در لبه از **{{< term "schema-validation" "اعتبارسنجی با schema" >}}** بگذرد؛ کدِ پشت آن با داده‌ای به شکل معلوم کار می‌کند. اینجا با Zod این کار را می‌کنم. این کار راه **mass assignment** ([OWASP Top 10 در کد واقعی](/fa/posts/sec-owasp-top10-in-code/)) و ترفندهای مشابه [Injection و XSS](/fa/posts/sec-injection-xss/) را هم می‌بندد.
+یک `parse` در Zod مقدار `qty: '2'` را به عدد 2 تبدیل کرد و کلید `admin: true` را که کسی نخواسته بود بی‌صدا حذف کرد. یک schema در لبه برای همین است: payload در [NATS JetStream از Node.js](/fa/posts/node-nats-jetstream/) هنوز ورودی غیرقابل‌اعتماد است و همین درباره‌ی هر body در [سرور HTTP با node:http](/fa/posts/node-http-server/) هم درست است. هر چیزی که از یک **{{< term "trust-boundary" "مرز اعتماد" >}}** رد می‌شود باید یک بار و در لبه از **{{< term "schema-validation" "اعتبارسنجی با schema" >}}** بگذرد؛ کدِ پشت آن با داده‌ای به شکل معلوم کار می‌کند. اینجا با Zod این کار را می‌کنم. این کار راه **mass assignment** ([OWASP Top 10 در کد واقعی](/fa/posts/sec-owasp-top10-in-code/)) و ترفندهای مشابه [Injection و XSS](/fa/posts/sec-injection-xss/) را هم می‌بندد.
 
 > Node نسخه‌ی v20.13.1، `zod` نسخه‌ی 4.1.5 (major نسخه‌ی ۴). اسکریپت‌های محلی روی 127.0.0.1، خروجی‌های واقعی و بدون زمان‌بندی. `typescript` نصب نبود، پس بررسی نوع با `z.infer` را اجرا نکردم.
 
@@ -97,7 +98,7 @@ JSON خراب مورد جدایی است: `JSON.parse` پیش از Zod شکست 
 
 در Go، `encoding/json` به‌طور پیش‌فرض فیلد ناشناخته را نادیده می‌گیرد مگر روی decoder متد `DisallowUnknownFields` را صدا بزنید، و struct tagهایی مثل `json:"qty"` فقط نام فیلد را می‌گویند و بازه را نمی‌سنجند (مقاله‌ی [فایل، io.Reader/Writer و JSON در Go](/fa/posts/go-file-io-json/)). Zod شکل و قاعده را یک‌جا انجام می‌دهد.
 
-## چند نکته‌ی مهم
+## آنچه اعتبارسنجی پوشش نمی‌دهد
 
 - یک بار در مرز اعتبارسنجی کنید و مقدار parse‌شده را جلو ببرید، نه body خام را.
 - در اجرای من `z.coerce.number()` رشته‌ی `''` را `0` کرد و `'abc'` رد شد؛ فقط جایی coerce کنید که واقعاً رشته می‌پذیرید.
@@ -111,4 +112,4 @@ JSON خراب مورد جدایی است: `JSON.parse` پیش از Zod شکست 
 
 ## قدم بعدی
 
-مقاله‌ی بعدی «worker thread و cluster در Node.js» است.
+«worker thread و cluster در Node.js»: ورودی معتبر هم می‌تواند پرهزینه باشد و یک تابع همگامِ کند جلوی همه‌ی درخواست‌ها را می‌گیرد.

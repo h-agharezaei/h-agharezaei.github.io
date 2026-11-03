@@ -3,15 +3,16 @@ date = '2026-11-19T18:00:00+03:30'
 draft = false
 title = 'Talking to Ethereum from Rust with alloy'
 description = 'alloy from Rust: provider and wallet, an EIP-1559 send with receipt, sol! macro token calls, a custom error decoded to an enum, polled Transfer events.'
+contentType = 'tutorial'
 categories = ["Blockchain"]
 series = ["Blockchain"]
 tags = ["blockchain", "rust", "ethereum", "alloy", "erc20"]
 cover = { image = "/images/covers/bc-rust-alloy-client.png", alt = "Talking to Ethereum from Rust with alloy", hiddenInSingle = true }
 +++
 
-In [Talking to Ethereum from Go with go-ethereum](/posts/bc-go-ethereum-client/) I read balances, sent ether, called `DemoToken` and decoded its custom error from Go. This post does the same steps from Rust with {{< term "alloy" "alloy" >}}, so you can put the two side by side.
+Send ether from Go and from Rust to the same anvil and the tips differ: go-ethereum suggested 1 gwei, {{< term "alloy" "alloy" >}} picked 1 {{< term "wei" "wei" >}}. This post takes the steps of [the Go post](/posts/bc-go-ethereum-client/) to Rust.
 
-The contract is the one from [Tokens: ERC-20 and ERC-721](/posts/bc-erc20-erc721/). The async code runs on tokio, as in [async/await and Tokio in Rust](/posts/rust-async-tokio/), and the macro is a procedural macro of the kind shown in [Macros in Rust](/posts/rust-macros/).
+The contract comes from [the tokens post](/posts/bc-erc20-erc721/); the async code runs on tokio, as in [the Tokio post](/posts/rust-async-tokio/), and the macro is a procedural macro like those in [Macros in Rust](/posts/rust-macros/).
 
 > Rust 1.90 on macOS (arm64), `alloy` 1.6.3 (default features off; `std`, `reqwest`, `provider-http`, `signer-local`, `contract`, `rpc-types`), `tokio` 1.54.1, `futures-util` 0.3, Foundry 1.8.7. I chose 1.6.3 because newer alloy releases need a newer Rust than 1.90. A fresh anvil on `127.0.0.1:8545` with the deploy script from the token post. The keys in the code are anvil's public test keys: never use them anywhere real. The demo is a local Cargo project.
 
@@ -36,7 +37,7 @@ balance wei:  9999997683290180192033
 balance ETH:  9999.997683290180192033
 ```
 
-Same numbers as the Go run, from the same deploy. The balance in {{< term "wei" "wei" >}} is a `U256`, a fixed 256-bit integer, where Go used `*big.Int`. `format_units` ships with alloy.
+Same numbers as the Go run, from the same deploy. The balance in wei is a `U256`, a fixed 256-bit integer, where Go used `*big.Int`. `format_units` ships with alloy.
 
 ## Wallet and an EIP-1559 send
 
@@ -172,7 +173,7 @@ Over HTTP there is no push. In the 1.6.3 source, `watch` installs a filter with 
 - Defaults: alloy filled nonce, gas and fees; in Go I did that by hand or via `bind.Transact`.
 - Weight: `Cargo.lock` has 397 packages, and the dev build without debug info was 506 MB of `target/`.
 
-## A few things to watch
+## Defaults that surprise
 
 - Fillers choose fees from fee history. Check the tip on a real network before trusting it.
 - In 1.6.3 the default nonce filler caches per address and counts locally, like the nonce manager from the Go post. Two processes with one key still collide.
@@ -186,4 +187,4 @@ Over HTTP there is no push. In the 1.6.3 source, `watch` installs a filter with 
 
 ## What's next
 
-Next post: **Events and building an indexer with Go and Postgres**.
+Next post: **Events and building an indexer with Go and Postgres**: events kept beyond a node restart.

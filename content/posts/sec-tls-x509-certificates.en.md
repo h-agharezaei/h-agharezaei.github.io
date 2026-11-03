@@ -3,13 +3,14 @@ date = '2027-04-24T10:00:00+03:30'
 draft = false
 title = 'TLS and x509 certificates in practice'
 description = 'TLS and x509 certificates in Go on loopback: verify errors, chains, rotation with GetCertificate, mutual TLS, expiry checks and pinning.'
+contentType = 'tutorial'
 categories = ["Security"]
 series = ["Software Security"]
 tags = ["security", "tls", "x509", "certificates", "mtls", "go"]
 cover = { image = "/images/covers/sec-tls-x509-certificates.png", alt = "TLS and x509 certificates in practice", hiddenInSingle = true }
 +++
 
-The previous post, [CSRF, CORS and security headers](/posts/sec-csrf-cors-headers/), hardened what the browser does. Here we harden the pipe itself. [TLS and certificates with openssl](/posts/net-tls-openssl/) covered the `openssl` command line; this post is the Go and operations side: what is inside an {{< term "x509-certificate" "x509 certificate" >}}, why verification fails, and how to rotate and monitor certificates. The server is the kind of API from [Building an API with net/http in Go](/posts/go-http-api-stdlib/).
+Serve a leaf without its intermediate and the Go client fails with `certificate signed by unknown authority`, the same error a completely untrusted issuer gives, which makes it confusing in production. [CSRF, CORS and security headers](/posts/sec-csrf-cors-headers/) hardened what the browser does; here we harden the pipe itself. [TLS and certificates with openssl](/posts/net-tls-openssl/) covered the `openssl` command line; this post is the Go and operations side: what is inside an {{< term "x509-certificate" "x509 certificate" >}}, why verification fails, and how to rotate and monitor certificates. The server is the kind of API from [Building an API with net/http in Go](/posts/go-http-api-stdlib/).
 
 > Defensive only. Everything ran on `127.0.0.1` in one Go 1.26 program using only the standard library. I created my own throwaway {{< term "certificate-authority" "CA" >}} in code (ECDSA P-256); there is no public CA here. Private keys never touched disk. ACME, OCSP and CT are explained only, not run. Times in the output are my local clock.
 
@@ -121,7 +122,7 @@ RootCAs, right name   -> hello <nil>
 
 {{< term "acme" "ACME" >}} automates issuance and renewal, which is why short lifetimes work. {{< term "ocsp" "OCSP" >}} asks a CA if a certificate was revoked; Certificate Transparency logs public issuance. I ran none of them, and as far as I know the Go client does not check revocation by itself.
 
-## A few things to watch
+## Operational habits
 
 - Send the full chain except the root.
 - Verify name and usage, never skip verification.
@@ -135,4 +136,4 @@ Extend `certcheck` to take the host name from its argument instead of a constant
 
 ## What's next
 
-The next post is Managing secrets and keys.
+“Managing secrets and keys” picks up the last habit above: how keys and other secrets escape anyway, and how to load them safely.

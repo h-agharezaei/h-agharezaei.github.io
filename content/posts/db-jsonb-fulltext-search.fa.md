@@ -3,13 +3,14 @@ date = '2027-01-14T10:00:00+03:30'
 draft = false
 title = 'JSONB و جست‌وجوی متنی'
 description = 'JSONB و جست‌وجوی متنی در PostgreSQL با اجرای واقعی: عملگرهای @> و ?، اندازه و buffer ایندکس GIN، tsvector، stemming، متن فارسی و pg_trgm.'
+contentType = 'tutorial'
 categories = ["Databases"]
 series = ["Databases"]
 tags = ["databases", "postgresql", "jsonb", "full-text-search", "gin"]
 cover = { image = "/images/covers/db-jsonb-fulltext-search.fa.png", alt = "JSONB و جست‌وجوی متنی", hiddenInSingle = true }
 +++
 
-در [پست قبلی](/fa/posts/db-locks-deadlocks/) سراغ قفل‌ها رفتیم. این بار سؤال دیگری داریم: با داده‌ای که در ستون‌های مرتب جا نمی‌شود (ویژگی‌های محصول، تنظیمات) چه کنیم، و چطور متن را بدون `LIKE '%...%'` که کل جدول را می‌خواند جست‌وجو کنیم؟ PostgreSQL به هر دو با {{< term "gin-index" "ایندکس GIN" >}} جواب می‌دهد؛ هم‌خانواده‌ی [B-tree](/fa/posts/db-indexes-btree-explain/) که می‌شناسید. خواندن planها مثل [پست planner](/fa/posts/db-planner-statistics/) است.
+جست‌وجوی `ILIKE '%run%'` «runners» را هم گرفت و مثل هر `LIKE '%...%'` کل جدول را خواند. داده‌ای که در ستون‌های مرتب جا نمی‌شود (ویژگی‌های محصول، تنظیمات) هم همین مشکل را دارد. PostgreSQL به هر دو با {{< term "gin-index" "ایندکس GIN" >}} جواب می‌دهد؛ هم‌خانواده‌ی [B-tree](/fa/posts/db-indexes-btree-explain/). planها را مثل [پست planner](/fa/posts/db-planner-statistics/) می‌خوانیم؛ بعد از [قفل‌ها](/fa/posts/db-locks-deadlocks/)، موضوع شکل داده است.
 
 > همه‌چیز روی یک PostgreSQL 18.3 واقعی اجرا شد. داده قطعی است (`i % n`، بدون random). ماشین مشغول بود، پس زمان‌سنجی نیست و فقط تعداد buffer آمده. به جدول ۱۰۰۰ ردیفی `products` از schema مشترک `shop` ستون `attrs` اضافه کردم؛ برای تست ایندکس جدول ۲۰۰ هزار ردیفی ساختم، چون ایندکس روی ۱۰۰۰ ردیف چیزی را ثابت نمی‌کند.
 
@@ -88,7 +89,7 @@ to_tsvector('simple', 'سلام دنیا. کتاب‌ها را می‌خوانم
 
 `CREATE EXTENSION pg_trgm` اینجا کار کرد. `similarity('hiking','hikng')` برابر 0.44444445 شد و `'kettls' <% body` ردیف‌های «kettles» را پیدا کرد (۱۰۰۰۰ ردیف). ایندکس GIN از نوع {{< term "trigram" "trigram" >}} روی متن 11 MB شد.
 
-## چند نکته‌ی مهم
+## غافلگیری‌های GIN و JSONB
 
 - ایندکس را برای عملگرهایی بسازید که واقعاً می‌زنید؛ `@>` و `?` operator class متفاوت می‌خواهند.
 - JSONB schema ندارد. برای کلیدهایی که به آن‌ها تکیه می‌کنید `CHECK` بگذارید.
@@ -102,4 +103,4 @@ to_tsvector('simple', 'سلام دنیا. کتاب‌ها را می‌خوانم
 
 ## قدم بعدی
 
-در پست بعدی این سری: «migration بدون downtime».
+«migration بدون downtime»: روی جدول زنده، ساختن ایندکس می‌تواند برنامه را بخواباند.

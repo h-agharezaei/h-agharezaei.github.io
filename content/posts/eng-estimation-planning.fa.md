@@ -2,6 +2,7 @@
 date = '2027-06-05T10:00:00+03:30'
 draft = false
 title = 'برآورد و برنامه‌ریزی'
+contentType = 'tutorial'
 description = "برآورد و برنامه‌ریزی در Go: چرا یک عدد گمراه می‌کند، بازه‌ی Monte Carlo، merge bias، پیش‌بینی با throughput، قانون Little و مدل اسباب‌بازی قانون Brooks."
 categories = ["Engineering"]
 series = ["Software Engineering"]
@@ -9,7 +10,7 @@ tags = ["estimation", "planning", "forecasting", "monte-carlo", "software-engine
 cover = { image = "/images/covers/eng-estimation-planning.fa.png", alt = "برآورد و برنامه‌ریزی", hiddenInSingle = true }
 +++
 
-پست قبل، [monorepo یا polyrepo؟](/fa/posts/eng-monorepo-vs-polyrepo/)، درباره‌ی ساختار بود. این پست آخر درباره‌ی «کی تمام می‌شود؟» است. یک عدد تقریباً همیشه غلط است، و دلیلش ریاضی است. مرتبط: [SLI، SLO و error budget](/fa/posts/eng-sli-slo-error-budgets/)، [بدهی فنی](/fa/posts/eng-technical-debt/)، [postmortem بدون سرزنش](/fa/posts/eng-postmortems-blameless/) و [مرتب‌سازی توپولوژیک و وابستگی‌ها](/fa/posts/algo-topological-sort/). نظرها مشخص شده‌اند.
+ده کار با جمع مدت محتمل ۴۲ روز، در بیش از نیمی از ۱۰۰٬۰۰۰ اجرای شبیه‌سازی بیشتر طول کشیدند. یک عدد برای «کی تمام می‌شود؟» تقریباً همیشه غلط است. سری اینجا، بعد از [monorepo یا polyrepo؟](/fa/posts/eng-monorepo-vs-polyrepo/)، تمام می‌شود. مرتبط: [SLI، SLO و error budget](/fa/posts/eng-sli-slo-error-budgets/)، [بدهی فنی](/fa/posts/eng-technical-debt/)، [postmortem بدون سرزنش](/fa/posts/eng-postmortems-blameless/) و [مرتب‌سازی توپولوژیک و وابستگی‌ها](/fa/posts/algo-topological-sort/).
 
 > Go 1.26 و `go test -race` سبز است. دموی محلی و seed‌دار با داده‌ی ساختگی؛ اعداد روزهای مدل و شمارش‌اند، نه زمان‌سنجی.
 
@@ -22,7 +23,7 @@ sum of likely=42.0  PERT sum=54.2
 simulated total: P50=50.5 P80=64.8 P95=85.5
 ```
 
-جمع مقدارهای محتمل (۴۲) حتی از {{< term "percentile" "P50" >}} کل هم کمتر است. میانگین PERT یعنی `(O + 4M + P) / 6` عدد ۵۴٫۲ داد که اینجا بین P50 و P80 است. دُم‌ها روی هم جمع می‌شوند؛ قانون Hofstadter و مغالطه‌ی برنامه‌ریزی (Kahneman و Tversky) همین را با کلمات می‌گویند. پاسخ صادقانه بازه است: «۵۰ روز با شانس مساوی، ۶۵ روز با ۸۰٪».
+جمع مقدارهای محتمل (۴۲) حتی از {{< term "percentile" "P50" >}} کل هم کمتر است. میانگین PERT یعنی `(O + 4M + P) / 6` عدد ۵۴٫۲ داد که اینجا بین P50 و P80 است. دُم‌ها روی هم جمع می‌شوند؛ قانون Hofstadter و مغالطه‌ی برنامه‌ریزی (Kahneman و Tversky) همین را می‌گویند. پاسخ صادقانه بازه است: «۵۰ روز با شانس مساوی، ۶۵ روز با ۸۰٪».
 
 ## وابستگی و merge bias
 
@@ -64,7 +65,7 @@ limit  done  avgWIP  throughput/day  avgCycle(days)  throughput*cycle
    40  1191   40.00           0.596            65.4             38.95
 ```
 
-از حد ۳ تا ۴۰ throughput ثابت می‌ماند و cycle time ۱۳ برابر می‌شود. زیر ۳ آدم‌ها بیکارند. در این مدل، کار بیشتر در جریان فقط انتظار می‌خرد. **نظر من:** {{< term "wip-limit" "WIP limit" >}} نزدیک اندازه‌ی تیم ارزان‌ترین ابزار برنامه‌ریزی است.
+از حد ۳ تا ۴۰ throughput ثابت می‌ماند و cycle time ۱۳ برابر می‌شود. زیر ۳ آدم‌ها بیکارند. **نظر من:** {{< term "wip-limit" "WIP limit" >}} نزدیک اندازه‌ی تیم ارزان‌ترین ابزار برنامه‌ریزی است.
 
 ## قانون Brooks، اسباب‌بازی
 
@@ -96,7 +97,7 @@ added  days to finish
 
 کار را نازک و عمودی ببرید تا هر تکه ship شود؛ cycle time و throughput هفتگی را بسنجید؛ هر هفته با bootstrap دوباره پیش‌بینی کنید؛ برای کار error budget (پست SLO را ببینید)، بدهی و اصلاحات postmortem ظرفیت کنار بگذارید.
 
-## چند نکته‌ی مهم
+## پیش‌بینی چطور بد به کار می‌رود
 
 - بازه‌ای که به مدیر می‌دهید به یک عدد تبدیل می‌شود؛ صدک را کنارش بنویسید.
 - تاریخچه‌ی throughput قبل از تغییر تیم را به کار نبرید.
@@ -109,4 +110,4 @@ added  days to finish
 
 ## قدم بعدی
 
-سری Software Engineering اینجا تمام می‌شود. بعدی سری Distributed Systems است که هنوز در حال نوشتن است.
+سری Software Engineering اینجا تمام می‌شود؛ Distributed Systems با [چرا سیستم توزیع‌شده سخت است](/fa/posts/ds-why-distributed-is-hard/) ادامه پیدا می‌کند.

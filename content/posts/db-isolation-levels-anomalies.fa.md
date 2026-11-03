@@ -3,13 +3,14 @@ date = '2026-12-21T10:00:00+03:30'
 draft = false
 title = 'سطح‌های ایزولاسیون و ناهنجاری‌ها'
 description = 'سطح‌های ایزولاسیون PostgreSQL با دو session هم‌زمان واقعی: non-repeatable read، phantom، lost update، write skew و خطای serialization.'
+contentType = 'tutorial'
 categories = ["Databases"]
 series = ["Databases"]
 tags = ["databases", "postgresql", "isolation", "transactions", "concurrency"]
 cover = { image = "/images/covers/db-isolation-levels-anomalies.fa.png", alt = "سطح‌های ایزولاسیون و ناهنجاری‌ها", hiddenInSingle = true }
 +++
 
-در [پست قبلی](/fa/posts/db-transactions-acid/) با حرف «I» در {{< term "acid" "ACID" >}} یعنی ایزولاسیون، به‌عنوان یک وعده آشنا شدیم. این پست آن وعده را امتحان می‌کند. هر {{< term "isolation-level" "سطح ایزولاسیون" >}} بعضی نتیجه‌های عجیب را اجازه می‌دهد و بعضی را ممنوع می‌کند، و تنها راهی که به آن اعتماد دارم دیدنِ درهم‌رفتن دو session است. اگر Go می‌نویسید، [تراکنش و الگوی Repository در Go](/fa/posts/go-transactions-patterns/) این سطح‌ها را از کد به کار برده بود؛ اینجا می‌بینیم چرا.
+دو برداشت ۱۰تایی از موجودی ۱۰۰ و نتیجه ۹۰ است، بدون هیچ خطایی: یک {{< term "lost-update" "lost update" >}} که در سطح پیش‌فرض PostgreSQL مجاز است. [تراکنش و ACID](/fa/posts/db-transactions-acid/) ایزولاسیون، حرف «I» در {{< term "acid" "ACID" >}}، را وعده داده بود؛ اینجا امتحانش می‌کنیم. هر {{< term "isolation-level" "سطح ایزولاسیون" >}} بعضی نتیجه‌های عجیب را اجازه می‌دهد و بعضی را نه، و تنها راهی که به آن اعتماد دارم دیدنِ درهم‌رفتن دو session است. [تراکنش و الگوی Repository در Go](/fa/posts/go-transactions-patterns/) این سطح‌ها را از کد به کار برد؛ اینجا می‌بینیم چرا.
 
 > همه‌چیز روی یک PostgreSQL 18.3 واقعی اجرا شده. یک برنامه‌ی کوچک Go (مثال محلی) دو اتصال **A** و **B** باز می‌کند و فهرست ثابتی از گام‌ها را به ترتیب اجرا می‌کند، پس خروجی قطعی است. جدول‌ها: `accounts(id, balance)` با (1, 100) و (2, 50)، جدول `oncall(doctor, on_duty)` و seed مشترک `shop`.
 
@@ -79,7 +80,7 @@ B> UPDATE accounts SET balance = 90 WHERE id = 1; COMMIT
 final balance -> 90
 ```
 
-دو برداشت ۱۰تایی از ۱۰۰ باید ۸۰ بگذارد. {{< term "lost-update" "lost update" >}} عدد ۹۰ را گذاشت. دو روش امن، که هر دو را اجرا کردم و به ۸۰ رسیدند:
+دو برداشت ۱۰تایی از ۱۰۰ باید ۸۰ بگذارد. lost update عدد ۹۰ را گذاشت. دو روش امن، که هر دو را اجرا کردم و به ۸۰ رسیدند:
 
 - `UPDATE accounts SET balance = balance - 10`: UPDATE در B روی قفل A **منتظر می‌ماند**، بعد ردیف commit‌شده را دوباره می‌خواند و از ۹۰ کم می‌کند.
 - `SELECT balance ... FOR UPDATE`: SELECT در B تا commit شدن A بلاک ماند، بعد ۹۰ برگرداند و B عدد ۸۰ را نوشت.
@@ -116,7 +117,7 @@ SELECT * FROM oncall  -> alice, false | bob, true
 | Lost update | دیده شد | خطای 40001 | ممکن نیست (مستندات) |
 | Write skew | تست نشد | دیده شد | جلوگیری شد (40001) |
 
-## چند نکته‌ی مهم
+## دام‌های هم‌زمانی
 
 - READ COMMITTED پیش‌فرض است و همه‌ی ناهنجاری‌های بالا به‌جز dirty read در آن مجازند. بیشتر از این فرض نکنید.
 - lost update در REPEATABLE READ در اجرای من به شکل خطا ظاهر شد؛ فقط شکل نسبی `balance - 10` را امتحان کردم.
@@ -130,4 +131,4 @@ write skew را خودتان با دو پنجره‌ی `psql` بازسازی ک�
 
 ## قدم بعدی
 
-بعدی: MVCC و VACUUM، سازوکاری که این snapshotها را ممکن می‌کند.
+«MVCC و VACUUM»: سازوکاری که این snapshotها را ممکن می‌کند.

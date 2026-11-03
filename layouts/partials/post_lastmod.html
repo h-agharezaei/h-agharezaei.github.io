@@ -1,0 +1,5 @@
+{{- /* Show "updated" only when the post really changed after its publish day. */ -}}
+{{- if and (not .Lastmod.IsZero) (gt (.Lastmod.Format "2006-01-02") (.Date.Format "2006-01-02")) -}}
+{{- $label := cond (eq .Language.Lang "fa") "به‌روزرسانی:" "Updated:" -}}
+&nbsp;·&nbsp;<span title='{{ .Lastmod }}'>{{ $label }} {{ .Lastmod | time.Format (default ":date_long" site.Params.DateFormat) }}</span>
+{{- end -}}

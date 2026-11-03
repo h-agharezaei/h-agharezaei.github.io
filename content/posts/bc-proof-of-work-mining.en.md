@@ -3,13 +3,14 @@ date = '2026-11-08T18:00:00+03:30'
 draft = false
 title = 'Proof of work, difficulty and mining'
 description = 'Proof of work in Go: a nonce and difficulty bits in the header, mining, validation, hashes doubling per bit, a clamped retarget and chainwork.'
+contentType = 'tutorial'
 categories = ["Blockchain"]
 series = ["Blockchain"]
 tags = ["blockchain", "go", "proof-of-work", "mining", "bitcoin"]
 cover = { image = "/images/covers/bc-proof-of-work-mining.png", alt = "Proof of work, difficulty and mining", hiddenInSingle = true }
 +++
 
-In the [previous post](/posts/bc-account-model-nonce/) we compared the account model with UTXO. So far anyone could build a valid block in microseconds. In [Blockchain for programmers](/posts/bc-blockchain-for-programmers/) I said that a hash chain is only tamper-evident, and that making rewrites expensive comes later. This is that post.
+After comparing the account model with UTXO in the [previous post](/posts/bc-account-model-nonce/), one thing is still wrong: anyone can build a valid block in microseconds. In [Blockchain for programmers](/posts/bc-blockchain-for-programmers/) I said that a hash chain is only tamper-evident, and that making rewrites expensive comes later. This is that post.
 
 [Consensus and Raft](/posts/ds-consensus-raft/) solved agreement among a known list of servers, each with one vote. An open network has no list: anyone can start a thousand nodes. {{< term "proof-of-work" "Proof of work" >}} replaces "one node, one vote" with "one unit of computation, one vote".
 
@@ -141,7 +142,7 @@ The last column is {{< term "chainwork" "chainwork" >}}: the sum of `2^Bits` ove
 
 In a {{< term "sybil-attack" "Sybil attack" >}} one party pretends to be many; with a vote per node, a thousand fake nodes would win. With proof of work, a fake identity costs nothing and adds nothing; only hashes count, and hashes cost electricity and hardware. Rewriting a block means redoing its work and all the work after it, faster than everyone else extends the chain.
 
-## A few things to watch
+## Consensus-code traps
 
 - Check proof of work before the expensive checks, and check `Bits` against your own rule, never the block's claim.
 - Use integers in consensus code; floating point can round differently.

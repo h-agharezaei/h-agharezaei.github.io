@@ -3,13 +3,14 @@ date = '2027-06-04T10:00:00+03:30'
 draft = false
 title = 'strace و perf برای عیب‌یابی'
 description = 'strace و perf از روی man pageها: خواندن خط فراخوان و errno، خلاصه‌ی -c، perf stat و record، با parser نمونه‌ی Go روی خطوط ساختگی.'
+contentType = 'tutorial'
 categories = ["Linux"]
 series = ["Linux"]
 tags = ["linux", "strace", "perf", "troubleshooting", "syscalls", "flame-graph", "go", "macos"]
 cover = { image = "/images/covers/linux-strace-perf.fa.png", alt = "strace و perf برای عیب‌یابی", hiddenInSingle = true }
 +++
 
-این را روی یک مک نوشتم؛ هیچ‌چیز اینجا روی Linux اجرا نشده است. `strace` و `perf` فقط روی Linux کار می‌کنند و من هیچ‌کدام را اجرا نکردم. این سیزدهمین پست سری Linux است، بعد از [لاگ‌ها و journalctl](/fa/posts/linux-logs-journalctl/). حقایق از man pageهای strace(1)، ptrace(2)، perf-stat(1)، perf-record(1) و مستندات sysctl کرنل است؛ متن Linux‌مانند با عبارت «نمونه‌ی تصویری، ضبط‌نشده» علامت خورده. مرتبط: [I/O و epoll](/fa/posts/linux-io-epoll/).
+وقتی پروسه‌ای با خطای مبهم خارج می‌شود یا گیر می‌کند و [لاگ‌ها](/fa/posts/linux-logs-journalctl/) نمی‌گویند چرا، `strace` درخواست‌هایش از کرنل را نشان می‌دهد و `perf` اینکه وقتش کجا می‌رود. هر دو فقط روی Linux کار می‌کنند، پس روی این مک هیچ‌کدام را اجرا نکردم. حقایق از man pageهای strace(1)، ptrace(2)، perf-stat(1)، perf-record(1) و مستندات sysctl کرنل است؛ متن Linux‌مانند با «نمونه‌ی تصویری، ضبط‌نشده» علامت خورده. مرتبط: [I/O و epoll](/fa/posts/linux-io-epoll/).
 
 ## strace چه نشان می‌دهد
 
@@ -80,7 +81,7 @@ FLAG: search path for app.conf: ENOENT in /etc/demo, /usr/local/etc/demo; found 
 
 `dtruss` و `fs_usage` را که root می‌خواهند اجرا نکردم. `/usr/bin/time -l` روی خلاصه‌ساز، بیشینه‌ی resident set برابر 4816896 بایت گزارش کرد (macOS؛ تغییر می‌کند).
 
-## چند نکته‌ی مهم
+## وقتی trace گمراه می‌کند
 
 - strace زمان‌بندی را عوض می‌کند و ممکن است race را پنهان کند.
 - اولین خطا را بخوان، نه آخرین را: خطاهای بعدی اغلب پیامد هستند.
@@ -93,4 +94,4 @@ FLAG: search path for app.conf: ENOENT in /etc/demo, /usr/local/etc/demo; found 
 
 ## قدم بعدی
 
-پست بعدی «اسکریپت‌نویسی ایمن و cron» است.
+آخرین پست سری «اسکریپت‌نویسی ایمن و cron» است، برای اسکریپت‌های دور همین سرویس‌ها.

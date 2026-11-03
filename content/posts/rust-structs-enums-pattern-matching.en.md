@@ -3,13 +3,14 @@ date = '2026-11-20T10:00:00+03:30'
 draft = false
 title = 'Structs, enums and pattern matching in Rust'
 description = 'Rust structs, impl blocks, enums with data, Option, exhaustive match, if let and let else, with runnable code and the real compiler error.'
+contentType = 'tutorial'
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "beginner", "enums", "pattern-matching", "structs"]
 cover = { image = "/images/covers/rust-structs-enums-pattern-matching.png", alt = "Structs, enums and pattern matching in Rust", hiddenInSingle = true }
 +++
 
-In the [previous post](/posts/rust-borrowing-references/) we learned how to lend values with references. Now we can model data. If you come from Go, structs will look familiar. Enums will not: in Rust a variant can carry data, and `match` forces you to handle every case. This combination is the feature I miss most when I go back to other languages.
+Leave one variant out of a `match` and the program does not compile: `error[E0004]: non-exhaustive patterns`. That check is what makes modeling data in Rust different, and with values lent through references as in the [previous post](/posts/rust-borrowing-references/), we can now build our own types. If you come from Go, structs will look familiar. Enums will not: in Rust a variant can carry data, and `match` forces you to handle every case. This combination is the feature I miss most when I go back to other languages.
 
 > Everything below was compiled and run with Rust 1.90, and the outputs are copied from those runs.
 
@@ -181,7 +182,7 @@ Empty                                    area = 0.00
 
 `first_even(&[7, 8])` printed `found 8`, and `parse_age("42")` and `parse_age("abc")` gave `42` and `0`.
 
-## A few things to watch
+## Where match surprises you
 
 - Order matters in `match`: arms are tried top to bottom, so the guarded `Rect` arm must come before any general one.
 - `{:?}` only works on types that derive or implement `Debug`; forgetting the derive is a common first error.
@@ -197,4 +198,4 @@ Empty                                    area = 0.00
 
 ## What's next
 
-We now have our own types. In the next post, collections and strings in Rust, we will store many of them with `Vec` and `HashMap` and look at `String` more closely.
+We now have our own types. Collections and strings in Rust follows naturally: storing many of them with `Vec` and `HashMap`, and a closer look at `String`.

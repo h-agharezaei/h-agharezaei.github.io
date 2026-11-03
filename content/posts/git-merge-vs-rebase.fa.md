@@ -3,13 +3,14 @@ date = '2026-11-03T10:00:00+03:30'
 draft = false
 title = 'merge یا rebase؟ دو تاریخچه‌ی واقعی'
 description = 'تفاوت git merge و rebase با خروجی واقعی: merge commit، fast-forward، تغییر hashها، قانون طلایی، force-with-lease، pull --rebase و squash.'
+contentType = 'tutorial'
 categories = ["Git"]
 series = ["Git"]
 tags = ["git", "merge", "rebase", "beginner"]
 cover = { image = "/images/covers/git-merge-vs-rebase.fa.png", alt = "merge یا rebase؟ دو تاریخچه‌ی واقعی", hiddenInSingle = true }
 +++
 
-در [مقاله‌ی قبل](/fa/posts/git-branches-head-refs/) دیدیم که branch فقط یک اشاره‌گر به یک commit است. پس سؤال بعدی ساده است: وقتی دو branch از هم جدا شدند، چطور دوباره آن‌ها را کنار هم بگذاریم؟ گیت دو جواب دارد: **{{< term "merge" "merge" >}}** و **{{< term "rebase" "rebase" >}}**. هر دو در آخر فایل‌های یکسانی به شما می‌دهند، ولی تاریخچه‌ی متفاوتی باقی می‌گذارند.
+وقتی دو branch از هم جدا شدند، چطور دوباره آن‌ها را کنار هم بگذاریم؟ گیت دو جواب دارد: **{{< term "merge" "merge" >}}** و **{{< term "rebase" "rebase" >}}**. هر دو در آخر فایل‌های یکسانی به شما می‌دهند، ولی تاریخچه‌ی متفاوتی باقی می‌گذارند: بعد از merge hashهای قدیمی می‌مانند، بعد از rebase هر commit بازپخش‌شده hash تازه‌ای دارد، و همین تفاوت تعیین می‌کند force push به هم‌تیمی‌ها آسیب می‌زند یا نه. branch فقط اشاره‌گری به یک commit است ([مقاله‌ی قبل](/fa/posts/git-branches-head-refs/))، پس سؤال این است که اشاره‌گرها کجا می‌ایستند.
 
 > همه‌ی مثال‌های زیر با Git نسخه‌ی 2.39.2 در repoهای موقت اجرا شده‌اند. تاریخ commitها را ثابت کردم تا hashها تکرارپذیر باشند. مسیرها در خروجی کوتاه شده‌اند.
 
@@ -125,7 +126,7 @@ commitهایی را که دیگران دارند rebase نکنید. مشکل ر�
 | branchی که دیگران هم روی آن push می‌کنند | merge، هرگز rebase |
 | مرتب کردن چند commit محلی آخرم | rebase |
 
-## چند نکته‌ی مهم
+## هزینه‌های بازنویسی تاریخچه
 
 - rebase تاریخچه را بازنویسی می‌کند. بعد از آن `git push` به force نیاز دارد، پس از `--force-with-lease` استفاده کنید.
 - conflict در rebase برای هر commit بازپخش‌شده جداگانه حل می‌شود، یعنی ممکن است یک بخش را چند بار حل کنید.
@@ -138,4 +139,4 @@ commitهایی را که دیگران دارند rebase نکنید. مشکل ر�
 
 ## قدم بعدی
 
-مقاله‌ی بعد «حل conflict و rerere» است.
+مقاله‌ی بعد «حل conflict و rerere» است؛ هر دو روش ممکن است روی conflict بایستند، حالتی که این‌جا امتحان نشد.

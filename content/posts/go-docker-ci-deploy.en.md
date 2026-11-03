@@ -3,13 +3,14 @@ date = '2027-02-28T10:00:00+03:30'
 draft = false
 title = 'Docker, CI and deploying a Go service'
 description = 'Deploy a Go service with Docker: a static binary, a multi-stage distroless Dockerfile, health endpoints and a GitHub Actions workflow with actionlint.'
+contentType = 'tutorial'
 categories = ["Go"]
 series = ["Go Backend"]
 tags = ["go", "backend", "docker", "ci", "github-actions", "deploy"]
 cover = { image = "/images/covers/go-docker-ci-deploy.png", alt = "Docker, CI and deploying a Go service", hiddenInSingle = true }
 +++
 
-Profiling was the previous topic. Now the service has to leave my laptop. We take the `orders` service from [the net/http post](/posts/go-http-api-stdlib/), put it in a container, and let CI test and publish it. SIGTERM handling from [graceful shutdown](/posts/go-graceful-shutdown-workers/) matters even more here, because the orchestrator stops a container with exactly that signal.
+An orchestrator stops a container with SIGTERM, so the signal handling from [graceful shutdown](/posts/go-graceful-shutdown-workers/) matters more once the service leaves my laptop. After [profiling with pprof](/posts/go-profiling-pprof/), we put the `orders` service from [the net/http post](/posts/go-http-api-stdlib/) in a container and let CI test and publish it.
 
 > **Honest disclaimer.** The Docker daemon is off on this machine and I chose not to start it, so I never ran `docker build`. The Dockerfile and the workflow below were written to be correct, but the image was not built. What I did run for real, on Go 1.26.0 (macOS arm64): the static cross-compiled binary, the health endpoints, `-healthcheck`, SIGTERM and `actionlint` on the workflow. So this post shows no image size and no `docker build` output.
 
@@ -121,7 +122,7 @@ A typo in `runs-on: ubuntu-lastest` was also caught as an unknown label. `action
 - **Termination window**: the orchestrator sends SIGTERM and waits (on Kubernetes, `terminationGracePeriodSeconds`) before killing. Our shutdown timeout of 10 seconds must fit inside that window. Check your platform's actual value.
 - **Rollback by tag**: deploy immutable tags (`type=sha`), so rollback means deploying the previous tag, not rebuilding.
 
-## A few things to watch
+## Container and CI traps
 
 - I did not verify the Dockerfile with a real build, so run `docker build` before trusting it.
 - `-healthcheck` probes `127.0.0.1` on the port of `ORDERS_ADDR`; it fails if you bind to a different host.
@@ -130,4 +131,4 @@ A typo in `runs-on: ubuntu-lastest` was also caught as an unknown label. `action
 
 ## What's next
 
-Next: the Go scheduler and garbage collector, to see what happens inside the runtime of the process we just shipped.
+Next is "The Go scheduler and garbage collector", a look inside the runtime of what we just shipped.

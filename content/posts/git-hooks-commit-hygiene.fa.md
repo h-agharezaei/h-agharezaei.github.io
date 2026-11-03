@@ -3,13 +3,14 @@ date = '2026-11-13T10:00:00+03:30'
 draft = false
 title = 'hookها و commit message تمیز'
 description = 'Git hook در عمل: اسکریپت‌های pre-commit، commit-msg و pre-push، اشتراک‌گذاری با core.hooksPath و نوشتن commit message تمیز با fixup.'
+contentType = 'tutorial'
 categories = ["Git"]
 series = ["Git"]
 tags = ["git", "hooks", "commit-messages", "beginner"]
 cover = { image = "/images/covers/git-hooks-commit-hygiene.fa.png", alt = "hookها و commit message تمیز", hiddenInSingle = true }
 +++
 
-در [مقاله‌ی قبل](/fa/posts/git-bisect/) با `git bisect` یک باگ را در تاریخچه پیدا کردیم. این کار فقط وقتی خوب جواب می‌دهد که تاریخچه خوانا باشد: کامیت‌های کوچک با پیامی که می‌گوید «چرا». این مقاله درباره‌ی این است که با **{{< term "git-hook" "hook" >}}** این وضعیت را خودکار نگه داریم، به‌علاوه چند عادت برای خود پیام‌ها.
+پیدا کردن باگ با [`git bisect`](/fa/posts/git-bisect/) فقط وقتی خوب جواب می‌دهد که تاریخچه خوانا باشد: کامیت‌های کوچک با پیامی که می‌گوید «چرا». نیت خوب این وضعیت را حفظ نمی‌کند. **{{< term "git-hook" "hook" >}}**، یعنی اسکریپتی که Git روی یک رویداد اجرا می‌کند و اگر با کد غیرصفر تمام شود کار را متوقف می‌کند، می‌تواند این را خودکار نگه دارد؛ بقیه‌اش چند عادت برای خود پیام‌هاست.
 
 > همه‌ی مثال‌ها در یک repo محلی با Git نسخه‌ی 2.39 و Python 3 اجرا شده‌اند و خروجی‌ها از همان اجراها کپی شده‌اند.
 
@@ -152,7 +153,7 @@ be3de2d feat: add greet
 
 خط fixup ناپدید شد و اصلاح داخل `feat: add greet` نشست. پیش از آن باید working tree تمیز باشد؛ اولین تلاش من با پیام «Your index contains uncommitted changes» شکست خورد. بازنویسی تاریخچه فقط برای commitهایی امن است که هنوز با کسی به اشتراک نگذاشته‌اید.
 
-## چند نکته‌ی مهم
+## جایی که hookها گیر می‌اندازند
 
 - hookهای `.git/hooks` محلی‌اند؛ برای اشتراک‌گذاری از `core.hooksPath` با یک پوشه‌ی ردیابی‌شده استفاده کنید.
 - اسکریپت را اجرایی کنید (`chmod +x`)، وگرنه Git نادیده‌اش می‌گیرد.
@@ -166,4 +167,4 @@ be3de2d feat: add greet
 
 ## قدم بعدی
 
-مقاله‌ی بعدی «submodule، subtree و worktree» است.
+مقاله‌ی بعدی «submodule، subtree و worktree» است؛ برای وقتی که repository شما به repository دیگری نیاز دارد یا دو branch را همزمان روی دیسک می‌خواهید.

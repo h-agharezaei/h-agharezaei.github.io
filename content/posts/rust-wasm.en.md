@@ -3,15 +3,16 @@ date = '2027-03-14T10:00:00+03:30'
 draft = false
 title = 'Rust and WebAssembly'
 description = 'Rust and WebAssembly: compile to wasm32-unknown-unknown and wasm32-wasip1, pass strings across the boundary and use wasm-bindgen.'
+contentType = 'tutorial'
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "wasm", "webassembly", "wasi", "wasm-bindgen", "intermediate"]
 cover = { image = "/images/covers/rust-wasm.png", alt = "Rust and WebAssembly", hiddenInSingle = true }
 +++
 
-[Release engineering](/posts/rust-docker-ci-release/) was the previous topic. This post is about a different kind of artifact: a `.wasm` file. In [the unsafe and FFI post](/posts/rust-unsafe-ffi/) we crossed a boundary with the C ABI, and Go did the same in [Calling Rust from Go over FFI](/posts/go-calls-rust-ffi/). WebAssembly is another way to cross a boundary, with a sandbox in the middle.
+Only numbers cross the wasm boundary: a string must be copied into module memory and passed as pointer and length. After [release engineering](/posts/rust-docker-ci-release/), the artifact this time is a `.wasm` file. In [the unsafe and FFI post](/posts/rust-unsafe-ffi/) we crossed a boundary with the C ABI, and Go did the same in [Calling Rust from Go over FFI](/posts/go-calls-rust-ffi/). WebAssembly is another way to cross a boundary, with a sandbox in the middle.
 
-**WebAssembly** (wasm) is a portable binary instruction format that runs on a sandboxed virtual machine. A wasm module cannot touch the DOM, files or the network by itself; it only has its own **linear memory** and whatever functions the host (a browser, Node, a runtime) chooses to give it. Only numbers cross the boundary.
+**WebAssembly** (wasm) is a portable binary instruction format that runs on a sandboxed virtual machine. A wasm module cannot touch the DOM, files or the network by itself; it only has its own **linear memory** and whatever functions the host (a browser, Node, a runtime) chooses to give it.
 
 > Everything here was built and run with Rust 1.90, edition 2024, Node 20.13 and `wasm-bindgen` 0.2.129 on macOS. There was no browser available, so everything was loaded from Node and I make no claims about browsers. The demos are local crates: `raw`, `bindgen`, `wasi`, `gohello`.
 
@@ -126,7 +127,7 @@ And when it does not:
 - Heavy DOM work: wasm still goes through JavaScript for it.
 - Frequent small calls with strings: every call copies bytes across the boundary.
 
-## A few things to watch
+## Before you reach for wasm
 
 - The `wasm-bindgen` CLI and crate versions must match.
 - Without glue, only numbers cross; `u64` becomes `BigInt` in JavaScript.
@@ -140,4 +141,4 @@ Add an exported `reverse(ptr, len)` function that reverses a string in place and
 
 ## What's next
 
-Next is the Rust capstone project: a complete service.
+*Rust capstone: a complete service* wires the earlier pieces together.

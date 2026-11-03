@@ -3,13 +3,14 @@ date = '2027-01-06T10:00:00+03:30'
 draft = false
 title = 'Building an API with Fastify'
 description = 'Building an API with Fastify, with real runs: JSON-schema validation, hooks, plugins, one error handler, pino logs, inject() tests, graceful shutdown.'
+contentType = 'tutorial'
 categories = ["Node.js"]
 series = ["Node.js"]
 tags = ["nodejs", "fastify", "api", "json-schema", "pino"]
 cover = { image = "/images/covers/node-fastify-api.png", alt = "Building an API with Fastify", hiddenInSingle = true }
 +++
 
-In the previous post, [An HTTP server with node:http](/posts/node-http-server/), I wrote routing, body limits and error mapping by hand. Here I rebuild the same tiny orders API (`GET /health`, `GET /orders/:id`, `POST /orders`, in-memory store) with Fastify, and compare it with [Building an API with net/http in Go](/posts/go-http-api-stdlib/).
+A Fastify route with `additionalProperties: false` still answered 200 to a body with an extra field, silently stripped. Here I rebuild the hand-written orders API from [An HTTP server with node:http](/posts/node-http-server/) (`GET /health`, `GET /orders/:id`, `POST /orders`, in-memory store) with Fastify, and compare it with [Building an API with net/http in Go](/posts/go-http-api-stdlib/).
 
 > Node v20.13.1, Fastify 5.12.7 (pino 10.4.0). The code is a local example (`app.js`, `main.js`, `app.test.js`); all outputs are copied from real runs on loopback. Fastify's `inject()` crashed at first with `ERR_REQUIRE_ESM`: the newest `light-my-request` pulls in an ES-module-only `cookie` that Node 20.13 cannot `require()`. I pinned `light-my-request` to 6.6.0 with an npm `overrides` entry; everything below ran with that pin.
 
@@ -35,7 +36,7 @@ I ran a Fastify app with no custom error handling and sent bad payloads. This is
 200 {"item":"book","qty":1}
 ```
 
-The third request had an extra field `"extra": true` and `additionalProperties: false`, yet it got 200 and the field was silently removed. By default Fastify's validator strips unknown properties instead of rejecting them.
+The third request carried that extra field, `"extra": true`: by default Fastify's validator strips unknown properties instead of rejecting them.
 
 The response schema works the other way: the handler returned an object with a `secretNote` field, but `GET /orders/:id` sent only `{"id":"c298b17c","item":"pen","qty":3}`. Serialization keeps only what the schema lists.
 
@@ -59,8 +60,6 @@ With `-H 'x-request-id: req-42'` the response carried `x-request-id: req-42`; wi
 ```text
 {"inside":42} {"outside":"undefined"}
 ```
-
-Hooks and decorators added in a plugin stay there.
 
 ## One place for errors
 
@@ -130,7 +129,7 @@ This is the {{< term "graceful-shutdown" "graceful shutdown" >}} from the last p
 
 I made no performance claim and measured none.
 
-## A few things to watch
+## Framework defaults that bite
 
 - Unknown body fields are stripped, not rejected, by default.
 - A schema is a contract: write response schemas so internal fields cannot leak.
@@ -143,4 +142,4 @@ Add `DELETE /orders/:id` (204, or 404 through your domain error) and a `preHandl
 
 ## What's next
 
-The next post is "Testing in Node.js with node:test".
+"Testing in Node.js with node:test": `inject()` made tests cheap, so the test runner itself is next.

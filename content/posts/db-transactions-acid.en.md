@@ -3,13 +3,14 @@ date = '2026-12-13T10:00:00+03:30'
 draft = false
 title = 'Transactions and ACID'
 description = 'PostgreSQL transactions and ACID with real runs: BEGIN, ROLLBACK, savepoints, constraints, transactional DDL, WAL and synchronous_commit.'
+contentType = 'tutorial'
 categories = ["Databases"]
 series = ["Databases"]
 tags = ["databases", "postgresql", "transactions", "acid", "wal"]
 cover = { image = "/images/covers/db-transactions-acid.png", alt = "Transactions and ACID", hiddenInSingle = true }
 +++
 
-A money transfer is two updates: subtract here, add there. If the process dies between them, money disappears. A {{< term "transaction" "transaction" >}} is the database's answer: a group of statements that either all happen or none do. In the [previous post](/posts/db-planner-statistics/) we looked at how the planner reads data; now we look at how writes stay correct. The application side of this is in [Transactions and the repository pattern in Go](/posts/go-transactions-patterns/).
+A money transfer is two updates: subtract here, add there. If the process dies between them, money disappears. A {{< term "transaction" "transaction" >}} is the database's answer: a group of statements that either all happen or none do. The [previous post](/posts/db-planner-statistics/) was about reading; this one is about keeping writes correct. The application side of this is in [Transactions and the repository pattern in Go](/posts/go-transactions-patterns/).
 
 > Everything ran on a real PostgreSQL 18.3. I used a small `accounts` table (alice 10000 cents, bob 5000) with `CHECK (balance_cents >= 0)` and a `transfers` table with foreign keys. The pieces together are called {{< term "acid" "ACID" >}}.
 
@@ -78,7 +79,7 @@ A: COMMIT
   B sees: alice=6200, transfers=1
 ```
 
-B does not see uncommitted work. What exactly B may see in more complex cases depends on the isolation level, which is the next post.
+B does not see uncommitted work. What exactly B may see in more complex cases depends on the isolation level.
 
 ## Durability, WAL and synchronous_commit
 
@@ -99,7 +100,7 @@ BEGIN; UPDATE; ROLLBACK:             112 bytes
 
 Two lessons: an empty transaction costs nothing, and a rolled-back transaction still wrote WAL. (My first try used `pg_current_wal_lsn()`, which showed 0 for the rollback because that data was not yet written out; the insert position is the right one.) The very first update after startup wrote 4568 bytes. I checked the cause afterwards with `pg_walinspect`: an update right after a `CHECKPOINT` logs a full-page image (record `FPI_FOR_HINT`, flagged `FPW`), and the next update on the same page wrote only 112 bytes. The size of that image depends on how full the page is. **I did not crash-test durability**, for example with `kill -9`, so this section rests on the settings and the documentation.
 
-## A few things to watch
+## Transaction traps
 
 - Keep transactions short. A long one holds locks and old row versions, which blocks cleanup; the post on MVCC and VACUUM explains it.
 - Never wait for a user or an HTTP call inside a transaction.
@@ -113,4 +114,4 @@ Add a `transfers` insert to the transfer, so a row is recorded only when both ba
 
 ## What's next
 
-Next in the series: Isolation levels and anomalies.
+Isolation levels and anomalies: what B may see in more complex cases depends on the isolation level.

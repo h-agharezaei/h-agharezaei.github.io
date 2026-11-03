@@ -2,6 +2,7 @@
 date = '2027-06-05T10:00:00+03:30'
 draft = false
 title = 'Estimation and planning'
+contentType = 'tutorial'
 description = "Estimation and planning in Go: why one number misleads, Monte Carlo ranges, merge bias, throughput forecasts, Little's law and a toy Brooks's law model."
 categories = ["Engineering"]
 series = ["Software Engineering"]
@@ -9,7 +10,7 @@ tags = ["estimation", "planning", "forecasting", "monte-carlo", "software-engine
 cover = { image = "/images/covers/eng-estimation-planning.png", alt = "Estimation and planning", hiddenInSingle = true }
 +++
 
-The previous post, [Monorepo or polyrepo?](/posts/eng-monorepo-vs-polyrepo/), was about structure. This last post is about "when will it be done?" A single number is almost always wrong, for mathematical reasons. Related: [SLIs, SLOs and error budgets](/posts/eng-sli-slo-error-budgets/), [Technical debt](/posts/eng-technical-debt/), [Blameless postmortems](/posts/eng-postmortems-blameless/), [Topological sort and dependencies](/posts/algo-topological-sort/). Opinions are marked.
+Ten tasks whose likely durations sum to 42 days ran longer in over half of 100,000 simulated runs. One number for "when will it be done?" is almost always wrong. The series closes here, after [Monorepo or polyrepo?](/posts/eng-monorepo-vs-polyrepo/). Related: [SLIs, SLOs and error budgets](/posts/eng-sli-slo-error-budgets/), [Technical debt](/posts/eng-technical-debt/), [Blameless postmortems](/posts/eng-postmortems-blameless/), [Topological sort and dependencies](/posts/algo-topological-sort/).
 
 > Go 1.26, `go test -race` passes. A local, seeded demo with synthetic data; numbers are model days and counts, no timings.
 
@@ -22,7 +23,7 @@ sum of likely=42.0  PERT sum=54.2
 simulated total: P50=50.5 P80=64.8 P95=85.5
 ```
 
-The sum of the likely values (42) is below even the {{< term "percentile" "P50" >}} of the total. The PERT mean, `(O + 4M + P) / 6`, gave 54.2, which here sits between P50 and P80. The long tails add up; Hofstadter's law and the planning fallacy (Kahneman and Tversky) describe this in words. The honest answer is a range: "50 days at even odds, 65 at 80%".
+The sum of the likely values (42) is below even the {{< term "percentile" "P50" >}} of the total. The PERT mean, `(O + 4M + P) / 6`, gave 54.2, which here sits between P50 and P80. The long tails add up; Hofstadter's law and the planning fallacy (Kahneman and Tversky) say the same. The honest answer is a range: "50 days at even odds, 65 at 80%".
 
 ## Dependencies and merge bias
 
@@ -64,7 +65,7 @@ limit  done  avgWIP  throughput/day  avgCycle(days)  throughput*cycle
    40  1191   40.00           0.596            65.4             38.95
 ```
 
-From a limit of 3 to 40, throughput stays flat while cycle time grows 13 times. Below 3 people are idle (starvation). In this model, more things in progress buys nothing but waiting. **My opinion:** a {{< term "wip-limit" "WIP limit" >}} near the team size is the cheapest planning tool there is.
+From a limit of 3 to 40, throughput stays flat while cycle time grows 13 times. Below 3 people are idle (starvation). **My opinion:** a {{< term "wip-limit" "WIP limit" >}} near the team size is the cheapest planning tool there is.
 
 ## Brooks's law, as a toy
 
@@ -96,7 +97,7 @@ Keep three words apart: a **forecast** is what we expect, a **target** is what w
 
 Slice work thin and vertical so each slice ships; measure cycle time and weekly throughput; re-forecast every week with the bootstrap; reserve capacity for error budget work (see the SLO post), debt, and fixes from postmortems.
 
-## A few things to watch
+## How forecasts get misused
 
 - A range given to a boss becomes a single number; write the percentile next to it.
 - Do not use throughput history from before a team change.
@@ -109,4 +110,4 @@ Add a fourth parallel branch before task d and watch the median.
 
 ## What's next
 
-The Software Engineering series ends here. Next is the Distributed Systems series, which is still being written.
+The Software Engineering series ends here; Distributed Systems continues with [Why distributed systems are hard](/posts/ds-why-distributed-is-hard/).

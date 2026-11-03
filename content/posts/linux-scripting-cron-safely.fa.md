@@ -3,13 +3,14 @@ date = '2027-06-07T10:00:00+03:30'
 draft = false
 title = 'اسکریپت‌نویسی ایمن و cron'
 description = 'اسکریپت‌نویسی ایمن در shell و cron روی macOS: quoting، تله‌های set -e، نوشتن اتمی، قفل mkdir و پارسر cron به Go با تست.'
+contentType = 'tutorial'
 categories = ["Linux"]
 series = ["Linux"]
 tags = ["linux", "shell", "cron", "scripting", "locking", "go"]
 cover = { image = "/images/covers/linux-scripting-cron-safely.fa.png", alt = "اسکریپت‌نویسی ایمن و cron", hiddenInSingle = true }
 +++
 
-این آخرین پست سری Linux است. بعد از [strace و perf برای عیب‌یابی](/fa/posts/linux-strace-perf/) می‌دانیم چطور داخل یک پردازش در حال اجرا را ببینیم؛ حالا می‌خواهیم اسکریپت‌های کوچک دور سرویس‌هایمان ساعت ۳ شب خراب نشوند. این پست بر [پوسته‌ی کاربردی](/fa/posts/linux-shell-practical/)، [پروسه و سیگنال](/fa/posts/linux-processes-signals/) (برای `trap`) و [systemd: واحدها و timerها](/fa/posts/linux-systemd-units-timers/) بنا شده است.
+یک متغیر خالی `$dir/*` را به `/*` تبدیل می‌کند و یک `cd` ناموفق اسکریپت را متوقف نمی‌کند؛ همین باگ‌ها اسکریپت‌های کوچک دور سرویس‌هایمان را ساعت ۳ شب خراب می‌کنند. این آخرین پست Linux بعد از [strace و perf برای عیب‌یابی](/fa/posts/linux-strace-perf/) می‌آید و بر [پوسته‌ی کاربردی](/fa/posts/linux-shell-practical/)، [پروسه و سیگنال](/fa/posts/linux-processes-signals/) (برای `trap`) و [systemd: واحدها و timerها](/fa/posts/linux-systemd-units-timers/) بنا شده است.
 
 > توضیح صادقانه: همه‌چیز روی **macOS** اجرا شد (`/bin/sh`، `/bin/bash` نسخه‌ی 3.2 و ابزارهای BSD). `flock`، `timeout` و `shellcheck` نصب نیستند (`command -v` چیزی چاپ نکرد)، پس اجرایشان نکردم. به crontab واقعی‌ام دست نزدم. الگوهای خطرناک فقط با `echo` یا در یک پوشه‌ی موقت اجرا شدند.
 
@@ -117,7 +118,7 @@ $ sh template.sh missing.log
 ... cannot read missing.log                                    (exit 1, temp and lock removed)
 ```
 
-## چند نکته‌ی مهم
+## پیش از زمان‌بندی اسکریپت
 
 - مسیر مطلق، `PATH` تنظیم‌شده و کاربر با کمترین دسترسی ([سیستم فایل و مجوزها](/fa/posts/linux-filesystem-permissions/)).
 - هرگز راز (secret) را در اسکریپت یا خط crontab نگذارید؛ [مدیریت راز و کلید](/fa/posts/sec-secrets-management/).
@@ -131,4 +132,4 @@ $ sh template.sh missing.log
 
 ## قدم بعدی
 
-سری Linux اینجا تمام می‌شود. بعدی سری سیستم‌های توزیع‌شده است، با «چرا سیستم توزیع‌شده سخت است» ([لینک](/fa/posts/ds-why-distributed-is-hard/)). پوشش داده نشد: همه‌چیز از یک Mac آمد، پس هسته‌ی واقعی Linux، کانتینر یا systemd اجرا نکردم؛ بخش‌های ویژه‌ی Linux از مستندات‌اند و برچسب خورده‌اند.
+سری Linux اینجا تمام می‌شود و سری سیستم‌های توزیع‌شده با «چرا سیستم توزیع‌شده سخت است» ([لینک](/fa/posts/ds-why-distributed-is-hard/)) شروع می‌شود. پوشش داده نشد: همه‌چیز از یک Mac آمد، پس هسته‌ی واقعی Linux، کانتینر یا systemd اجرا نکردم؛ بخش‌های ویژه‌ی Linux از مستندات‌اند و برچسب خورده‌اند.

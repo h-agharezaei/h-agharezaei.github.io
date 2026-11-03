@@ -3,13 +3,14 @@ date = '2027-05-15T10:00:00+03:30'
 draft = false
 title = 'Sharding and consistent hashing'
 description = 'Sharding and consistent hashing: shard-key skew, a hot key, hash slots, a crash-tested migration simulation and real Postgres hash partitions.'
+contentType = 'tutorial'
 categories = ["Distributed"]
 series = ["Distributed Systems"]
 tags = ["distributed-systems", "sharding", "consistent-hashing", "partitioning", "go", "postgres"]
 cover = { image = "/images/covers/ds-sharding-consistent-hashing.png", alt = "Sharding and consistent hashing", hiddenInSingle = true }
 +++
 
-[The previous post](/posts/ds-replication-quorum/) copied the same data to several nodes. That helps availability and reads, but every node still holds everything and takes every write. When the data or the write rate outgrows one machine you need {{< term "sharding" "sharding" >}}: each key lives on one shard. I will not repeat the ring basics from [Bloom filters and consistent hashing](/posts/algo-bloom-filter-consistent-hashing/); I copied its ring code and build on it.
+Every node in a replicated cluster still holds all the data and takes every write. [Replication](/posts/ds-replication-quorum/) helps availability and reads, but when the data or the write rate outgrows one machine you need {{< term "sharding" "sharding" >}}: each key lives on one shard. I will not repeat the ring basics from [Bloom filters and consistent hashing](/posts/algo-bloom-filter-consistent-hashing/); I copied its ring code and build on it.
 
 > Honest labelling: sections 1 to 4 are a Go 1.26 simulation on one machine, with seeded randomness and counts only, no timings. The shards are in-memory maps, not a network. Section 5 is a real Postgres 18.3, but on one node.
 
@@ -87,7 +88,7 @@ I inserted 20,000 rows (random user ids, not seeded, so your counts differ):
 
 With `created_at > ...` the plan is an `Append` over all four partitions. That is {{< term "partition-pruning" "partition pruning" >}} on `user_id` only; see [B-tree indexes and EXPLAIN ANALYZE](/posts/db-indexes-btree-explain/) for reading plans. This is {{< term "partitioning" "partitioning" >}} on one node: same disk, same CPU, same failure. Spreading partitions across nodes is what `postgres_fdw` or Citus are for; I only name them, I did not run them.
 
-## A few things to watch
+## Where sharding hurts
 
 - Choose the shard key from your queries; changing it later means moving everything.
 - Check the biggest key, not the average: max/mean is the number to watch.
@@ -100,4 +101,4 @@ Make the simulation lose a key on purpose by moving cutover before verify, and s
 
 ## What's next
 
-The next post is “Consensus and Raft”.
+Next, “Consensus and Raft”: how several nodes agree on one value even when some fail.

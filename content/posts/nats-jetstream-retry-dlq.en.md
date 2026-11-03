@@ -4,15 +4,16 @@ draft = false
 title = 'Retry and Dead-Letter Queues in NATS JetStream with Go'
 seoTitle = 'Retry and Dead-Letter Queues in NATS JetStream'
 description = 'A follow-up: retry failed messages with MaxDeliver and BackOff, then route the ones that never succeed to a dead-letter stream.'
+contentType = 'tutorial'
 categories = ["Go"]
 series = ["NATS JetStream"]
 tags = ["go", "nats", "jetstream", "messaging", "retry"]
 cover = { image = "/images/covers/nats-jetstream-retry-dlq.png", alt = "Retry and Dead-Letter Queues in NATS JetStream with Go", hiddenInSingle = true }
 +++
 
-In the [previous post](/posts/nats-jetstream-go/) we built a simple publisher and worker on JetStream. But that worker assumed processing always succeeds. In real systems some messages fail every single time, and if you do nothing they either retry forever or get lost.
+Some messages fail every single time, and if the worker does nothing about them they either retry forever or get lost. The simple worker from the [previous post](/posts/nats-jetstream-go/) ignored this: it assumed processing always succeeds.
 
-This post adds three things:
+Fixing it takes three things:
 
 1. Limiting attempts with `MaxDeliver`
 2. Spacing out attempts with `BackOff` and `NakWithDelay`
@@ -112,7 +113,7 @@ nc.Subscribe("$JS.EVENT.ADVISORY.CONSUMER.MAX_DELIVERIES.EVENTS.worker-consumer"
 
 In my test I published three messages: `good-1`, `poison` and `good-2`. The two good ones were delivered once and acked. `poison` was delivered three times, and then exactly **one** message landed in the `DLQ` stream. At the end the consumer had no pending or ack-pending messages.
 
-## A few caveats
+## Limits of this DLQ
 
 - **Advisories are core NATS messages, not JetStream ones.** If the DLQ service is down at the moment the advisory is published, it misses it. For critical systems you need a fallback, such as periodically inspecting the consumer with `ConsumerInfo` or persisting advisories into a stream.
 - The original message is not removed from the stream after hitting `MaxDeliver`. How long it stays depends on that stream's retention policy.
@@ -121,4 +122,4 @@ In my test I published three messages: `good-1`, `poison` and `good-2`. The two 
 
 ## What's next
 
-Two topics remain for the next post: running multiple workers on one consumer, and monitoring processing lag. The full code for the base example is in [go-nats-demo](https://github.com/h-agharezaei/go-nats-demo).
+The two remaining topics, more workers and processing lag, are covered in Multiple workers on one consumer and monitoring lag in JetStream: a DLQ collects messages that fail, but does nothing about a queue that fills faster than one worker can drain it. The full code for the base example is in [go-nats-demo](https://github.com/h-agharezaei/go-nats-demo).

@@ -3,13 +3,14 @@ date = '2027-01-07T10:00:00+03:30'
 draft = false
 title = 'Concurrency with threads in Rust'
 description = 'Rust threads with std only: spawn and join, move closures, mpsc channels, Arc and Mutex, Send and Sync, scoped threads, and data races as compile errors.'
+contentType = 'tutorial'
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "concurrency", "threads", "intermediate"]
 cover = { image = "/images/covers/rust-concurrency-threads.png", alt = "Concurrency with threads in Rust", hiddenInSingle = true }
 +++
 
-In the [previous post](/posts/rust-testing-docs/) we covered tests and documentation. Now to the feature Rust is most proud of: "fearless concurrency". The claim is that ownership and borrowing, which you already know, also rule out data races at compile time. We will use only the standard library, and every error below comes from a real compile. If you know Go, this is the counterpart of [goroutines and channels](/posts/go-goroutines-channels/) and [sync, select and context](/posts/go-sync-select-context/).
+Share a counter between threads with `Rc` instead of `Arc` and the program does not compile: `Rc<std::sync::Mutex<i32>> cannot be sent between threads safely`. That error is the feature Rust is most proud of, "fearless concurrency", and the topic after the tests and docs of the [previous post](/posts/rust-testing-docs/). The claim is that ownership and borrowing, which you already know, also rule out data races at compile time. We will use only the standard library, and every error below comes from a real compile. If you know Go, this is the counterpart of [goroutines and channels](/posts/go-goroutines-channels/) and [sync, select and context](/posts/go-sync-select-context/).
 
 > Everything here ran on Rust 1.90.
 
@@ -176,7 +177,7 @@ lock failed, but data is recoverable: 0
 
 `lock()` returns `Err`, and `into_inner()` on that error still gives you the guard if you decide the data is fine.
 
-## A few things to watch
+## What Rust does not prevent
 
 - Forgetting `drop(tx)` makes the receiving loop wait forever.
 - Holding a `MutexGuard` for long serializes your threads; keep critical sections short.
@@ -191,4 +192,4 @@ lock failed, but data is recoverable: 0
 
 ## What's next
 
-Threads are heavy when you have thousands of concurrent tasks, mostly waiting on I/O. Next: async/await and Tokio in Rust.
+Threads are heavy when you have thousands of concurrent tasks, mostly waiting on I/O, which is the problem async/await and Tokio in Rust solves.

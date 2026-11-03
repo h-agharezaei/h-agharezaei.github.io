@@ -3,13 +3,14 @@ date = '2027-03-18T10:00:00+03:30'
 draft = false
 title = 'Rust capstone: a complete service'
 description = 'A Rust orders service combining Axum, SQLx, thiserror, tracing, NATS JetStream and graceful shutdown, tested on real Postgres, with honest production gaps.'
+contentType = 'tutorial'
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "capstone", "axum", "sqlx", "tracing", "nats", "thiserror", "backend"]
 cover = { image = "/images/covers/rust-capstone-service.png", alt = "Rust capstone: a complete service", hiddenInSingle = true }
 +++
 
-The [previous post](/posts/rust-wasm/) was about WebAssembly. This one is the last technical post of the series, and it builds nothing new: it wires the earlier pieces into one small `orders` service. It has the same API as the Go one from [Building an API with net/http in Go](/posts/go-http-api-stdlib/): `POST /orders`, `GET /orders/{id}`, `GET /orders`, `/healthz` and `/readyz`. The module split follows [Modules, crates and Cargo in Rust](/posts/rust-modules-crates-cargo/), and the Go side of the same idea is [Project layout and clean architecture in Go](/posts/go-project-layout-clean-architecture/).
+A NUL character in a customer name passed my validation and Postgres rejected it: the client got a generic 500, the log got the cause and the request id. After [Rust and WebAssembly](/posts/rust-wasm/), this last technical post of the series builds nothing new: it wires the earlier pieces into one small `orders` service. It has the same API as the Go one from [Building an API with net/http in Go](/posts/go-http-api-stdlib/): `POST /orders`, `GET /orders/{id}`, `GET /orders`, `/healthz` and `/readyz`. The module split follows [Modules, crates and Cargo in Rust](/posts/rust-modules-crates-cargo/), and the Go side of the same idea is [Project layout and clean architecture in Go](/posts/go-project-layout-clean-architecture/).
 
 > Rust 1.90, edition 2024, `axum 0.8.9`, `sqlx 0.8.6`, `async-nats 0.50.0`, `tokio 1.54.1`, `tracing-subscriber 0.3.23`. Real PostgreSQL 18.3 and nats-server 2.15.1, each started from a tiny Go program (embedded, no Docker) as separate processes, stopped at the end. Everything below was run; `RUST_LOG` was `info` and timestamps are cut from logs.
 
@@ -93,7 +94,7 @@ WARN request{method=POST path=/orders request_id="req-5"}: orders_service::error
 ERROR request{method=POST path=/orders request_id="req-6"}: orders_service::error: request failed error=error returned from database: invalid byte sequence for encoding "UTF8": 0x00
 ```
 
-The 500 is a real, unexpected failure: a NUL character in the customer name passes my validation and Postgres rejects it. The client sees a generic body, the log has the cause and the id. Fixing the validation is a one-line change that I left out on purpose to show this path.
+The 500 is the real NUL failure from the opening. Fixing the validation is a one-line change that I left out on purpose to show this path.
 
 ## Store, then event
 
@@ -168,7 +169,7 @@ test create_then_get_then_list ... ok
 - `sqlx::migrate!` at startup is fine here, but with several replicas you need a real migration strategy.
 - No metrics, and the JetStream side (retention, replicas, security) is in [JetStream in production](/posts/nats-jetstream-production/).
 
-## A few things to watch
+## Where failures stay quiet
 
 - Log the error source, return a generic body; never send database text to clients.
 - Axum's own extractor rejections (bad JSON, non-numeric id) use their own plain-text bodies, not `AppError`.
@@ -177,4 +178,4 @@ test create_then_get_then_list ... ok
 
 ## What's next
 
-The next post is the year-end recap of the Rust series and 1405.
+*Rust series recap and a look back at 1405* closes the series with a map of all its posts.

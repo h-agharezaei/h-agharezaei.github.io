@@ -3,19 +3,20 @@ date = '2027-04-16T10:00:00+03:30'
 draft = false
 title = 'عیب‌یابی شبکه با curl، dig و traceroute'
 description = 'عیب‌یابی شبکه با curl، dig و traceroute: exit codeهای واقعی، redirect، هدر Host، جواب DNS، NXDOMAIN و چک‌لیست لایه‌به‌لایه.'
+contentType = 'tutorial'
 categories = ["Networking"]
 series = ["Networking"]
 tags = ["networking", "troubleshooting", "curl", "dig", "traceroute", "dns"]
 cover = { image = "/images/covers/net-troubleshooting-curl-traceroute.fa.png", alt = "عیب‌یابی شبکه با curl، dig و traceroute", hiddenInSingle = true }
 +++
 
-در [پست قبل](/fa/posts/net-load-balancer-l4-l7/) درخواست از یک جعبه‌ی دیگر هم رد شد. وقتی چیزی خراب می‌شود، مهارت اصلی پیدا کردن لایه‌ی خراب است. این پست یک جعبه‌ابزار کوچک است: curl برای {{< term "http" "HTTP" >}}، dig برای {{< term "dns" "DNS" >}}، nc و lsof برای port و traceroute برای مسیر. از ایده‌های [مدل TCP/IP](/fa/posts/net-tcp-ip-model/)، [DNS در عمل](/fa/posts/net-dns-in-practice/) و [HTTP/1.1 با دست](/fa/posts/net-http1-by-hand/) استفاده می‌کند.
+با 404، curl با exit code صفر تمام می‌شود و با timeout با 28، و فقط دومی مشکل شبکه است. وقتی چیزی خراب می‌شود، مهارت اصلی پیدا کردن لایه‌ی خراب است و هر جعبه در مسیر، مثل balancer [پست قبل](/fa/posts/net-load-balancer-l4-l7/)، یک جای دیگر برای گشتن است. جعبه‌ابزار: curl برای {{< term "http" "HTTP" >}}، dig برای {{< term "dns" "DNS" >}}، nc و lsof برای port و traceroute برای مسیر. بر پایه‌ی [مدل TCP/IP](/fa/posts/net-tcp-ip-model/)، [DNS در عمل](/fa/posts/net-dns-in-practice/) و [HTTP/1.1 با دست](/fa/posts/net-http1-by-hand/) است.
 
 > حریم خصوصی: سرورها روی `127.0.0.1:18080` بودند (یک سرور تست کوچک Go، macOS، curl نسخه‌ی 8.7.1). برای DNS همیشه یک resolver عمومی را صریح نام بردم و خط‌هایی را که اسم ماشین یا شبکه‌ی من را دارند حذف کردم. هیچ traceroute‌ای روی اینترنت نچسباندم چون hopهای واقعی را فاش می‌کند. ماشین مشغول بود، پس زمان‌سنجی ندارم. `ss` و `ip` ابزار Linux هستند و اجرایشان نکردم.
 
 ## curl: سرور چه گفت
 
-`curl -v` هدرهای درخواست و پاسخ را نشان می‌دهد. یک نکته که دیدم: هدر `Host` ارسالی curl برابر `127.0.0.1:18080` بود. `-I` فقط هدر می‌خواهد. `-w` واقعیت‌های انتقال را چاپ می‌کند:
+`curl -v` هدرهای درخواست و پاسخ را نشان می‌دهد. نشان داد curl هدر `Host: 127.0.0.1:18080` را فرستاد. `-I` فقط هدر می‌خواهد. `-w` واقعیت‌های انتقال را چاپ می‌کند:
 
 ```
 $ curl -s -o /dev/null -w 'http=%{http_code}\n' http://127.0.0.1:18080/missing
@@ -87,7 +88,7 @@ $ lsof -nP -iTCP:18080 -sTCP:LISTEN     (فقط خط من نگه داشته شد
 srv  IPv4  TCP  127.0.0.1:18080 (LISTEN)
 ```
 
-{{< term "traceroute" "traceroute" >}} بسته‌هایی با {{< term "ttl" "TTL" >}} رو‌به‌افزایش می‌فرستد؛ هر روتری که یکی را دور بیندازد با {{< term "icmp" "ICMP" >}} جواب می‌دهد. روی {{< term "loopback" "loopback" >}} فقط یک hop دارد:
+{{< term "traceroute" "traceroute" >}} بسته‌هایی با TTL رو‌به‌افزایش می‌فرستد؛ هر روتری که یکی را دور بیندازد با {{< term "icmp" "ICMP" >}} جواب می‌دهد. روی {{< term "loopback" "loopback" >}} فقط یک hop دارد:
 
 ```
 $ traceroute -m 3 127.0.0.1
@@ -109,7 +110,7 @@ $ traceroute -m 3 127.0.0.1
 
 برای TLS در [TLS و گواهی‌ها با openssl](/fa/posts/net-tls-openssl/) از openssl استفاده کردم. برای هیچ ادعای گواهی از curl استفاده نکردم: این curl روی SecureTransport ساخته شده و در اجراهای قبلی رفتار تأییدش عجیب بود.
 
-## چند نکته‌ی مهم
+## برداشت‌های غلط رایج
 
 - 404 مشکل شبکه نیست؛ exit code و status را جدا بررسی کنید.
 - نام‌ها را با `--resolve` pin کنید، نه با ویرایش فایل‌های سیستم.
@@ -122,4 +123,4 @@ handlerی اضافه کنید که بی‌نهایت redirect کند. curl با 
 
 ## قدم بعدی
 
-پست بعدی «case study: چرا این درخواست کند است» است.
+بعدی «case study: چرا این درخواست کند است» است: همین جعبه‌ابزار، فاز به فاز.

@@ -3,15 +3,16 @@ date = '2027-03-14T10:00:00+03:30'
 draft = false
 title = 'Rust و WebAssembly'
 description = 'Rust و WebAssembly: کامپایل به wasm32-unknown-unknown و wasm32-wasip1، رد کردن رشته از مرز wasm به‌صورت دستی و با wasm-bindgen، و کاربردهای wasm.'
+contentType = 'tutorial'
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "wasm", "webassembly", "wasi", "wasm-bindgen", "intermediate"]
 cover = { image = "/images/covers/rust-wasm.fa.png", alt = "Rust و WebAssembly", hiddenInSingle = true }
 +++
 
-موضوع [مقاله‌ی قبل](/fa/posts/rust-docker-ci-release/) release engineering بود. این مقاله درباره‌ی نوع دیگری از خروجی است: فایل `.wasm`. در [مقاله‌ی unsafe و FFI](/fa/posts/rust-unsafe-ffi/) با **C ABI** از یک مرز رد شدیم و Go هم در [فراخوانی Rust از Go با FFI](/fa/posts/go-calls-rust-ffi/) همین کار را کرد. WebAssembly راه دیگری برای رد شدن از مرز است، با یک sandbox در وسط.
+از مرز wasm فقط عدد رد می‌شود: رشته را باید در حافظه‌ی ماژول کپی کرد و pointer و طولش را فرستاد. بعد از [release engineering](/fa/posts/rust-docker-ci-release/)، خروجی فایل `.wasm` است. در [مقاله‌ی unsafe و FFI](/fa/posts/rust-unsafe-ffi/) با **C ABI** از یک مرز رد شدیم و Go هم در [فراخوانی Rust از Go با FFI](/fa/posts/go-calls-rust-ffi/) همین کار را کرد. WebAssembly راه دیگری برای رد شدن از مرز است، با یک sandbox در وسط.
 
-**WebAssembly** (به‌اختصار wasm) یک قالب دودویی قابل‌حمل برای دستورهاست که روی یک ماشین مجازی ایزوله اجرا می‌شود. یک ماژول wasm خودش به DOM، فایل یا شبکه دسترسی ندارد؛ فقط **linear memory** خودش را دارد و هر تابعی که میزبان (مرورگر، Node یا یک runtime) به آن بدهد. از مرز فقط عدد رد می‌شود.
+**WebAssembly** (به‌اختصار wasm) یک قالب دودویی قابل‌حمل برای دستورهاست که روی یک ماشین مجازی ایزوله اجرا می‌شود. یک ماژول wasm خودش به DOM، فایل یا شبکه دسترسی ندارد؛ فقط **linear memory** خودش را دارد و هر تابعی که میزبان (مرورگر، Node یا یک runtime) به آن بدهد.
 
 > همه‌چیز با Rust 1.90، edition 2024، Node 20.13 و `wasm-bindgen` نسخه‌ی 0.2.129 روی macOS ساخته و اجرا شد. مرورگر در دسترس نبود، پس همه‌چیز از Node بارگذاری شد و درباره‌ی مرورگر ادعایی ندارم. دموها crateهای محلی‌اند: `raw`، `bindgen`، `wasi` و `gohello`.
 
@@ -126,7 +127,7 @@ Go هم به wasm کامپایل می‌شود: `GOOS=js GOARCH=wasm` و `GOOS=w
 - کار سنگین با DOM: wasm برای آن هم از JavaScript رد می‌شود.
 - فراخوانی‌های کوچک و پرتکرار با رشته: هر فراخوانی بایت‌ها را از مرز کپی می‌کند.
 
-## چند نکته که باید حواستان باشد
+## پیش از رفتن سراغ wasm
 
 - نسخه‌ی CLI و crate مربوط به `wasm-bindgen` باید یکی باشند.
 - بدون glue فقط عدد رد می‌شود؛ `u64` در JavaScript به `BigInt` تبدیل می‌شود.
@@ -140,4 +141,4 @@ Go هم به wasm کامپایل می‌شود: `GOOS=js GOARCH=wasm` و `GOOS=w
 
 ## قدم بعدی
 
-مقاله‌ی بعد پروژه‌ی پایانی Rust است: یک سرویس کامل.
+«پروژه‌ی پایانی Rust: یک سرویس کامل» تکه‌های قبلی را به هم وصل می‌کند.

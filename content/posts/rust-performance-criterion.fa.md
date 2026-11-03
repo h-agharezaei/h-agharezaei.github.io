@@ -3,13 +3,14 @@ date = '2027-02-22T10:00:00+03:30'
 draft = false
 title = 'پرفورمنس و benchmark با Criterion در Rust'
 description = 'کد Rust را درست benchmark کنید: راه‌اندازی Criterion، BenchmarkGroup و BenchmarkId، black_box، خواندن خروجی آماری، baseline و مقایسه با testing.B در Go.'
+contentType = 'tutorial'
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "performance", "benchmarking", "criterion", "intermediate"]
 cover = { image = "/images/covers/rust-performance-criterion.fa.png", alt = "پرفورمنس و benchmark با Criterion در Rust", hiddenInSingle = true }
 +++
 
-[مقاله‌ی قبل](/fa/posts/rust-unsafe-ffi/) درباره‌ی `unsafe` و FFI بود. این مقاله سؤالی را جواب می‌دهد که بعد از «کار می‌کند؟» می‌آید: سریع است، و نسبت به چه؟ یک حلقه‌ی دست‌ساز دور `Instant::now()` فقط یک عدد می‌دهد و نمی‌گوید چقدر نویزی است. **Criterion** کتاب‌خانه‌ی استاندارد benchmark آماری در Rust است. اگر Go بلدید، معادل‌هایش `testing.B` از [مقاله‌ی تست](/fa/posts/go-testing-basics/)، ابزار `benchstat` و [pprof](/fa/posts/go-profiling-pprof/) هستند. [مقاله‌ی مقایسه‌ی Go و Rust](/fa/posts/go-vs-rust-when-to-use/) هم قبلاً هشدار داده بود که یک microbenchmark چیز زیادی ثابت نمی‌کند؛ اینجا یاد می‌گیریم همان یکی را حداقل درست اندازه بگیریم.
+اگر benchmark شما حدود ۰٫۳ نانوثانیه گزارش کند، چیزی اندازه نگرفته‌اید: کامپایلر کار را حذف کرده است. سرعت را راحت می‌شود غلط اندازه گرفت و یک حلقه‌ی دست‌ساز دور `Instant::now()` فقط یک عدد می‌دهد و نمی‌گوید چقدر نویزی است. **Criterion** کتاب‌خانه‌ی استاندارد benchmark آماری در Rust است و بعد از [Unsafe و FFI](/fa/posts/rust-unsafe-ffi/) موضوع این مقاله است. اگر Go بلدید، معادل‌هایش `testing.B` از [مقاله‌ی تست](/fa/posts/go-testing-basics/)، ابزار `benchstat` و [pprof](/fa/posts/go-profiling-pprof/) هستند. [مقاله‌ی مقایسه‌ی Go و Rust](/fa/posts/go-vs-rust-when-to-use/) هم قبلاً هشدار داده بود که یک microbenchmark چیز زیادی ثابت نمی‌کند؛ اینجا یاد می‌گیریم همان یکی را حداقل درست اندازه بگیریم.
 
 > Rust 1.90، edition 2024، `criterion` نسخه‌ی 0.8.2، macOS روی arm64، و crate محلی `strbench`. اعداد زمانی مال همین ماشین و همین بار آن هستند: هر اجرا را فقط وقتی شروع کردم که load average یک‌دقیقه‌ای زیر ۲ بود (شروع‌ها بین ۱٫۷ و ۱٫۹۹؛ یک اجرا با ۲٫۵ تمام شد). آن‌ها را مثال بدانید، نه معیار کامپیوتر خودتان.
 
@@ -125,7 +126,7 @@ build_string/with_capacity/1000
 
 `testing.B` در Go برای هر اجرا یک خط می‌دهد؛ با `-count` تکرار می‌کنید و فایل‌ها را با `benchstat` مقایسه می‌کنید. Criterion نمونه‌گیری، شمارش outlier و مقایسه را در یک `cargo bench` انجام می‌دهد. attribute داخلی `#[bench]` فقط روی nightly هست، پس در Rust پایدار عملاً سراغ Criterion (یا مشابهش) می‌روید. Criterion می‌گوید چقدر طول کشید؛ برای فهمیدن چرا از profiler مثل `cargo flamegraph` یا `perf` استفاده کنید که اینجا فقط اسمشان را می‌آورم.
 
-## چند نکته‌ی مهم
+## وقتی benchmark دروغ می‌گوید
 
 - فقط در پروفایل bench/release اندازه بگیرید، نه با `cargo run` در debug.
 - نتیجه‌ی زیر نانوثانیه یعنی کار حذف شده؛ از `black_box` استفاده کنید.
@@ -140,4 +141,4 @@ build_string/with_capacity/1000
 
 ## قدم بعدی
 
-مقاله‌ی بعد: Futures، Pin و درون async در Rust.
+«Future، Pin و درون async در Rust» جعبه‌ی زیر async/await را باز می‌کند: future چیست، چه کسی poll‌اش می‌کند و چرا `Pin` همه‌جا دیده می‌شود.

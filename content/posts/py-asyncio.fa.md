@@ -3,13 +3,14 @@ date = '2027-04-14T10:00:00+03:30'
 draft = false
 title = 'asyncio در Python'
 description = 'asyncio در Python: coroutine و task، TaskGroup، لغو و timeout، فریز شدن loop با کد بلاک‌کننده، Queue، Semaphore و یک echo server با TCP.'
+contentType = 'tutorial'
 categories = ["Python"]
 series = ["Python"]
 tags = ["python", "asyncio", "concurrency", "async", "taskgroup"]
 cover = { image = "/images/covers/py-asyncio.fa.png", alt = "asyncio در Python", hiddenInSingle = true }
 +++
 
-در [مقاله‌ی قبل](/fa/posts/py-multiprocessing/) برای کار CPU از process استفاده کردیم. برای انتظار روی socket، `asyncio` گزینه‌ی سوم کنار thread است (ببینید [GIL و threading](/fa/posts/py-gil-threading/)). اگر Node.js بلد باشید ([event loop](/fa/posts/node-event-loop/)، [Promise و async/await](/fa/posts/node-promises-async-await/)) بیشترش آشناست؛ جالب‌ترین بخش تفاوت‌هاست.
+یک task که باید هر ۱۰ میلی‌ثانیه tick بزند، در مدتی که task دیگری `time.sleep(0.5)` را صدا زد، صفر tick گرفت: یک فراخوانی بلاک‌کننده همه‌چیز را متوقف کرد. قرارداد `asyncio` همین است: همه روی یک thread‌اند و فقط سر `await` جابه‌جا می‌شوند. برای انتظار روی socket، این گزینه‌ی سوم است، کنار thread (ببینید [GIL و threading](/fa/posts/py-gil-threading/)) و process که در [پست قبل](/fa/posts/py-multiprocessing/) برای کار CPU به کار بردیم. اگر Node.js بلد باشید ([event loop](/fa/posts/node-event-loop/)، [Promise و async/await](/fa/posts/node-promises-async-await/)) بیشترش آشناست؛ جالب‌ترین بخش تفاوت‌هاست.
 
 > Python 3.14.0 و فقط کتابخانه‌ی استاندارد. ماشین زیر بار سنگین بود، پس تعداد، ترتیب و boolean منتشر می‌کنم و **هیچ زمانی** نه. اسکریپت‌های دمو نمونه‌های محلی‌اند.
 
@@ -107,7 +108,7 @@ port صفر یعنی سیستم‌عامل یک port آزاد انتخاب کن�
 
 یک thread هر پنج اتصال را سرویس داد. با [سرور TCP از صفر](/fa/posts/net-sockets-tcp-from-scratch/) مقایسه کنید.
 
-## چند نکته‌ی مهم
+## دام‌های asyncio
 
 - در coroutine هرگز کد بلاک‌کننده (`time.sleep`، `requests`، CPU سنگین) صدا نزنید؛ از `to_thread` یا process pool استفاده کنید.
 - coroutine‌ها را همیشه `await` کنید و به هشدار `never awaited` توجه کنید.

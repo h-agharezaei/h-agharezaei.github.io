@@ -3,13 +3,14 @@ date = '2026-11-16T18:00:00+03:30'
 draft = false
 title = 'Testing, fuzzing and invariants with Foundry'
 description = 'Foundry tests in Solidity: unit tests with cheatcodes, bounded fuzz tests, an invariant test with a handler that finds a planted bug, gas and coverage.'
+contentType = 'tutorial'
 categories = ["Blockchain"]
 series = ["Blockchain"]
 tags = ["blockchain", "solidity", "foundry", "testing", "fuzzing"]
 cover = { image = "/images/covers/bc-foundry-testing-fuzzing.png", alt = "Testing, fuzzing and invariants with Foundry", hiddenInSingle = true }
 +++
 
-In [A first contract with Solidity and Foundry](/posts/bc-solidity-first-contract/) I deployed a small ETH vault and poked it with `cast`. A contract cannot be patched after deploy without extra machinery, and it holds money, so tests matter more than in a backend service. This post tests that vault with Foundry, in Solidity.
+A contract cannot be patched after deploy without extra machinery, and it holds money, so tests matter more than in a backend service. This post tests the vault from [the previous post](/posts/bc-solidity-first-contract/) with Foundry, in Solidity.
 
 The ideas are the ones from [Testing in Go: table-driven tests and benchmarks](/posts/go-testing-basics/), [Testing and documentation in Rust](/posts/rust-testing-docs/), [Property-based testing](/posts/eng-property-based-testing/) and [Fuzzing to find security bugs](/posts/sec-fuzzing/). What is new is the cheatcodes and the invariant runner.
 
@@ -181,7 +182,7 @@ $ forge coverage
 
 {{< term "code-coverage" "Coverage" >}} worked (forge warned that it turns the optimizer off). 100% of lines, 25% of branches. `--report debug` lists `revert ZeroAmount()` with zero hits: true, no test sends zero. It also lists `revert IsPaused()` with zero hits, although a test reaches it under `vm.expectRevert`; I did not dig into why. I read the branch number as a list of questions, not a grade.
 
-## A few things to watch
+## Fuzzing and invariant traps
 
 - `bound` beats `vm.assume` for ranges: assume throws inputs away, and too many rejects fail the test.
 - A handler that reverts most of the time tests nothing. Watch the `reverts` column.
@@ -196,4 +197,4 @@ $ forge coverage
 
 ## What's next
 
-Next post: **Tokens: ERC-20 and ERC-721**.
+Next post: **Tokens: ERC-20 and ERC-721**, built with the same project and tools.

@@ -3,13 +3,14 @@ date = '2026-11-17T10:00:00+03:30'
 draft = false
 title = 'Team workflows and packfiles inside'
 description = 'Git workflows and packfiles: trunk-based, GitHub flow and Gitflow compared, then git gc, verify-pack, shallow, partial and sparse clones in real runs.'
+contentType = 'tutorial'
 categories = ["Git"]
 series = ["Git"]
 tags = ["git", "beginner", "workflows", "packfiles"]
 cover = { image = "/images/covers/git-workflows-packfiles.png", alt = "Team workflows and packfiles inside", hiddenInSingle = true }
 +++
 
-This is the last Git post. In the [previous post](/posts/git-submodule-subtree-worktree/) we looked at submodules, subtrees and worktrees. Here we close with how teams organize branches, and what Git does to keep a repository small, which explains the clone options for big repositories.
+One 2000-line file with 40 small edits took 3384 KB as loose objects and 268 KB after `git gc`; that gap explains the clone options. The last post of the series, after [submodules, subtrees and worktrees](/posts/git-submodule-subtree-worktree/), covers it and team workflows.
 
 > The demos were run with Git 2.39.2 on macOS in throwaway directories, and the numbers are copied from those runs. I ran no hosting service, so branch protection is only a concept here.
 
@@ -117,7 +118,7 @@ The `--sparse` clone started with 0 blobs; after `set app` one blob was download
 
 `git maintenance` can run `gc`-style housekeeping in the background; I did not run it.
 
-## A few things to watch
+## The price of the shortcuts
 
 - A shallow clone has no history, so `git log` and `git blame` see little.
 - A partial clone needs its remote later; offline, a missing blob is an error.
@@ -144,4 +145,4 @@ Create a repo with a 1000-line file and 20 commits, each changing one line. Reco
 
 ## What's next
 
-This was the last Git post. The next post in the calendar starts the Databases series: The relational model and essential SQL.
+Next on the calendar is "The relational model and essential SQL", which opens the Databases series.

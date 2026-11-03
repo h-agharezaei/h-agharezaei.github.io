@@ -3,13 +3,14 @@ date = '2026-11-15T10:00:00+03:30'
 draft = false
 title = 'Submodules, subtrees and worktrees'
 description = 'Git submodules, subtrees and worktrees compared with real runs: gitlinks, forgotten clones, unpushed pointers, subtree split and two branches at once.'
+contentType = 'tutorial'
 categories = ["Git"]
 series = ["Git"]
 tags = ["git", "beginner", "submodule", "subtree", "worktree"]
 cover = { image = "/images/covers/git-submodule-subtree-worktree.png", alt = "Submodules, subtrees and worktrees", hiddenInSingle = true }
 +++
 
-In the [previous post](/posts/git-hooks-commit-hygiene/) we automated checks around commits. Now the other side of daily Git: what to do when your repository needs *another* repository, and what to do when you need two branches on disk at once. Git has three tools for this, and they are easy to confuse: {{< term "submodule" "submodules" >}}, {{< term "subtree" "subtrees" >}} and {{< term "worktree" "worktrees" >}}.
+Clone a repository that uses a {{< term "submodule" "submodule" >}} without `--recurse-submodules` and you get an empty directory; push the parent before the submodule and your collaborators get a pointer to a commit only you have. After the [commit checks](/posts/git-hooks-commit-hygiene/), this is the other side of daily Git: what to do when your repository needs *another* repository, or when you need two branches on disk at once. Git has three tools for this, and they are easy to confuse: submodules, {{< term "subtree" "subtrees" >}} and {{< term "worktree" "worktrees" >}}.
 
 This blog already uses one. `.gitmodules` in its repo contains a single entry, `themes/PaperMod`, pointing at the PaperMod GitHub repository, and `git submodule status` prints `7d061d5... themes/PaperMod (v8.0-54-g7d061d5)`. That is a pinned commit of someone else's code.
 
@@ -132,7 +133,7 @@ Both directories share one object database, so there is no second clone. The err
 
 The last row is my opinion, not a measurement.
 
-## A few things to watch
+## Common traps
 
 - Always clone with `--recurse-submodules`, or run `git submodule update --init` afterwards.
 - Push the submodule before the parent.
@@ -148,4 +149,4 @@ The last row is my opinion, not a measurement.
 
 ## What's next
 
-In the next post, Team workflows and packfiles inside, we will look at how teams use branches and pull requests day to day, and how Git stores objects in packfiles.
+Next is "Team workflows and packfiles inside", the last post of the series: how teams use branches and pull requests day to day, and how Git stores objects in packfiles.

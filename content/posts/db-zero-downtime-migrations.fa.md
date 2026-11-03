@@ -3,13 +3,14 @@ date = '2027-01-24T10:00:00+03:30'
 draft = false
 title = 'migration بدون downtime'
 description = 'migration بدون downtime در PostgreSQL 18.3: کدام ALTER جدول را بازنویسی می‌کند، constraint با NOT VALID، CREATE INDEX CONCURRENTLY و expand/contract.'
+contentType = 'engineering'
 categories = ["Databases"]
 series = ["Databases"]
 tags = ["databases", "postgresql", "migrations", "zero-downtime", "ddl"]
 cover = { image = "/images/covers/db-zero-downtime-migrations.fa.png", alt = "migration بدون downtime", hiddenInSingle = true }
 +++
 
-در [پست قبلی](/fa/posts/db-jsonb-fulltext-search/) روی یک جدول ایندکس JSONB و جست‌وجو ساختیم. روی لپ‌تاپ این کار مجانی است؛ اما روی جدولِ زنده‌ای که ترافیک دارد، همین {{< term "migration" "migration" >}} می‌تواند برنامه را بخواباند. هزینه معمولاً خود SQL نیست، [قفل](/fa/posts/db-locks-deadlocks/)هایی است که می‌گیرد و مدتی که نگه‌شان می‌دارد. این پست دستور به دستور بررسی می‌کند چه چیزی امن است. پایه‌اش [MVCC](/fa/posts/db-mvcc-vacuum/)، [ایندکس](/fa/posts/db-indexes-btree-explain/) و [تراکنش](/fa/posts/db-transactions-acid/) است.
+اضافه کردن یک ستون با default ثابت روی ۲۰۰ هزار ردیف آنی است؛ همان ستون با `DEFAULT clock_timestamp()` کل جدول را در فایل جدید بازنویسی می‌کند. روی لپ‌تاپ این فرق، مثل ساختن ایندکس‌های [JSONB و جست‌وجوی متنی](/fa/posts/db-jsonb-fulltext-search/)، به چشم نمی‌آید؛ روی جدولِ زنده‌ای که ترافیک دارد، یک {{< term "migration" "migration" >}} می‌تواند برنامه را بخواباند. هزینه معمولاً خود SQL نیست، [قفل](/fa/posts/db-locks-deadlocks/)هایی است که می‌گیرد و مدتی که نگه‌شان می‌دارد. این پست دستور به دستور بررسی می‌کند چه چیزی امن است. پایه‌اش [MVCC](/fa/posts/db-mvcc-vacuum/)، [ایندکس](/fa/posts/db-indexes-btree-explain/) و [تراکنش](/fa/posts/db-transactions-acid/) است.
 
 > همه‌چیز روی یک PostgreSQL 18.3 واقعی و روی یک کپی از جدول `orders` با ۲۰۰ هزار ردیف (`orders_m`) اجرا شد. دو یا سه session را یک برنامه‌ی کوچک Go با ترتیب ثابت اجرا کرد. بعضی از این رفتارها به نسخه بستگی دارند؛ من فقط 18.3 را اجرا کردم. زمان‌سنجی نیست چون ماشین مشغول بود؛ به‌جایش نشانه‌های قطعی را می‌خوانیم.
 
@@ -114,7 +115,7 @@ rows still NULL: 0  mismatches: 0
 
 بین گام‌ها هم کد قدیمی کار می‌کند هم جدید.
 
-## چند نکته‌ی مهم
+## قاعده‌های DDL در پروداکشن
 
 - `RENAME COLUMN` تغییر metadata است (طبق مستندات؛ اجرایش نکردم) ولی کد در حال اجرا را می‌شکند؛ روش بالا برای سازگاری است، نه سرعت.
 - روی هر DDL در پروداکشن `lock_timeout` و حلقه‌ی تلاش دوباره بگذار.
@@ -122,10 +123,6 @@ rows still NULL: 0  mismatches: 0
 - اینکه کدام تغییر نوع بازنویسی نمی‌خواهد به نسخه بستگی دارد: روی نسخه‌ی خودت با `pg_relation_filenode()` امتحان کن.
 - ابزارهای migration (مثل goose و Flyway) فقط فایل‌ها را به ترتیب اجرا می‌کنند؛ دستوری را امن نمی‌کنند.
 
-## تمرین
-
-یک جدول را کپی کن و برنامه‌ی «`status` را `NOT NULL` کن و یک foreign key اضافه کن» را بدون قفل سنگین طولانی بچین. برای هر دستور قفل را پیش‌بینی کن و با `pg_locks` تأیید کن.
-
 ## قدم بعدی
 
-پست بعدی «partitioning جدول‌ها» است: تقسیم یک جدول عظیم به تکه‌هایی که planner می‌تواند از بعضی‌شان رد شود.
+«partitioning جدول‌ها»: وقتی جدول برای یک تکه بودن زیادی بزرگ می‌شود، تقسیمش به تکه‌هایی که planner می‌تواند از بعضی‌شان رد شود.

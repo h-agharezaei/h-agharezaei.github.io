@@ -3,13 +3,14 @@ date = '2026-11-12T10:00:00+03:30'
 draft = false
 title = 'Pointers and the memory model in Go'
 description = 'How pointers, pass-by-value, nil, escape analysis and Go 1.22 loop variables really work, with runnable examples and real compiler output.'
+contentType = 'tutorial'
 categories = ["Go"]
 series = ["Go Fundamentals"]
 tags = ["go", "beginner", "pointers", "memory"]
 cover = { image = "/images/covers/go-pointers-memory.png", alt = "Pointers and the memory model in Go", hiddenInSingle = true }
 +++
 
-In the [previous post](/posts/go-structs-methods-interfaces/) we gave methods pointer receivers without asking much about what a pointer actually is. This post fills that gap: how `&` and `*` work, why Go copies everything, what a nil pointer does to your program, and how the compiler decides where a value lives.
+In Go, returning `&p` from a function is perfectly safe, yet an `append` on a slice you passed to a function is invisible to the caller. Both come from the same place: Go always passes by value, and the compiler, not you, decides where a value lives. In [structs, methods and interfaces](/posts/go-structs-methods-interfaces/) we gave methods pointer receivers without asking much about what a pointer actually is. This post fills that gap: how `&` and `*` work, why Go copies everything, what a nil pointer does to your program, and how the compiler decides where a value lives.
 
 > Everything below was run with Go 1.26 on macOS (arm64).
 
@@ -141,7 +142,7 @@ The old behavior would have printed `3 3 3`. I did not run the old version, so t
 - Use a pointer when "absent" is meaningful (`*string` can be nil, `string` cannot).
 - Otherwise prefer plain values: they are simpler and need no nil checks.
 
-## A few things to watch
+## Where pointers bite
 
 - Don't mix value and pointer receivers on one type; pick one.
 - Check pointers for nil before dereferencing when they can be absent.
@@ -157,4 +158,4 @@ The old behavior would have printed `3 3 3`. I did not run the old version, so t
 
 ## What's next
 
-Next we look at packages and modules: how to structure a Go project into packages and manage dependencies with `go.mod`.
+"Packages and modules: structuring a Go project": so far every example fit in one file, and that post shows how to split a Go project into packages and manage dependencies with `go.mod`.

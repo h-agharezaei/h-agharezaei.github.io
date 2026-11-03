@@ -3,13 +3,14 @@ date = '2027-05-13T10:00:00+03:30'
 draft = false
 title = 'Command-line tools and scripts with Python'
 description = 'Python command-line tools: argparse subcommands, exit codes, pipes and BrokenPipeError, subprocess safety, Ctrl-C, Typer, PEP 723 scripts and tests.'
+contentType = 'tutorial'
 categories = ["Python"]
 series = ["Python"]
 tags = ["python", "cli", "argparse", "typer", "scripts"]
 cover = { image = "/images/covers/py-cli-scripts.png", alt = "Command-line tools and scripts with Python", hiddenInSingle = true }
 +++
 
-In the [previous post](/posts/py-packaging-publishing/) we packaged a project and met the console-script entry point. Here we write the program behind such an entry point. I also built a Go version in [a command-line tool in Go](/posts/go-cli-tool/), and the process side relies on [processes and signals](/posts/linux-processes-signals/).
+`python3 emit.py | head -2` printed two numbers and then a `BrokenPipeError` traceback. Details like that, plus signals and subprocess quoting, are what separate a script from a tool. Here we write the program behind the console-script entry point from [the previous post](/posts/py-packaging-publishing/). I also built a Go version in [a command-line tool in Go](/posts/go-cli-tool/), and the process side relies on [processes and signals](/posts/linux-processes-signals/).
 
 > Python 3.14.0 and uv 0.10.9, in a throwaway directory. Typer 0.20.0 (with Click 8.5.0) lived in a venv I deleted afterwards. The load on this machine was high, so there are no timings. The demo is a local example.
 
@@ -133,7 +134,7 @@ For tests, call `main(argv)` with pytest's `capsys` ([testing with pytest](/post
 
 In Go a CLI compiles to one binary that needs no interpreter. Go's `flag` package ships with the standard library too. A Python tool needs an interpreter and its dependencies on the target machine, unless packaged as in the previous post.
 
-## A few things to watch
+## CLI traps
 
 - Return ints from `main()`, and send errors to stderr.
 - Never `shell=True` with user-controlled text.
@@ -146,4 +147,4 @@ Make `--limit` read its default from the `--config` file, and test it with `caps
 
 ## What's next
 
-The next post is "Small data processing with csv and sqlite3".
+Next: "Small data processing with csv and sqlite3", because many real scripts end up reading a CSV someone sent.

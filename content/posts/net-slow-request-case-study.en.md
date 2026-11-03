@@ -3,13 +3,14 @@ date = '2027-04-23T10:00:00+03:30'
 draft = false
 title = 'Case study: why is this request slow'
 description = 'Why is this request slow: a Go httptrace phase breakdown of four mystery requests on loopback, plus curl timings and a layered checklist.'
+contentType = 'analysis'
 categories = ["Networking"]
 series = ["Networking"]
 tags = ["networking", "latency", "troubleshooting", "httptrace", "curl", "case-study"]
 cover = { image = "/images/covers/net-slow-request-case-study.png", alt = "Case study: why is this request slow", hiddenInSingle = true }
 +++
 
-In [the previous post](/posts/net-troubleshooting-curl-traceroute/) we built a toolbox. This last post of the series uses it on one question every backend engineer gets: "this request is slow, why?" The trick is to stop looking at the total and split it into phases: name lookup, {{< term "tcp" "TCP" >}} connect, {{< term "tls" "TLS" >}} handshake, waiting for the first byte ({{< term "ttfb" "TTFB" >}}), body download. See also [the TCP/IP model](/posts/net-tcp-ip-model/) and [DNS in practice](/posts/net-dns-in-practice/).
+"This request is slow, why?" Every backend engineer gets that question, and the total time alone never answers it. Here I use the toolbox from [the previous post](/posts/net-troubleshooting-curl-traceroute/) on it. The trick is to stop looking at the total and split it into phases: name lookup, {{< term "tcp" "TCP" >}} connect, {{< term "tls" "TLS" >}} handshake, waiting for the first byte ({{< term "ttfb" "TTFB" >}}), body download. See also [the TCP/IP model](/posts/net-tcp-ip-model/) and [DNS in practice](/posts/net-dns-in-practice/).
 
 > Privacy: everything ran on `127.0.0.1` with a self-signed certificate for `localhost` (the client skips verification, fine only for this local demo). The machine was very busy (load average above 20), so numbers are rounded to 50 ms: the injected delays (300-400 ms) dominate. I did not test real DNS, real ISP latency, packet loss or packet captures.
 
@@ -89,15 +90,11 @@ Nothing is slow on the wire; requests queue for the {{< term "connection-pool" "
 | 7 | body | body | bytes or trickle? |
 | 8 | client again | after body | parsing? |
 
-## A few things to watch
+## Lessons from the four requests
 
 - Measure the phases of one request before guessing; the total hides the culprit.
 - A big body and a trickling body both show a long download; check the bytes.
 - Client-only numbers cannot separate a slow handshake from an accept stall.
-
-## Exercise
-
-Add a server flag that closes the connection after the headers. What error does the client report? Then add a retry and decide how you would notice the hidden second attempt.
 
 ## What's next
 

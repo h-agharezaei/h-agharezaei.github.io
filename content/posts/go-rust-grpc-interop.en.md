@@ -3,13 +3,14 @@ date = '2027-02-06T10:00:00+03:30'
 draft = false
 title = 'Go and Rust talking over gRPC'
 description = 'Go and Rust over gRPC: one .proto file, a Go server and a Rust tonic server, each called by the other, with optional fields, deadlines and streaming.'
+contentType = 'tutorial'
 categories = ["Go", "Rust"]
 series = ["Go + Rust"]
 tags = ["go", "rust", "grpc", "protobuf", "interop", "tonic"]
 cover = { image = "/images/covers/go-rust-grpc-interop.png", alt = "Go and Rust talking over gRPC", hiddenInSingle = true }
 +++
 
-[The last post in this series](/posts/go-vs-rust-when-to-use/) compared the two languages. This one makes them work together, which is where gRPC is really useful: the contract is a `.proto` file, so the language behind each end does not matter. We take the orders service from [the Go gRPC post](/posts/go-grpc-service/), unchanged (same proto, same Go server and client), and add Rust on both sides: a client that calls the Go server, and a server that the Go client calls. The Rust side uses [async and Tokio](/posts/rust-async-tokio/); the handlers will look familiar if you read the [axum post](/posts/rust-http-axum-api/) and the [thiserror post](/posts/rust-thiserror-anyhow/).
+When Go and Rust services must call each other, gRPC makes it simple: the contract is a `.proto` file, so the language behind each end does not matter. After [comparing the two languages](/posts/go-vs-rust-when-to-use/), this post makes them work together. We take the orders service from [the Go gRPC post](/posts/go-grpc-service/), unchanged (same proto, same Go server and client), and add Rust on both sides: a client that calls the Go server, and a server that the Go client calls. The Rust side uses [async and Tokio](/posts/rust-async-tokio/); the handlers will look familiar if you read the [axum post](/posts/rust-http-axum-api/) and the [thiserror post](/posts/rust-thiserror-anyhow/).
 
 > Go 1.26, Rust 1.90, macOS arm64, grpc-go v1.84.0, protoc 33.4, protoc-gen-go v1.36.11, protoc-gen-go-grpc 1.6.1, tonic 0.14.6, prost 0.14.4, tokio 1.54.1, protox 0.10.0. Everything below was run locally on one machine.
 
@@ -124,7 +125,7 @@ My plan was a `tokio::select!` on a cancellation signal, but tonic gives no such
 
 The Rust client has `Request::set_timeout`. Against the Go server the slow call returned `Cancelled | Timeout expired`, not `DeadlineExceeded`: the tonic client maps its own timeout to `Cancelled`. Check that mapping before alerting on codes.
 
-## A few things to watch
+## Cross-language gotchas
 
 - Keep one `.proto` and regenerate both sides in CI; copied proto files drift.
 - `optional` tells you presence, not meaning. Document the meaning of empty values.
@@ -134,4 +135,4 @@ The Rust client has `Request::set_timeout`. Against the Go server the slow call 
 
 ## What's next
 
-The Rust series continues with trait objects and `dyn`, which is how Rust does the runtime polymorphism we got for free from Go interfaces.
+The Rust series continues with Trait objects and dyn in Rust: that is how Rust does the runtime polymorphism we got for free from Go interfaces.

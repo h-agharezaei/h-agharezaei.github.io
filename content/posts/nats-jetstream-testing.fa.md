@@ -3,13 +3,14 @@ date = '2027-01-17T10:00:00+03:30'
 draft = false
 title = 'تست سرویس‌های JetStream با nats-server توکار'
 description = 'تست Consumerهای JetStream با go test ساده: یک nats-server توکار برای هر تست، بدون sleep، با BackOff کوتاه، برای retry، DLQ و idempotency.'
+contentType = 'tutorial'
 categories = ["Go"]
 series = ["NATS JetStream"]
 tags = ["go", "nats", "jetstream", "testing", "messaging"]
 cover = { image = "/images/covers/nats-jetstream-testing.fa.png", alt = "تست سرویس‌های JetStream با nats-server توکار", hiddenInSingle = true }
 +++
 
-[مقاله‌ی قبل](/fa/posts/nats-jetstream-observability/) درباره‌ی این بود که در production چطور ببینیم یک سرویس JetStream چه می‌کند. این مقاله درباره‌ی دیدن همین رفتار قبل از production است. در مقاله‌های اخیر چند رفتار را توضیح دادیم: [retry و dead-letter queue](/fa/posts/nats-jetstream-retry-dlq/) و [idempotency](/fa/posts/nats-jetstream-idempotency/). هر کدام را با یک برنامه‌ی موقت امتحان کردیم و خروجی را با چشم خواندیم. حالا همان بررسی‌ها را با [`go test`](/fa/posts/go-testing-basics/) به تست واقعی تبدیل می‌کنیم، بدون Docker و بدون سرور بیرونی، تا اگر کسی رفتار را خراب کرد، تست بلند شکست بخورد.
+رفتارهای JetStream در این سری، از [retry و dead-letter queue](/fa/posts/nats-jetstream-retry-dlq/) تا [idempotency](/fa/posts/nats-jetstream-idempotency/)، با برنامه‌های موقت امتحان شدند و خروجی‌شان را با چشم خواندیم؛ این فقط نشان می‌دهد یک بار کار کرده‌اند. [مقاله‌ی قبل](/fa/posts/nats-jetstream-observability/) درباره‌ی دیدن سرویس در production بود؛ اینجا همان بررسی‌ها را با [`go test`](/fa/posts/go-testing-basics/) به تست واقعی تبدیل می‌کنیم، بدون Docker و بدون سرور بیرونی، تا اگر کسی رفتار را خراب کرد، تست بلند شکست بخورد.
 
 > همه‌چیز با Go 1.26، `nats-server` نسخه‌ی v2.15.1 و `nats.go` نسخه‌ی v1.54.0 اجرا شده و خروجی‌ها از ماشین خودم است.
 
@@ -141,7 +142,7 @@ FAIL	jstest/worker	1.083s
 
 این همان باگ اعمال دوباره در مقاله‌ی idempotency است که حالا در حدود یک ثانیه گرفته می‌شود.
 
-## چند نکته‌ی مهم
+## دام‌های تست JetStream
 
 - بعد از subscribe به advisory حتماً `nc.Flush()` بزنید، همان‌طور که `RunDLQ` می‌زند؛ وگرنه تست ممکن است پیام را قبل از ثبت subscription در سرور publish کند.
 - `ReadyForConnections` باید قبل از اتصال باشد و ترتیب `Cleanup` مهم است: اول Worker را متوقف کنید، بعد connection و سرور را ببندید.
@@ -151,4 +152,4 @@ FAIL	jstest/worker	1.083s
 
 ## قدم بعدی
 
-مقاله‌ی بعد: KV و Object Store در NATS، جایی که JetStream به یک key-value store و یک ذخیره‌گاه blob تبدیل می‌شود.
+«KV و Object Store در NATS» با همین سرور توکار، JetStream را در نقش key-value store و ذخیره‌گاه blob نشان می‌دهد.

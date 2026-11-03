@@ -3,13 +3,14 @@ date = '2026-11-13T10:00:00+03:30'
 draft = false
 title = 'Hooks and clean commit messages'
 description = 'Git hooks in practice: pre-commit, commit-msg and pre-push scripts, sharing them with core.hooksPath, and writing clean commit messages with fixup.'
+contentType = 'tutorial'
 categories = ["Git"]
 series = ["Git"]
 tags = ["git", "hooks", "commit-messages", "beginner"]
 cover = { image = "/images/covers/git-hooks-commit-hygiene.png", alt = "Hooks and clean commit messages", hiddenInSingle = true }
 +++
 
-In the [previous post](/posts/git-bisect/) we hunted a bug through history with `git bisect`. That only works well when history is readable: small commits with messages that say why. This post is about keeping it that way automatically with {{< term "git-hook" "hooks" >}}, plus a few habits for the messages themselves.
+Hunting a bug with [`git bisect`](/posts/git-bisect/) only works well when history is readable: small commits with messages that say why. Good intentions do not keep it that way. A {{< term "git-hook" "hook" >}}, a script Git runs on an event that stops the operation when it exits non-zero, can do it automatically; the rest is a few habits for the messages themselves.
 
 > Everything below ran in a local demo repo with Git 2.39 and Python 3. Outputs are copied from those runs.
 
@@ -152,7 +153,7 @@ be3de2d feat: add greet
 
 The fixup line is gone and the fix lives inside `feat: add greet`. The tree must be clean first; my first attempt failed with "Your index contains uncommitted changes". Rewriting history is only safe for commits you have not shared.
 
-## A few things to watch
+## Where hooks trip you up
 
 - Hooks in `.git/hooks` are local; use `core.hooksPath` with a tracked directory to share them.
 - Make the script executable (`chmod +x`), otherwise Git ignores it.
@@ -166,4 +167,4 @@ In a scratch repo, add a `commit-msg` hook in `.githooks/` that rejects subjects
 
 ## What's next
 
-The next post is "Submodules, subtrees and worktrees".
+The next post is "Submodules, subtrees and worktrees", for when your repository needs another repository or you want two branches on disk at once.

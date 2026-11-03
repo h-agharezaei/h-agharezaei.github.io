@@ -3,13 +3,14 @@ date = '2027-03-04T10:00:00+03:30'
 draft = false
 title = 'Observability در Rust با tracing'
 description = 'رویداد و span ساخت‌یافته، EnvFilter، خروجی JSON و تله‌ی گم شدن span در tokio::spawn: چطور crate به نام tracing سرویس async را قابل عیب‌یابی می‌کند.'
+contentType = 'tutorial'
 categories = ["Rust"]
 series = ["Rust"]
 tags = ["rust", "tracing", "observability", "async", "logging"]
 cover = { image = "/images/covers/rust-tracing-observability.fa.png", alt = "Observability در Rust با tracing", hiddenInSingle = true }
 +++
 
-[مقاله‌ی قبل](/fa/posts/rust-pin-future-internals/) درون async را باز کرد. حالا سؤال عملی این است: وقتی سرویس هزاران task هم‌زمان دارد، چطور ببینیم برای یک درخواست مشخص چه اتفاقی افتاده؟ در این مقاله روی کدی شبیه [async/await و Tokio در Rust](/fa/posts/rust-async-tokio/) از crate به نام `tracing` استفاده می‌کنیم؛ همین ایده‌ها برای سرویسی مثل [ساخت API با Axum در Rust](/fa/posts/rust-http-axum-api/) هم صدق می‌کند. آخر مقاله آن را با `slog` در [کانفیگ، لاگ ساخت‌یافته و خطا در Go](/fa/posts/go-config-logging-errors/) مقایسه می‌کنم.
+سه task که با `println!` چاپ می‌کنند کافی است تا رشته از دستتان در برود: کدام `done` مال کدام سفارش است؟ حالا سرویسی با هزاران task هم‌زمان را تصور کنید که باید بگویید برای یک درخواست مشخص چه اتفاقی افتاد. پس از [درون async](/fa/posts/rust-pin-future-internals/)، اینجا روی کدی شبیه [async/await و Tokio در Rust](/fa/posts/rust-async-tokio/) از crate به نام `tracing` استفاده می‌کنیم؛ همین ایده‌ها برای سرویسی مثل [ساخت API با Axum در Rust](/fa/posts/rust-http-axum-api/) هم صدق می‌کند. آخر مقاله آن را با `slog` در [کانفیگ، لاگ ساخت‌یافته و خطا در Go](/fa/posts/go-config-logging-errors/) مقایسه می‌کنم.
 
 > Rust 1.90 با edition 2024، نسخه‌های `tracing 0.1.44`، `tracing-subscriber 0.3.23` (با featureهای `env-filter` و `json`) و `tokio 1.54.1`. همه‌ی خروجی‌ها از اجرای واقعی کپی شده‌اند (رنگ با `NO_COLOR=1` خاموش بود).
 
@@ -157,7 +158,7 @@ busy زمانی است که future در حال poll شدن بوده و idle زم
 
 مقایسه با Go: `log/slog` لاگ ساخت‌یافته‌ی key-value و `With` برای چسباندن فیلد به logger می‌دهد، اما مفهوم span ندارد؛ برای ربط دادن خط‌ها بین goroutineها باید خودتان logger یا context را پاس بدهید. در `tracing` حامل این زمینه خود span است.
 
-## چند نکته برای دقت
+## تله‌های tracing در کد async
 
 - `tokio::spawn` span را گم می‌کند؛ از `.instrument(Span::current())` استفاده کنید.
 - `#[instrument]` پیش‌فرض همه‌ی آرگومان‌ها را با `Debug` ثبت می‌کند؛ برای رازها و مقدارهای بزرگ `skip` بگذارید.
@@ -171,4 +172,4 @@ busy زمانی است که future در حال poll شدن بوده و idle زم
 
 ## قدم بعدی
 
-مقاله‌ی بعد درباره‌ی الگوی type-state و طراحی API در Rust است: کد کردن حالت‌های معتبر در type تا استفاده‌ی غلط اصلاً کامپایل نشود.
+«الگوی Type-State و طراحی API در Rust» یک قدم پیش از هر خط log می‌رود: کد کردن حالت‌های معتبر در type تا استفاده‌ی غلط اصلاً کامپایل نشود.

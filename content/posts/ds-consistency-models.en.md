@@ -3,13 +3,14 @@ date = '2027-04-25T10:00:00+03:30'
 draft = false
 title = 'Consistency models'
 description = 'Consistency models explained with a Go history checker: linearizable, sequential, read-your-writes and monotonic reads, tested on 1000 simulated histories.'
+contentType = 'tutorial'
 categories = ["Distributed"]
 series = ["Distributed Systems"]
 tags = ["distributed-systems", "consistency", "linearizability", "go", "replication"]
 cover = { image = "/images/covers/ds-consistency-models.png", alt = "Consistency models", hiddenInSingle = true }
 +++
 
-"Consistent" is the word I have misused most in design reviews. The previous post, [CAP and PACELC, correctly](/posts/ds-cap-pacelc/), argued that the C in CAP means one specific thing. This post is about the whole ladder of promises a store can make, and about how to **check** a promise instead of arguing about it. It builds on [why distributed systems are hard](/posts/ds-why-distributed-is-hard/) and on [replication lag in Postgres](/posts/db-replication-streaming/).
+"Consistent" is the word I have misused most in design reviews. The previous post, [CAP and PACELC, correctly](/posts/ds-cap-pacelc/), argued that the C in CAP means one specific thing. This post covers the whole ladder of promises a store can make, and how to **check** a promise instead of arguing about it. Background: [why distributed systems are hard](/posts/ds-why-distributed-is-hard/) and [replication lag in Postgres](/posts/db-replication-streaming/).
 
 > Honest labelling: everything here is Go 1.26 code in one process. The leader and followers are a **simulation** with seeded randomness and discrete ticks, not a network. Numbers are counts of histories, never timings. The checker itself is real and tested with `go test -race`.
 
@@ -60,7 +61,7 @@ B: both writes finished before the reads, so two readers cannot disagree on the 
 | {{< term "causal-consistency" "Causal" >}} | cause is seen before effect, unrelated writes may differ |
 | {{< term "eventual-consistency" "Eventual" >}} | replicas converge if writes stop |
 
-Read-your-writes and monotonic reads are session guarantees beside the ladder. Causal needs a way to track "happened before", which the next post (see the end) builds. I did not implement a causal checker.
+Read-your-writes and monotonic reads are session guarantees beside the ladder. Causal needs "happened before" tracking; I did not implement a causal checker.
 
 ## A leader and a lagging follower
 
@@ -81,7 +82,7 @@ But 271 histories are still not linearizable. Session guarantees say nothing abo
 
 I did not run them, but real checkers exist: Jepsen with Knossos, and Porcupine in Go, which record histories of real databases under faults. They solve my toy's problem at a scale where brute force fails. In my experience the best habit is to ask of every read path which of these properties it promises and what happens when it hits a replica. JetStream's replicated streams are in [JetStream in production](/posts/nats-jetstream-production/).
 
-## A few things to watch
+## Where consistency claims mislead
 
 - Eventual consistency says nothing about how stale; measure lag.
 - A session token needs a fallback (leader) when no replica is fresh enough.
@@ -94,4 +95,4 @@ Add a third property to the checker: "writes follow reads" (a write after a read
 
 ## What's next
 
-The next post is “Logical clocks: Lamport and vector clocks”.
+Next, “Logical clocks: Lamport and vector clocks”: the "happened before" tracking that causal consistency needs.

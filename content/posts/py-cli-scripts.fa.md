@@ -3,13 +3,14 @@ date = '2027-05-13T10:00:00+03:30'
 draft = false
 title = 'ابزار خط فرمان و اسکریپت‌نویسی با Python'
 description = 'ابزار خط فرمان با Python: زیردستور argparse، کد خروج، pipe و BrokenPipeError، subprocess امن، Ctrl-C، Typer، اسکریپت PEP 723 و تست.'
+contentType = 'tutorial'
 categories = ["Python"]
 series = ["Python"]
 tags = ["python", "cli", "argparse", "typer", "scripts"]
 cover = { image = "/images/covers/py-cli-scripts.fa.png", alt = "ابزار خط فرمان و اسکریپت‌نویسی با Python", hiddenInSingle = true }
 +++
 
-در [مقاله‌ی قبل](/fa/posts/py-packaging-publishing/) پروژه را بسته‌بندی کردیم و با entry point از نوع console-script آشنا شدیم. این‌جا خودِ برنامه‌ای را می‌نویسیم که پشت چنین entry point ای است. نسخه‌ی Go را در [ابزار خط فرمان در Go](/fa/posts/go-cli-tool/) ساخته بودم و بخش مربوط به پروسه به [پروسه‌ها و سیگنال‌ها](/fa/posts/linux-processes-signals/) تکیه دارد.
+`python3 emit.py | head -2` دو عدد و بعد traceback یک `BrokenPipeError` چاپ کرد. همین جزئیات، به‌علاوه‌ی سیگنال‌ها و quote کردن در subprocess، اسکریپت را از ابزار جدا می‌کند. این‌جا خودِ برنامه‌ای را می‌نویسیم که پشت entry point از نوع console-script در [پست قبل](/fa/posts/py-packaging-publishing/) قرار می‌گیرد. نسخه‌ی Go را در [ابزار خط فرمان در Go](/fa/posts/go-cli-tool/) ساخته بودم و بخش مربوط به پروسه به [پروسه‌ها و سیگنال‌ها](/fa/posts/linux-processes-signals/) تکیه دارد.
 
 > Python 3.14.0 و uv 0.10.9 در یک پوشه‌ی موقت. Typer 0.20.0 (با Click 8.5.0) در یک venv بود که بعداً پاکش کردم. بار این ماشین بالا بود، پس زمان‌سنجی ندارم. دمو یک نمونه‌ی محلی است.
 
@@ -133,7 +134,7 @@ def count(file: Optional[Path] = None, limit: int = 0,
 
 در Go یک CLI به یک باینری تبدیل می‌شود که مفسر نمی‌خواهد. بسته‌ی `flag` هم در کتابخانه‌ی استاندارد Go هست. ابزار Python روی ماشین مقصد به مفسر و وابستگی‌هایش نیاز دارد، مگر مثل مقاله‌ی قبل بسته‌بندی شود.
 
-## چند نکته‌ی مهم
+## دام‌های ابزار خط فرمان
 
 - از `main()` عدد برگردانید و خطاها را به stderr بنویسید.
 - با متن زیر کنترل کاربر هرگز `shell=True` نزنید.
@@ -146,4 +147,4 @@ def count(file: Optional[Path] = None, limit: int = 0,
 
 ## قدم بعدی
 
-مقاله‌ی بعد «پردازش داده‌ی کوچک با csv و sqlite3» است.
+قدم بعد: «پردازش داده‌ی کوچک با csv و sqlite3»، چون خیلی از اسکریپت‌های واقعی آخرش CSVای را می‌خوانند که کسی فرستاده.

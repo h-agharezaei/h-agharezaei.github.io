@@ -3,13 +3,14 @@ date = '2027-02-13T10:00:00+03:30'
 draft = false
 title = 'replication با دو instance واقعی'
 description = 'streaming replication در PostgreSQL با دو instance واقعی: راه‌اندازی، lag بر حسب بایت، توقف commit همگام، promote و اینکه replica بک‌آپ نیست.'
+contentType = 'tutorial'
 categories = ["Databases"]
 series = ["Databases"]
 tags = ["databases", "postgresql", "replication", "wal", "high-availability"]
 cover = { image = "/images/covers/db-replication-streaming.fa.png", alt = "replication با دو instance واقعی", hiddenInSingle = true }
 +++
 
-در [پست قبلی](/fa/posts/db-partitioning/) یک جدول بزرگ را داخل یک سرور تکه‌تکه کردیم. این پست جهت دیگر را می‌گیرد: نگه‌داشتن یک نسخه‌ی دوم از کل سرور. {{< term "replication" "Replication" >}} ظرفیت خواندن می‌دهد و یک standby که وقتی primary بمیرد می‌توانید promote کنید. پایه‌اش همان {{< term "wal" "WAL" >}} است که در [تراکنش و ACID](/fa/posts/db-transactions-acid/) دیدیم، و ردیف‌های مرده‌ای که در [MVCC و VACUUM](/fa/posts/db-mvcc-vacuum/) بود.
+روی primary ده ردیف را DELETE کردم و replica در همان poll اول آن‌ها را از دست داده بود. replica نسخه‌ی دوم کل سرور است، نه بک‌آپ، و این فرق را باید پیش از تکیه به آن دانست. [partitioning جدول‌ها](/fa/posts/db-partitioning/) یک جدول بزرگ را داخل یک سرور تکه‌تکه کرد؛ این پست جهت دیگر را می‌گیرد. {{< term "replication" "Replication" >}} ظرفیت خواندن می‌دهد و یک standby که وقتی primary بمیرد می‌توانید promote کنید. پایه‌اش همان {{< term "wal" "WAL" >}} است که در [تراکنش و ACID](/fa/posts/db-transactions-acid/) دیدیم، و ردیف‌های مرده‌ای که در [MVCC و VACUUM](/fa/posts/db-mvcc-vacuum/) بود.
 
 > همه‌چیز روی دو PostgreSQL 18.3 واقعی روی یک ماشین اجرا شد (پورت‌های 55713 و 55714، فقط loopback، بدون Docker). زمان‌سنجی نیست، فقط بایت و وضعیت. باینری‌های embedded فایل `pg_basebackup` نداشتند و تنها نسخه‌ی موجود روی این ماشین 17.5 است که با سرور 18.3 کار نمی‌کند. برای همین کپی را دستی ساختم: primary را خاموش کردم، data directory را کپی کردم و دو چیزی را که `pg_basebackup -R` می‌نویسد خودم نوشتم. روی سیستم زنده از `pg_basebackup -D replica -R -X stream` استفاده کنید؛ من آن را اجرا نکردم.
 
@@ -101,7 +102,7 @@ new primary: 39|on_new_primary  7|sync
 
 روی primary ۱۰ ردیف از `products` را DELETE کردم. replica در همان poll اول ۰ ردیف نشان داد. DELETE فقط یک رکورد WAL دیگر است، پس `UPDATE`، `DELETE` یا `DROP TABLE` اشتباه هم وفادارانه replicate می‌شود. نسخه‌های مرده‌ای که [VACUUM](/fa/posts/db-mvcc-vacuum/) هنوز نیاز دارد هم undo log قابل استفاده نیستند. برای بازیابی بک‌آپ واقعی لازم است.
 
-## چند نکته‌ی مهم
+## replication چه چیزی را حل نمی‌کند
 
 - replicaهای async عقب می‌مانند. نوشته‌ی خودتان را بدون چک‌کردن LSN یا استفاده از primary از آن‌ها نخوانید.
 - یک standby همگام، خرابی‌اش را به توقف نوشتن تبدیل می‌کند؛ چند کاندیدا بگذارید یا async را بپذیرید.

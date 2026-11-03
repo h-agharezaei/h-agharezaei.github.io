@@ -3,13 +3,14 @@ date = '2027-03-01T10:00:00+03:30'
 draft = false
 title = 'TLS and certificates with openssl'
 description = 'TLS and certificates with openssl on loopback: build a CA, sign a certificate with a SAN, read verification errors, TLS 1.2 vs 1.3, ALPN and mutual TLS.'
+contentType = 'tutorial'
 categories = ["Networking"]
 series = ["Networking"]
 tags = ["networking", "tls", "openssl", "certificates", "mtls", "security"]
 cover = { image = "/images/covers/net-tls-openssl.png", alt = "TLS and certificates with openssl", hiddenInSingle = true }
 +++
 
-In the previous post, [HTTP/1.1 by hand](/posts/net-http1-by-hand/), we typed HTTP requests over a plain socket, and anyone on the path could read them. {{< term "tls" "TLS" >}} fixes that: it encrypts the connection and proves who the server is. Most TLS pain is not cryptography, it is certificates and error messages. So we build the whole chain ourselves with `openssl`, break it on purpose, and read each error. It sits on top of [the TCP/IP model](/posts/net-tcp-ip-model/) and [TCP connections](/posts/net-tcp-handshake-states/).
+Most {{< term "tls" "TLS" >}} pain is not cryptography, it is certificates and error messages. TLS encrypts the connection and proves who the server is; without it, the requests from [HTTP/1.1 by hand](/posts/net-http1-by-hand/) cross a plain socket that anyone on the path can read. So we build the whole chain ourselves with `openssl`, break it on purpose, and read each error. It sits on top of [the TCP/IP model](/posts/net-tcp-ip-model/) and [TCP connections](/posts/net-tcp-handshake-states/).
 
 > Everything ran on `127.0.0.1` with throwaway files in a temp directory (`<tmp>`), so there is nothing personal in the output. I used Homebrew's `/opt/homebrew/bin/openssl` (OpenSSL 3.6.4); macOS's `/usr/bin/openssl` is LibreSSL 3.3.6 and has different options. The port is shown as `PORT`. No packet capture was possible (no root).
 
@@ -138,7 +139,7 @@ Note that in TLS 1.3 the client's handshake appears to finish and the rejection 
 
 Leaf, two intermediates, a root. Your system trusts the root; the server sends the rest. This chain can change at any time.
 
-## A few things to watch
+## Certificate mistakes to avoid
 
 - Always set a SAN, with `IP:` entries for IP addresses.
 - Never "fix" a verify error with `-k` or by skipping verification; add the CA instead.
@@ -152,4 +153,4 @@ Create a second server certificate whose SAN has only `DNS:demo.test`. Connect w
 
 ## What's next
 
-The next post is HTTP/2 and what changes. A later series covers TLS and x509 certificates in practice.
+Next is "HTTP/2 and what changes", the protocol ALPN picked above. A later series covers TLS and x509 certificates in practice.

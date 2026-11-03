@@ -3,13 +3,14 @@ date = '2027-03-09T10:00:00+03:30'
 draft = false
 title = 'Connection pooling and its failure modes'
 description = 'PostgreSQL connection pooling with a real max_connections limit and a pgxpool demo: waiting callers, leaked connections, idle in transaction and timeouts.'
+contentType = 'tutorial'
 categories = ["Databases"]
 series = ["Databases"]
 tags = ["databases", "postgresql", "connection-pooling", "pgxpool", "timeouts"]
 cover = { image = "/images/covers/db-connection-pooling.png", alt = "Connection pooling and its failure modes", hiddenInSingle = true }
 +++
 
-In the [previous post](/posts/db-backup-restore-pitr/) we made sure we can get data back. This post is about getting to the data at all. Every query needs a connection, and PostgreSQL gives each one its own server process, so the number is limited. A {{< term "connection-pool" "connection pool" >}} sits between your code and that limit. I used it in [Postgres with pgx and sqlc](/posts/go-postgres-pgx-sqlc/); here I break it on purpose. It also ties into [transactions and ACID](/posts/db-transactions-acid/) and [transactions in Go](/posts/go-transactions-patterns/).
+With `max_connections = 10`, the server refused the tenth connection: `sorry, too many clients already`. [Backup, restore and PITR](/posts/db-backup-restore-pitr/) made sure the data can come back; this post is about getting to the data at all. Every query needs a connection, and PostgreSQL gives each one its own server process, so the number is limited. A {{< term "connection-pool" "connection pool" >}} sits between your code and that limit. I used it in [Postgres with pgx and sqlc](/posts/go-postgres-pgx-sqlc/); here I break it on purpose. It also ties into [transactions and ACID](/posts/db-transactions-acid/) and [transactions in Go](/posts/go-transactions-patterns/).
 
 > Everything ran against a real PostgreSQL 18.3 on loopback with `max_connections = 10`, and a Go program with `pgxpool` (pgx v5.11.0). The machine was busy, so there are no timings, only counts and errors.
 
@@ -85,7 +86,7 @@ The first kills the connection, so the pool must discard it and open a new one. 
 
 I did not run {{< term "pgbouncer" "PgBouncer" >}} (it is not available here), so this is from its documentation, not from a run. An external pooler lets thousands of client connections share a few server connections. In session mode a client keeps a server connection for its whole session. In transaction mode it gets one only during a transaction, which packs connections much tighter, but session state (`SET`, session-level advisory locks) must not be relied on between transactions.
 
-## A few things to watch
+## The connection budget and its traps
 
 - Total pool sizes across all services must stay under `max_connections` minus reserved slots.
 - Always use a context with a deadline for `Acquire` and queries.

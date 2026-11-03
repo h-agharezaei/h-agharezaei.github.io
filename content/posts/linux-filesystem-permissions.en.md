@@ -3,13 +3,14 @@ date = '2027-03-27T10:00:00+03:30'
 draft = false
 title = 'The filesystem and permissions'
 description = 'Linux filesystem and permissions with real runs: inodes, hard and symbolic links, chmod, umask, directory bits and setuid, tested on macOS.'
+contentType = 'tutorial'
 categories = ["Linux"]
 series = ["Linux"]
 tags = ["linux", "filesystem", "permissions", "chmod", "umask", "inode"]
 cover = { image = "/images/covers/linux-filesystem-permissions.png", alt = "The filesystem and permissions", hiddenInSingle = true }
 +++
 
-After [the practical shell](/posts/linux-shell-practical/), the next thing every script touches is files, and most "permission denied" surprises come from a few rules. This post goes through them with small runs.
+Most "permission denied" surprises come from a few rules: a directory needs `x` to be entered, and creating or deleting a file needs `w` and `x` on the directory, not on the file. After [the practical shell](/posts/linux-shell-practical/) come files; this post goes through those rules with small runs.
 
 > Honest disclaimer: everything here ran on **macOS** in a throwaway directory (BSD userland, no Linux kernel, no sudo). I did not run anything on Linux. `/proc` and `/sys` (kernel state shown as files) exist only on Linux, so I did not touch them; Linux ACLs (`getfacl`) were not run either. Usernames, ids and home paths are redacted.
 
@@ -102,7 +103,7 @@ On my lab (`hard.txt` set to 666, `t` to 1777) it printed `ok(sticky)  ./t` and 
 
 The `@` in `ls -l` means extended attributes. `xattr` showed `com.apple.provenance` on my files. macOS also has ACLs shown with `ls -le` and a quarantine flag on downloads; I did not explore them. The Linux counterpart is `getfacl`/`setfacl`, which I did not run.
 
-## A few things to watch
+## Permission mistakes
 
 - Hard links cannot cross filesystems; symlinks can dangle.
 - A directory needs `x` to be entered, `w`+`x` to change.
@@ -116,4 +117,4 @@ Make a directory with a file, then try every mode from 000 to 700 on the directo
 
 ## What's next
 
-The next post is “Processes and signals”.
+Next: “Processes and signals”, because a script killed mid-run can leave its temp files behind.

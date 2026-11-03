@@ -3,13 +3,14 @@ date = '2027-03-15T10:00:00+03:30'
 draft = false
 title = 'Input validation with Zod'
 description = 'Input validation with Zod in Node.js: parse vs safeParse, real error shapes, coerce, strict, refine, transform and a 400 response at the HTTP boundary.'
+contentType = 'tutorial'
 categories = ["Node.js"]
 series = ["Node.js"]
 tags = ["nodejs", "zod", "validation", "security", "http"]
 cover = { image = "/images/covers/node-validation-zod.png", alt = "Input validation with Zod", hiddenInSingle = true }
 +++
 
-In the previous post, [NATS JetStream from Node.js](/posts/node-nats-jetstream/), I said the payload is still untrusted. The same is true of every HTTP body from [An HTTP server with node:http](/posts/node-http-server/). Everything that crosses a {{< term "trust-boundary" "trust boundary" >}} should go through {{< term "schema-validation" "schema validation" >}} once, at the edge; the code behind it then works with data of a known shape. Here I do that with Zod. It also closes the door on [mass assignment](/posts/sec-owasp-top10-in-code/) and similar tricks from [Injection and XSS](/posts/sec-injection-xss/).
+One Zod `parse` turned `qty: '2'` into the number 2 and silently dropped an `admin: true` key nobody asked for. That is what a schema at the edge is for: the payload from [NATS JetStream from Node.js](/posts/node-nats-jetstream/) is still untrusted, and so is every HTTP body from [An HTTP server with node:http](/posts/node-http-server/). Everything that crosses a {{< term "trust-boundary" "trust boundary" >}} should go through {{< term "schema-validation" "schema validation" >}} once, at the edge; the code behind it then works with data of a known shape. Here I do that with Zod. It also closes the door on [mass assignment](/posts/sec-owasp-top10-in-code/) and similar tricks from [Injection and XSS](/posts/sec-injection-xss/).
 
 > Node v20.13.1, `zod` 4.1.5 (major version 4). Local example scripts on 127.0.0.1, real outputs, no timings. `typescript` was not installed, so I did not run any `z.infer` type check.
 
@@ -97,7 +98,7 @@ Broken JSON is a separate case: `JSON.parse` fails before Zod sees anything, so 
 
 In Go, `encoding/json` ignores unknown fields by default unless you call `DisallowUnknownFields` on the decoder, and struct tags such as `json:"qty"` only name fields, they do not check ranges (see [Files, io.Reader/Writer and JSON in Go](/posts/go-file-io-json/)). Zod does shape and rules in one place.
 
-## A few things to watch
+## What validation does not cover
 
 - Validate at the boundary once, and pass the parsed value on, not the raw body.
 - `z.coerce.number()` turned `''` into `0` in my run and `'abc'` failed; coerce only where you really accept strings.
@@ -111,4 +112,4 @@ Add a `PATCH /orders` schema from `Order.partial()` and make unknown keys a 400.
 
 ## What's next
 
-The next post is "Worker threads and cluster in Node.js".
+"Worker threads and cluster in Node.js": valid input can still be expensive, and one slow synchronous function blocks every request.

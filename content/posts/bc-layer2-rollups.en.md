@@ -3,13 +3,14 @@ date = '2026-11-29T18:00:00+03:30'
 draft = false
 title = 'Layer 2 and rollups: optimistic and ZK'
 description = 'Rollups in Go and Solidity: a toy optimistic rollup with a Merkle state root, a fraud proof that slashes a lying sequencer, and measured L1 gas.'
+contentType = 'tutorial'
 categories = ["Blockchain"]
 series = ["Blockchain"]
 tags = ["blockchain", "go", "solidity", "layer-2", "rollup", "foundry"]
 cover = { image = "/images/covers/bc-layer2-rollups.png", alt = "Layer 2 and rollups: optimistic and ZK", hiddenInSingle = true }
 +++
 
-The previous post, [Proof of stake, BFT and finality](/posts/bc-proof-of-stake-bft/), made blocks final, not bigger. Every node re-executes every transaction and a block has a gas limit, so an L1 like Ethereum has limited throughput however fast your server is.
+Every node re-executes every transaction and a block has a gas limit, so an L1 like Ethereum has limited throughput however fast your server is. [Proof of stake, BFT and finality](/posts/bc-proof-of-stake-bft/) made blocks final, not bigger.
 
 A {{< term "layer-2" "Layer 2" >}} moves execution elsewhere and keeps L1 as judge. The common design is a {{< term "rollup" "rollup" >}}: execute transactions off-chain, then post the transaction data and the resulting state commitment to an L1 contract. I built a toy one from earlier pieces: the tree from [Merkle trees and inclusion proofs](/posts/bc-merkle-trees-proofs/), the token from [Tokens: ERC-20 and ERC-721](/posts/bc-erc20-erc721/), logs as in [Events and building an indexer](/posts/bc-event-indexer-go/).
 
@@ -94,7 +95,7 @@ A {{< term "zk-rollup" "ZK rollup" >}} posts a {{< term "validity-proof" "validi
 
 Leaving a rollup means proving your L2 balance on L1 against a root. In an optimistic rollup that root must survive the window first; as far as I know, major ones use about seven days. In a ZK rollup you wait for the next verified proof.
 
-## A few things to watch
+## Where the toy model breaks
 
 - My transactions are unsigned, so an honest re-execution cannot stop a sequencer inventing transfers. Real rollups verify user signatures during execution.
 - Optimistic security needs at least one honest verifier online during every window.
@@ -107,4 +108,4 @@ Leaving a rollup means proving your L2 balance on L1 against a root. In an optim
 
 ## What's next
 
-Next post: **Bridges and cross-chain messaging**.
+**Bridges and cross-chain messaging**: L1 can judge a rollup because it holds the data; two independent chains cannot.

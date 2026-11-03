@@ -3,13 +3,14 @@ date = '2027-05-26T10:00:00+03:30'
 draft = false
 title = 'CQRS و event sourcing'
 description = 'CQRS و event sourcing با Go روی Postgres واقعی: optimistic concurrency، snapshot، upcasting، projection عقب‌مانده، replay و زمان‌هایی که نباید استفاده کرد.'
+contentType = 'tutorial'
 categories = ["Distributed"]
 series = ["Distributed Systems"]
 tags = ["distributed-systems", "cqrs", "event-sourcing", "postgres", "go"]
 cover = { image = "/images/covers/ds-cqrs-event-sourcing.fa.png", alt = "CQRS و event sourcing", hiddenInSingle = true }
 +++
 
-[مقاله‌ی قبل](/fa/posts/ds-saga-vs-2pc/) چند سرویس را با saga هماهنگ کرد. این مقاله چیزی را عوض می‌کند که یک سرویس ذخیره می‌کند: نه وضعیت فعلی، بلکه واقعیت‌هایی که به آن رسیدند. این همان {{< term "event-sourcing" "event sourcing" >}} است و {{< term "cqrs" "CQRS" >}} همراه همیشگی آن. همچنین ببینید [تراکنش و ACID](/fa/posts/db-transactions-acid/)، [مدل‌های consistency](/fa/posts/ds-consistency-models/)، [الگوی outbox](/fa/posts/go-outbox-pattern-nats/) و [idempotency در JetStream](/fa/posts/nats-jetstream-idempotency/).
+اگر سرویس به‌جای وضعیت فعلی، واقعیت‌هایی را ذخیره کند که به آن رسیدند، سؤالی مثل «موجودی این حساب در ۱ مارس ۲۰۲۷ چقدر بود؟» بدون جدول audit جواب دارد. این همان {{< term "event-sourcing" "event sourcing" >}} است و {{< term "cqrs" "CQRS" >}} همراه همیشگی آن. [مقاله‌ی قبل](/fa/posts/ds-saga-vs-2pc/) چند سرویس را با saga هماهنگ کرد؛ همچنین ببینید [تراکنش و ACID](/fa/posts/db-transactions-acid/)، [مدل‌های consistency](/fa/posts/ds-consistency-models/)، [الگوی outbox](/fa/posts/go-outbox-pattern-nats/) و [idempotency در JetStream](/fa/posts/nats-jetstream-idempotency/).
 
 > صادقانه: یک برنامه‌ی Go 1.26 روی یک ماشین با PostgreSQL 18.3 واقعی روی loopback. تصادف seed ثابت دارد، شمارش نشان می‌دهم نه زمان؛ `go test -race` سبز است. «زمان‌بندی poller» و «crash» در بخش آخر **شبیه‌سازی** است.
 
@@ -37,7 +38,7 @@ snapshot/500: version=10123 balance=989607 replayed=123 events
 state at 2027-03-01: version=1416 balance=138314 (replayed 1416 events)
 ```
 
-وضعیت یکسان، ۱۲۳ رویداد به‌جای ۱۰٬۱۲۳. snapshot کش است نه حقیقت. خط آخر query زمانی است: تا یک version replay کنید (که از `created_at` پیدا شد؛ در این demo هر version یک ساعت است) و گذشته را دارید، بدون جدول audit. رویدادها audit trail را هم رایگان می‌دهند.
+وضعیت یکسان، ۱۲۳ رویداد به‌جای ۱۰٬۱۲۳. snapshot کش است نه حقیقت. خط آخر query زمانی است: تا یک version replay کنید (که از `created_at` پیدا شد؛ در این demo هر version یک ساعت است) و گذشته را دارید، بدون جدول audit.
 
 شکل رویدادها عوض می‌شود. نسخه‌ی ۱ مقدار `{"amount": 5}` (دلار) ذخیره می‌کرد؛ نسخه‌ی ۲ `amount_cents` و `currency`. رویداد قدیمی را هرگز ویرایش نکنید: هنگام خواندن {{< term "upcasting" "upcast" >}} کنید. سطرهای قدیمی که با SQL خام گذاشتم:
 
@@ -84,7 +85,7 @@ events=10435 deliveries=13885 distinct=10435 simulated-crashes=69
 
 به نظر من بیشتر برنامه‌های CRUD نباید: هزینه‌اش پیچیدگی، eventual consistency و upcasterهای همیشگی است. یک جدول معمولی به‌علاوه‌ی جدول audit تاریخچه را با ابزار بسیار کمتر می‌دهد؛ رویداد وقتی می‌ارزد که تاریخچه خودِ دامنه باشد (دفتر حساب، سفارش با چرخه‌ی پیچیده). log تغییرناپذیر با درخواست حذف داده هم تعارض دارد. یک پاسخ شناخته‌شده {{< term "crypto-shredding" "crypto-shredding" >}} است: فیلدهای شخصی را برای هر فرد رمز کنید و کلید را نابود کنید. پیاده‌اش نکردم. همچنین position از نوع `bigserial` ممکن است در تراکنش‌های همزمان بی‌ترتیب دیده شود و poller رویدادی را رد کند؛ بازتولیدش نکردم.
 
-## چند نکته‌ی مهم
+## دام‌های رایج
 
 - command روی وضعیت اعتبارسنجی و رویداد صادر می‌کند؛ handler نباید مستقیم state بنویسد.
 - snapshot و projection دورریختنی‌اند؛ حقیقت رویدادهاست.
@@ -97,4 +98,4 @@ events=10435 deliveries=13885 distinct=10435 simulated-crashes=69
 
 ## قدم بعدی
 
-مقاله‌ی بعد «پیام‌رسانی و معماری رویدادمحور» است.
+«پیام‌رسانی و معماری رویدادمحور»: آنجا رویدادها بین سرویس‌ها جابه‌جا می‌شوند و تکرار و ترتیب مسئله‌ی معماری می‌شوند.

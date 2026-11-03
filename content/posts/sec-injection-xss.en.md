@@ -3,13 +3,14 @@ date = '2027-03-07T10:00:00+03:30'
 draft = false
 title = 'Injection and XSS'
 description = 'SQL injection, command injection, path traversal and XSS in a tiny Go demo on localhost: the vulnerable code, the real behavior and the fix for each.'
+contentType = 'tutorial'
 categories = ["Security"]
 series = ["Software Security"]
 tags = ["security", "injection", "xss", "sql-injection", "appsec", "go"]
 cover = { image = "/images/covers/sec-injection-xss.png", alt = "Injection and XSS", hiddenInSingle = true }
 +++
 
-The previous post, [The OWASP Top 10 in real code](/posts/sec-owasp-top10-in-code/), listed the categories. This one goes deep on the family behind most of them: untrusted input that is mixed into something an interpreter reads. The interpreter can be Postgres, a shell, the filesystem or a browser, and the bug is always the same: data crosses a {{< term "trust-boundary" "trust boundary" >}} and is treated as code. The subject is again the orders-style API from [Building an API with net/http in Go](/posts/go-http-api-stdlib/), now with [pgx](/posts/go-postgres-pgx-sqlc/) behind it.
+A query built with `fmt.Sprintf` returns every row when the product name is `' OR '1'='1`. Shells, filesystems and browsers fail alike: untrusted input mixed into something an interpreter reads crosses a {{< term "trust-boundary" "trust boundary" >}} and is treated as code. [The OWASP Top 10 in real code](/posts/sec-owasp-top10-in-code/) only listed this family; here each gets a demo on the orders-style API from [Building an API with net/http in Go](/posts/go-http-api-stdlib/), with [pgx](/posts/go-postgres-pgx-sqlc/) behind it.
 
 > Defensive only. Everything below is one tiny Go program of mine on `127.0.0.1`, against a real PostgreSQL 18.3 with two throwaway tables (`items`, `secrets`), run with Go 1.26. No third-party target. This program does not continue the previous post's demo; it is a separate one. I did not test anything in a browser.
 
@@ -141,7 +142,7 @@ A {{< term "content-security-policy" "Content Security Policy" >}} restricts scr
 
 On the Node side, I ran nothing. Template literals (`` `<h1>${name}</h1>` ``) do no escaping at all, so they behave like `Fprintf`. Use a template engine that escapes by default, and parameters (`$1`) in `pg`, as in [Postgres from Node.js with pg](/posts/node-postgres-pg/) and [an HTTP server with node:http](/posts/node-http-server/).
 
-## A few things to watch
+## Traps in the defence
 
 - Blocklists ("remove quotes") fail; separate data from code instead of cleaning it.
 - Never put user input into `sh -c`; prefer a library over spawning programs.
@@ -155,4 +156,4 @@ Add a `/v1/search` endpoint that uses `LIKE '%` + input + `%'`. Break it, then f
 
 ## What's next
 
-The next post is Storing passwords safely: argon2 and bcrypt.
+“Storing passwords safely: argon2 and bcrypt” assumes an injection already worked and someone has read your `users` table.

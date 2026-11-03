@@ -3,13 +3,14 @@ date = '2027-04-26T10:00:00+03:30'
 draft = false
 title = 'cgroup و namespace: پایه‌ی کانتینر'
 description = 'cgroup و namespace در Linux از روی man pageها: کانتینر یعنی پروسه‌ای با دید و منبع محدود، همراه با دو برنامه‌ی Go که فقط کامپایل شدند.'
+contentType = 'tutorial'
 categories = ["Linux"]
 series = ["Linux"]
 tags = ["linux", "cgroups", "namespaces", "containers", "go", "macos"]
 cover = { image = "/images/covers/linux-cgroups-namespaces.fa.png", alt = "cgroup و namespace: پایه‌ی کانتینر", hiddenInSingle = true }
 +++
 
-این را روی یک مک نوشتم؛ هیچ‌چیز اینجا روی Linux اجرا نشده است. این ششمین پست سری Linux است، بعد از [systemd: واحدها و timerها](/fa/posts/linux-systemd-units-timers/). پرسش این است که کانتینر واقعاً چیست. جواب از man pageها و مستندات کرنل می‌آید، به‌علاوه‌ی دو برنامه‌ی Go که برای Linux کامپایل کردم و **هرگز اجرا نکردم**. هر چیز Linux‌مانند پایین با عبارت «نمونه‌ی تصویری، ضبط‌نشده» علامت خورده است.
+کانتینر واقعاً چیست؟ کرنل چنین شیئی ندارد؛ فقط پروسه‌ای معمولی با دو محدودیت که تعیین می‌کنند چه چیزی جدا شود و چه چیزی با میزبان مشترک بماند. بعد از [systemd: واحدها و timerها](/fa/posts/linux-systemd-units-timers/)، جواب از man pageها و مستندات کرنل می‌آید، به‌علاوه‌ی دو برنامه‌ی Go که برای Linux کامپایل کردم و **هرگز اجرا نکردم**. متن Linux‌مانند با «نمونه‌ی تصویری، ضبط‌نشده» علامت خورده است.
 
 > توضیح صادقانه: این مک هسته‌ی Linux ندارد، ماشین مجازی هم ندارد و daemon داکر را خاموش نگه داشتم. تا آنجا که می‌دانم Docker Desktop روی مک کانتینرها را داخل یک ماشین مجازی Linux اجرا می‌کند؛ برای همین چیزی نتوانستم امتحان کنم. پست قبلی [Docker، CI و دیپلوی سرویس Go](/fa/posts/go-docker-ci-deploy/) هم اعتراف کرد که build واقعی Docker نکرده است.
 
@@ -67,7 +68,7 @@ Linux only: namespaces and cgroups do not exist on this OS
 
 محتاطانه و از مستندات: image مجموعه‌ای از لایه‌هاست که معمولاً با {{< term "overlayfs" "overlayfs" >}} mount می‌شود و runtime با `pivot_root` پروسه را به آن ریشه می‌برد. ابزارهایی مثل Docker و containerd و runc image و لایه و پیکربندی runtime اضافه می‌کنند؛ تا جایی که می‌دانم مشخصات OCI runtime آن پیکربندی را تعریف می‌کند.
 
-## چند نکته‌ی مهم
+## مرزهای ایزوله‌سازی
 
 - کانتینر ماشین مجازی نیست: کرنل میزبان را به اشتراک می‌گذارد.
 - namespace پنهان می‌کند، cgroup محدود می‌کند. هر دو لازم‌اند.
@@ -80,4 +81,4 @@ Linux only: namespaces and cgroups do not exist on this OS
 
 ## قدم بعدی
 
-پست بعدی «حافظه، page cache و OOM killer» است.
+بعدی «حافظه، page cache و OOM killer» است: رسیدن به `memory.max` یعنی چه.

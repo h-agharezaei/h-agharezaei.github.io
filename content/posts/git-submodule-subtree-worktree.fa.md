@@ -10,15 +10,17 @@ tags = ["git", "beginner", "submodule", "subtree", "worktree"]
 cover = { image = "/images/covers/git-submodule-subtree-worktree.fa.png", alt = "submodule، subtree و worktree", hiddenInSingle = true }
 +++
 
-repositoryای را که **{{< term "submodule" "submodule" >}}** دارد بدون `--recurse-submodules` clone کنید و پوشه‌ی خالی می‌گیرید؛ والد را قبل از submodule پوش کنید و همکارانتان pointerی به commitی می‌گیرند که فقط روی دیسک شماست. بعد از [کنترل‌های دور commit](/fa/posts/git-hooks-commit-hygiene/)، این سمت دیگر کار روزمره است: وقتی repository شما به repository دیگری نیاز دارد یا دو branch را همزمان روی دیسک می‌خواهید. گیت برای این‌ها سه ابزار دارد که راحت با هم قاطی می‌شوند: submodule، **{{< term "subtree" "subtree" >}}** و **{{< term "worktree" "worktree" >}}**.
+فرض کنید repository شما به کد یک repository دیگر نیاز دارد، مثلاً یک کتابخانه‌ی مشترک یا یک پوسته‌ی وبلاگ. کپی‌کردن پوشه‌ی آن توی پروژه‌ی خودتان کار می‌کند، تا روزی که کتابخانه یک باگ را رفع کند و شما نفهمید کدام نسخه‌اش را دارید. گیت برای این وضع ابزار دارد، و یک مشکل مشابه هم هست: وسط کار روی یک branch، یک hotfix فوری می‌رسد و نمی‌خواهید کار نیمه‌تمامتان را stash کنید.
 
-این بلاگ هم از یکی از آن‌ها استفاده می‌کند. فایل `.gitmodules` این repo فقط یک ورودی دارد، `themes/PaperMod` که به repository پوسته‌ی PaperMod در GitHub اشاره می‌کند، و `git submodule status` این را چاپ می‌کند: `7d061d5... themes/PaperMod (v8.0-54-g7d061d5)`. یعنی یک commit پین‌شده از کد دیگران.
+برای این‌ها سه ابزار هست که راحت با هم قاطی می‌شوند: {{< term "submodule" "submodule" >}}، {{< term "subtree" "subtree" >}} و {{< term "worktree" "worktree" >}}. دو تای اول برای وقتی‌اند که repository شما به repository دیگری نیاز دارد؛ سومی برای وقتی است که دو branch را همزمان روی دیسک می‌خواهید. بعد از [کنترل‌های دور commit](/fa/posts/git-hooks-commit-hygiene/)، این سمت دیگر کار روزمره است.
+
+این وبلاگ هم از یکی از آن‌ها استفاده می‌کند. فایل `.gitmodules` این repo فقط یک ورودی دارد، `themes/PaperMod` که به repository پوسته‌ی PaperMod در GitHub اشاره می‌کند، و `git submodule status` این را چاپ می‌کند: `7d061d5... themes/PaperMod (v8.0-54-g7d061d5)`. یعنی یک commit پین‌شده از کد دیگران. این مقاله نشان می‌دهد پشت این یک خط چه می‌گذرد و کجاها گیر می‌افتید.
 
 > همه‌ی دستورها با Git نسخه‌ی 2.39.2 در repositoryهای موقت اجرا شده‌اند و remoteها مسیر محلی بوده‌اند. hashها در هر اجرا فرق می‌کنند، پس مال شما یکی نخواهد بود. برای دمو `protocol.file.allow=always` را در محیط گذاشتم، چون گیت به‌صورت پیش‌فرض submodule با مسیر محلی را مسدود می‌کند. این فقط برای دموی محلی لازم است.
 
 ## submodule فقط یک pointer است
 
-آماده‌سازی: یک repo به نام `lib` و یکی به نام `app`. سپس:
+ایده‌ی submodule ساده است: repository والد خودِ کد کتابخانه را نگه نمی‌دارد، فقط یادداشتی دارد که می‌گوید «از آن repository، commit شماره‌ی فلان را بگیر». یعنی یک اشاره‌گر (pointer) به یک commit مشخص. برای دیدنش دو repo ساختم: `lib` (کتابخانه) و `app` (برنامه‌ای که از آن استفاده می‌کند). بعد کتابخانه را به برنامه اضافه کردم:
 
 ```bash
 cd app
@@ -27,15 +29,19 @@ git commit -m "add lib submodule"
 git ls-tree HEAD
 ```
 
+دستور آخر محتوای commit را فهرست می‌کند، یعنی چیزی که Git واقعاً ذخیره کرده:
+
 ```text
 100644 blob 008e8edaf3165b09395d7d5fe13cb3e657072b74	.gitmodules
 100644 blob b80f0bd60822d4fa4893de455958ef32f6c521bf	README
 160000 commit 390b441e850cdffb00b1fed3b0abb7551293e794	lib
 ```
 
-ورودی `lib` یک **{{< term "gitlink" "gitlink" >}}** است: mode برابر `160000` و یک id برای commit، نه tree. `app` هیچ فایلی از `lib` ندارد، فقط می‌گوید «commit شماره‌ی 390b441 را بگیر». نشانی هم در `.gitmodules` است.
+دو خط اول فایل‌های معمولی‌اند. `.gitmodules` فایل متنی کوچکی است که نشانی repository کتابخانه را نگه می‌دارد. خط آخر جالب است: ورودی `lib` یک {{< term "gitlink" "gitlink" >}} است. mode آن `160000` است و به‌جای blob یا tree، یک id برای commit دارد. `app` هیچ فایلی از `lib` ندارد؛ فقط می‌گوید «commit شماره‌ی 390b441 را بگیر».
 
 ## فراموش کردن --recurse-submodules
+
+نتیجه‌ی این طراحی اولین گیر کار است. clone معمولی فقط یادداشت را می‌آورد، نه کد را. من `app` را clone کردم و پوشه‌ی `lib` را شمردم:
 
 ```bash
 git clone app app-plain
@@ -48,17 +54,19 @@ git -C app-plain submodule status
 -390b441e850cdffb00b1fed3b0abb7551293e794 lib
 ```
 
-پوشه هست ولی خالی است، و علامت `-` یعنی «مقداردهی اولیه نشده». با `git submodule update --init` درستش می‌کنید، یا از همان اول با `git clone --recurse-submodules` clone کنید. داخل submodule در حالت **{{< term "detached-head" "detached HEAD" >}}** هستید:
+پوشه‌ی `lib` هست ولی خالی است (صفر فایل). در خروجی `submodule status`، علامت `-` اول خط یعنی «مقداردهی اولیه نشده»، یعنی Git هنوز آن commit را نگرفته. با `git submodule update --init` درستش می‌کنید، یا از همان اول با `git clone --recurse-submodules` clone کنید.
+
+وقتی داخل submodule می‌روید، چیز دیگری هم می‌بینید: در حالت {{< term "detached-head" "detached HEAD" >}} هستید، یعنی روی یک commit ایستاده‌اید، نه روی یک branch:
 
 ```text
 HEAD detached at 390b441
 ```
 
-این عمدی است: والد یک commit را پین می‌کند، نه branch را. اگر آنجا commit بزنید و بعد branch را عوض کنید، commit جدید هیچ branchی ندارد که به آن اشاره کند.
+این عمدی است، چون والد یک commit را پین می‌کند، نه یک branch را. اما یک تله دارد: اگر آنجا commit بزنید و بعد branch را عوض کنید، commit جدید هیچ branchی ندارد که به آن اشاره کند. برای کار روی کتابخانه اول یک branch بسازید (یا `git switch main`).
 
 ## جابه‌جا کردن pointer
 
-وقتی `lib` یک commit جدید می‌گیرد، والد خودش متوجه نمی‌شود:
+وقتی `lib` یک commit جدید می‌گیرد، والد خودش متوجه نمی‌شود، چون به یک commit مشخص اشاره می‌کند. باید خودتان pointer را جلو ببرید:
 
 ```bash
 git submodule update --remote    # lib را fetch و آخرین main را checkout می‌کند
@@ -66,11 +74,11 @@ git status --short               #  M lib
 git commit -am "bump lib to v2"
 ```
 
-تغییر در `app` فقط یک خط است: gitlink حالا به commit دیگری اشاره می‌کند.
+بعد از `update --remote`، `git status` پوشه‌ی `lib` را تغییرکرده نشان می‌دهد (`M lib`)، چون commitی که الان در آن است با آنچه والد ثبت کرده فرق دارد. با commit کردن، آن تغییر ثبت می‌شود. تغییر در `app` فقط یک خط است: gitlink حالا به commit دیگری اشاره می‌کند.
 
 ## اشتباه کلاسیک: pointer به commitی که هیچ‌کس نمی‌تواند بگیرد
 
-داخل `app/lib` یک commit زدم، pointer جدید را در `app` commit کردم، ولی `lib` را push نکردم. بعد یک همکار pull کرد:
+حالا رایج‌ترین خطای این ابزار. داخل `app/lib` یک commit زدم، pointer جدید را در `app` commit کردم، ولی `lib` را push نکردم. بعد یک همکار (یک clone دیگر) `git pull` زد:
 
 ```text
 Fetching submodule lib
@@ -81,30 +89,48 @@ Errors during submodule fetch:
 pull exit=1
 ```
 
-commit والد معتبر است ولی به commitی اشاره می‌کند که فقط روی دیسک من وجود دارد. قاعده: اول submodule را push کنید، بعد والد را. بعد از push کردن `lib`، همان pull و `git submodule update` درست کار کردند.
+commit والد معتبر است، ولی به commitی اشاره می‌کند که فقط روی دیسک من وجود دارد. سرور `lib` می‌گوید «چنین چیزی در اختیار ندارم» (`not our ref`) و pull خطا می‌دهد. قاعده این است: اول submodule را push کنید، بعد والد را. بعد از push کردن `lib`، همان pull و `git submodule update` درست کار کردند.
 
 ## subtree: فقط فایل
 
-`git subtree` روی این نصب گیت وجود دارد (بررسی کردم `git-subtree` در exec path هست؛ این دستور بخش contrib است و ممکن است در بعضی buildها نباشد):
+submodule یک اشاره‌گر است؛ {{< term "subtree" "subtree" >}} برعکس، خود فایل‌ها را داخل repository شما می‌آورد. `git subtree` روی این نصب گیت وجود دارد (بررسی کردم `git-subtree` در exec path هست؛ این دستور بخش contrib است و ممکن است در بعضی buildها نباشد). اول کتابخانه را به پوشه‌ی `vendor/lib` اضافه می‌کنیم. `--squash` یعنی کل تاریخچه‌ی کتابخانه به‌جای اینکه commit به commit بیاید، در یک commit جمع شود:
 
 ```bash
 git subtree add --prefix=vendor/lib ../lib main --squash
+```
+
+```text
+Added dir 'vendor/lib'
+```
+
+بعد کتابخانه یک نسخه‌ی جدید گرفت و با `pull` آن را آوردم، که در خروجی تغییر فایل را نشان می‌دهد:
+
+```bash
 git subtree pull --prefix=vendor/lib ../lib main --squash -m "pull lib"
+```
+
+```text
+ vendor/lib/greet.txt | 2 +-
+```
+
+(بخشی از خروجی را برای کوتاه شدن حذف کرده‌ام.) فایل‌ها حالا فایل معمولی داخل `app` هستند: clone ساده آن‌ها را دارد و دستور اضافه‌ای نمی‌خواهد. بعد در `app` فایل `vendor/lib/greet.txt` را ویرایش و commit کردم و `split` زدم. این دستور تاریخچه‌ای می‌سازد که فقط تغییرهای زیر `vendor/lib` را دارد، و آن را در branch جدیدی به اسم `lib-only` می‌گذارد:
+
+```bash
 git subtree split --prefix=vendor/lib -b lib-only
 git log --oneline lib-only
 ```
 
 ```text
-Added dir 'vendor/lib'
- vendor/lib/greet.txt | 2 +-
 861c90e app: tweak greet
 e229a82 lib: v2
 556dcb6 lib: first
 ```
 
-فایل‌ها حالا فایل معمولی داخل `app` هستند: clone ساده آن‌ها را دارد و دستور اضافه‌ای نمی‌خواهد. `split` تاریخچه‌ای ساخت که فقط تغییرهای زیر `vendor/lib` را دارد و می‌توانید آن را به `lib` برگردانید. هزینه‌اش تاریخچه‌ی شلوغ‌تر و دستورهایی است که سخت‌تر یادتان می‌مانند.
+commit بالا همان ویرایش من در `app` است و دو commit پایین از خود `lib` آمده‌اند. می‌توانید `lib-only` را به `lib` برگردانید. هزینه‌ی subtree تاریخچه‌ی شلوغ‌تر و دستورهایی است که سخت‌تر یادتان می‌مانند.
 
 ## worktree: دو branch همزمان
+
+سومی مشکل دیگری را حل می‌کند: وسط کار روی یک branch، لازم است سراغ branch دیگری بروید. راه معمول stash یا commit موقت است. `git worktree` یک راه سوم می‌دهد: یک پوشه‌ی کاری دوم از همان repository، با branch دیگر، کنار اولی.
 
 ```bash
 git worktree add -b hotfix ../app-hotfix
@@ -120,7 +146,7 @@ HEAD is now at 8de0ccd app: tweak greet
 fatal: 'hotfix' is already checked out at '<tmp>/app-hotfix'
 ```
 
-هر دو پوشه یک پایگاه object مشترک دارند، پس clone دومی لازم نیست. خطا همان قاعده‌ی ایمنی است: یک branch، یک worktree. با `git worktree remove ../app-hotfix` پاک‌سازی می‌شود. (به‌جای مسیر طولانی temp من، `<tmp>` گذاشته‌ام.)
+دستور اول branch جدید `hotfix` را می‌سازد و در `../app-hotfix` checkout می‌کند. `worktree list` دو پوشه را با branchشان نشان می‌دهد. دستور سوم می‌خواست همان branch را در پوشه‌ی سومی هم باز کند و Git جلویش را گرفت. هر دو پوشه یک پایگاه object مشترک دارند، پس clone دومی لازم نیست. خطا همان قاعده‌ی ایمنی است: هر branch فقط در یک worktree. با `git worktree remove ../app-hotfix` پاک‌سازی می‌شود. (به‌جای مسیر طولانی temp من، `<tmp>` گذاشته‌ام.)
 
 ## کدام را انتخاب کنیم؟
 
@@ -135,11 +161,11 @@ fatal: 'hotfix' is already checked out at '<tmp>/app-hotfix'
 
 ## دام‌های رایج
 
-- همیشه با `--recurse-submodules` clone کنید، یا بعدش `git submodule update --init` بزنید.
-- اول submodule را push کنید، بعد والد را.
-- داخل submodule روی detached HEAD commit نزنید، مگر اینکه اول یک branch بسازید.
-- فایل‌های subtree را دستی کپی نکنید؛ از `subtree pull` استفاده کنید تا تاریخچه قابل merge بماند.
-- `git worktree prune` و worktreeهای قفل‌شده را آزمایش نکردم.
+- **همیشه با `--recurse-submodules` clone کنید**، یا بعدش `git submodule update --init` بزنید. وگرنه پوشه‌ی خالی می‌گیرید.
+- **اول submodule را push کنید، بعد والد را.** وگرنه همکارانتان به commitی اشاره می‌گیرند که روی سرور نیست.
+- **داخل submodule روی detached HEAD commit نزنید**، مگر اینکه اول یک branch بسازید.
+- **فایل‌های subtree را دستی کپی نکنید**؛ از `subtree pull` استفاده کنید تا تاریخچه قابل merge بماند.
+- **`git worktree prune` و worktreeهای قفل‌شده را آزمایش نکردم.**
 
 ## تمرین
 

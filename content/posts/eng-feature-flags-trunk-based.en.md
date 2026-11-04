@@ -10,13 +10,24 @@ tags = ["feature-flags", "trunk-based-development", "software-engineering", "go"
 cover = { image = "/images/covers/eng-feature-flags-trunk-based.png", alt = "Feature flags and trunk-based development", hiddenInSingle = true }
 +++
 
-Twenty independent boolean {{< term "feature-flag" "feature flags" >}} give 1048576 configurations, and nobody tests them all. What flags buy is the separation of deploy from release, a choice worth recording as in [ADRs and documenting decisions](/posts/eng-adr-documentation/) because it changes how you ship. A feature flag lets unfinished code live in `main` while users cannot see it, and that is what makes {{< term "trunk-based-development" "trunk-based development" >}} workable. Flags also create {{< term "technical-debt" "debt" >}} ([Technical debt](/posts/eng-technical-debt/)), so I count that cost too. Related: [Testing in Go](/posts/go-testing-basics/), [Refactoring safely](/posts/eng-refactoring-safely/). Opinions are marked; the rest was run.
+Suppose a feature takes three weeks to build. If it lives on its own branch for those three weeks, `main` keeps moving without it, and on the day you merge, the branch and `main` have drifted far apart. The merge is large, painful and risky, and the release waits for it. Meanwhile nobody else has seen your code run.
 
-> Go 1.26, `go test -race`. The demo is a local example I wrote for this post: a flag package of about 80 lines, no vendor SDK.
+The usual answer is to merge the unfinished code into `main` every day and hide it, so that users cannot see it yet. A {{< term "feature-flag" "feature flag" >}} is the switch that hides it: an `if` in the code that asks a configuration, not a deploy, whether a feature is on. With flags, unfinished code can live in `main` safely, and that is what makes {{< term "trunk-based-development" "trunk-based development" >}} (everyone merging small changes to one main branch, often) workable. The idea is to separate **deploy** (putting code on the servers) from **release** (letting users use it). That is a decision worth recording, as in [ADRs and documenting decisions](/posts/eng-adr-documentation/), because it changes how a team ships.
+
+Flags are not free. Twenty independent boolean flags give 1,048,576 possible configurations, and nobody tests them all. Old flags also turn into {{< term "technical-debt" "debt" >}}, the subject of [Technical debt](/posts/eng-technical-debt/), so I count that cost too. Related posts: [Testing in Go](/posts/go-testing-basics/) and [Refactoring safely](/posts/eng-refactoring-safely/). Opinions are marked as such. The rest was run.
+
+> The original run used Go 1.26, and I re-ran everything below with Go 1.27.3 (`go test -race`). The demo is a local example I wrote for this post: a flag package of about 80 lines, with no vendor SDK.
 
 ## The evaluator
 
-Each flag has a rule: a `kill` bool, a `percent` and per-user `overrides`. The order is fixed: unknown flag is off, then kill switch, then override, then percentage.
+The core of a flag system is a function that answers one question: is flag X on for user Y? In my demo, each flag has a rule with three parts: a `kill` bool, a `percent` (how many users should see it) and per-user `overrides`. The order of checks is fixed:
+
+1. an unknown flag is off;
+2. then the kill switch: if it is set, the flag is off;
+3. then a per-user override, if there is one;
+4. then the percentage.
+
+The percentage needs a way to decide, for each user, whether they are inside the 10% or outside. The answer is a hash. It maps a flag name and a user id to a number from 0 to 99 (a bucket), and the user is in if their bucket is below the percentage:
 
 ```go
 func Bucket(name, user string) int {
@@ -26,11 +37,13 @@ func Bucket(name, user string) int {
 }
 ```
 
-The same user and flag always land in the same bucket, so there is no state to store. The {{< term "kill-switch" "kill switch" >}} beats even an override, and an unknown flag returns false (fail-safe: a typo hides a feature instead of exposing one). Config is a JSON file; `Reload` parses it first and only then swaps it with `atomic.Pointer`, so a broken file keeps the old config.
+The same user and flag always land in the same bucket, so there is no state to store, and the user does not flip in and out between requests. The {{< term "kill-switch" "kill switch" >}} beats even an override, because its job is to turn a feature off right now, whatever else is configured. An unknown flag returns false. That is fail-safe: a typo in a flag name hides a feature instead of exposing one.
+
+The config is a JSON file. `Reload` parses the file first and only then swaps it in with an `atomic.Pointer`, so readers never see half a config, and a broken file leaves the old config in place.
 
 ## Does ramping flip anyone?
 
-A {{< term "canary-release" "percentage rollout" >}} is only honest if ramping up never removes a user who was already in. The test ramps 10, 25, 50 over 10,000 synthetic ids and fails on any flip:
+A {{< term "canary-release" "percentage rollout" >}} releases a feature to 10% of users, then 25%, then 50%, and so on. It is only honest if ramping up never removes a user who was already in. Imagine a user who sees the new checkout and then, after you ramp up, sees the old one again. The test ramps through 10, 25 and 50 over 10,000 synthetic user ids and fails if any user ever flips out:
 
 ```text
 percent=10 users_in=1017 of 10000
@@ -38,36 +51,42 @@ percent=25 users_in=2513 of 10000
 percent=50 users_in=5020 of 10000
 ```
 
-It passes. That follows from the rule `bucket < percent`: raising `percent` only adds buckets. The buckets are roughly even; users per block of ten buckets:
+Each line is one step of the ramp: how many of the 10,000 users were in at that percentage. The test passes. That follows directly from the rule `bucket < percent`: raising `percent` only adds buckets and never removes any. The numbers are close to 10%, 25% and 50%, which means the hash spreads users fairly evenly. Another test counts users per block of ten buckets, and each block should hold about 1,000:
 
 ```text
 [1017 990 1005 1003 1005 982 1006 1013 988 991]
 ```
 
-Mixing the flag name into the hash matters: otherwise the same 10% of users would test every flag.
+Mixing the flag name into the hash matters. Without it, the same 10% of users would be the test group for every flag, and those users would get all the experiments while the other 90% got none.
 
 ## Live reload
 
-A tiny program reads the file, waits, I edit the file, and it reloads. Real output (time stamps removed):
+The point of a flag is that behavior changes without a deploy. To show this, a tiny program reads a config file, checks two flags for the user `alice` (the real `new-pricing` flag and a flag name that does not exist, `typo-flag`), and waits. I edit the file, press Enter, and it reloads and checks again. The first config gives `alice` an override of false with 0 percent. I changed it to 100 percent with no override. The output, with time stamps removed:
 
 ```text
 -- before first load
 level=INFO msg=flag name=new-pricing user=alice on=false why=unknown
+level=INFO msg=flag name=typo-flag user=alice on=false why=unknown
 -- after load
 level=INFO msg=flag name=new-pricing user=alice on=false why=override
+level=INFO msg=flag name=typo-flag user=alice on=false why=unknown
+press enter after editing the file
 -- after reload
 level=INFO msg=flag name=new-pricing user=alice on=true why=percent
+level=INFO msg=flag name=typo-flag user=alice on=false why=unknown
 ```
 
-Same process, new behavior. A test reloads while eight goroutines evaluate, under `-race`, and passes. The log line answers "why did this user see it?".
+Before the first load the store is empty, so both flags are unknown and off. After the load, `new-pricing` is still off, but now for a different reason: the override. After I edited the file and reloaded, it is on, because the percentage now decides. The `typo-flag` line is the fail-safe: it is off every time. This is the same process with new behavior, and no restart. A test also reloads while eight goroutines are evaluating flags, under `-race`, and passes. The `why` field is worth keeping in real systems. It answers the support question "why did this user see it?".
 
 ## Both branches, and branch by abstraction
 
-Every flag doubles a code path, and both halves need tests. My `shop` package puts old and new pricing behind a `Pricer` interface ({{< term "branch-by-abstraction" "branch by abstraction" >}}), switched by `new-pricing`. One test runs the same expectations with the flag at 0 and at 100 percent. A {{< term "characterization-test" "characterization test" >}} compares old and new on 8866 inputs and requires equal results. Merge the new code dark (flag off) daily; when the comparison holds, ramp.
+Every flag doubles a code path: the code runs the old way or the new way, and both need tests. A technique that keeps this manageable is {{< term "branch-by-abstraction" "branch by abstraction" >}}: put the old and the new implementation behind one interface, and let the flag choose which to use. My `shop` package does this with a `Pricer` interface, switched by `new-pricing`. One test runs the same expectations with the flag at 0 and at 100 percent, so both paths are tested.
+
+How do I know the new code is correct before I ramp? A {{< term "characterization-test" "characterization test" >}} compares the old and the new implementation on many inputs and requires equal results. Mine compares them on 8866 inputs, and they agree. The working method is: merge the new code dark (flag off) every day, and when the comparison holds, ramp.
 
 ## The cost
 
-n independent boolean flags give 2^n configurations. The test printed:
+The cost of flags is mostly in combinations. n independent boolean flags give 2^n configurations. The test printed:
 
 ```text
 3 boolean flags -> 8 configurations
@@ -75,9 +94,9 @@ n independent boolean flags give 2^n configurations. The test printed:
 20 boolean flags -> 1048576 configurations
 ```
 
-You will not test them all. **In my experience** most flags do not interact, but the ones that do fail in production. Keep flags independent and few.
+You will not test them all. **In my experience** most flags do not interact with each other, but the ones that do will fail in production. So keep flags independent and few.
 
-Old flags are debt. In a demo repo with three commits (fake author, fixed dates; the history is staged, not a real project), a script lists flags in `flag/flags.go`, references to them, and the first commit via `git log -S`:
+Old flags are debt. The demo repo for this check has three commits, with a fake author and fixed dates. The history is staged for the demo, not a real project. A script lists the flags defined in `flag/flags.go`, counts the references to each outside that file, and finds the first commit that mentioned the name with `git log -S`:
 
 ```text
 old-banner     refs=0 first_added=2026-01-10
@@ -85,11 +104,11 @@ fast-checkout  refs=1 first_added=2026-03-02
 new-pricing    refs=2 first_added=2026-04-20
 ```
 
-`old-banner` is defined, referenced nowhere, and the oldest. That is a removal candidate. My removal checklist: ramp to 100 and wait; delete the losing branch and the flag check; delete its tests; delete the config entry; delete the constant.
+`old-banner` is defined, referenced nowhere, and the oldest. That makes it a removal candidate. My removal checklist: ramp to 100 percent and wait; delete the losing branch and the flag check; delete its tests; delete the config entry; delete the constant.
 
 ## Trunk-based in practice
 
-Short-lived branches, merged to `main` at least daily, with unfinished work behind flags. Advice on branch lifetime varies; I aim for a day or two. Deploy puts code on servers; release is turning it on. A dark launch deploys code that runs but whose result users do not see; a canary exposes a small percentage.
+Trunk-based development means short-lived branches, merged to `main` at least daily, with unfinished work hidden behind flags. Advice on how long a branch may live varies; I aim for a day or two. A few words you will meet around this: a **dark launch** deploys code that runs but whose result users do not see, and a canary exposes a small percentage of users, as in the percentage rollout above. Compared with GitFlow, the older model with long-lived `develop` and release branches, the differences are these:
 
 | | GitFlow | Trunk-based |
 |---|---|---|
@@ -97,15 +116,15 @@ Short-lived branches, merged to `main` at least daily, with unfinished work behi
 | Unfinished work | sits on a branch | merged behind a flag |
 | Needs | merge discipline | fast CI, tests, flags |
 
-**In my opinion** trunk-based fits a service deployed often; GitFlow suits software with versioned releases. Rollback becomes flipping the flag, then reverting at leisure.
+**In my opinion** trunk-based fits a service that is deployed often, and GitFlow suits software with versioned releases. With flags, rollback also becomes simple: flip the flag first, and revert the code later, at leisure.
 
 ## Where flags bite
 
-- Flags are not access control: do not decide authorization with them.
-- Test the flag-off path too, because it is your rollback.
-- Every flag needs an owner and a removal date.
+- Flags are not access control. Do not decide authorization with them: a flag is a rollout tool, not a permission system.
+- Test the flag-off path too, because it is your rollback. If it is broken, your rollback does not work.
+- Every flag needs an owner and a removal date, or it will stay forever.
 - I did not run OpenFeature. As far as I know it is a vendor-neutral standard API for flag evaluation; check its docs before relying on that.
 
 ## What's next
 
-“Designing a CI/CD pipeline”: trunk-based only works with fast CI, and that pipeline runs on every merge.
+The next post is "Designing a CI/CD pipeline". Trunk-based development only works if every merge is checked quickly and automatically, and that check is the pipeline.

@@ -10,17 +10,32 @@ tags = ["go", "beginner", "functions", "errors", "defer"]
 cover = { image = "/images/covers/go-functions-defer-errors.png", alt = "Functions, defer and error handling in Go", hiddenInSingle = true }
 +++
 
-Go has no exceptions. Functions return errors as ordinary values, the caller checks `if err != nil` right away, and `defer` takes care of cleanup. Once this clicks, the shape of most Go code and a lot of its style make sense. The only prerequisite is [types, variables and control flow](/posts/go-types-control-flow/).
+Imagine a function that opens a file, reads it and pulls a number out of it. Each of those three steps can fail. In languages with exceptions, the failure is thrown out of the middle of the code and a `try/catch` somewhere around it catches it. Go does it differently. It has no exceptions in that sense: functions return errors as ordinary values, the caller checks `if err != nil` right away, and cleanup, like closing that same file, is done with `defer`.
 
-> I ran every example below with Go 1.26. The outputs are copied from those runs.
+Once these two ideas click, the shape of most Go code and a lot of its style make sense. In this post we first look at functions (because errors start there), then `error`, then `defer`, and finally a short word on `panic`. The only prerequisite is [types, variables and control flow](/posts/go-types-control-flow/).
+
+> I ran every example below with Go 1.26. The outputs are taken from those runs.
 
 ## Functions and multiple return values
 
-A function declares its parameter types after the names, and it can return more than one value:
+In Go the type of a parameter comes after its name, and a function can return several values. The second point is the foundation of Go's whole error handling, so we start with a simple example. `divmod` returns the quotient and the remainder together:
 
 ```go
 func divmod(a, b int) (int, int) { return a / b, a % b }
+```
 
+The return types go in parentheses, and at the call site we receive both values into two variables:
+
+```go
+q, r := divmod(17, 5)
+fmt.Println(q, r)   // 3 2
+```
+
+17 divided by 5 is 3 with a remainder of 2. In other languages you would usually return an array or an object and unpack it. In Go the two values simply come back.
+
+Three more things about functions:
+
+```go
 func sum(nums ...int) int {
 	total := 0
 	for _, n := range nums {
@@ -35,21 +50,25 @@ func counter() func() int {
 }
 ```
 
-`sum` is **variadic**: inside, `nums` is a `[]int`. You can call it with no arguments, with several, or pass an existing slice with `...`. Functions are also values. `counter` returns a **closure** that keeps its own `n` alive between calls.
+`sum` is **variadic**, which means its number of arguments is not fixed. Inside the function, `nums` is a slice of `int`. You can call it with no arguments, with several, or with a ready-made slice followed by `...`. (The `_` in the loop means we do not need the index and throw it away.)
+
+Functions are values too. `counter` returns a function, and that returned function can reach the variable `n`, which was defined outside of it, and keeps it between calls. Such a function is called a **closure**. Every call to `counter()` creates a fresh, independent `n`.
 
 ```go
-q, r := divmod(17, 5)
-fmt.Println(q, r)                                   // 3 2
 fmt.Println(sum(), sum(1, 2, 3), sum([]int{4, 5}...)) // 0 6 9
 next := counter()
 fmt.Println(next(), next(), next())                 // 1 2 3
 ```
 
-Return values can be **named** (`func f() (n int, err error)`). They start as zero values and a bare `return` returns them. That is handy with `defer` (see below), but a bare `return` in a long function makes readers hunt for where the values were set. I only use named returns for short functions or when a deferred function needs to change the result.
+The three `sum` calls give 0 (no arguments), 6 and 9. The three `next()` calls return 1, 2 and 3, because `n` stays alive between calls.
+
+Return values can also be **named**, as in `func f() (n int, err error)`. These variables start at their zero value (which we saw in the previous post) and a bare `return` returns them. Naming helps with `defer`, which we see below. But a bare `return` in a long function makes the reader hunt for where the values were set. I use named results only in short functions, or when a deferred function must change the result.
 
 ## The error interface
 
-`error` is just an interface with one method, `Error() string`. By convention the error is the last return value, and the caller checks it right away:
+Now to errors. Go has a type called `error`, which is really just an **interface** with one method: `Error() string`. An interface is a list of methods; any type that has those methods automatically belongs to it. (We cover interfaces fully in a later post.) For now it is enough to know that an error is nothing complicated: any value that can describe itself as a piece of text.
+
+By convention the error is the last return value of a function, and the caller checks it immediately. If nothing went wrong, the error is `nil` ("nothing"):
 
 ```go
 n, err := strconv.Atoi(s)
@@ -58,13 +77,17 @@ if err != nil {
 }
 ```
 
-You will write `if err != nil` a lot. That is intentional: the failure path is visible in the code.
+`strconv.Atoi` converts a string to a number. If it cannot, `err` is set and we pass it on to our own caller. You will write this `if err != nil` a lot, and that is deliberate: the failure path is visible in the code, and no hidden `throw` gets lost in the middle of your functions.
 
 ## Creating, wrapping and inspecting errors
 
-`errors.New` creates a simple error. `fmt.Errorf` with the `%w` verb **wraps** another error, adding context while keeping the original reachable. Then `errors.Is` checks whether a specific error is anywhere in the chain, and `errors.As` finds an error of a specific type and gives it to you.
+A bare error such as "invalid syntax" is not very useful. After going up several layers of functions you want to know where, and while doing what, it failed. So we have three tools:
 
-Here is the small program I ran. It has a **sentinel error** (a package-level value you compare against) and a custom error type with `Unwrap`:
+- `errors.New` creates a simple error with a message.
+- `fmt.Errorf` with the `%w` verb **wraps** an error: it adds new text and context and keeps the original error inside.
+- `errors.Is` checks whether a specific error appears somewhere in the chain of wraps, and `errors.As` finds an error of a given type in the chain and hands it to you.
+
+Here is a small program I built for this. It has three pieces. The first is a **sentinel error**, an error defined once at package level so we can compare against it later. The second is a custom error type. (It uses `struct` and a method, which I cover fully in later posts; for now, a `struct` is a group of fields and a method is a function attached to a type. The `*` and `&` belong to pointers, which come in [Pointers and the memory model in Go](/posts/go-pointers-memory/).) The `Unwrap` method tells `errors.Is` and `errors.As` where the inner error is. The third is the functions that use them:
 
 ```go
 var ErrDivideByZero = errors.New("divide by zero")
@@ -101,7 +124,9 @@ func divide(a, b string) (int, error) {
 }
 ```
 
-`main` runs four inputs and, for each error, prints the message and the results of `errors.Is` and `errors.As`:
+`parse` turns a string (after trimming surrounding spaces) into a number. If that fails, it puts the `Atoi` error inside a `ParseError`, which also keeps the original input. `divide` takes two strings, parses both and divides. If parsing fails, it wraps the error with whether it was the "left" or "right" operand. If the divisor is zero, it wraps `ErrDivideByZero` together with the numbers.
+
+`main` tries four inputs: `("84", "2")`, `("10", "0")`, `("abc", "2")` and `("7", " x1")`. For each error it prints the message and the results of `errors.Is` and `errors.As`. The output:
 
 ```text
 result: 42
@@ -119,11 +144,16 @@ error: divide: right operand: parse " x1": strconv.Atoi: parsing "x1": invalid s
   as *ParseError: input=" x1"
 ```
 
-Notice that the printed message reads like a chain, each layer adding context. And `errors.Is(err, strconv.ErrSyntax)` is true even though we never mentioned it: it walks through our `ParseError` (thanks to `Unwrap`) down to what `strconv` returned.
+Let us read it input by input:
+
+- **`84` and `2`:** no error, and the result 42 is printed.
+- **`10` and `0`:** both numbers parse fine, but the divisor is zero. The message says `divide 10 by 0: divide by zero`. `errors.Is(err, ErrDivideByZero)` is true and `ErrSyntax` is not, and since there is no `ParseError` in the chain, `errors.As` answers "no".
+- **`abc` and `2`:** read the message as a chain: each layer added context, from `divide: left operand` to `parse "abc"` to the text of `strconv`'s own error. This time `errors.Is(err, strconv.ErrSyntax)` is true even though we never mention it ourselves: the function walks down through our `ParseError` (thanks to `Unwrap`) to the error `strconv` returned. `errors.As` also found the `ParseError` and handed us the original input, `abc`.
+- **`7` and ` x1`:** the same story, for the right operand. Notice that `ParseError` kept the original input with its leading space (`" x1"`), while `strconv` saw only `x1`, because `parse` trimmed the spaces before converting.
 
 ## defer
 
-`defer` schedules a call to run when the surrounding function returns. It is the idiomatic way to release resources right next to where you acquire them:
+Now cleanup. Suppose a function opens a file and then has five different places where it can return early. In each of those five places you must remember to close the file. `defer` solves that: it schedules a call for the moment the function returns, however the function ends. The usual pattern is to write the release right next to where you acquired the resource:
 
 ```go
 f, err := os.Open(path)
@@ -133,7 +163,7 @@ if err != nil {
 defer f.Close()
 ```
 
-Two rules matter. Deferred calls run in **LIFO** order, and the arguments are evaluated at the `defer` statement, not when the call finally runs:
+You need to know two rules. First, deferred calls run in **LIFO** order: last registered, first run, like plates stacked on top of each other and taken from the top. Second, the arguments of a `defer` are evaluated at the moment of the `defer` statement itself, not when the call finally runs. This example shows both:
 
 ```go
 func demoDefer() {
@@ -155,9 +185,11 @@ deferred 2
 deferred 1
 ```
 
-## panic and recover, briefly
+Read the output from the top. The first line is `x now: 20`, because that is the only print that is not deferred and it runs immediately. After that, when the function ends, the deferred prints start, from the last registered to the first. The last `defer` is the one that prints `x`, and its value is `10`, not `20`: the argument `x` was copied at the moment the `defer` line ran, not when the print actually happened. After it come the three loop defers in reverse order: 3, 2, 1.
 
-`panic` stops normal execution, runs deferred calls, and crashes the program unless something calls `recover` inside a deferred function. For example, writing to a nil map panics, and a named result lets us turn that into an error:
+## A short word on panic and recover
+
+Go has another kind of failure too: `panic`. A `panic` stops normal execution, runs the deferred functions and crashes the program, unless someone calls `recover` inside one of those deferred functions. For example, writing to a `nil` map causes a panic. In this example we use a named result to turn the panic into an ordinary error:
 
 ```go
 func safeName() (name string, err error) {
@@ -173,22 +205,24 @@ func safeName() (name string, err error) {
 // prints:  recovered: assignment to entry in nil map
 ```
 
-Do not use panic for expected failures like bad input or a missing file. Return an error instead. Panic is for bugs and impossible states, and `recover` is mostly for boundaries such as an HTTP server protecting itself from one bad request.
+The line `m["a"] = 1` writes to an empty map and panics. Before the program dies, the deferred function runs, `recover()` catches the panic message and stores it in `err`. Because `err` is a named result, the function returns exactly that. The real output of `fmt.Println(safeName())` was an empty string for `name` followed by the error message, which is the line above (the blank before "recovered" is the empty `name`).
 
-## Common mistakes with errors and defer
+For expected failures, such as bad input or a missing file, do not use panic; return an error. A panic is for bugs and impossible states. `recover` is mostly useful at boundaries, for example an HTTP server that does not want one broken request to bring down the whole program.
 
-- Never ignore an error with `_` unless you can say why it is safe.
-- Wrap with `%w`, not `%v`, if callers may need `errors.Is` or `errors.As`. `%v` only keeps the text.
-- Compare errors with `errors.Is`, not `==`, once wrapping is involved.
-- `defer` inside a loop runs at the end of the function, not each iteration. Move the body into its own function if you open many files.
-- Arguments of a deferred call are evaluated immediately. Use a closure (`defer func() { ... }()`) if you need the latest value.
+## Common traps with errors and defer
+
+- **Do not ignore an error with `_`** unless you can say why it is safe. Writing `n, _ := strconv.Atoi(s)` means "if it fails I do not want to know", and you go on working with `0`.
+- **If the caller might need `errors.Is` or `errors.As`, wrap with `%w`, not `%v`.** `%v` only puts the text of the error into the new message and drops the original error from the chain.
+- **When wrapping is involved, compare errors with `errors.Is`, not `==`.** `==` sees only the value itself, not what is inside the wrap.
+- **`defer` inside a loop runs at the end of the function, not at the end of each iteration.** If you open many files in a loop, they all stay open until the function ends. Move the loop body into a separate function.
+- **The arguments of a deferred call are evaluated immediately**, as the `x` example showed. If you want the latest value, use a closure: `defer func() { ... }()`.
 
 ## Exercise
 
-1. Add a `ErrNegative` sentinel to `divide` and return it (wrapped) when either operand is negative. Check it with `errors.Is`.
+1. Add a sentinel `ErrNegative` to `divide` and return it (wrapped) when either operand is negative. Check it with `errors.Is`.
 2. Write `func average(nums ...float64) (float64, error)` that returns an error for empty input.
-3. Write a function that defers three prints and predict the output before running it.
+3. Write a function with three `defer` statements that print; guess the output before you run it.
 
 ## What's next
 
-"Slices, maps and strings in Go": the language's most used data types behave in ways their syntax does not show, and that post explains how they actually work and the traps that catch beginners.
+"Slices, maps and strings in Go": the most used types in the language behave in ways that you cannot see from their appearance. That post shows how they really work and where beginners get surprised.

@@ -10,11 +10,17 @@ tags = ["nodejs", "zod", "validation", "security", "http"]
 cover = { image = "/images/covers/node-validation-zod.fa.png", alt = "اعتبارسنجی ورودی با Zod", hiddenInSingle = true }
 +++
 
-یک `parse` در Zod مقدار `qty: '2'` را به عدد 2 تبدیل کرد و کلید `admin: true` را که کسی نخواسته بود بی‌صدا حذف کرد. یک schema در لبه برای همین است: payload در [NATS JetStream از Node.js](/fa/posts/node-nats-jetstream/) هنوز ورودی غیرقابل‌اعتماد است و همین درباره‌ی هر body در [سرور HTTP با node:http](/fa/posts/node-http-server/) هم درست است. هر چیزی که از یک **{{< term "trust-boundary" "مرز اعتماد" >}}** رد می‌شود باید یک بار و در لبه از **{{< term "schema-validation" "اعتبارسنجی با schema" >}}** بگذرد؛ کدِ پشت آن با داده‌ای به شکل معلوم کار می‌کند. اینجا با Zod این کار را می‌کنم. این کار راه **mass assignment** ([OWASP Top 10 در کد واقعی](/fa/posts/sec-owasp-top10-in-code/)) و ترفندهای مشابه [Injection و XSS](/fa/posts/sec-injection-xss/) را هم می‌بندد.
+کسی برای ثبت سفارش این JSON را به سرور شما می‌فرستد: `{ "id": "nope", "qty": "2", "admin": true }`. `id` شناسه‌ی معتبری نیست، `qty` به‌جای عدد متن `"2"` است و `admin` فیلدی است که هرگز از او نخواسته‌اید. اگر کدتان بی‌نگاه‌کردن `body.qty * price` را بخواند، چیزی حساب می‌کند و حتی ممکن است درست به نظر برسد: `"2" * 5` در JavaScript می‌شود 10. فیلد `admin` اگر بدنه را در یک ردیف دیتابیس کپی کنید ممکن است بی‌صدا آسیب بزند. بدنه‌ی درخواست فقط متنی است که یک غریبه نوشته.
 
-> Node نسخه‌ی v20.13.1، `zod` نسخه‌ی 4.1.5 (major نسخه‌ی ۴). اسکریپت‌های محلی روی 127.0.0.1، خروجی‌های واقعی و بدون زمان‌بندی. `typescript` نصب نبود، پس بررسی نوع با `z.infer` را اجرا نکردم.
+راه‌حل این نیست که همه‌جا `if` بپاشیم. راه‌حل این است که داده را یک‌بار، همان لبه‌ای که وارد برنامه می‌شود، بررسی کنیم و بگذاریم هرچه پشت آن لبه است با داده‌ای کار کند که شکلش معلوم است. آن لبه یک {{< term "trust-boundary" "مرز اعتماد" >}} است: جایی که داده از چیزی که کنترلش با شما نیست (اینترنت، سرویس دیگر، صف پیام) وارد کد خودتان می‌شود. این بررسی را {{< term "schema-validation" "اعتبارسنجی با schema" >}} می‌نامند: شکل معتبر را یک‌بار توصیف می‌کنید و یک کتابخانه داده‌ی ورودی را با آن مقایسه می‌کند.
+
+داده‌ی [NATS JetStream از Node.js](/fa/posts/node-nats-jetstream/) هم در همین معنا هنوز نامطمئن است، و هر بدنه‌ی HTTP در [سرور HTTP با node:http](/fa/posts/node-http-server/) هم. در این مقاله این بررسی را با Zod انجام می‌دهم، یک کتابخانه‌ی schema برای JavaScript. این کار در برابر {{< term "mass-assignment" "mass assignment" >}} هم کمک می‌کند (وقتی کلاینت فیلدهایی را تنظیم می‌کند که نباید؛ [OWASP Top 10 در کد واقعی](/fa/posts/sec-owasp-top10-in-code/) را ببینید) و در برابر ترفندهای [تزریق و XSS](/fa/posts/sec-injection-xss/).
+
+> همه‌چیز را با Node نسخه‌ی v20.13.1 و `zod` نسخه‌ی 4.1.5 (major نسخه‌ی ۴) اجرا کردم. اسکریپت‌ها مثال محلی‌اند؛ سرور روی 127.0.0.1 و یک پورت تصادفی گوش می‌دهد. خروجی‌ها واقعی‌اند و زمان‌بندی نشان نمی‌دهم. `typescript` نصب نبود، پس بررسی نوع با `z.infer` را اجرا نکردم.
 
 ## یک schema برای سفارش
+
+schema در Zod مثل توصیف داده‌ی معتبر خوانده می‌شود. این یکی برای سفارش است:
 
 ```js
 export const Order = z.object({
@@ -29,7 +35,16 @@ export const Order = z.object({
 });
 ```
 
-`parse` روی `{ id, email, items: [{ sku: 'abc', qty: '2' }], admin: true }` این را داد:
+از بالا بخوانید: `id` باید UUID باشد، `email` آدرس ایمیل، `status` یا `new` است یا `paid` و اگر نباشد `new` می‌شود، `note` متن اختیاری حداکثر ۲۰ کاراکتری است، و `items` فهرستی غیرخالی است که هر آیتمش یک `sku` حداقل ۳ کاراکتری و یک `qty` صحیح بین ۱ تا ۱۰ دارد. `z.coerce.number()` یعنی «اول متن را به عدد تبدیل کن».
+
+حالا `Order.parse(...)` روی این ورودی، یک سفارش خوب به‌اضافه‌ی `admin: true` اضافی و مقداری که به‌شکل متن نوشته شده:
+
+```js
+{ id: '3f2b8c1e-5d4a-4b7e-9a1c-0d2e4f6a8b1c', email: 'a@example.com',
+  items: [{ sku: 'abc', qty: '2' }], admin: true }
+```
+
+این را برگرداند:
 
 ```text
 {
@@ -40,38 +55,79 @@ export const Order = z.object({
 }
 ```
 
-سه اتفاق افتاد: `status` مقدار پیش‌فرض گرفت، `qty` برابر `'2'` با `z.coerce` عدد ۲ شد و کلید ناشناخته‌ی `admin` حذف شد. به‌طور پیش‌فرض objectها کلیدهای ناشناخته را strip می‌کنند.
+سه اتفاق افتاد. `status` نبود، پس مقدار پیش‌فرض `new` را گرفت. `qty` که `'2'` بود به‌خاطر `z.coerce` عدد 2 شد. و کلید ناشناخته‌ی `admin` از بین رفت: به‌طور پیش‌فرض شیء Zod کلیدهایی را که نمی‌شناسد حذف می‌کند. آنچه از `parse` بیرون می‌آید شیء تازه و تمیزی است، نه خود ورودی.
 
 ## parse، safeParse و issueها
 
-`parse` یک `ZodError` پرتاب می‌کند (برای payload خراب من ۴ issue)؛ `safeParse` بدون پرتاب، `{ success, data }` یا `{ success: false, error }` برمی‌گرداند. برای ورودی شبکه `safeParse` را ترجیح می‌دهم، چون body خراب عادی است، نه استثنا. در `error.issues` هر مورد `code`، `path` و `message` دارد، مثلاً:
+اگر داده بد باشد چه؟ `parse` یک `ZodError` پرتاب می‌کند. `safeParse` پرتاب نمی‌کند: `{ success: true, data }` یا `{ success: false, error }` برمی‌گرداند. برای ورودی شبکه من `safeParse` را ترجیح می‌دهم، چون بدنه‌ی بد چیزی عادی و قابل‌انتظار است، نه یک رویداد استثنایی.
+
+یک payload بد دادم: `{ id: 'nope', email: 'x', items: [{ sku: 'a', qty: 99 }] }`. `parse` یک `ZodError` با ۴ issue پرتاب کرد. هر عضو `error.issues` یک `code`، یک `path` (جای مشکل در ورودی) و یک `message` دارد. مثلاً مشکل `qty`:
 
 ```text
-{ "code": "too_big", "maximum": 10, "path": ["items", 0, "qty"],
-  "message": "Too big: expected number to be <=10" }
+{
+ "origin": "number",
+ "code": "too_big",
+ "maximum": 10,
+ "inclusive": true,
+ "path": ["items", 0, "qty"],
+ "message": "Too big: expected number to be <=10"
+}
 ```
 
-(`origin` و `inclusive` را حذف کردم.) این نسخه `z.flattenError` هم دارد که برای هر کلید سطح بالا فهرست پیام می‌دهد:
+(این یکی از issueهای خروجی واقعی است؛ آرایه‌ی `path` را برای کم‌کردن جا در یک خط گذاشتم.) مسیر `["items", 0, "qty"]` می‌گوید: در `items`، عضو اول، فیلد `qty`.
+
+برای پاسخ API معمولاً خطاها را بر حسب فیلد می‌خواهید. این نسخه `z.flattenError` دارد که `fieldErrors` را می‌دهد، با فهرست پیام‌ها برای هر کلید سطح بالا:
 
 ```text
-fieldErrors: { id: [ 'Invalid UUID' ], email: [ 'Invalid email address' ],
-  items: [ 'Too small: expected string to have >=3 characters',
-           'Too big: expected number to be <=10' ] }
+{
+  formErrors: [],
+  fieldErrors: {
+    id: [ 'Invalid UUID' ],
+    email: [ 'Invalid email address' ],
+    items: [
+      'Too small: expected string to have >=3 characters',
+      'Too big: expected number to be <=10'
+    ]
+  }
+}
 ```
 
-دقت کنید دو پیام `items` در هم ریخته و اندیس از دست رفته است. `z.treeifyError` تو در تویی را نگه می‌دارد (`items[0].properties.qty`). بسته به نیاز کلاینت انتخاب کنید.
-
-## strict، refine، transform
+ببینید که دو مشکل `items` در یک فهرست ادغام شده‌اند و جایشان (کدام آیتم، کدام فیلد) از دست رفته. `z.treeifyError` تو در تو بودن را نگه می‌دارد. برای همین خطا، بخش `items` آن این بود:
 
 ```text
-P.strict() روی {name, extra}: code 'unrecognized_keys', keys ['extra'], message 'Unrecognized key: "extra"'
-refine از from<to روی {from:5,to:1}: code 'custom', path ['to'], message 'from must be < to'
-z.string().trim().toLowerCase().transform(s => s.split(',')).parse('  A,B ')  ->  [ 'a', 'b' ]
+{"errors":[],"items":[{"errors":[],"properties":{"sku":{"errors":["Too small: expected string to have >=3 characters"]},"qty":{"errors":["Too big: expected number to be <=10"]}}}]}
 ```
 
-وقتی فیلد ناشناخته باید خطا باشد، نه نادیده گرفته شود، از `.strict()` استفاده کنید. `.refine` برای قاعده‌هایی است که چند فیلد را درگیر می‌کنند؛ `path` بدهید تا پیام روی یک فیلد بنشیند. `.transform` خروجی را عوض می‌کند، پس مقدار parse‌شده ممکن است با ورودی برابر نباشد.
+این‌جا `items[0].properties.qty` را می‌توانید پیدا کنید. بر حسب نیاز کلاینت‌هایتان انتخاب کنید: تخت ساده‌تر است و درختی دقیق‌تر.
+
+## strict، refine و transform
+
+سه ابزار دیگر. خط‌های بعد از یک اسکریپت‌اند و خروجی هرکدام به‌صورت کامنت آمده:
+
+```js
+const P = z.object({ name: z.string() });
+P.strict().safeParse({ name: 'a', extra: 1 }).error.issues;
+// [ { code: 'unrecognized_keys', keys: [ 'extra' ], path: [], message: 'Unrecognized key: "extra"' } ]
+
+const Range = z.object({ from: z.number(), to: z.number() })
+  .refine(v => v.from < v.to, { message: 'from must be < to', path: ['to'] });
+Range.safeParse({ from: 5, to: 1 }).error.issues;
+// [ { code: 'custom', path: [ 'to' ], message: 'from must be < to' } ]
+
+const Tag = z.string().trim().toLowerCase().transform(s => s.split(','));
+Tag.parse('  A,B ');
+// [ 'a', 'b' ]
+```
+
+(در اسکریپت، `P.parse({ name: 'a', extra: 1 })` بدون `strict` مقدار `{ name: 'a' }` را برمی‌گرداند؛ کلید اضافه فقط حذف می‌شود.)
+
+- **`.strict()`** کلیدهای ناشناخته را به‌جای نادیده‌گرفتن بی‌صدا، خطا می‌کند. وقتی فیلد غیرمنتظره یعنی کلاینت گیج شده از آن استفاده کنید.
+- **`.refine`** قاعده‌ای را بررسی می‌کند که چند فیلد را درگیر می‌کند، مثل «from باید کوچک‌تر از to باشد». یک `path` بدهید تا پیام روی یک فیلد بنشیند.
+- **`.transform`** خروجی را عوض می‌کند، پس مقدار parse‌شده ممکن است دیگر شبیه ورودی نباشد. این‌جا متن `'  A,B '` تمیز شد، به حروف کوچک رفت و به آرایه شکسته شد.
 
 ## در مرز HTTP
+
+حالا بخشی که برای سرور مهم است. handler بدنه را می‌خواند، JSON را parse می‌کند و بعد schema را اجرا می‌کند. اگر رد شود، جواب ۴۰۰ با خطای فیلدهاست. اگر قبول شود، فقط مقدار تمیز ادامه می‌دهد:
 
 ```js
 const r = Order.safeParse(data);
@@ -79,37 +135,46 @@ if (!r.success) return send(res, 400, { error: 'validation', issues: z.flattenEr
 send(res, 200, { id: r.data.id, status: r.data.status, units: total(r.data) });
 ```
 
-`total` همیشه فقط سفارش معتبر می‌گیرد. درخواست‌های واقعی به سرور:
+تابع کسب‌وکار `total` همیشه فقط سفارش معتبر می‌گیرد و به بررسی خودش نیاز ندارد. اسکریپت سرور را بالا می‌آورد، پنج درخواست واقعی با `fetch` می‌فرستد و وضعیت و بدنه‌ی هرکدام را چاپ می‌کند:
 
 ```text
-ok     200 {"id":"3f2b8c1e-...","status":"new","units":2}
-bad    400 {"error":"validation","issues":{"id":["Invalid UUID"],"email":["Invalid email address"],"items":["Too small: expected array to have >=1 items"]}}
-type   400 {"error":"validation","issues":{"id":["Invalid input: expected string, received number"],"email":["Invalid input: expected string, received null"],"items":["Invalid input: expected array, received string"]}}
-broken 400 {"error":"invalid JSON"}
+ok      200 {"id":"3f2b8c1e-5d4a-4b7e-9a1c-0d2e4f6a8b1c","status":"new","units":2}
+bad     400 {"error":"validation","issues":{"id":["Invalid UUID"],"email":["Invalid email address"],"items":["Too small: expected array to have >=1 items"]}}
+type    400 {"error":"validation","issues":{"id":["Invalid input: expected string, received number"],"email":["Invalid input: expected string, received null"],"items":["Invalid input: expected array, received string"]}}
+proto   200 {"id":"3f2b8c1e-5d4a-4b7e-9a1c-0d2e4f6a8b1c","status":"new","units":1}
+broken  400 {"error":"invalid JSON"}
 ```
 
-JSON خراب مورد جدایی است: `JSON.parse` پیش از Zod شکست می‌خورد، پس ۴۰۰ مخصوص خودش را دارد.
+- `ok`: سفارش خوب، با `qty` به‌شکل متن. جواب ۲۰۰ با ۲ واحد.
+- `bad`: id غلط، ایمیل غلط، فهرست `items` خالی. هر مشکل زیر فیلد خودش آمده.
+- `type`: فیلدهای درست ولی نوع‌های غلط (`id` عدد است، `email` برابر null و `items` یک رشته). پیام‌ها می‌گویند چه انتظار می‌رفت و چه رسید.
+- `proto`: بدنه‌ای با کلید `__proto__`؛ بخش بعد توضیحش می‌دهد. جواب یک ۲۰۰ معمولی است.
+- `broken`: `{oops` اصلاً JSON نیست. `JSON.parse` پیش از آنکه Zod چیزی ببیند شکست می‌خورد، پس این حالت ۴۰۰ و پیام جداگانه‌ی خودش را دارد.
 
-## کلیدهایی مثل __proto__
+## کلیدهایی مثل `__proto__`
 
-`JSON.parse` روی `{"name":"x","__proto__":{"isAdmin":true},"constructor":{...}}` شیءای می‌دهد که `__proto__` در آن یک کلید own عادی است. parse با `z.object({ name: z.string() })` نتیجه‌ی `{ name: 'x' }` داد، با prototype برابر `Object.prototype` و بدون `isAdmin`. با `.loose()` که کلیدهای ناشناخته را نگه می‌دارد، نتیجه `isAdmin: true` گرفت (از راه `__proto__` کپی‌شده، به‌صورت ارثی)، اما `({}).isAdmin` همچنان `undefined` ماند. پس کلیدی به سبک **{{< term "prototype-pollution" "prototype pollution" >}}** در حالت پیش‌فرض بی‌خطر است و دلیل خوبی است که `.loose()` را روی ورودی عمومی نگذارید. همین payload به سرور هم ۲۰۰ عادی و نتیجه‌ی تمیز داد. این یک بررسی محلی روی همین نسخه بود، نه اثبات امنیتی.
+JSON می‌تواند کلیدی به اسم `__proto__` داشته باشد. بعد از `JSON.parse` این یک کلید معمولی خود شیء است، نه prototype آن. ولی اگر کدی بعداً کلیدها را با انتساب ساده کپی کند، `__proto__` می‌تواند مهم شود. این ایده‌ی پشت {{< term "prototype-pollution" "آلودگی prototype" >}} است.
+
+با `{"name":"x","__proto__":{"isAdmin":true},"constructor":{"prototype":{"polluted":1}}}` امتحان کردم. parse‌کردنش با `z.object({ name: z.string() })` مقدار `{ name: 'x' }` داد. prototype آن هنوز `Object.prototype` بود و `isAdmin` برابر `undefined`. همین ورودی با `.loose()`، که کلیدهای ناشناخته را نگه می‌دارد، فرق داشت: نتیجه `isAdmin: true` داشت، البته فقط روی همان یک شیء (`({}).isAdmin` همچنان `undefined` ماند). یک `Object.assign({}, evil)` ساده هم همین اثر را نشان داد. برداشت من این است که کلید `__proto__` با انتساب کپی شده و این کار prototype نتیجه را تعیین می‌کند؛ کد Zod را نخوانده‌ام تا این را تأیید کنم.
+
+پس در حالت پیش‌فرض چنین کلیدی بی‌ضرر است و این دلیل خوبی است که `.loose()` را روی ورودی عمومی نگذاریم. همین بدنه به سرور هم فرستاده شد (خط `proto` بالا) و جواب ۲۰۰ معمولی بود و بعدش `({}).isAdmin` در process سرور هنوز `undefined` بود. این یک بررسی محلی روی همین نسخه بود، نه اثبات امنیتی.
 
 ## مقایسه با Go
 
-در Go، `encoding/json` به‌طور پیش‌فرض فیلد ناشناخته را نادیده می‌گیرد مگر روی decoder متد `DisallowUnknownFields` را صدا بزنید، و struct tagهایی مثل `json:"qty"` فقط نام فیلد را می‌گویند و بازه را نمی‌سنجند (مقاله‌ی [فایل، io.Reader/Writer و JSON در Go](/fa/posts/go-file-io-json/)). Zod شکل و قاعده را یک‌جا انجام می‌دهد.
+در Go، `encoding/json` به‌طور پیش‌فرض فیلدهای ناشناخته را نادیده می‌گیرد، مگر اینکه روی decoder تابع `DisallowUnknownFields` را صدا بزنید. تگ‌های struct مثل `json:"qty"` فقط فیلدها را نام می‌برند و بازه‌ها را بررسی نمی‌کنند ([فایل، io.Reader/Writer و JSON در Go](/fa/posts/go-file-io-json/) را ببینید). Zod شکل و قاعده‌ها را یک‌جا انجام می‌دهد.
 
-## آنچه اعتبارسنجی پوشش نمی‌دهد
+## چیزهایی که اعتبارسنجی پوشش نمی‌دهد
 
-- یک بار در مرز اعتبارسنجی کنید و مقدار parse‌شده را جلو ببرید، نه body خام را.
-- در اجرای من `z.coerce.number()` رشته‌ی `''` را `0` کرد و `'abc'` رد شد؛ فقط جایی coerce کنید که واقعاً رشته می‌پذیرید.
-- issueهای خام را بی‌فکر برنگردانید اگر نام فیلدهای داخلی را لو می‌دهند.
-- اعتبارسنجی شکل را می‌سنجد، نه مجوز دسترسی یا قواعد کسب‌وکار.
-- major را pin کنید؛ پیام‌های v4 با نسخه‌های قدیمی فرق دارند.
+- **اعتبارسنجی در چند جا.** یک‌بار در مرز اعتبارسنجی کنید و مقدار parse‌شده را ادامه دهید، نه بدنه‌ی خام را. وگرنه یک مسیر کد از داده‌ی بررسی‌نشده استفاده می‌کند.
+- **تبدیل بیش از حد مهربان.** در اجرای من `z.coerce.number()` مقدار `''` را `0` کرد، در حالی که `'abc'` شکست خورد. بدون `coerce`، مقدار `'2'` رد می‌شود («expected number, received string»). فقط جایی coerce کنید که واقعاً متن می‌پذیرید.
+- **برگرداندن issueها همان‌طور که هستند.** پیام‌ها ممکن است نام فیلدهای داخلی را لو بدهند. تصمیم بگیرید کلاینت چه ببیند.
+- **باور اینکه همه‌چیز را بررسی می‌کند.** اعتبارسنجی شکل را می‌سنجد، نه دسترسی و نه قاعده‌های کسب‌وکار. سفارش معتبر از کاربر اشتباه باز هم اشتباه است.
+- **نسخه‌ی شناور.** major نسخه‌ی Zod را ثابت کنید؛ پیام‌های v4 با نسخه‌های قدیمی‌تر فرق دارند.
 
 ## تمرین
 
-یک schema برای `PATCH /orders` از `Order.partial()` بسازید و کلید ناشناخته را ۴۰۰ کنید. با یک `refine` که حداقل یک فیلد می‌خواهد، آزمایش کنید که body خالی همچنان رد می‌شود.
+یک schema برای `PATCH /orders` از `Order.partial()` بسازید و کلیدهای ناشناخته را ۴۰۰ کنید. با یک `refine` که حداقل یک فیلد را الزامی می‌کند، تست کنید که بدنه‌ی خالی همچنان رد می‌شود.
 
 ## قدم بعدی
 
-«worker thread و cluster در Node.js»: ورودی معتبر هم می‌تواند پرهزینه باشد و یک تابع همگامِ کند جلوی همه‌ی درخواست‌ها را می‌گیرد.
+مقاله‌ی بعد «worker thread و cluster در Node.js» است. ورودی معتبر هم می‌تواند پردازشش گران باشد: یک تابع همزمانِ کند همه‌ی درخواست‌ها را بلوکه می‌کند و آن مقاله نشان می‌دهد چطور از سر راه برش داریم.

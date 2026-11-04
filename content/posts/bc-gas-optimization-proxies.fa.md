@@ -10,15 +10,17 @@ tags = ["blockchain", "solidity", "gas", "proxy", "foundry", "evm"]
 cover = { image = "/images/covers/bc-gas-optimization-proxies.fa.png", alt = "بهینه‌سازی gas و قرارداد قابل ارتقا با proxy", hiddenInSingle = true }
 +++
 
-storage گران‌ترین بخش {{< term "gas" "gas" >}} است ([EVM از درون](/fa/posts/bc-evm-internals-rust/))، ولی استخر من هفت slot مصرف می‌کرد در حالی که پنج کافی بود، و کد دیپلوی‌شده هم تغییر نمی‌کند. [امنیت قرارداد: reentrancy، access control و نمونه‌های واقعی](/fa/posts/bc-contract-security/) قراردادهایم را امن‌تر کرد؛ این پست ارزان‌تر و قابل ارتقایشان می‌کند.
+هر عملیات روی قرارداد هوشمند هزینه دارد، و اسم این هزینه {{< term "gas" "gas" >}} است. گران‌ترین بخشش نوشتن در storage است ([EVM از درون](/fa/posts/bc-evm-internals-rust/)). استخر AMM من هفت slot storage مصرف می‌کرد، در حالی که پنج‌تا کافی بود. مشکل دوم بدتر است: کدی که روی زنجیره دیپلوی شد دیگر تغییر نمی‌کند. اگر باگی در آن پیدا شود، نمی‌توان آن را وصله کرد.
 
-> Foundry 1.8.7 و solc 0.8.38 روی macOS (arm64)، روی کپی پروژه‌ی پست قبل. gas برای کد و تنظیمات یکسان قطعی است. کد آموزشی است، audit نشده.
+[امنیت قرارداد: reentrancy، access control و نمونه‌های واقعی](/fa/posts/bc-contract-security/) قراردادهایم را امن‌تر کرد. این پست دو کار دیگر می‌کند: ارزان‌ترشان می‌کند و راهی برای ارتقایشان می‌سازد.
+
+> اجرا با Foundry 1.8.7 و solc 0.8.38 روی macOS (arm64)، روی کپی پروژه‌ی پست قبل. gas برای کد و تنظیمات یکسان قطعی است. کد آموزشی است، audit نشده.
 
 ## اول اندازه بگیرید
 
-`forge snapshot` gas هر تست را ذخیره و `--diff` مقایسه می‌کند. از تست یک swap و یک واریز روی `SimplePool` snapshot گرفتم و استخر را عوض کردم.
+بهینه‌سازی بدون اندازه‌گیری حدس زدن است. `forge snapshot` gas هر تست را ذخیره می‌کند و `--diff` وضعیت جدید را با آن مقایسه می‌کند. من از تست یک swap و یک واریز نقدینگی روی `SimplePool` snapshot گرفتم و بعد استخر را عوض کردم.
 
-استخر برای هر مقدار یک slot سی‌ودوبایتی داشت. مثل Uniswap v2، موجودی‌ها و timestamp را در یک slot جا دادم؛ این {{< term "storage-packing" "storage packing" >}} است:
+اول یک توضیح درباره‌ی storage. هر متغیر state در یک «slot» سی‌ودوبایتی ذخیره می‌شود و هر slot که نوشته شود هزینه‌ی سنگینی دارد. اگر چند متغیر کوچک باشند، می‌شود چندتا را کنار هم در یک slot جا داد. استخر من برای هر مقدار یک slot داشت، حتی برای timestamp که چند بایت بیشتر نیست. مثل Uniswap v2، موجودی‌ها و timestamp را در یک slot گذاشتم. این کار {{< term "storage-packing" "storage packing" >}} نام دارد:
 
 ```solidity
 uint112 private _reserve0; // 112 + 112 + 32 bits = one slot
@@ -26,7 +28,7 @@ uint112 private _reserve1;
 uint32 public lastUpdate;
 ```
 
-خروجی کوتاه‌شده‌ی `forge inspect SimplePool storageLayout`:
+۱۱۲ بیت و ۱۱۲ بیت و ۳۲ بیت روی هم ۲۵۶ بیت می‌شود، یعنی دقیقاً یک slot. خروجی کوتاه‌شده‌ی `forge inspect SimplePool storageLayout` نشان می‌دهد چطور جا گرفته‌اند:
 
 ```
  Name               Type        Slot   Offset   Bytes
@@ -37,7 +39,11 @@ uint32 public lastUpdate;
  price0Cumulative   uint256     2      0        32
 ```
 
-هفت slot شد پنج تا. تابع `swap` و تابع‌های نقدینگی موجودی‌ها را یک بار در متغیر محلی می‌خوانند و با یک `_update` می‌نویسند. cast به نوع کوچک‌تر بی‌صدا می‌بُرد (پست قبل)، پس `_update` بالای `type(uint112).max` revert می‌کند و `forge lint` هر cast را گزارش کرد تا دلیل امن بودنش را نوشتم.
+هر سه متغیر slot شماره‌ی ۱ هستند. ستون `Offset` می‌گوید هر کدام از کدام بایت slot شروع می‌شود و `Bytes` اندازه‌شان است. هفت slot شد پنج تا.
+
+دو تغییر دیگر هم دادم. تابع `swap` و تابع‌های نقدینگی حالا موجودی‌ها را یک بار در متغیر محلی می‌خوانند و با یک `_update` می‌نویسند. و چون تبدیل به نوع کوچک‌تر بی‌صدا عدد را می‌بُرد (پست قبل نشان داد)، `_update` بالای `type(uint112).max` revert می‌کند. `forge lint` هم هر cast را گزارش کرد، تا برای هرکدام دلیل امن بودنش را نوشتم.
+
+نتیجه:
 
 ```
 $ forge snapshot --mt test_gas_ --diff
@@ -46,11 +52,11 @@ $ forge snapshot --mt test_gas_ --diff
 (trimmed)
 ```
 
-این عددها با optimizer خاموش (پیش‌فرض Foundry) است. با `FOUNDRY_OPTIMIZER=true` هزینه‌ی swap از ۱۳۱٬۶۰۵ به ۱۲۱٬۵۵۷ رسید.
+هر خط gas قبل و بعد از تغییر را نشان می‌دهد. `swap` حدود ۹٬۲۰۰ gas و ۶٫۷ درصد ارزان‌تر شد و واریز نقدینگی حدود ۹٬۵۰۰ و ۷٫۳ درصد. این عددها با optimizer خاموش است، که پیش‌فرض Foundry است. با `FOUNDRY_OPTIMIZER=true` هزینه‌ی swap از ۱۳۱٬۶۰۵ به ۱۲۱٬۵۵۷ رسید.
 
 ## الگوهای کوچک‌تر، اندازه‌گیری‌شده
 
-جفت‌هایی با یک تفاوت (`test/gas/Micro.sol`)، gas هر فراخوانی از `forge test --gas-report`:
+چند توصیه‌ی معروف برای کم کردن gas هست. به‌جای باور کردن‌شان، هر کدام را اندازه گرفتم. برای هر کدام دو قرارداد کوچک نوشتم که فقط در یک چیز فرق دارند (`test/gas/Micro.sol`) و gas هر فراخوانی را از `forge test --gas-report` خواندم:
 
 | تغییر | optimizer خاموش | optimizer روشن |
 |---|---|---|
@@ -60,13 +66,23 @@ $ forge snapshot --mt test_gas_ --diff
 | `uint256[] memory` → `calldata` (۱۰۰ عضو) | 53,784 → 31,176 | 26,806 → 18,153 |
 | `i++` → `unchecked { ++i; }` (۱۰۰ عضو) | 31,176 → 30,676 | 18,153 → 18,153 |
 
-ترفند معروف unchecked با optimizer روشن سودی نداشت؛ تا جایی که از release note نسخه‌ی 0.8.22 می‌فهمم، کامپایلر خودش این چک را برای شمارنده‌ی ساده حذف می‌کند. gas در storage و کپی خرج می‌شود؛ بقیه کوچک است و ارزش یک باگ را ندارد. خوانایی و امنیت اول‌اند.
+هر سطر یعنی:
+
+- **custom error:** به‌جای نوشتن یک رشته‌ی طولانی در revert، یک خطای نام‌دار تعریف کنید. داده‌ی revert فقط یک شناسه‌ی چهاربایتی می‌شود.
+- **`immutable` و `constant`:** مقدار ثابتی مثل کارمزد را در storage نگه ندارید. `immutable` در زمان دیپلوی در خود کد قرارداد گذاشته می‌شود و `constant` هنگام کامپایل. خواندنشان دیگر یک خواندن storage نیست.
+- **cache:** اگر یک متغیر storage را سه بار می‌خوانید، یک بار در متغیر محلی بگذارید.
+- **`calldata`:** پارامتر آرایه‌ی تابع external را از `memory` به `calldata` ببرید تا کپی نشود.
+- **`unchecked`:** شمارنده‌ی حلقه را بدون چک overflow بالا ببرید.
+
+ترفند معروف `unchecked` با optimizer روشن هیچ سودی نداشت. تا جایی که از release note نسخه‌ی 0.8.22 می‌فهمم، کامپایلر خودش این چک را برای شمارنده‌ی ساده حذف می‌کند. پس درس این جدول این است: gas بیشتر در storage و کپی خرج می‌شود؛ بقیه کوچک است و ارزش ریسک یک باگ را ندارد. خوانایی و امنیت اول‌اند.
 
 ## چرا proxy
 
-کد یک آدرس ویرایش‌شدنی نیست؛ رفع باگ یعنی آدرس جدید، ولی کاربرها و موجودی‌ها روی آدرس قبلی‌اند. با {{< term "proxy-pattern" "proxy" >}} کاربر با قرارداد کوچکی حرف می‌زند که state را نگه می‌دارد و هر فراخوانی را به implementation قابل تعویض می‌فرستد.
+حالا سراغ مشکل دوم می‌رویم. کد هر آدرس قابل ویرایش نیست. اگر باگی پیدا شود، قرارداد جدید آدرس جدید دارد، ولی کاربرها و موجودی‌هایشان روی آدرس قبلی است.
 
-فرستادن با {{< term "delegatecall" "delegatecall" >}} است: کد B روی storage قرارداد A اجرا می‌شود و `msg.sender` و `msg.value` همان می‌مانند.
+راه حل مثل یک شماره‌تلفن ثابت برای یک فروشگاه است. مشتری همیشه به همان شماره زنگ می‌زند، ولی کارمندی که پشت خط جواب می‌دهد را می‌شود عوض کرد. دفتر حساب‌ها هم همیشه در همان فروشگاه می‌ماند. در قرارداد، این الگو {{< term "proxy-pattern" "proxy" >}} نام دارد. کاربر با قرارداد کوچکی حرف می‌زند که وضعیت (state و ETH) را نگه می‌دارد و هر فراخوانی را به یک قرارداد دیگر، یعنی implementation، می‌فرستد. با عوض کردن آدرس implementation، منطق عوض می‌شود و داده سر جایش می‌ماند.
+
+این فرستادن با {{< term "delegatecall" "delegatecall" >}} انجام می‌شود. یک فراخوانی عادی کد قرارداد B را روی storage خود B اجرا می‌کند. `delegatecall` کد B را روی storage قرارداد A اجرا می‌کند و `msg.sender` و `msg.value` هم همان فراخوانی اصلی می‌مانند. انگار A کد B را قرض گرفته.
 
 ```solidity
 fallback() external payable {
@@ -83,7 +99,9 @@ fallback() external payable {
 }
 ```
 
-Alice و Bob از راه proxy جمعاً ۸ ETH واریز می‌کنند:
+`fallback` تابعی است که وقتی هیچ تابع دیگری با فراخوانی جور نباشد اجرا می‌شود، یعنی عملاً هر فراخوانی. این کد آدرس implementation را از storage می‌خواند، ورودی فراخوانی را کپی می‌کند، `delegatecall` می‌زند، و نتیجه یا خطا را عیناً به صدازننده برمی‌گرداند.
+
+آزمایش: Alice و Bob از راه proxy جمعاً ۸ ETH واریز می‌کنند و بعد به شکل زیر نگاه می‌کنیم:
 
 ```
 $ forge test --mt test_DelegatecallContext -vv
@@ -94,7 +112,12 @@ $ forge test --mt test_DelegatecallContext -vv
   ETH held by proxy:   8000000000000000000
 ```
 
-آدرس implementation slotی می‌خواهد که هیچ متغیر عادی به آن نرسد. {{< term "eip-1967" "EIP-1967" >}} یک hash منهای یک را انتخاب می‌کند:
+- **`msg.sender seen by V1 code is alice`:** کد implementation فرستنده را Alice می‌بیند، نه proxy.
+- **`address(this) is the proxy`:** ولی «خودم» برای آن کد، proxy است.
+- **`proxy totalDeposits` و `impl totalDeposits`:** داده در proxy نوشته شد (۸ ETH) و implementation دست‌نخورده ماند (صفر).
+- **`ETH held by proxy`:** ETH هم در proxy است.
+
+یک جزئیات: خود proxy هم باید آدرس implementation را در یک slot نگه دارد. اگر این slot با slotی که Solidity به یک متغیر عادی می‌دهد یکی باشد، آن متغیر آدرس را خراب می‌کند. برای همین {{< term "eip-1967" "EIP-1967" >}} یک slot دور از دسترس تعیین کرده: hash یک رشته، منهای یک.
 
 ```
 $ cast keccak "eip1967.proxy.implementation"
@@ -105,7 +128,7 @@ $ cast keccak "eip1967.proxy.implementation"
 
 ## ارتقا و storage collision
 
-`VaultV2` از `VaultV1` ارث می‌برد و فقط `withdrawCount` را به آخر می‌افزاید. بعد از `upgradeTo` همه‌چیز سالم است:
+ارتقا یعنی `upgradeTo` که آدرس implementation را عوض می‌کند. نسخه‌ی ۲ از نسخه‌ی ۱ ارث می‌برد و فقط متغیر `withdrawCount` را به آخر می‌افزاید. Alice ۱ ETH برداشت می‌کند و می‌بینیم همه‌چیز سالم است:
 
 ```
 $ forge test --mt test_UpgradeKeepsState -vv
@@ -117,7 +140,9 @@ $ forge test --mt test_UpgradeKeepsState -vv
   withdrawCount 1
 ```
 
-`VaultV2Reordered` همان متغیرها را «مرتب‌تر» تعریف می‌کند. slotها جابه‌جا نشده‌اند، پس هر اسم داده‌ی اشتباه می‌خواند؛ این {{< term "storage-collision" "storage collision" >}} است:
+نسخه ۲ شده، owner همان است، موجودی‌ها (۵ منهای ۱ برای Alice و ۳ برای Bob) حفظ شده و `withdrawCount` یک است.
+
+خطر کجاست؟ قرارداد با نام متغیر کار نمی‌کند، با شماره‌ی slot. نسخه‌ی ۱ می‌گوید `owner` در slot ۰ و `balanceOf` در slot ۱ و `totalDeposits` در slot ۲ است. اگر نسخه‌ی جدید همان متغیرها را «مرتب‌تر» و با ترتیب دیگری تعریف کند، داده‌ی قدیمی همان جا می‌ماند ولی هر اسم از slot دیگری می‌خواند. `VaultV2Reordered` همین کار را می‌کند. به این مشکل {{< term "storage-collision" "storage collision" >}} می‌گویند:
 
 ```
 $ forge test --mt test_ReorderedUpgradeCorruptsState -vv
@@ -129,20 +154,27 @@ $ forge test --mt test_ReorderedUpgradeCorruptsState -vv
   after fix, alice 5000000000000000000
 ```
 
-`totalDeposits` آدرس admin است که عدد خوانده شده و Alice موجودی ندارد. این نسخه فقط می‌خواند، پس برگشت به چیدمان درست ۵ ETH او را برگرداند؛ یک نوشتن داده را برای همیشه خراب می‌کرد. قبل از هر ارتقا `forge inspect ... storageLayout` دو نسخه را مقایسه کنید.
+- **`owner`:** صفر شد، چون حالا از slotی می‌خواند که قبلاً به mapping تعلق داشت.
+- **`totalDeposits`:** عدد عجیبی است، و خط `admin as uint` نشان می‌دهد همان آدرس admin است که به‌صورت عدد خوانده شده. چون `totalDeposits` حالا در slot ۰ است که قبلاً `owner` بود.
+- **`alice`:** موجودی‌اش صفر دیده می‌شود.
+- **`after fix`:** این نسخه فقط می‌خواند و چیزی نمی‌نویسد، پس برگشتن به چیدمان درست ۵ ETH Alice را برگرداند. اگر یک نوشتن هم انجام شده بود، داده برای همیشه خراب می‌شد.
+
+قاعده این است: بین نسخه‌ها متغیر state را جابه‌جا، حذف یا عوض نکنید و فقط به آخر بیفزایید. و قبل از هر ارتقا خروجی `forge inspect ... storageLayout` دو نسخه را کنار هم بگذارید.
 
 ## Initializer
 
-proxy هرگز constructor پیاده‌سازی را اجرا نمی‌کند، پس state با `initialize()` مقدار می‌گیرد. proxy من آن را در تراکنش دیپلوی صدا می‌زند و شکاف پست قبل بسته می‌شود. implementation هم قرارداد است و constructor در `VaultV1` قفلش می‌کند، پس `impl.initialize(mallory)` revert می‌شود. بدون قفل، Mallory مالک implementation می‌شود؛ تا جایی که می‌بینم اینجا بی‌خطر است، ولی اگر منطق ارتقا آنجا بود مهم می‌شد.
+یک نکته‌ی دیگر: proxy هرگز constructor پیاده‌سازی را اجرا نمی‌کند، چون constructor فقط یک بار در زمان دیپلوی خود implementation اجرا می‌شود و روی storage خودش می‌نویسد. پس state اولیه‌ی proxy باید با تابعی به اسم `initialize()` پر شود. باگ `InitFeed` در پست قبل نشان داد اگر کسی بتواند آن را دوباره صدا بزند چه می‌شود. proxy من `initialize` را در همان تراکنش دیپلوی صدا می‌زند و آن شکاف بسته می‌شود.
 
-تفاوت UUPS و transparent، تا جایی که از مستندات OpenZeppelin می‌فهمم، در جای منطق ارتقاست. transparent آن را در proxy نگه می‌دارد و فراخوانی admin را جلو نمی‌فرستد تا تداخلی پیش نیاید؛ `upgradeTo` من هر تابع implementation با همان {{< term "function-selector" "selector" >}} را می‌پوشاند. UUPS آن را در implementation می‌گذارد: proxy ارزان‌تر، ولی نسخه‌ای بدون آن یعنی پایان ارتقاها.
+خود implementation هم یک قرارداد معمولی است و می‌شود مستقیم صدایش زد. برای همین constructor در `VaultV1` آن را قفل می‌کند و `impl.initialize(mallory)` revert می‌شود. بدون قفل، Mallory مالک implementation می‌شود. تا جایی که می‌بینم این‌جا بی‌خطر است، چون state آن قرارداد به کسی مربوط نیست، ولی اگر منطق ارتقا همان‌جا بود مهم می‌شد.
+
+دو سبک رایج proxy هم هست: transparent و UUPS. تفاوتشان، تا جایی که از مستندات OpenZeppelin می‌فهمم، در جای منطق ارتقاست. در transparent منطق ارتقا در proxy می‌ماند و فراخوانی admin به implementation نمی‌رود، تا تداخلی پیش نیاید؛ `upgradeTo` در proxy من هم هر تابع implementation با همان {{< term "function-selector" "selector" >}} را می‌پوشاند. UUPS منطق ارتقا را در implementation می‌گذارد: proxy ارزان‌تر می‌شود، ولی نسخه‌ای که آن را نداشته باشد یعنی پایان ارتقاها.
 
 ## دام‌های بهینه‌سازی و ارتقا
 
-- با `forge snapshot --diff` اندازه بگیرید، نه افسانه.
-- فقط متغیرهای پرمصرف را pack کنید و هر cast کوچک‌کننده را چک کنید.
-- بین نسخه‌ها متغیر state را جابه‌جا، حذف یا عوض نکنید؛ فقط به آخر بیفزایید.
-- در تراکنش دیپلوی initialize کنید و implementation را قفل کنید.
+- **با `forge snapshot --diff` اندازه بگیرید، نه افسانه.** چند ترفند معروف، مثل `unchecked`، سودی نداشتند.
+- **فقط متغیرهای پرمصرف را pack کنید و هر cast کوچک‌کننده را چک کنید.** pack کردن بی‌دقت همان باگ برش بی‌صدا را می‌آورد.
+- **بین نسخه‌ها متغیر state را جابه‌جا، حذف یا عوض نکنید.** فقط به آخر بیفزایید.
+- **در تراکنش دیپلوی initialize کنید و implementation را قفل کنید.**
 
 ## تمرین
 

@@ -10,11 +10,17 @@ tags = ["go", "nats", "jetstream", "kv", "object-store", "messaging"]
 cover = { image = "/images/covers/nats-kv-object-store.fa.png", alt = "KV و Object Store در NATS", hiddenInSingle = true }
 +++
 
-اگر سرویس‌هایتان از JetStream استفاده می‌کنند، برای وضعیت کوچکِ مشترک شاید به store جدایی نیاز نداشته باشید: JetStream می‌تواند **key-value store** (KV) و **blob store** (Object Store) هم باشد. هر دو روی streamها ساخته شده‌اند، پس چیز اضافه‌ای برای اجرا لازم نیست و همان سرور توکار [مقاله‌ی قبل](/fa/posts/nats-jetstream-testing/) کافی است. نمونه‌هایش: feature flag، قفل‌های کوتاه‌مدت، [کلیدهای dedup](/fa/posts/nats-jetstream-idempotency/) یا فایلی که چند سرویس لازم دارند.
+فرض کنید چند سرویس دارید که همه باید یک تکه‌ی کوچک کانفیگ مشترک را بخوانند، مثلاً یک feature flag که checkout جدید را روشن می‌کند. سه چیز می‌خواهید. سرویس بتواند flag را بخواند. وقتی کسی آن را عوض کرد فوراً خبردار شود، بدون polling. و دو نفری که همزمان flag را عوض می‌کنند بی‌صدا روی کار هم ننویسند. یک روز دیگر یکی از سرویس‌ها باید یک فایل گزارش ۵ مگابایتی را با سرویس دیگر به اشتراک بگذارد. می‌توانید برای هرکدام یک دیتابیس یا فایل‌سرور جدا راه بیندازید، یا متوجه شوید چیزی دارید که هر دو را بلد است.
 
-> Go 1.26، `nats-server` نسخه‌ی v2.15.1 و `nats.go` نسخه‌ی v1.54.0، با پکیج جدیدتر `jetstream` (KV و Object Store را دارد). برنامه‌ی نمونه یک سرور توکار دارد. ماشین شلوغ بود، پس فقط زمان‌های تقریبی را می‌آورم.
+اگر سرویس‌هایتان از قبل JetStream دارند، می‌تواند: JetStream به‌عنوان **ذخیره‌ی key-value** (KV) و **ذخیره‌ی blob** (Object Store) هم کار می‌کند. هر دو روی streamها ساخته شده‌اند، پس چیز اضافه‌ای برای راه‌اندازی نیست. سرور تعبیه‌شده‌ی [مقاله‌ی قبل](/fa/posts/nats-jetstream-testing/) برای امتحانشان کافی است. کاربردهای معمول: feature flag، قفل‌های کوتاه‌عمر، [کلیدهای dedup](/fa/posts/nats-jetstream-idempotency/) یا فایلی که چند سرویس لازم دارند.
 
-## ساخت bucket، Put و Get
+> همه‌چیز را با Go 1.27، `nats-server` نسخه‌ی v2.15.1 و `nats.go` نسخه‌ی v1.54.0 اجرا کردم و از پکیج جدیدتر `jetstream` استفاده کردم (KV و Object Store در آن است). دمو یک برنامه‌ی محلی با یک سرور تعبیه‌شده است. کد یک مثال محلی است، نه یک repo منتشرشده. ماشین مشغول بود، پس فقط زمان‌های تقریبی می‌آورم، و شناسه‌های تصادفی در خروجی (مثل `nuid`) در هر اجرا فرق می‌کنند.
+
+## ساختن bucket، put و get
+
+یک KV یک **bucket** (سطل) از کلیدها و مقدارهاست. مقداری را زیر یک کلید می‌گذارید و دوباره می‌خوانید. نکته این است که هر نوشتن یک **revision** می‌گیرد، عددی که می‌گوید این کدام نوشتن بود. همین عدد کوچک است که watch و به‌روزرسانی امن را در ادامه‌ی مقاله ممکن می‌کند.
+
+در دموی اول یک bucket به نام `Config` می‌سازم، یک کلید را دو بار می‌نویسم و می‌خوانمش:
 
 ```go
 kv, _ := js.CreateKeyValue(ctx, jetstream.KeyValueConfig{
@@ -25,7 +31,8 @@ r2, _ := kv.Put(ctx, "feature.checkout", []byte("on"))
 e, _ := kv.Get(ctx, "feature.checkout")
 hist, _ := kv.History(ctx, "feature.checkout")
 ```
-```
+
+```text
 put revisions: 1 2
 get: key=feature.checkout value=on revision=2 op=KeyValuePutOp
 get missing: nats: key not found true
@@ -33,45 +40,64 @@ history: rev=1 value=off
 history: rev=2 value=on
 ```
 
-`History` تعداد مقدارهای قدیمیِ نگه‌داشته‌شده برای هر کلید است (پیش‌فرض ۱، حداکثر ۶۴). **Revision** همان شماره‌ی sequence پیام در stream است، پس در کل bucket یکتاست، نه فقط برای هر کلید. از فیلدهای مفید دیگر `TTL` (انقضا) و `Storage` (فایل یا حافظه) است.
+خط‌به‌خط:
 
-## فقط یک stream است
+- `put revisions: 1 2`: دو نوشتن revision شماره‌ی ۱ و ۲ گرفتند.
+- `get`: خواندن کلید آخرین مقدار، یعنی `on` را با revision شماره‌ی ۲ برمی‌گرداند. `op=KeyValuePutOp` می‌گوید این مدخل با put ساخته شده (انواع دیگرش delete و purge است، پایین‌تر).
+- `get missing`: خواندن کلیدی که وجود ندارد خطا برمی‌گرداند. در Go با `errors.Is(err, jetstream.ErrKeyNotFound)` آزمونش می‌کنید و `true` آخر خط همان بررسی است.
+- `history`: هر دو مقدار هنوز هستند، قدیمی‌ترین اول، چون bucket تاریخچه نگه می‌دارد.
 
-```
+`History` تعداد مقدارهای قدیمی هر کلید است که bucket نگه می‌دارد (پیش‌فرض ۱ و حداکثر ۶۴). revision همان شماره‌ی ترتیب stream برای آن نوشتن است، پس در کل bucket یکتاست، نه برای هر کلید جدا. فیلدهای مفید دیگر `TTL` (انقضا، بعداً می‌آید) و `Storage` (فایل یا حافظه) هستند.
+
+## این فقط یک stream است
+
+اگر KV «روی stream ساخته شده» می‌توانیم زیر کاپوت را ببینیم. دمو اطلاعات stream و پیام خام را می‌خواند:
+
+```text
 stream=KV_Config subjects=[$KV.Config.>] max_msgs_per_subject=5 storage=File msgs=2
 raw message: subject=$KV.Config.feature.checkout seq=2 data=on
 ```
 
-Bucket به نام `Config` یک stream با نام `KV_Config` است. هر کلید یک subject است: `$KV.Config.<key>`، و `History` به `max_msgs_per_subject` تبدیل می‌شود. `Get` آخرین پیام آن subject را می‌خواند. پس هر چه درباره‌ی streamها می‌دانید (replica، storage، `nats stream info`) اینجا هم صدق می‌کند.
+bucket به نام `Config` یک stream به نام `KV_Config` است. هر کلید یک subject است، یعنی `$KV.Config.<key>`، و `History: 5` شده `max_msgs_per_subject=5` که یعنی «برای هر subject حداکثر ۵ پیام نگه دار». `msgs=2` همان دو نوشتن ماست. `Get` فقط آخرین پیام آن subject را می‌خواند و شماره‌ی ترتیب آن پیام (`seq=2`) همان revision است. پس هرچه درباره‌ی streamها می‌دانید (replica، storage، `nats stream info`) برای bucket هم صادق است.
 
 ## Create و Update: compare-and-swap
 
-`Create` فقط وقتی موفق می‌شود که کلید وجود نداشته باشد. `Update` فقط وقتی موفق می‌شود که revision فعلی کلید را بدهید.
+حالا مشکل دو نفری که یک flag را عوض می‌کنند. فرض کنید دو سرویس هر دو شمارنده‌ای با مقدار ۵ را می‌خوانند و هر دو ۶ می‌نویسند. یک افزایش گم می‌شود و هیچ‌کس خطایی نمی‌گیرد. راه‌حل رایج **compare-and-swap** است: «این مقدار جدید را فقط اگر کلید هنوز روی همان revisionی است که من خواندم بنویس». اگر کسی در این فاصله آن را عوض کرده باشد، نوشتن رد می‌شود و دوباره می‌خوانید. این همان ایده‌ی {{< term "optimistic-concurrency" "همزمانی خوش‌بینانه" >}} است: قفل نیست، فقط یک بررسی موقع نوشتن.
 
-```
+KV برای این دو فراخوانی دارد. `Create` فقط وقتی موفق می‌شود که کلید وجود نداشته باشد. `Update` فقط وقتی موفق می‌شود که revision فعلی کلید را بدهید. دمو هر دو را امتحان می‌کند، با حالت‌های شکست:
+
+```text
 create: 3 <nil>
 create again: nats: nats: API error: code=400 err_code=10071 description=wrong last sequence: 3: key exists | is ErrKeyExists: true
 update with current rev: 4 <nil>
 update stale: nats: nats: API error: code=400 err_code=10071 description=wrong last sequence: 4: nats: key revision mismatch
+api error code: 10071 | wrong last sequence: 4
 is ErrKeyRevisionMismatch: true
 ```
 
-هر دو در اصل همان بررسی `wrong last sequence` سرور هستند (کد خطای 10071). در Go با `errors.Is` و `jetstream.ErrKeyExists` یا `jetstream.ErrKeyRevisionMismatch` تشخیص بدهید. الگوی معمول: `Get`، محاسبه، `Update` با همان revision، و اگر mismatch بود دوباره `Get` و تلاش مجدد. به قفل نیازی نیست.
+- اولین `create` کلید `limit` را با revision شماره‌ی ۳ ساخت (revisionهای ۱ و ۲ نوشتن‌های قبلی بودند).
+- `create` دوم همین کلید شکست خورد. `wrong last sequence: 3` می‌گوید آخرین revision کلید ۳ است، پس «ساختن» مجاز نیست.
+- `update with current rev` با revision شماره‌ی ۳ موفق شد و revision جدید ۴ است.
+- `update stale` با revision شماره‌ی ۱ آمد که کهنه است. سرور جواب داد `wrong last sequence: 4`، یعنی «کلید روی ۴ است، نه ۱»، و کتابخانه آن را revision mismatch گزارش می‌کند.
+
+هر دو شکست در اصل همان بررسی `wrong last sequence` سرور هستند (کد خطا ۱۰۰۷۱). در Go از `errors.Is` با `jetstream.ErrKeyExists` و `jetstream.ErrKeyRevisionMismatch` استفاده کنید. حلقه‌ی معمول این است: `Get`، محاسبه‌ی مقدار جدید، `Update` با revisionی که خواندید و در صورت mismatch دوباره `Get` و تلاش مجدد. قفل لازم نیست.
 
 ## Delete در برابر Purge و تاریخچه
 
-کلیدهای `a` و `b` را دو بار نوشتم، بعد `Delete(a)` و `Purge(b)`:
+برای پاک کردن یک کلید دو راه هست و در سرنوشت تاریخچه فرق دارند. در دمو کلیدهای `a` و `b` را هرکدام دو بار نوشتم و بعد `Delete(a)` و `Purge(b)` را صدا زدم:
 
-```
+```text
 get a after delete: nats: key not found
 history a (3 entries): [rev=5 op=KeyValuePutOp] [rev=6 op=KeyValuePutOp] [rev=9 op=KeyValueDeleteOp]
 history b (1 entries): [rev=10 op=KeyValuePurgeOp]
 keys: [feature.checkout limit]
 ```
 
-`Delete` یک نشانگر حذف اضافه می‌کند و مقدارهای قدیمی در history می‌مانند. `Purge` هم نشانگر می‌نویسد ولی مقدارهای قبلی را پاک می‌کند. در هر دو حالت `Get` خطای `ErrKeyNotFound` می‌دهد.
+`Delete` یک نشانگر حذف اضافه می‌کند و مقدارهای قدیمی را در تاریخچه نگه می‌دارد: `a` دو put خود را دارد (revisionهای ۵ و ۶) و نشانگر (revision شماره‌ی ۹). revisionهای ۷ و ۸ مال `b` هستند، که دوباره نشان می‌دهد revisionها در کل bucket شمرده می‌شوند. `Purge` هم نشانگر می‌نویسد (revision شماره‌ی ۱۰) ولی مقدارهای قدیمی‌تر را پاک می‌کند، برای همین `b` یک مدخل دارد. هر دو باعث می‌شوند `Get` خطای `ErrKeyNotFound` بدهد و `Keys` دیگر فهرستشان نکند: فقط `feature.checkout` و `limit` مانده‌اند.
 
 ## Watch
+
+حالا چیز دوم از ابتدای مقاله: خبردار شدن وقتی مقداری عوض می‌شود. **watch** یک subscription روی bucket است. کد از کانال `Updates()` ناظر می‌خواند:
 
 ```go
 w, _ := kv.WatchAll(ctx)
@@ -81,9 +107,9 @@ for e := range w.Updates() {
 }
 ```
 
-با دو کلیدِ موجود، بعد دو put و یک delete از goroutine دیگر:
+در دمو bucket از قبل دو کلید دارد. بعد از شروع watch، یک goroutine دیگر دو put و یک delete انجام می‌دهد:
 
-```
+```text
 watch: dark=off rev=1 op=KeyValuePutOp
 watch: beta=off rev=2 op=KeyValuePutOp
 watch: nil (initial values done)
@@ -92,59 +118,68 @@ watch: gamma=on rev=4 op=KeyValuePutOp
 watch: beta= rev=5 op=KeyValueDeleteOp
 ```
 
-اول مقدار فعلیِ همه‌ی کلیدها می‌آید، بعد یک مقدار `nil` به معنی «به‌روز شدی»، بعد تغییرهای زنده، از جمله delete. یک سرویس با این می‌تواند cache محلیِ config خودش را نگه دارد. `Watch` الگوی کلید می‌گیرد و گزینه‌هایی مثل `UpdatesOnly()` و `IgnoreDeletes()` هست.
+دو خط اول مقدار فعلی هر کلید است. بعد یک مدخل `nil` می‌آید که یعنی «به زمان حال رسیدی». بعد از آن تغییرهای زنده می‌آیند: `dark` روشن شد، کلید تازه‌ی `gamma` آمد و `beta` حذف شد (مقدارش خالی است). سرویس می‌تواند از این برای نگه داشتن یک cache محلی از کانفیگ استفاده کند: cache را از بخش اول پر می‌کند و تغییرها را با رسیدنشان اعمال می‌کند، بدون polling. `Watch` یک الگوی کلید می‌گیرد و گزینه‌هایی مثل `UpdatesOnly()` و `IgnoreDeletes()` هم هست.
 
 ## TTL و یک قفل کوچک
 
-Bucket با `TTL: time.Second` ورودی‌ها را بعد از یک ثانیه حذف می‌کند. به‌جای sleep، تا یک deadline poll کردم:
+bucket می‌تواند مدخل‌ها را منقضی هم بکند. bucket با `TTL: time.Second` مدخل‌ها را یک ثانیه بعد از نوشتن حذف می‌کند. دمو یک کلید session می‌نویسد و به‌جای sleep با یک مهلت poll می‌کند:
 
-```
+```text
 get right after put: <nil>
 gone after ~1.3s: nats: key not found
 ```
 
-(انقضا لحظه‌ای نیست: با TTL یک‌ثانیه‌ای روی ماشین شلوغ حدود ۱.۳ ثانیه دیدم، پس هرگز به زمان دقیق تکیه نکنید.) `Create` و TTL را کنار هم بگذارید تا قفلی داشته باشید که اگر صاحبش بمیرد خودش آزاد می‌شود. در نمونه، `worker-a` قفل `nightly-report` را می‌گیرد و «crash» می‌کند، بعد `worker-b` و `worker-c` در حلقه `Create` را تکرار می‌کنند و برنده با `Delete` آزادش می‌کند:
+خط اول یعنی خواندن موفق بود (`<nil>` یعنی «بدون خطا»). خط دوم یعنی کلید بعد از حدود ۱٫۳ ثانیه خودش ناپدید شد. انقضا لحظه‌ای نیست: با TTL یک‌ثانیه‌ای روی یک ماشین مشغول حدود ۱٫۳ ثانیه دیدم، پس هرگز به زمان دقیق تکیه نکنید.
 
-```
+`Create` و TTL را کنار هم بگذارید تا قفلی داشته باشید که اگر صاحبش بمیرد خودش آزاد می‌شود. `Create` گرفتن قفل است چون فقط یک نفر می‌تواند کلید را بسازد و TTL تور ایمنی است. در دمو `worker-a` قفل `nightly-report` را می‌گیرد و با آزاد نکردنش «crash» می‌کند. بعد `worker-b` و `worker-c` در یک حلقه `Create` را دوباره امتحان می‌کنند. هرکس ببرد ۱۰۰ میلی‌ثانیه قفل را نگه می‌دارد و با `Delete` آزادش می‌کند:
+
+```text
 +0.0s worker-a: create lock: err=<nil>
 +1.3s worker-c: got the lock
-+1.4s worker-b: got the lock
-+1.5s done
++1.5s worker-b: got the lock
++1.6s done
 ```
 
-هر لحظه فقط یکی قفل را داشت. این یک lease ساده است، نه mutex امن: اگر صاحب قفل فقط کند باشد و TTL بگذرد، دیگری هم قفل را می‌گیرد. کار را idempotent نگه دارید. همین `Create` برای بررسی dedup هم خوب است، و برای متوقف کردن تمیز workerها [graceful shutdown](/fa/posts/go-graceful-shutdown-workers/) را ببینید.
+تا ۱٫۳ ثانیه‌ی اول هیچ‌کس نتوانست قفل را بگیرد، تا مدخل worker-a منقضی شد. بعد `worker-c` برد و `worker-b` فقط بعد از آزاد کردن `worker-c` آن را گرفت، پس هر لحظه فقط یک نفر آن را داشت. برنده در هر اجرا می‌تواند فرق کند، و در اجرای قبلی‌ام برای `worker-b` عدد `+1.4s` و برای `done` عدد `+1.5s` چاپ شد.
+
+توجه کنید این یک lease ساده است، نه mutex امن. اگر صاحب قفل فقط کند باشد و TTL بگذرد، یک نفر دیگر هم قفل را می‌گیرد. کار را idempotent نگه دارید. همین `Create` برای بررسی dedup هم عالی است، و برای خاموش کردن تمیز Workerها [خاموشی تمیز Workerها در Go](/fa/posts/go-graceful-shutdown-workers/) را ببینید.
 
 ## Object Store
 
-مقدارهای KV کوچک‌اند. برای چیزهای بزرگ Object Store هست. ۵ مگابایت + ۱۲۳ بایت داده‌ی تصادفی ساختم و رفت‌وبرگشت را با SHA-256 بررسی کردم:
+مقدارهای KV کوچک‌اند، چون هرکدام یک پیام NATS است. برای چیزهای بزرگ Object Store هست. یک blob بزرگ را به chunk (تکه) تقسیم می‌کند، هر تکه را یک پیام ذخیره می‌کند و موقع `Get` دوباره سر هم می‌کند. دمو ۵ مگابایت + ۱۲۳ بایت داده‌ی شبه‌تصادفی می‌سازد و رفت‌وبرگشت را با SHA-256 بررسی می‌کند:
 
-```
+```text
 generated 5243003 bytes sha256=814fa28020cf3b71
-put: name=report.bin size=5243003 chunks=41 digest=SHA-256=gU-igCDPO3F_4IIRwRPdwils9n-F89Us246F7Q2bgTo= nuid=...
+put: name=report.bin size=5243003 chunks=41 digest=SHA-256=gU-igCDPO3F_4IIRwRPdwils9n-F89Us246F7Q2bgTo= nuid=OBH4NbUJ2ckiDHP87U2H7F
 get: 5243003 bytes sha256=814fa28020cf3b71 equal=true
 list: report.bin size=5243003 chunks=41
 list: small.txt size=5 chunks=1
 stream=OBJ_Files subjects=[$O.Files.C.> $O.Files.M.>] msgs=44 bytes=5246313
 ```
 
-اندازه‌ی پیش‌فرض هر chunk برابر ۱۲۸ کیلوبایت است، پس blob به ۴۱ پیام تبدیل شد (۴۰ chunk کامل و ۱۲۳ بایت). subjectهای `.C.` chunkها و `.M.` متادیتا را نگه می‌دارند، پس ۴۴ پیام = ۴۱ + ۱ chunk فایل `small.txt` + ۲ متادیتا. بعد از `Delete("report.bin")`:
+- خط اول ۸ بایت اول SHA-256 داده‌ای را که ساختیم چاپ می‌کند. `get` همان مقدار را برای داده‌ی برگشتی چاپ می‌کند و `equal=true` یعنی یکی هستند.
+- `put` نشان می‌دهد شیء در ۴۱ تکه ذخیره شد، با یک digest از نوع SHA-256 برای محتوا.
+- اندازه‌ی پیش‌فرض هر تکه ۱۲۸ کیلوبایت است، پس blob شد ۴۱ پیام: ۴۰ تکه‌ی کامل و یک تکه‌ی آخر ۱۲۳ بایتی.
+- subjectهای `.C.` تکه‌ها و subjectهای `.M.` متادیتا را نگه می‌دارند، پس ۴۴ پیام = ۴۱ تکه + ۱ تکه‌ی `small.txt` + ۲ پیام متادیتا (یکی برای هر شیء).
 
-```
+بعد دمو شیء بزرگ را حذف می‌کند:
+
+```text
 info after delete: nats: object not found
 after delete: msgs=3 bytes=671
 status: bucket=Files size=671 sealed=false storage=File replicas=1
 ```
 
-Delete، chunkها را پاک می‌کند و یک نشانگر در متادیتا می‌گذارد.
+حذف تکه‌ها را پاک می‌کند و یک نشانگر متادیتا می‌گذارد: ۳ پیام می‌ماند (تکه و متادیتای `small.txt` و نشانگر `report.bin`). `replicas=1` اشاره‌ای به مقاله‌ی بعد است: این bucket فقط روی یک سرور است.
 
-## کجا KV و Object Store کم می‌آورند
+## KV و Object Store کجا کم می‌آورند
 
-- این پایگاه‌داده نیست: query ندارد، تراکنش بین چند کلید ندارد، فقط revision برای هر کلید. آن را وضعیت کوچکِ مشترک بدانید.
-- TTL اینجا تنظیم کل bucket است، پس برای هر طول عمر یک bucket بسازید (قفل‌ها، sessionها، config).
-- مقدارها پیام عادی NATS هستند، پس حداکثر payload سرور (پیش‌فرض ۱ مگابایت) مقدار KV را محدود می‌کند؛ بزرگ‌تر از آن Object Store.
-- Object Store هنگام `Get` digest را بررسی می‌کند، ولی باز هم chunk در یک stream است: به محدودیت‌های storage و replica دقت کنید.
-- Watcher باید ورودی `nil` و نشانگرهای delete را مدیریت کند.
+- این یک دیتابیس نیست: نه query دارد، نه تراکنش روی چند کلید، فقط revision برای هر کلید. آن را حالت مشترک کوچک بدانید.
+- در این دمو TTL تنظیم bucket است، پس برای هر طول عمر یک bucket بگیرید (قفل‌ها، sessionها، کانفیگ).
+- مقدارها به‌صورت پیام معمولی NATS می‌روند، پس حداکثر payload سرور (طبق مستندات NATS به‌طور پیش‌فرض ۱ مگابایت) مقدار KV را محدود می‌کند. بیشتر از آن از Object Store استفاده کنید.
+- Object Store موقع `Get` digest را بررسی می‌کند، ولی باز هم تکه‌هایی در یک stream است: حد ذخیره‌سازی و replicaها را در نظر بگیرید.
+- ناظرها باید مدخل `nil` و نشانگرهای حذف را مدیریت کنند، مثل خروجی بالا.
 
 ## قدم بعدی
 
-همه‌ی این‌ها روی یک سرور توکار اجرا شد. «JetStream در پروداکشن: cluster، retention و امنیت» درباره‌ی چیزهایی است که با رفتن به سه سرور و محیط واقعی تغییر می‌کنند.
+همه‌ی این‌ها روی یک سرور تعبیه‌شده اجرا شد. مقاله‌ی بعد، [JetStream در پروداکشن: cluster، retention و امنیت](/fa/posts/nats-jetstream-production/)، می‌گوید با سه سرور و یک محیط واقعی چه چیزهایی عوض می‌شود.

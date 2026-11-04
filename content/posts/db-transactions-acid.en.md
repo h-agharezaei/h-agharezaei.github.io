@@ -10,17 +10,28 @@ tags = ["databases", "postgresql", "transactions", "acid", "wal"]
 cover = { image = "/images/covers/db-transactions-acid.png", alt = "Transactions and ACID", hiddenInSingle = true }
 +++
 
-A money transfer is two updates: subtract here, add there. If the process dies between them, money disappears. A {{< term "transaction" "transaction" >}} is the database's answer: a group of statements that either all happen or none do. The [previous post](/posts/db-planner-statistics/) was about reading; this one is about keeping writes correct. The application side of this is in [Transactions and the repository pattern in Go](/posts/go-transactions-patterns/).
+Say alice wants to send bob $30. Your code does two things: it takes 30 dollars out of alice's account, then adds 30 dollars to bob's. Now imagine the process dies right between the two statements, or the second one fails with an error. alice has lost $30, bob has not received it, and the money has vanished from the system.
 
-> Everything ran on a real PostgreSQL 18.3. I used a small `accounts` table (alice 10000 cents, bob 5000) with `CHECK (balance_cents >= 0)` and a `transfers` table with foreign keys. The pieces together are called {{< term "acid" "ACID" >}}.
+The database's answer to this problem is the **{{< term "transaction" "transaction" >}}**: a group of statements that the database treats as one unit of work. Either all of them take effect or none of them do. The [previous post](/posts/db-planner-statistics/) was about reading, and how the database decides how to find data. This one is about writing, and how data stays correct after it is written. The application side, how to open a transaction from Go, is in [Transactions and the Repository pattern in Go](/posts/go-transactions-patterns/); here we look at the database itself.
+
+> Every example below was re-run on a real PostgreSQL 18.3, and the outputs are what I saw. I have two small tables. `accounts` holds two rows, alice with 10000 cents and bob with 5000 cents, plus a constraint that a balance can never go negative (`CHECK (balance_cents >= 0)`). `transfers` records transfers and has foreign keys to the accounts. I store money in cents so I do not have to deal with floating-point numbers.
+
+## What does ACID mean?
+
+The guarantees a transaction gives are summarized by four letters, **{{< term "acid" "ACID" >}}**. Here is a quick look at all four before we test them one by one:
+
+- **Atomicity (all or nothing):** a transaction either runs completely or counts as never having run. There is no half-done state.
+- **Consistency:** a transaction moves the data from one valid state to another valid state. "Valid" means every constraint you defined still holds.
+- **Isolation:** transactions running at the same time do not see each other's unfinished work, up to a point. How far that goes is decided by the isolation level, and the next post is entirely about it.
+- **Durability:** once the database has said `COMMIT` succeeded, the change survives even if the power goes out a moment later.
 
 ## Autocommit versus BEGIN
 
-Without `BEGIN`, every statement is its own transaction and commits immediately (autocommit). `UPDATE accounts SET balance_cents = balance_cents - 3000 WHERE id = 1` made alice 7000 at once, even though bob had not received anything yet. That is the problem a transfer must avoid.
+If you do not write `BEGIN`, PostgreSQL treats every statement as its own transaction and commits it immediately. This is called autocommit. When I ran `UPDATE accounts SET balance_cents = balance_cents - 3000 WHERE id = 1` that way, alice was at 7000 right away and nobody could take it back, while bob had received nothing yet. A money transfer must stay away from exactly this state. The fix is to put both statements between `BEGIN` and `COMMIT` so they become one unit.
 
-## Atomicity
+## Atomicity: when an error comes in the middle
 
-I wrapped the transfer in a transaction, with a second statement that fails (bob would go to -4000):
+Let us see what "all or nothing" means in practice. I put the transfer inside a transaction, but wrote the second statement so that it fails on purpose: instead of 3000 cents it takes 9000 cents from bob, which would leave him negative. The `CHECK` constraint does not allow that. The `psql` output was:
 
 ```text
 BEGIN;
@@ -34,11 +45,20 @@ COMMIT;
 ROLLBACK
 ```
 
-After an error the transaction is **aborted**: every further command is refused until the block ends. Even `COMMIT` answers `ROLLBACK`. The balances afterwards were alice 10000, bob 5000: the first update vanished. The successful version (minus 3000, plus 3000, `COMMIT`) gave 7000 and 8000. An explicit `ROLLBACK` works the same: inside the transaction I set alice to 0 and read 0; after `ROLLBACK` she was 7000 again.
+Line by line:
 
-## Savepoints
+- The first statement succeeded (`UPDATE 1`): inside the transaction, alice is now at 7000.
+- The second statement failed. `DETAIL` says the row that was about to be written (`bob` with `-4000`) violates the constraint.
+- After the error the transaction is in the **aborted** state. From this point to the end of the block PostgreSQL rejects every statement. Even a plain `SELECT 1` fails.
+- The last line is the interesting one. We typed `COMMIT`, but the answer was `ROLLBACK`. The database does not let you commit a broken transaction.
 
-A {{< term "savepoint" "savepoint" >}} lets you undo a part:
+Afterwards I read the balances: alice was back at 10000 and bob at 5000. The first statement, which was perfectly fine by itself, had disappeared too. That is atomicity. When I wrote the same transfer correctly (take 3000 from alice, add 3000 to bob, `COMMIT`), the result was 7000 and 8000.
+
+You can also write `ROLLBACK` yourself. Inside a transaction I set alice to 0 and a `SELECT` showed 0; after `ROLLBACK` she was back at 7000. So until `COMMIT`, changes exist only for the transaction itself, and you can throw them away whenever you like.
+
+## Savepoints: undoing only part of the work
+
+Sometimes you do not want one error to throw away the whole transaction. A {{< term "savepoint" "savepoint" >}} is a point you can return to inside a transaction: you roll back only as far as that point, and the transaction stays usable afterwards.
 
 ```text
 BEGIN;
@@ -50,26 +70,30 @@ UPDATE accounts SET balance_cents = balance_cents - 200 WHERE id = 1;
 COMMIT;
 ```
 
-Alice went from 7000 to 6700: the -100 and -200 survived, the failed one did not. Without the savepoint the error would have aborted everything.
+First we subtract 100 cents and set `s1`. Then an impossible subtraction (99999 cents) hits the constraint and fails. Instead of giving up on the transaction, we run `ROLLBACK TO s1`. That undoes only the failed statement, and the transaction can be used again. Then we subtract another 200 cents and `COMMIT`.
 
-## Consistency
+alice went from 7000 to 6700: the 100 and the 200 stayed, and the failed statement did not. Without the savepoint, that error would have aborted the entire transaction.
 
-Consistency here means constraints. A {{< term "check-constraint" "CHECK" >}} failed above; a {{< term "foreign-key" "foreign key" >}} does the same. I subtracted 50 from alice and inserted a transfer to account 99, which does not exist:
+## Consistency: constraints
+
+In ACID, consistency means in practice the constraints you defined yourself: a {{< term "check-constraint" "CHECK constraint" >}}, uniqueness, a {{< term "foreign-key" "foreign key" >}} and so on. We already saw a `CHECK` stop a negative balance. A foreign key does the same for the relationship between tables. This time I took 50 cents from alice and then recorded a transfer to an account with id 99, which does not exist:
 
 ```text
 ERROR:  insert or update on table "transfers" violates foreign key constraint "transfers_to_id_fkey"
 DETAIL:  Key (to_id)=(99) is not present in table "accounts".
 ```
 
-The final `COMMIT` rolled back and alice stayed 6700. Constraints guard the data even if the application code has a bug. The database only enforces rules you declared; business rules that are not constraints are your job.
+The insert failed, so the final `COMMIT` became a `ROLLBACK` as well, and alice stayed at 6700: the 50 cents she had lost came back. So even if the application code has a bug, the database refuses to store invalid data. One important point: the database enforces only the rules you declared as constraints. A business rule that is not a constraint, such as "each user may make at most ten transfers a day", is still your job.
 
-## DDL is transactional (PostgreSQL)
+## DDL is transactional too (in PostgreSQL)
 
-I did `BEGIN; CREATE TABLE temp_demo ...; INSERT ...; SELECT count(*)` (returned 1) and then `ROLLBACK`. Afterwards `to_regclass('temp_demo')` was empty: the table never existed. This is a PostgreSQL feature; I did not test other databases, and some of them commit implicitly on DDL, so do not assume it elsewhere. It makes migrations safer.
+Transactions are not only for `INSERT` and `UPDATE`. In PostgreSQL, the statements that create and change tables (DDL) live inside transactions too. I opened a transaction, created the table `temp_demo`, inserted a row, and `SELECT count(*)` returned 1. Then I ran `ROLLBACK`. After that `to_regclass('temp_demo')` returned empty (`NULL`): the table had never existed.
 
-## Isolation: a teaser
+This is a PostgreSQL feature. I have not tried other databases, and I know that some of them commit implicitly when you run DDL, so do not assume this behavior elsewhere. In PostgreSQL it makes migrations safer: if a multi-step migration fails halfway, everything goes back to how it was.
 
-A small Go program opened two connections. Session A began a transaction, subtracted 500 from alice and inserted a transfer:
+## Isolation: a short example
+
+So far there was only one session. But a database serves many connections at once. A small Go program opened two connections, A and B. A started a transaction, took 500 cents from alice and inserted a transfer row. Before the `COMMIT`, both connections read the balance:
 
 ```text
 A: BEGIN; update alice -500; insert a transfer row
@@ -79,17 +103,19 @@ A: COMMIT
   B sees: alice=6200, transfers=1
 ```
 
-B does not see uncommitted work. What exactly B may see in more complex cases depends on the isolation level.
+A sees its own work: 6200 and one transfer. B still sees 6700 and zero transfers, because A has not committed yet. After the `COMMIT`, B sees the change too. (The 6700 comes from continuing the same session of experiments: alice had reached 6700 in the sections above.) So the result of unfinished work is invisible from outside. But this is only the simplest case. What B sees in trickier situations, for example when A commits in the middle of B's own transaction, depends on the isolation level, and that is the subject of the next post.
 
-## Durability, WAL and synchronous_commit
+## Durability: WAL and synchronous_commit
 
-A committed change must survive a crash. PostgreSQL writes each change to the {{< term "wal" "WAL" >}} first and flushes it on commit. Real settings here:
+Now the last letter: durability. When `COMMIT` succeeds, the change has to survive a crash. PostgreSQL guarantees this with a simple trick: before it writes a change to the main table files, it writes the change to a sequential log called the {{< term "wal" "WAL" >}} (write-ahead log). At `COMMIT` it flushes that log to disk. If the program or the server dies, then after the database starts again it replays the committed changes from the log. The actual settings of this instance:
 
 ```text
 synchronous_commit = on     fsync = on     wal_level = replica     full_page_writes = on
 ```
 
-With {{< term "synchronous-commit" "synchronous_commit" >}} `on`, `COMMIT` returns after the WAL is flushed. I measured WAL with `pg_current_wal_insert_lsn()` before and after (bytes, deterministic):
+The most important one is {{< term "synchronous-commit" "synchronous_commit" >}}. When it is `on`, `COMMIT` answers the application only after the WAL has been written to disk.
+
+To see how much WAL each kind of work writes, I read the WAL position with `pg_current_wal_insert_lsn()` before and after each piece of work and computed the difference in bytes. This number is deterministic and does not depend on how fast the machine is:
 
 ```text
 UPDATE of one row (autocommit):      112 bytes
@@ -98,20 +124,24 @@ BEGIN; COMMIT (empty):                 0 bytes
 BEGIN; UPDATE; ROLLBACK:             112 bytes
 ```
 
-Two lessons: an empty transaction costs nothing, and a rolled-back transaction still wrote WAL. (My first try used `pg_current_wal_lsn()`, which showed 0 for the rollback because that data was not yet written out; the insert position is the right one.) The very first update after startup wrote 4568 bytes. I checked the cause afterwards with `pg_walinspect`: an update right after a `CHECKPOINT` logs a full-page image (record `FPI_FOR_HINT`, flagged `FPW`), and the next update on the same page wrote only 112 bytes. The size of that image depends on how full the page is. **I did not crash-test durability**, for example with `kill -9`, so this section rests on the settings and the documentation.
+I re-ran these four lines and got exactly these numbers. Two things follow. First, an empty transaction costs nothing (0 bytes). Second, a transaction that was rolled back also wrote WAL, because PostgreSQL writes the change first and only later settles its fate. The cancelled row versions are ignored afterwards, but they were written. (A note on the method: `pg_current_wal_lsn()` is not the right position for this measurement. On my first attempt it showed 0 for the rollback case, because that transaction's data had not been written yet; the insert position, `pg_current_wal_insert_lsn()`, is the right one.)
 
-## Transaction traps
+You might think every `UPDATE` always costs 112 bytes. It does not. In my first run, the first update after startup wrote 4568 bytes. I checked why with `pg_walinspect`: right after a `CHECKPOINT`, the first change to any page puts the whole page (a full-page image) into the WAL, and the next update on the same page writes only 112 bytes. I tried this again this time: after a `CHECKPOINT` the first update wrote 952 bytes and the second wrote 112. The first number depends on how full the page is (our table has only two rows), so it is not the same everywhere; and 112 is the cost of this simple update on this table, not a general rule.
 
-- Keep transactions short. A long one holds locks and old row versions, which blocks cleanup; the post on MVCC and VACUUM explains it.
-- Never wait for a user or an HTTP call inside a transaction.
-- After an error the transaction is dead until `ROLLBACK` or `ROLLBACK TO` a savepoint.
-- `synchronous_commit = off` is faster but can lose the last commits in a crash; I did not test it.
-- In application code use one `WithTx` helper rather than hand-written `BEGIN` calls.
+An honest warning: **I did not crash-test durability**, for example by killing the database with `kill -9` in the middle of a commit. So this part rests on the settings above and on the PostgreSQL documentation, not on an experiment.
+
+## Transaction pitfalls
+
+- **Keep transactions short.** A long transaction holds locks and prevents old row versions from being cleaned up. Why that is, I explain in [MVCC and VACUUM](/posts/db-mvcc-vacuum/).
+- **Do not wait for a human or the network inside a transaction.** If you wait for a user's answer or an HTTP call between `BEGIN` and `COMMIT`, the transaction and everything it holds stay open for a long time.
+- **After an error, the transaction is dead.** As we saw, nothing is accepted until `ROLLBACK` or `ROLLBACK TO` a savepoint. If you use a library that hides this state, be careful.
+- **`synchronous_commit = off` is faster, but gives up some durability.** According to the PostgreSQL documentation, with it a crash can lose the last few commits. I did not test that.
+- **Do not scatter manual `BEGIN`s through your code.** Write one helper such as `WithTx` that handles the start, `COMMIT` and `ROLLBACK` in one place, so nobody forgets one.
 
 ## Exercise
 
-Add a `transfers` insert to the transfer, so a row is recorded only when both balances change. Make the second update fail with a CHECK violation and verify with `SELECT` that neither balance nor `transfers` changed. Then repeat it with a `SAVEPOINT` around the insert.
+Add the insert into `transfers` to the transfer, so that the transfer row is recorded only when both balances have changed. Make the second update fail by violating the `CHECK`, and use `SELECT` to see that neither the balances nor `transfers` changed. Then repeat it with a `SAVEPOINT` around the insert and see what difference it makes.
 
 ## What's next
 
-Isolation levels and anomalies: what B may see in more complex cases depends on the isolation level.
+[Isolation levels and anomalies](/posts/db-isolation-levels-anomalies/): we saw that B does not see A's uncommitted work, but we do not yet know what happens when A commits in the middle of B's transaction. The answer depends on the isolation level.

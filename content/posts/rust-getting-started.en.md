@@ -11,21 +11,23 @@ tags = ["rust", "cargo", "beginner", "tooling"]
 cover = { image = "/images/covers/rust-getting-started.png", alt = "Getting started with Rust: install, Cargo and a first program", hiddenInSingle = true }
 +++
 
-In practice you almost never call the Rust compiler, `rustc`, directly. Two tools sit in front of it: rustup, which installs and updates the toolchain, and Cargo, which creates projects, builds, runs, adds dependencies and formats code, roughly what the `go` command does for Go. This post also opens a Rust series, from beginner to advanced: I have spent most of my career writing backend services in Go and Node.js, and I am learning Rust in public. Where it helps, I will compare Rust with Go, since I have already written a few posts about Go.
+Say you have decided to learn Rust, and your first questions are: what do I install, and what do I type? The short answer is that you almost never call the Rust compiler, `rustc`, directly. Two tools stand in front of it. {{< term "rustup" "rustup" >}} installs and updates the compiler and the tools around it. {{< term "cargo" "Cargo" >}} creates projects, builds and runs your code, adds libraries and tidies the code up. Cargo plays roughly the role of the `go` command in Go.
 
-Why Rust at all? Honestly, not because it is trendy. Rust gives you memory safety without a garbage collector, performance in the same range as C and C++, and a strong type system that moves many bugs from runtime to compile time. The price is a steeper learning curve and a compiler that argues with you a lot at the beginning. This post is only about tooling: install, Cargo, and a program that runs.
+This post also opens a Rust series, from beginner to advanced. I have spent most of my career writing backend services in Go and Node.js, and I am learning Rust in public. I have also written a few posts about Go (they start with [Getting started with Go](/posts/go-getting-started/)), so where a comparison helps, I will compare Rust with Go.
 
-> Everything below was run with Rust 1.90.0 on macOS.
+Why Rust at all? Not because it is trendy. Rust gives you memory safety without a {{< term "garbage-collector" "garbage collector" >}}: your program does not need a separate part of the runtime that cleans up unused memory, and still the compiler catches mistakes such as using memory after it has been freed. Its speed is in the same range as C and C++. And it has a strong type system that moves many bugs from runtime to compile time. The price is a steeper learning curve and a compiler that argues with you a lot at the beginning. This post does not get into those arguments yet. It is only about tooling: install, create a project and run a program.
+
+> Everything below was run with Rust 1.90.0 on macOS. Build times and random numbers differ from run to run.
 
 ## Installing with rustup
 
-The official way is **rustup**, the toolchain manager (from https://rustup.rs):
+The official way to install Rust is a tool called **rustup**. It is a "toolchain manager". A toolchain is the set of tools you need to work with the language: the compiler, Cargo and a few more. rustup installs them, and later it can move you to a newer version. You get the install command from https://rustup.rs:
 
 ```bash
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 ```
 
-It installs the compiler (`rustc`), the build tool and package manager (**Cargo**) and lets you update later with `rustup update`. Check the install:
+Afterwards you can update with `rustup update`. To make sure everything is in place, ask for the versions of the compiler and Cargo:
 
 ```bash
 $ rustc --version
@@ -34,9 +36,11 @@ $ cargo --version
 cargo 1.90.0 (840b83a10 2025-07-30)
 ```
 
-## Your first project with Cargo
+Both tools answer, and both are version 1.90.0. Your version number is probably higher, and that is fine.
 
-In practice you almost never call `rustc` directly. Cargo does it:
+## The first project with Cargo
+
+Now we create a new project. The command `cargo new` makes a folder with a ready-made layout:
 
 ```bash
 $ cargo new rust-getting-started
@@ -44,7 +48,7 @@ $ cargo new rust-getting-started
 $ cd rust-getting-started
 ```
 
-The layout is small: `Cargo.toml` (name, version, dependencies; similar to `go.mod` plus metadata), and `src/main.rs`, the entry point. This is the generated `Cargo.toml`:
+`binary (application)` means a project that builds a runnable program. (The other kind is a library, which provides code for other projects.) Two things matter inside the folder. `src/main.rs` is where the program starts. `Cargo.toml` is the project's identity card: its name, its version and the libraries it needs. If you know Go, it is similar to `go.mod`. This is the `Cargo.toml` that `cargo new` generated:
 
 ```toml
 [package]
@@ -55,48 +59,56 @@ edition = "2024"
 [dependencies]
 ```
 
-`edition` is the language edition; it lets Rust evolve without breaking old code. The generated `main.rs` is a hello world, and `cargo run` builds and runs it:
+The `edition` line needs one explanation. To move forward, a language sometimes has to break something. Rust solves this with "editions": each project says which edition of the language it was written in, and the compiler follows that one. So the language can evolve without old code breaking. The `[dependencies]` section is empty for now.
+
+`cargo new` also put a hello world program in `src/main.rs`. The command `cargo run` compiles it first and then runs it:
 
 ```bash
 $ cargo run
    Compiling rust-getting-started v0.1.0 (...)
-    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.37s
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.67s
      Running `target/debug/rust-getting-started`
 Hello, world!
 ```
 
-## Debug vs release
+The first three lines are printed by Cargo, not by our program. `Compiling` means compilation started. `Finished` says it is done and which "profile" was used; I explain profiles in the next section. `Running` tells you which executable it started. The last line, `Hello, world!`, is the output of the program itself.
 
-`cargo build` makes a fast-to-compile debug build in `target/debug/`. `cargo build --release` turns optimizations on and puts the result in `target/release/`:
+## Debug and release
+
+You saw Cargo print `dev` profile. Cargo has two main ways to build. `cargo build` produces a **debug** build: it compiles quickly because it does not optimize the code, and it carries extra information that debuggers use. The output goes to `target/debug/`. `cargo build --release` turns optimization on. Compiling is slower, but the final program runs faster, and the output goes to `target/release/`:
 
 ```bash
 $ cargo build --release
-    Finished `release` profile [optimized] target(s) in 0.34s
+    Finished `release` profile [optimized] target(s) in 0.15s
 $ ls target
 CACHEDIR.TAG  debug  release
-$ ls -la target/debug/rust-getting-started target/release/rust-getting-started
--rwxr-xr-x@ 1 hossein  staff  443816 ... target/debug/rust-getting-started
--rwxr-xr-x@ 1 hossein  staff  406208 ... target/release/rust-getting-started
+$ ls -l target/debug/rust-getting-started target/release/rust-getting-started
+-rwxr-xr-x@ 1 <user>  staff  444520 ... target/debug/rust-getting-started
+-rwxr-xr-x@ 1 <user>  staff  406192 ... target/release/rust-getting-started
 ```
 
-For hello world the sizes are close; the real difference is in speed on heavy code. Use debug while developing and `--release` for anything you measure or ship.
+Each build kind got its own folder inside `target/`. The number in the fifth column is the file size in bytes. For a hello world the two numbers are close; the real difference of release shows when the program does heavy work. (I replaced my user name with `<user>`. The sizes also depend on the compiler version and the machine.) A simple rule: use debug while writing code, and use `--release` for anything you measure or ship.
 
-## Check, format, lint
+## Check, format and lint
 
-- `cargo check` type-checks without producing a binary, so it is much faster than a full build. I run it constantly.
-- `cargo fmt` formats code with `rustfmt` (like `gofmt`). `cargo fmt --check` only reports.
-- `cargo clippy` is the linter. It was installed on my machine with the default rustup profile and printed no warnings for the code below.
+Three more small commands will serve you every day:
+
+- `cargo check` only verifies that the code is valid (types and the rules of the language) and does not produce an executable, so it is much faster than a full build. I run it a lot while writing code.
+- `cargo fmt` tidies the code with the `rustfmt` tool, like `gofmt` in Go. `cargo fmt --check` changes nothing and only tells you if a file is not tidy.
+- `cargo clippy` is a **linter**: it reads your program and points out places that work but could be written better, or that are probably mistakes. I ran it on the program in the next section and it gave no warnings.
 
 ## A slightly bigger program, with a dependency
 
-Add a crate with `cargo add` (this needs network the first time):
+So far we have not written any code. Let us write a small program that uses an outside library. In Rust, a package of code is called a **crate**, and public crates are published on crates.io. To make a random number we need a crate named `rand`. Adding it is one command (it needs the internet the first time):
 
 ```bash
 $ cargo add rand
       Adding rand v0.10.3 to dependencies
 ```
 
-Cargo edits `Cargo.toml` for us (`rand = "0.10.3"`). Now a program that takes an optional CLI argument and prints a greeting with a random number:
+Cargo edited `Cargo.toml` for us and put a line like `rand = "0.10.3"` under `[dependencies]`. The exact version that was really used is also recorded in a file called `Cargo.lock`. Cargo creates that file itself, and you do not need to edit it by hand.
+
+Now the program. It does something simple: it takes an optional command-line argument and prints a greeting with a random number between 1 and 100.
 
 ```rust
 use std::env;
@@ -111,41 +123,50 @@ fn main() {
 }
 ```
 
-`env::args().nth(1)` returns an `Option` (there may be no argument), and `unwrap_or_else` supplies the default. We will cover `Option` properly later. Output (the number differs on every run):
+Line by line:
+
+- `env::args()` gives the command-line arguments. Argument number 0 is the program's own name, so `.nth(1)` takes the first argument the user typed.
+- The user may type no argument at all. That is why `nth(1)` returns its value inside an `Option`, which means "either there is something, or there is not". `unwrap_or_else` says: if there was nothing, use `"world"` instead. I will explain `Option` properly in later posts; this meaning is enough for now.
+- `random_range(1..=100)` returns a number from 1 to 100, where 100 itself is possible.
+- `println!` prints the text, and replaces anything inside `{}` with the value of that variable.
+
+We run it twice, once without an argument and once with a name:
 
 ```bash
 $ cargo run -q
-Hello, world! Your lucky number is 78.
+Hello, world! Your lucky number is 82.
 $ cargo run -q -- Roham
-Hello, Roham! Your lucky number is 20.
+Hello, Roham! Your lucky number is 86.
 ```
 
-The `--` separates Cargo's own flags from the arguments for your program.
+The `-q` (quiet) option removes the `Compiling` and `Running` lines so that only the program's own output remains. The `--` separates Cargo's own arguments from your program's arguments; everything after it goes to the program. The first time we gave no argument, so the default name `world` was printed; the second time it was `Roham`. The random number differs on every run, so your numbers will be different.
 
-## Go vs Rust tooling
+## Go and Rust tools side by side
+
+To see the everyday tasks next to each other:
 
 | Task | Go | Rust |
 | --- | --- | --- |
 | New project | `go mod init` | `cargo new` |
 | Build and run | `go run .` | `cargo run` |
-| Build | `go build` | `cargo build` (`--release` for optimized) |
+| Build | `go build` | `cargo build` (with `--release` for optimized) |
 | Add a dependency | `go get` | `cargo add` |
-| Format | `gofmt` / `go fmt` | `cargo fmt` |
+| Format code | `gofmt` / `go fmt` | `cargo fmt` |
 | Dependency file | `go.mod` | `Cargo.toml` (plus `Cargo.lock`) |
 
-## Tooling gotchas
+## Common tooling traps
 
-- Cargo builds into `target/`, which can get large. Keep it out of git (`cargo new` adds a `.gitignore` for it).
-- The first build with a new dependency downloads and compiles it; later builds reuse the cache.
-- Crate versions move fast. `rand` 0.10 needs `use rand::RngExt` for `random_range`; older tutorials show different APIs, so check the version.
-- Prefer `cargo check` while editing and `--release` when you measure performance.
-- Clippy and rustfmt are components; if `cargo clippy` is missing, run `rustup component add clippy`.
+- **The `target/` folder grows large.** Cargo puts all build output there. Keep it out of git; `cargo new` creates a `.gitignore` that already excludes `target`.
+- **The first build after adding a dependency is slow.** Cargo downloads and compiles the crate. Later builds reuse that work and are faster.
+- **Crate versions change, and old tutorials mislead.** In version 0.10 of `rand`, you need `use rand::RngExt` to call `random_range`. If an older tutorial shows different code, check the version first.
+- **Use the right command for the job.** While editing, `cargo check` gives the fastest feedback; when measuring speed you must use `--release`, because the speed of a debug build is not meaningful.
+- **Clippy and rustfmt are "components".** If `cargo clippy` is not found on your machine, install it with `rustup component add clippy`.
 
 ## Exercise
 
-1. Change the program to take two arguments, a name and a maximum number, and pick the lucky number from `1..=max`. (Hint: arguments are strings, so you will need to parse the second one.)
-2. Run `cargo build --release` and compare the binary with the debug one using `ls -la`.
+1. Change the program so that it takes two arguments, a name and a maximum number, and picks the lucky number from `1..=max`. (Hint: arguments are strings, so you have to parse the second one.)
+2. Run `cargo build --release` and compare the executable with the debug one using `ls -l`.
 
 ## What's next
 
-Types, variables and control flow in Rust: the basic vocabulary, where immutability, shadowing, `if` and `match` already differ from Go.
+"Types, variables and control flow in Rust". Now that we can build and run a program, it is time to learn the language itself: its basic vocabulary, where immutability, shadowing, `if` and `match` differ from Go right from the start.

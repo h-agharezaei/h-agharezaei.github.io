@@ -10,13 +10,17 @@ tags = ["rust", "axum", "http", "api", "tokio", "tower", "intermediate"]
 cover = { image = "/images/covers/rust-http-axum-api.png", alt = "Building an API with Axum in Rust", hiddenInSingle = true }
 +++
 
-Broken JSON sent to an Axum handler gets a `400`, valid JSON of the wrong shape a `422`, a missing header a `415`, all as plain text rather than your API's error format, unless you decide otherwise. Here the types from [Serde and JSON in Rust](/posts/rust-serde-json/) become request and response bodies, and on top of the Tokio runtime from [async Rust with Tokio](/posts/rust-async-tokio/) we build the same small orders API as in the Go counterpart, [Building an API with net/http in Go](/posts/go-http-api-stdlib/): create, get by id, list, a `422` for validation errors and a `404` for unknown orders. I use **Axum**, a thin web framework on top of Hyper and Tower.
+What should a server answer when a client sends broken JSON? When the JSON is fine but a field has the wrong type? When the order the client asks for does not exist? An API is not only the happy path. Half of its quality is in these answers: the right status code (`400`, `422`, `404`), and a body the client can act on.
 
-> I ran everything with Rust 1.90, `axum` 0.8.9, `tokio` 1.54.1, `tower-http` 0.7.1 and `tower` 0.5.3, pinned in `Cargo.lock`. Outputs are copied from real runs of a local demo; headers like `date` are removed.
+In this post we build a small orders API in Rust and watch it answer exactly those questions. It uses the types from [Serde and JSON in Rust](/posts/rust-serde-json/) as request and response bodies, and it runs on the Tokio runtime from [async/await and Tokio in Rust](/posts/rust-async-tokio/). It is the same API as the Go counterpart, [Building an API with net/http in Go](/posts/go-http-api-stdlib/): create an order, get one by id, list orders, a `422` for validation errors and a `404` for unknown orders. This time the web framework is **Axum**, a thin layer on top of Hyper (an HTTP implementation) and Tower (a library of reusable middleware).
 
-## Router, handlers, extractors
+> I ran everything with Rust 1.90, `axum` 0.8.9, `tokio` 1.54.1, `tower-http` 0.7.1 and `tower` 0.5.3, as pinned in the demo's `Cargo.lock`. I re-ran the server and the tests for this version of the post, on a random free local port, and the outputs below are copied from those runs. Headers such as `date` and `content-length` are removed. Request ids such as `req-5` depend on how many requests came before, so they vary.
 
-A handler is an async function. Its arguments are **extractors**, which pull data out of the request, and its return type is anything that implements `IntoResponse`:
+## A handler, and what an extractor is
+
+A **handler** is an async function that receives a request and returns a response. Axum has a nice trick for what comes in and goes out. Each *argument* of the handler is an **extractor**: a type that knows how to pull one piece out of the request, such as the path, the query string or the body. Whatever the function *returns* only has to implement a trait called `IntoResponse`, which says how to turn the value into an HTTP response.
+
+Here is how the three routes of our API are declared, and the signature of one handler:
 
 ```rust
 let app = Router::new()
@@ -30,9 +34,16 @@ async fn get_order(
 ) -> Result<Json<Order>, ApiError> { /* ... */ }
 ```
 
-`Path` reads `{id}`, `Query` reads `?customer=x&limit=2` into a struct, `Json<T>` reads the body with the serde rules from the last post, and `State` hands you shared data. The last extractor may consume the body, so `Json` goes last. `Order` is `Serialize`; `CreateOrder` is `Deserialize` with `deny_unknown_fields`.
+`get_order` asks for two things. `Path(id)` extracts the `{id}` part of the URL, and `State(st)` hands over the data shared by all requests (more on that in a moment). The other extractors we use:
 
-## State
+- `Query<T>` reads the query string, for example `?customer=sara&limit=2`, into a struct `T`.
+- `Json<T>` reads the request body as JSON into `T`, using exactly the serde rules from the last post.
+
+One rule: the body can be consumed only once, so an extractor that reads the body (`Json`) must be the last argument. In the demo, `Order` is `Serialize` (we only send it) and `CreateOrder` is `Deserialize` with `deny_unknown_fields` (we only receive it, and we want typos rejected).
+
+## Shared state
+
+Every request needs the list of orders, and requests are handled concurrently, possibly on different threads. So the store has to be shared and protected:
 
 ```rust
 #[derive(Default)]
@@ -40,11 +51,11 @@ pub struct AppState { orders: Mutex<Vec<Order>> }
 pub type Shared = Arc<AppState>;
 ```
 
-`State` needs a `Clone` type, and `Arc` gives that cheaply. I used `std::sync::Mutex`, which is fine because no `.await` happens while the lock is held. If you must hold a lock across an await, use `tokio::sync::Mutex`. The id is the length plus one, as a string like in Go.
+This is the {{< term "arc" "Arc" >}} plus {{< term "rust-mutex" "Mutex" >}} pattern from the post on [threads](/posts/rust-concurrency-threads/): the `Arc` lets every handler own the state, and the `Mutex` lets one at a time change it. Axum asks the state type to be cheap to `Clone`, and cloning an `Arc` only bumps a counter. I used `std::sync::Mutex`. That is fine here because no `.await` happens while the lock is held; if you ever must hold a lock across an await, use `tokio::sync::Mutex` instead. The order id is the number of orders plus one, written as a string, as in the Go version. It is a demo store; the next post replaces it with a real database.
 
-## One error type
+## One error type for the whole API
 
-In Go one function (`statusOf`) mapped errors to statuses. In Rust that job belongs to an enum that implements `IntoResponse`; then handlers return `Result<T, ApiError>` and `?` does the rest:
+When something goes wrong in a handler, the client needs the right status code and a body in a consistent format. In the Go version a single function (`statusOf`) mapped errors to statuses. In Rust the same job goes to an enum that implements `IntoResponse`. Then every handler can return `Result<T, ApiError>`, and the `?` operator does the rest, because axum turns the `Err` side into a response too:
 
 ```rust
 pub enum ApiError {
@@ -70,46 +81,52 @@ impl IntoResponse for ApiError {
 }
 ```
 
-As in Go, the detail of a `500` goes to the log, never to the client. A tuple `(StatusCode, Json<T>)` is itself a response. Real runs:
+Three things to notice. A tuple `(StatusCode, Json<T>)` is already a valid response, which keeps each arm short. `Validation` carries a map from field name to message, so the client can show each problem next to its field. And `Internal` keeps its detail for the log and sends the client only `internal error`: as in the Go version, what went wrong inside your server is not the client's business.
+
+Now the real runs. I started the server on a random port and called it with `curl` (`-s` silent, `-i` to print the status line and headers). The first request creates an order, the second asks for an id that does not exist, the third sends an order that breaks two rules, and the fourth calls `/broken`, a route that exists only in the demo and always returns `ApiError::Internal`:
 
 ```text
-$ curl -si -X POST localhost:8096/orders -H 'content-type: application/json' -d '{"customer":"roham","cents":2500}'
+$ curl -si -X POST localhost:$PORT/orders -H 'content-type: application/json' -d '{"customer":"roham","cents":2500}'
 HTTP/1.1 201 Created
 {"id":"1","customer":"roham","cents":2500,"status":"new"}
 
-$ curl -si localhost:8096/orders/99
+$ curl -si localhost:$PORT/orders/99
 HTTP/1.1 404 Not Found
 {"error":"order not found"}
 
-$ curl -si -X POST localhost:8096/orders -H 'content-type: application/json' -d '{"customer":"","cents":0}'
+$ curl -si -X POST localhost:$PORT/orders -H 'content-type: application/json' -d '{"customer":"","cents":0}'
 HTTP/1.1 422 Unprocessable Entity
 {"error":"validation failed","fields":{"cents":"must be positive","customer":"is required"}}
 
-$ curl -si localhost:8096/broken
+$ curl -si localhost:$PORT/broken
 HTTP/1.1 500 Internal Server Error
 {"error":"internal error"}
 ```
 
-Unlike the Go version, validation reports both broken fields at once. `/broken` is a demo-only route that returns `ApiError::Internal`. `?customer=sara` and `?limit=1` filtered the list as expected.
+Each answer has the status code we planned and the same JSON shape. Notice that the validation response lists *both* broken fields; the Go version reports only the first broken rule. The `500` body says nothing about the disk; the real reason went to the log (we will see it below). I also checked that `?customer=sara` and `?limit=1` filter the list as expected.
 
 ## What the built-in extractors reject
 
-When an extractor fails, Axum answers for you, with a plain-text body:
+We did not write any code for bad JSON, a wrong type or a missing header. Still, the server answers them. When an extractor fails, axum replies for you with a *rejection*: a status code and a plain-text message. This is what the demo returned (`->` separates what I sent from what came back):
 
 ```text
-{"customer":"a",                 -> 400 Failed to parse the request body as JSON: EOF while parsing a value at line 1 column 16
-{"customer":"a","cents":"12"}    -> 422 Failed to deserialize the JSON body into the target type: cents: invalid type: string "12", expected i64 at line 1 column 28
-{"customer":"a"}                 -> 422 ... missing field `cents` at line 1 column 16
+{"customer":"a",                      -> 400 Failed to parse the request body as JSON: EOF while parsing a value at line 1 column 16
+{"customer":"a","cents":"12"}         -> 422 Failed to deserialize the JSON body into the target type: cents: invalid type: string "12", expected i64 at line 1 column 28
+{"customer":"a"}                      -> 422 ... missing field `cents` at line 1 column 16
 {"customer":"a","cents":1,"vip":true} -> 422 ... vip: unknown field `vip`, expected `customer` or `cents` at line 1 column 31
-(no content-type header)         -> 415 Expected request with `Content-Type: application/json`
-/orders?limit=abc                -> 400 Failed to deserialize query string: limit: invalid digit found in string
+(no content-type header)              -> 415 Expected request with `Content-Type: application/json`
+/orders?limit=abc                     -> 400 Failed to deserialize query string: limit: invalid digit found in string
 ```
 
-So broken syntax is `400`, valid JSON of the wrong shape is `422`, and a missing header is `415`. These bodies are text, not our JSON. If clients expect one error format, wrap the extractor with your own that converts the rejection into `ApiError`. I left it as is, to show the defaults. Routing errors differ too: `DELETE /orders/1` gave `405` with `allow: GET,HEAD`, and an unknown path gave `404` with an empty body.
+Look at how the status code splits the problems in two. Text that is not JSON at all is `400`. Text that is valid JSON but does not fit our type is `422`; the message after it is the serde error from the previous post, so you already know how to read it. A missing `content-type: application/json` header is `415`. A bad query string is `400`.
 
-## Layers
+The bodies are plain text, not our `{"error": ...}` format. If your clients expect one error format everywhere, write a small wrapper around `Json` that converts the rejection into `ApiError`. I left the defaults as they are, to show what you get for free. (One difference from the Go version: there a body with an unknown field was a `400`, here it is a `422`.)
 
-Axum is built on Tower, so middleware is a **layer**. Three from `tower-http`:
+Routing mistakes behave a little differently, and they have no body at all. `DELETE /orders/1` returned `405 Method Not Allowed` with the header `allow: GET,HEAD`, and an unknown path returned `404` with an empty body.
+
+## Layers: middleware around the whole router
+
+Some things should apply to every request: a timeout, a request id, logging. In Axum these are **layers**. Axum is built on Tower, in which a service is a thing that takes a request and returns a response, and a layer wraps one service in another. The crate `tower-http` provides ready-made layers. We use four:
 
 ```rust
 .layer(TimeoutLayer::with_status_code(StatusCode::REQUEST_TIMEOUT, timeout))
@@ -118,28 +135,32 @@ Axum is built on Tower, so middleware is a **layer**. Three from `tower-http`:
 .layer(SetRequestIdLayer::new(x_request_id, Counter::default()))
 ```
 
-The last layer added is the outermost, the opposite of the Go `Chain` helper where the first listed is outermost. So `SetRequestIdLayer` runs first, with a small `MakeRequestId` of mine that counts (`req-1`, ...). Results:
+The order needs care. Each `.layer(...)` wraps everything above it, so the *last* one added is the *outermost* and sees the request first. That is the opposite of the Go `Chain` helper, where the first one listed is the outermost. So here `SetRequestIdLayer` runs first. It gives each request an id (a small generator of mine that counts: `req-1`, `req-2`, ...) unless the caller already sent one. Then `TraceLayer` logs with that id, `PropagateRequestIdLayer` copies the id onto the response, and `TimeoutLayer` cuts off a handler that takes too long (one second in the demo).
+
+To try it, `/slow?ms=2000` sleeps for two seconds, longer than the timeout. The second call sends its own request id:
 
 ```text
-$ curl -si localhost:8096/slow?ms=2000     # timeout is 1s
+$ curl -si localhost:$PORT/slow?ms=2000
 HTTP/1.1 408 Request Timeout
-x-request-id: req-12
+x-request-id: req-17
 
-$ curl -si -H 'x-request-id: mine-1' localhost:8096/orders/1
+$ curl -si -H 'x-request-id: mine-1' localhost:$PORT/orders/1
 HTTP/1.1 200 OK
 x-request-id: mine-1
 ```
 
-A caller's id is kept; otherwise one is generated. In the log, the `500` from `/broken` carries the id from the span:
+The slow request was answered with `408` after the timeout. A caller's id (`mine-1`) is kept and echoed back; when there is none, the server makes one. The same id appears in the log, so you can follow one request through the system. This is the log of the `500` from `/broken` above:
 
 ```text
-ERROR request{method=GET path=/broken request_id="req-1"}: request failed detail=disk on fire
-ERROR request{method=GET path=/broken request_id="req-1"}: response failed classification=Status code: 500 Internal Server Error latency=0 ms
+ERROR request{method=GET path=/broken request_id="req-5"}: request failed detail=disk on fire
+ERROR request{method=GET path=/broken request_id="req-5"}: response failed classification=Status code: 500 Internal Server Error latency=0 ms
 ```
 
-With the default filter only failures show; successful requests appear when you enable `DEBUG` for `tower_http`.
+The first line is the one we wrote in `ApiError::Internal`: here is the detail the client never saw (`disk on fire`). The second is from `TraceLayer`, noting that the response was a failure. Both carry the request id. With the default log filter only failures show up; successful requests appear when you enable `DEBUG` for `tower_http`.
 
 ## Graceful shutdown
+
+A deploy sends your process `SIGTERM`. If the server just dies, every request in flight is cut in half. With Axum you attach a shutdown signal to the server:
 
 ```rust
 axum::serve(listener, router)
@@ -147,21 +168,20 @@ axum::serve(listener, router)
     .await?;
 ```
 
-`shutdown_signal` waits for Ctrl-C or SIGTERM (`tokio::signal::unix`) in a `select!`. I started a request taking 800 ms, sent SIGTERM after 200 ms, then tried a new request:
+`shutdown_signal` is a function in `main.rs` that waits for Ctrl-C or `SIGTERM` (using `tokio::signal::unix`) inside a `select!`, which finishes as soon as either happens. When it does, the server stops accepting connections and waits for the running requests. {{< term "graceful-shutdown" "Graceful shutdown" >}} is exactly this. To test it, I started a request that takes 800 ms, sent `SIGTERM` to the server after 200 ms, and then tried a new request:
 
 ```text
-new request: exit=7            # connection refused
-done
- -> 200 after 0.803108s
+new request: exit=7
+ -> 200 after 0.803547s
  INFO shutting down
  INFO stopped
 ```
 
-The listener stopped, the in-flight request finished with `200`, and the process exited. `ps` showed no process left afterwards.
+`exit=7` is curl saying "connection refused": the listener was already closed, so the new request was turned away. The old request still finished with `200` after about 0.8 seconds, which proves it was not cut. Then the log shows the server announcing the shutdown and stopping, and the process exited. (The time `0.80…s` varies a little from run to run.) `ps` showed no process of mine left afterwards.
 
-## Tests without a port
+## Tests without opening a port
 
-A `Router` is a Tower service, so `oneshot` calls it directly:
+A `Router` is a Tower service, and a Tower service can be called as a plain function. So tests do not need a socket at all: `oneshot` sends one request straight into the router.
 
 ```rust
 use tower::ServiceExt; // for oneshot
@@ -170,21 +190,21 @@ let res = app.clone().oneshot(post(r#"{"customer":"roham","cents":2500}"#)).awai
 assert_eq!(res.status(), StatusCode::CREATED);
 ```
 
-`clone()` is cheap and shares the state, so a second `oneshot` can read the order back. A table of seven cases (validation, bad JSON, wrong type, 404, 405, 500, timeout) plus the request-id test gave `3 passed`.
+`clone()` of a router is cheap and shares the same state, so a second `oneshot` on the clone can read the order back. The demo has three tests: create then get; a table of seven error cases (validation, bad JSON, wrong type, 404, 405, 500 and timeout, each with its expected status); and one that checks the request id is echoed. `cargo test` reported `3 passed`.
 
 ## Where Axum surprises you
 
-- Extractor order matters: `Json` (or any body extractor) must be last.
-- Default rejections are plain text; decide whether your API needs JSON errors.
-- Never hold a `std::sync::Mutex` guard across `.await`.
-- Layer order is reversed compared to the Go `Chain` helper.
-- Axum 0.8 writes path parameters as `{id}`; the `:id` form you see in older tutorials belongs to earlier versions.
+- **Extractor order matters.** `Json` (or any extractor that reads the body) must be last, or the code does not compile.
+- **Default rejections are plain text.** Decide early whether your API needs JSON errors, and wrap the extractor if it does.
+- **Do not hold a `std::sync::Mutex` guard across `.await`.** The future stops being `Send` and the compiler refuses it, as in the Tokio post.
+- **Layer order is reversed from what you may expect.** The last `.layer(...)` is the outermost.
+- **Path syntax changed.** Axum 0.8 writes path parameters as `{id}`; the `:id` form you see in older tutorials belongs to earlier versions.
 
 ## Exercise
 
 1. Add `PUT /orders/{id}/pay` that sets the status to `paid` and returns `404` for unknown ids.
-2. Replace `Json` with a wrapper extractor that turns rejections into `ApiError`.
+2. Replace `Json` with a wrapper extractor that turns rejections into `ApiError`, so that a broken body also gets the `{"error": ...}` format.
 
 ## What's next
 
-*Databases with SQLx in Rust* replaces this API's in-memory store with a real Postgres database.
+The in-memory list is lost on every restart, so the next post, *Databases with SQLx in Rust*, replaces it with a real Postgres database.

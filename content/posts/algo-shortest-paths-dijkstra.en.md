@@ -10,13 +10,37 @@ tags = ["algorithms", "graphs", "dijkstra", "shortest-path", "go"]
 cover = { image = "/images/covers/algo-shortest-paths-dijkstra.png", alt = "Shortest paths and Dijkstra", hiddenInSingle = true }
 +++
 
-In the six-vertex example below, the direct edge `A-F` costs 14, while the two-edge route through C costs 11. {{< term "bfs" "BFS" >}} from [Graphs: BFS and DFS](/posts/algo-graphs-bfs-dfs/) counts edges and picks the direct one, right only when all edges cost the same. Roads, network links and prices have weights. The fix needs a [priority queue](/posts/algo-heaps-priority-queues/), the {{< term "binary-heap" "heap" >}} from earlier, to always take the closest unfinished vertex next.
+Suppose you want to travel from city A to city F. The map has six cities. The direct road from A to F is 14 kilometers, but if you go from A to C (9 km) and then from C to F (just 2 km), you reach F after 11 km. The shortest way is not always the one with the fewest roads.
 
-> Go 1.26, local example, tests with `go test -race`. The load average was above 3 when I ran it, so I publish only counts, no timings.
+{{< term "bfs" "BFS" >}} from the [previous post](/posts/algo-graphs-bfs-dfs/) only counts edges, so here it would pick the direct 14 km road. That is right only when every edge costs the same. But roads, network links and prices each have a **weight**. A graph whose edges have weights is a **weighted graph**, and finding shortest paths in it needs another algorithm. That algorithm uses a [priority queue](/posts/algo-heaps-priority-queues/), the same {{< term "binary-heap" "heap" >}} we built earlier, so that each time we can pull out "the nearest vertex we have not finished yet".
 
-## Dijkstra on a small graph
+> I re-ran every output with Go 1.27. It is a local example and its tests pass with `go test -race`. The machine was busy, so I publish no timings; you will only see counts, which are the same on every run.
 
-{{< term "dijkstra" "Dijkstra's algorithm" >}} keeps a tentative distance for every vertex. It pops the smallest one, then tries every edge out of it: if `dist[u] + w` beats `dist[v]`, we found a better route and update it. That update is called {{< term "relaxation" "relaxation" >}}. With `container/heap` the core is short:
+## The idea behind Dijkstra
+
+{{< term "dijkstra" "Dijkstra's algorithm" >}} thinks like this. For every vertex it keeps "the best distance I have found so far". At the start the source's distance is 0 and everyone else's is infinity. Then it repeats: among the vertices that are not finished, take the one whose tentative distance is smallest. That distance will never change again. Then try all of its outgoing edges: if `dist[u] + w` is smaller than `dist[v]`, we have found a shorter way to `v` through `u`, and we update `dist[v]`. This update is called {{< term "relaxation" "relaxation" >}}.
+
+Why is the smallest tentative distance final? Because any other route to this vertex must pass through some vertex that is not finished yet, and that vertex is at least as far away; if no weight is negative, the rest of the route cannot subtract anything. (This condition matters later.)
+
+A hand-worked example makes it clear. Six cities and these two-way roads (the number is the weight):
+
+```
+A-B:7 A-C:9 A-F:14 B-C:10 B-D:15 C-D:11 C-F:2 D-E:6 E-F:9
+```
+
+We start from A:
+
+| vertex taken | what changed | distances afterwards |
+|---|---|---|
+| A (0) | B←7, C←9, F←14 | B=7 C=9 F=14 |
+| B (7) | D←22 (C via B would be 17, not better than 9) | D=22 |
+| C (9) | D←20 (better than 22), F←11 (better than 14) | D=20 F=11 |
+| F (11) | E←20 | E=20 |
+| D (20) and E (20) | nothing gets better | |
+
+In the end the distances from A are B=7, C=9, F=11, D=20, E=20. Interestingly, the shortest way from A to E goes through C and F (`A>C>F>E`): three edges, but 20 km. BFS would have picked the two-edge route `A>F>E`, which is 23 km.
+
+Now the code. To get "the smallest vertex" we use `container/heap`:
 
 ```go
 h := &minHeap{{src, 0}}
@@ -32,7 +56,7 @@ for h.Len() > 0 {
 }
 ```
 
-I used six vertices and these undirected edges:
+One detail: when a vertex's distance improves, we do not remove its old entry from the heap; we just add a new one. Later, when the old entry (with the worse distance) comes out, the check `it.d > dist[it.v]` skips it. You could see this in the table above: F entered once with 14 and later with 11, and D once with 22 and once with 20. The demo's output for this graph:
 
 ```
 A-B:7 A-C:9 A-F:14 B-C:10 B-D:15 C-D:11 C-F:2 D-E:6 E-F:9
@@ -45,11 +69,13 @@ F dist=11 path=A>C>F
 lazy: {Pops:8 Stale:2 Checks:18 Relax:7 Fixes:0}
 ```
 
-Each of the 9 edges is checked from both ends, hence 18 checks.
+Each `dist` line shows a distance and a path (built from `parent`, as in BFS). The last line holds the counters: 8 pops (6 vertices plus 2 stale entries that were skipped, namely `F=14` and `D=22`), 18 edge checks (each of the 9 edges from both ends), and 7 successful relaxations (B, C, F, D at 22, D at 20, F at 11, and E).
 
-## Lazy deletion or decrease-key
+## Two ways to update the heap
 
-The code above never changes an entry inside the heap. It pushes a new one and skips the old one when it pops, which is called {{< term "lazy-deletion" "lazy deletion" >}}: 8 pops for 6 vertices, 2 of them stale. The alternative is decrease-key: keep one entry per vertex, remember its position and call `heap.Fix` after lowering the distance. The same graph gave 6 pops and 2 `Fix` calls. On random directed graphs with 4V edges and weights 1 to 100 (seed 11):
+What we just did, keeping the stale entry and skipping it later, is called {{< term "lazy-deletion" "lazy deletion" >}}. The other way is **decrease-key**: keep exactly one entry per vertex, remember where it sits in the heap, and when its distance drops call `heap.Fix` to put it in the right place. On the same six vertices this version made 6 pops and 2 `Fix` calls (`fix : {Pops:6 Stale:0 Checks:18 Relax:7 Fixes:2}`).
+
+Which is better? I counted both on random directed graphs with 4 times V edges and weights 1 to 100 (seed 11):
 
 ```
 V      E       lazyPops stale relax | fixPops fixes
@@ -58,27 +84,42 @@ V      E       lazyPops stale relax | fixPops fixes
 100000 400000  128790   30793 128789 | 97997   30781 same=true
 ```
 
-Both versions return identical distances. Lazy pops about 30% more, but the code is simpler and needs no position bookkeeping. I did not measure which is faster; the heap holds more entries in one and does extra `Fix` work in the other. The cost is O((V+E) log V) either way.
+`same=true` means the distances are exactly equal in both methods. The lazy method does about 30 percent more pops; and `lazyPops - stale` equals `fixPops` (for V=1000 that is 987, meaning 987 vertices were reachable from vertex 0). But the lazy method has simpler code and does not need us to track where entries sit. Which one is faster in practice, I did not measure. Both cost about O((V+E) log V).
 
-## Why negative edges break it
+## Why a negative edge breaks Dijkstra
 
-Dijkstra's {{< term "invariant" "invariant" >}}: once a vertex is popped, its distance is final, because any other route must pass through something at least as far away. A negative edge breaks that "at least". Directed edges S->A 2, S->B 3, B->A -2:
+The algorithm's correctness depends on the {{< term "invariant" "invariant" >}} we described: a vertex that has come out has its final distance, because continuing along any other route cannot subtract anything. A negative edge breaks exactly that. Take a tiny directed graph: S→A with weight 2, S→B with weight 3, and B→A with weight -2. The route S→B→A costs 3 + (-2) = 1, better than the direct edge's 2. But textbook Dijkstra finalizes A (distance 2) before B (distance 3) and never comes back. The demo's output:
 
 ```
+S->A 2, S->B 3, B->A -2
 settled Dijkstra: [0 2 3]  lazy-skip Dijkstra: [0 1 3]  Bellman-Ford: [0 1 3] false
 ```
 
-The textbook version finalises A at 2 before it learns that S->B->A costs 1. That is a real wrong answer. Interesting detail: the lazy version above happened to get it right here, because it never finalises anything. I would not rely on that, since it can redo exponential work on bigger graphs; I did not test that.
+Each array holds the distances of S, A and B. The finalizing version (`settled`) gives A the value 2, which is wrong. The other two give 1, which is right. (The lazy version above happened to be right here because it improves the distance of a vertex it has already seen. Still, I do not rely on it, and I have not tested it on larger graphs with negative edges.)
 
-{{< term "bellman-ford" "Bellman-Ford" >}} simply relaxes every edge, repeatedly, up to V rounds: O(V·E). If a V-th round still improves something, there is a {{< term "negative-cycle" "negative cycle" >}} and no shortest path exists. With edges 1->2 of -3 and 2->1 of 1 it reports `negative cycle: true`.
+For negative edges we use {{< term "bellman-ford" "Bellman-Ford" >}}. The idea is simple: relax every edge, one by one, and repeat that round at most V times. If a round changes no distance, we are done. It costs O(V·E), which is slower than Dijkstra. If after V rounds something still improves, there is a {{< term "negative-cycle" "negative cycle" >}}: a cycle that makes the route shorter every time you go around it, so "the shortest path" has no meaning. With edges 0→1 of weight 1, 1→2 of weight -3 and 2→1 of weight 1, the cycle 1→2→1 totals -2, and the demo prints:
 
-## Checking by comparison
+```
+cycle 1->2 (-3), 2->1 (1) negative cycle: true
+```
 
-A test builds 300 random graphs (seeds 0 to 299, 2 to 13 vertices, weights 0 to 20, half directed) and compares both Dijkstra versions, Bellman-Ford and Floyd-Warshall (all pairs, O(V³)). It also rebuilds each path from `parent` and checks that the edge weights sum to the distance. It passes with `-race`. This is {{< term "property-based-testing" "property-style" >}} testing: independent algorithms must agree.
+## How do we know it works?
 
-## A grid with obstacles
+A test generates 300 random graphs (2 to 13 vertices, weights 0 to 20, half of them directed) and compares both Dijkstra versions with Bellman-Ford and Floyd-Warshall. Floyd-Warshall computes the distance between all pairs with three nested loops, O(V³): slow but very simple, so a good reference. The test also builds the path of every vertex from `parent` and checks that the weights along the path add up to the distance. It is {{< term "property-based-testing" "property-based" >}} in style: several independent algorithms must agree on every random input.
 
-Each open cell is a vertex, each move costs 1. Dijkstra gave cost 33 and expanded 38 cells (`*` marks the path):
+## A grid of cells
+
+The same idea works on a grid of cells: each open cell is a vertex and each move to a neighboring cell costs 1 (`#` is a wall). The input:
+
+```
+S....#......
+.###.#.####.
+.#...#.#....
+.#.###.#.###
+.#.....#...E
+```
+
+Dijkstra found cost 33 and expanded 38 cells before reaching `E` (`*` is the path):
 
 ```
 S****#******
@@ -88,29 +129,34 @@ S****#******
 .#*****#***E
 ```
 
-## A* in one section
+The route winds around because the walls allow no shortcuts. "Expanding" a cell means taking it out of the heap and trying its edges; 38 is smaller than the number of all open cells because the search stops as soon as it reaches `E`.
 
-{{< term "a-star" "A*" >}} orders the heap by `cost so far + estimate to goal`. If the estimate never exceeds the true remaining cost (Manhattan distance on a 4-direction grid), the answer stays optimal. On a 60x60 grid with a wall, same cost 159:
+## A*: look at the goal
+
+Dijkstra spreads in all directions like a ripple, even in directions away from the goal. If we know where the goal is, we can be a bit smarter. {{< term "a-star" "A*" >}} orders the heap not only by "cost so far" but by "cost so far + an estimate of the cost to the goal". On a four-direction grid a good estimate is the "Manhattan distance": the row difference plus the column difference, which is the cost of walking if there were no walls. The result stays optimal as long as the estimate never exceeds the true remaining cost, which Manhattan satisfies. (This implementation finalizes a cell the first time it comes out of the heap; that is safe for an estimate that is also "consistent", meaning it never drops by more than the cost of a step, and Manhattan on a four-direction grid is.)
+
+I built a 60 by 60 grid with a wall in column 30 that is open only at the bottom (rows 50 to 59). The start is at the top left and the goal at the top right, so the route has to go around the wall. The result:
 
 ```
 60x60 wall: dijkstra cost 159 expanded 3550 | A* cost 159 expanded 1969
 no wall in the way: dijkstra expanded 216 | A* cost 20 expanded 21
 ```
 
-With a clear straight line A* expanded 21 cells, Dijkstra 216. The wall shrank the gain, because the estimate does not see walls. The generic `Search[N comparable]` function is the same code for both; Dijkstra is A* with estimate 0. A test checks equal costs on 100 random grids.
+Line one: both found the same optimal cost, 159, but A* expanded 1969 cells and Dijkstra 3550. Line two: the goal is on the same row on the left side of the wall, so a direct route is open. A* with cost 20 looked at only 21 cells (basically just the path itself), and Dijkstra at 216. When a wall is in the way the gain is smaller, because the Manhattan estimate cannot see the wall and A* has to head toward it first.
+
+In the code, one generic function `Search[N comparable]` does both: when the estimate is `nil` it is always zero, and A* becomes Dijkstra. A test on 100 random grids checks that A* and Dijkstra give the same cost.
 
 ## Where Dijkstra goes wrong
 
-- Dijkstra needs non-negative weights; otherwise use Bellman-Ford.
-- A zero weight is fine; a negative one is not.
-- With lazy deletion, always skip stale entries or you redo work.
-- Use a large but safe "infinity" so `Inf + w` cannot overflow.
-- A bad A* estimate (one that overestimates) can return a non-shortest path.
+- **Dijkstra needs non-negative weights.** With a negative edge it gives a wrong answer, silently. Use Bellman-Ford there.
+- **With lazy deletion, always skip stale entries.** Without the `it.d > dist[it.v]` check, every stale entry makes you examine all of the vertex's edges again, which is needless work.
+- **Pick an "infinity" that is large but safe.** If you use the largest possible number, `Inf + w` overflows and becomes negative. In this example's code it is `math.MaxInt / 4`.
+- **A bad estimate in A* ruins the answer.** If the estimate claims more than the true remaining cost, the path returned may not be the shortest.
 
 ## Exercise
 
-Add a path-reconstruction check to `DijkstraFix`, then make a graph where all edges are 1 and confirm Dijkstra's distances equal the BFS distances.
+Add the path-reconstruction check (the weights along the path add up to the distance) for `DijkstraFix` too. Then build a graph whose edges all have weight 1 and see that Dijkstra's distances equal BFS's distances.
 
 ## What's next
 
-"Topological sort and dependencies" follows because some graphs are about order, not distance: build steps, imports, tasks.
+"Topological sort and dependencies". So far our graphs were about distance, but some graphs are about order: build steps, imports, tasks that must run one after another.

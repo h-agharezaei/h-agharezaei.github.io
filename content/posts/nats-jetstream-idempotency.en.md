@@ -11,19 +11,25 @@ tags = ["go", "nats", "jetstream", "messaging", "idempotency", "exactly-once"]
 cover = { image = "/images/covers/nats-jetstream-idempotency.png", alt = "Idempotency and the meaning of exactly-once in JetStream", hiddenInSingle = true }
 +++
 
-When a worker dies without acking, the message is redelivered, so a job can run twice; the [previous post](/posts/nats-jetstream-scaling-lag/) ended on that uncomfortable fact. People often answer it with "just use exactly-once". Here I test what that phrase can honestly mean, using the pieces JetStream gives us: deduplication at publish time, acks, and an {{< term "idempotency" "idempotent" >}} handler.
+Suppose the message "order A was paid, add 100 to the balance" reaches a worker twice. If the worker applies both, the customer gets 200, not 100. This is not rare. When a worker dies without acking, the message is redelivered, so a job can run twice; the [previous post](/posts/nats-jetstream-scaling-lag/) ended on that uncomfortable fact.
 
-> Everything below ran against an embedded `nats-server` v2.15.1 and `nats.go` v1.54.0 on Go 1.26. The outputs are from those runs.
+The usual answer is one sentence: "just use exactly-once". But what exactly does that phrase promise? Here I test what it can honestly mean, using three tools: deduplication at publish time, acks, and a handler that is {{< term "idempotency" "idempotent" >}}, meaning that running it twice has the same effect as running it once.
+
+> Everything below was re-run with Go 1.27, an embedded `nats-server` v2.15.1 and `nats.go` v1.54.0. The original run of this post used Go 1.26. The outputs are from these runs; the seconds can differ by a tenth or two between runs. The code is a local example.
 
 ## Publish-side dedup with Nats-Msg-Id
 
-If a publisher times out and retries, the stream could end up with two copies. To prevent that, you attach an ID with `nats.MsgId`, which sets the `Nats-Msg-Id` header. The stream remembers IDs for its **duplicate window** (the `Duplicates` setting). I set it to 2 seconds so I could also see what happens outside it:
+The first problem: a publisher sends a message, the confirmation does not arrive in time (a timeout), and it sends again. Maybe the first one was stored after all. Now the stream holds two copies.
+
+The fix: send every message with an ID. `nats.MsgId` sets the `Nats-Msg-Id` header. The stream remembers recent IDs, and if a message with a repeated ID arrives, it does not store it. How long it remembers is the **duplicate window** (the `Duplicates` setting). I set it to 2 seconds so I could also see what happens outside the window. (The default, as the DLQ stream in the Retry post showed, is 2 minutes.)
 
 ```go
 js.AddStream(&nats.StreamConfig{Name: "PAY", Subjects: []string{"pay.>"}, Duplicates: 2 * time.Second})
 ack, err := js.Publish("pay.created", []byte("order-1001"), nats.MsgId("order-1001"))
 fmt.Println(ack.Sequence, ack.Duplicate)
 ```
+
+The program publishes one message twice with the same ID, then the same content with another ID, and after 3 seconds once more with the first ID. After each step it asks for the number of messages in the stream:
 
 ```
   0.0s publish #1: err=<nil> seq=1 duplicate=false
@@ -35,11 +41,18 @@ fmt.Println(ack.Sequence, ack.Duplicate)
   3.0s stream messages: 3
 ```
 
-The second publish succeeds without an error, but the `PubAck` says `Duplicate: true` and points to the original sequence, and the stream still holds one message. Two things to notice. Dedup is by ID, not by content: the same payload with another ID was stored. And dedup is time-bounded: after 3 seconds (past my 2-second window) the same ID was stored again as a new message. So a duplicate-window dedup is a safety net for quick retries, not a permanent uniqueness guarantee.
+Line two: the second publish succeeds without an error, but the server's confirmation (`PubAck`) says `Duplicate: true` and points to the original message (sequence 1). Line three shows the stream still holds one message. Two things to notice:
+
+- **Dedup is by ID, not by content.** The same text with another ID was stored, and the stream had two messages.
+- **Dedup is time-bounded.** After 3 seconds, past my 2-second window, the same ID was stored again as a new message (`seq=3`). So this mechanism is a safety net for quick retries, not a permanent uniqueness guarantee.
+
+This is only half the story. The mechanism only prevents duplicate storage. If one stored message is delivered twice to a worker, it can do nothing. That problem has to be solved on the worker's side.
 
 ## Consumer-side: make the handler idempotent
 
-Redelivery is not a bug, it is the at-least-once contract. So the handler must produce the same result whether it runs once or twice. The usual approach is to key the work by a **business ID** (an order ID, a payment ID) and record it as done. In my demo that is an in-memory map; in production it would be a unique constraint or an upsert in your database, written in the same transaction as the side effect, otherwise a crash between the two reintroduces the problem.
+Redelivery is not a bug, it is the {{< term "at-least-once-delivery" "at-least-once" >}} contract: a message may arrive more than once, but it is never lost. So the handler must give the same result whether it runs once or twice.
+
+The usual approach is to key the work by a **business ID** (an order ID, a payment ID) and record it as done. In my demo that is an in-memory map. In production it would be a unique constraint or an upsert in your database, written in the same transaction as the side effect; otherwise a crash between the two brings the problem back.
 
 ```go
 if processed[id] {          // production: INSERT ... ON CONFLICT DO NOTHING
@@ -51,22 +64,26 @@ processed[id] = true
 // ... crash here for order B, before m.Ack()
 ```
 
-I published three messages: order A (+100), order B (+50), and another copy of order A with a different `Nats-Msg-Id`, simulating a producer retry that publish dedup cannot catch. The handler "crashes" after applying B but before the ack, with `AckWait` of 1 second:
+I published three messages: order A (+100), order B (+50), and another copy of order A with a different `Nats-Msg-Id`. That last one simulates a producer retry that publish dedup cannot catch, because its ID differs. The worker "crashes" after applying B and **before the ack** (the program just does not call ack). `AckWait` is 1 second:
 
 ```
-  3.0s apply  order A +100 balance=100 (stream seq 1, delivery #1)
-  3.0s apply  order B +50 balance=150 (stream seq 2, delivery #1)
-  3.0s CRASH after side effect, before ack
-  3.0s skip   order A (stream seq 3, delivery #1)
-  4.0s skip   order B (stream seq 2, delivery #2)
-  5.5s final balance=150 (expected 150)
+  3.1s apply  order A +100 balance=100 (stream seq 1, delivery #1)
+  3.1s apply  order B +50 balance=150 (stream seq 2, delivery #1)
+  3.1s CRASH after side effect, before ack
+  3.1s skip   order A (stream seq 3, delivery #1)
+  4.1s skip   order B (stream seq 2, delivery #2)
+  5.6s final balance=150 (expected 150)
 ```
 
-Both kinds of duplicates were skipped: the retry of A (a different stream message) and the redelivery of B (the same message, delivery #2). Without the map, the balance would have been 300.
+(The clock counts from the program's start, and the first 3 seconds belong to the previous section, which waited 3 seconds.)
 
-## What AckSync and double acks tell us
+Line by line: A and B were applied once and the balance became 150. After the crash, the third message (the duplicate A, number 3 in the stream) arrived and the worker **skipped** it, because A was already done. One second later (3.1 + 1 = 4.1, the `AckWait`) message B came back as `delivery #2` and was skipped too. The last line was printed 1.5 seconds later (4.1 + 1.5 = 5.6), because the program waits that long for a new message and then gives up. The final balance is 150, the expected value. Without the map it would have been 300 (100 + 50 + 100 + 50).
 
-`m.Ack()` is fire-and-forget; `m.AckSync()` waits for the server to confirm. What I observed:
+Both kinds of duplicates were caught: the retry of A, which was a different message in the stream, and the redelivery of B, which was the same message.
+
+## ack, AckSync and acking twice
+
+Now a subtler question. `m.Ack()` sends the ack and moves on; `m.AckSync()` waits for the server to confirm. What happens if we ack a message twice, or ack late? Three acks in a row on the same message:
 
 ```
   5.6s AckSync #1: <nil>
@@ -75,7 +92,9 @@ Both kinds of duplicates were skipped: the retry of A (a different stream messag
   5.6s ackFloor=1 ackPending=0
 ```
 
-Acking the same `*nats.Msg` twice is rejected by the client library itself, so a double ack from one object is harmless. A stale copy is different: I let `AckWait` expire so the message was redelivered, then acked the old copy and the new copy:
+The first `AckSync` succeeded. The second and third acked the same `*nats.Msg` object again, and the client library itself refused ("already acknowledged"). So acking twice from one object is harmless.
+
+A stale copy is different. I took a message, let `AckWait` expire so it was redelivered, and then acked both the old copy and the new copy:
 
 ```
   6.9s old delivery #1, new delivery #2
@@ -84,7 +103,7 @@ Acking the same `*nats.Msg` twice is rejected by the client library itself, so a
   6.9s AckSync on NEW copy: <nil>
 ```
 
-The server accepted the late ack from the old delivery and moved the ack floor, and acking the new copy also returned no error. I only checked these outcomes, not the server's internals. The lesson is that a successful ack does not tell you that you were the only one who processed the message, which is exactly why the handler has to be idempotent.
+The server accepted the late ack from the old delivery and moved the ack floor, and acking the new copy also returned no error. I only checked these outcomes, not the server's internals. The lesson: a successful ack does not tell you that you were the only one who processed the message. That is exactly why the handler has to be idempotent.
 
 ## So what is "exactly-once"?
 
@@ -98,12 +117,12 @@ The effect on your data is exactly-once; the delivery is not. I did not test any
 
 ## Where duplicates still slip through
 
-- Pick the business ID from the data (order ID), not from the message sequence: stream sequences differ for producer retries, as order A showed.
-- Keep the duplicate window longer than your longest realistic retry period, and remember it costs memory proportional to the number of IDs in it.
-- Store the processed marker and the side effect in one transaction. An in-memory map, like mine, is lost on restart.
-- External side effects (emails, calls to third-party APIs) need their own idempotency key if the other side supports one.
-- Ack after the work is done. Acking first turns a crash into a lost message.
+- Take the ID from the **data** (the order ID), not from the message's stream sequence: as order A showed, a producer retry gets a different sequence.
+- Keep the duplicate window longer than your longest realistic retry period. The longer it is, the more IDs have to be remembered; I did not measure the memory cost.
+- Record "done" and the side effect in one transaction. An in-memory map, like mine, is lost on restart.
+- External side effects (emails, calls to third-party APIs) need their own idempotency key, if the other side supports one.
+- Ack **after** the work is done. If you ack first, a crash becomes a lost message.
 
 ## What's next
 
-Redelivery during a deploy is the most common way to hit all of this, which is why Graceful shutdown for Go workers comes next: context, signals, `Drain`, and finishing in-flight work.
+Redelivery during a deploy is the most common way to run into all of this, which is why Graceful shutdown for Go workers comes next: context, signals, `Drain`, and finishing in-flight work.

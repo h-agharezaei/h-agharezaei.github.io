@@ -10,13 +10,17 @@ tags = ["rust", "beginner", "borrowing", "references"]
 cover = { image = "/images/covers/rust-borrowing-references.png", alt = "Borrowing and references in Rust", hiddenInSingle = true }
 +++
 
-Pass a `String` into a function and it is gone; to keep using it, the function has to return it back. That clumsy pattern is where [Ownership in Rust](/posts/rust-ownership/) ended, and {{< term "borrowing" "borrowing" >}} is the fix. You hand a function a reference, it uses the value, and ownership never moves. This post covers the two kinds of references, the one rule that governs them, and the compiler errors you will meet while learning it.
+Imagine you own a book and a friend wants to read one page of it. There are two ways: give them the book, so it is no longer yours, or just lend it and get it back. In [Ownership in Rust](/posts/rust-ownership/) we saw only the first way: when we passed a `String` to a function, ownership went with it, and the function had to give it back so we could use it again. At the end of that post I said this back and forth is clumsy. The second way, lending, is what {{< term "borrowing" "borrowing" >}} is.
 
-> Everything below was compiled and run with Rust 1.90, and the outputs and errors are copied from those runs.
+The core idea is simple: instead of the value itself, you give the function a **reference**. A reference is an address that points to the value. The function sees the value through it (and in one special case, changes it), but ownership stays where it was, and the owner is still the one responsible for freeing the memory. In this post we look at the two kinds of reference, the single rule that governs them, and the compiler errors you will meet while learning. I show each rule first through the error the compiler gives, so the reason is clear.
+
+> I compiled and ran all the code below with Rust 1.90, and the outputs and errors come from those runs. I removed a few side lines of the error messages (like "For more information...") to keep them short. I also wrote two small programs that exist only to show `*` and one fix.
 
 ## Shared and mutable references
 
-`&T` is a **shared reference**: you can read through it. `&mut T` is a **mutable reference**: you can read and change the value. Creating one is called **borrowing**.
+There are two kinds of reference. `&T` is a **shared reference**: through it you can read the value but not change it. `&mut T` is a **mutable reference**: you can read it and also change the value. Making either is called "borrowing". `&s` makes a shared reference to `s`, and `&mut s` makes a mutable one.
+
+The program below has two functions: `length` only reads the length of the string, and `add_exclaim` appends a `!` to it. In `main` we call both, and at the end we make two shared references at the same time:
 
 ```rust
 fn length(s: &String) -> usize {
@@ -42,21 +46,42 @@ fn main() {
 }
 ```
 
-Output:
-
 ```text
 salam has 5 bytes
 salam!
 salam! salam!
 ```
 
-Compare with the last post: `length` no longer takes ownership, so `s` is still ours afterwards and there is no tuple to return. Note that the variable must be declared `mut` for `&mut s` to be allowed.
+First line: `length(&s)` only borrowed and returned the length. Afterwards `s` is still ours and we can print it, without the function giving anything back and without a tuple. Second line: `add_exclaim(&mut s)` changed the string (a `!` was added), and `s` in `main` sees that change, because the function worked on the string itself, not on a copy. Third line: two shared references at the same time are no problem.
 
-## The rule: many readers or one writer
+Two notes about the code:
 
-At any moment you can have either any number of `&T` references, or exactly one `&mut T`, but not both. This is the whole borrowing rule. It is what lets the compiler guarantee that nobody changes data while someone else is reading it.
+- To write `&mut s`, the variable itself must be declared `mut` (`let mut s`). You cannot take a mutable reference to something immutable.
+- You "unwrap" a reference with `*` to reach the value itself. When you call a method (`s.len()`) Rust does this for you, but in an assignment you must write it. The small program below shows both:
 
-Two writers first:
+```rust
+fn main() {
+    let mut x = 10;
+    let r = &mut x;
+    *r += 5;
+    println!("{x}");
+
+    let s = String::from("salam");
+    let rs = &s;
+    println!("{} {}", rs.len(), (*rs).len());
+}
+```
+
+```text
+15
+5 5
+```
+
+`*r += 5` says "add 5 to what `r` points to", and `x` became 15. On the last line `rs.len()` and `(*rs).len()` do the same thing and both give 5.
+
+## Many readers or one writer
+
+Now let us ask: what happens if we take two mutable references to one value? In Go that is no problem, but see what Rust says:
 
 ```rust
 fn main() {
@@ -81,7 +106,9 @@ error[E0499]: cannot borrow `s` as mutable more than once at a time
   |     - first borrow later used here
 ```
 
-Now a reader that is still alive while we mutate:
+Let us read the message. The title says you cannot borrow `s` as mutable more than once at a time. Three labels tell the story: the first borrow on line 3, the second borrow on line 4 (the problematic one), and "first borrow later used here" on line 5. That last label is the most important. It shows why the first borrow is still alive: `a` is used again after the second borrow. If `a` were not used any more, there would be no problem (we see this in the next section).
+
+Now the second case: a reader that is still alive while we change the value. (`vec![1, 2, 3]` makes a `Vec`, a growable list; we will say more about it later.)
 
 ```rust
 fn main() {
@@ -104,11 +131,13 @@ error[E0502]: cannot borrow `v` as mutable because it is also borrowed as immuta
   |                        ----- immutable borrow later used here
 ```
 
-The second one is the interesting case. `push` may need to reallocate the vector's buffer, which would leave `first` pointing at freed memory. Rust rejects the program before that can happen.
+This time a shared reference (`first`, to the first element) and a mutable reference (`v.push` takes `&mut v` behind the scenes to change `v`) conflict. This case is more interesting. Why is it dangerous? `push` may run out of room and move the whole vector buffer to a bigger place. Then `first` would point to the old place, which has been freed. That is "use of freed memory", which in C is a bug and a security hole. Rust rejects the program before it reaches that moment.
+
+From these two errors we can state the borrowing rule: **at any time you can have any number of `&T`, or exactly one `&mut T`, but never both.** In plain words: many readers or one writer. The reason is that while someone is reading, nobody should change the data under their feet. The compiler has a part called the {{< term "borrow-checker" "borrow checker" >}} that verifies this rule at compile time.
 
 ## A borrow ends at its last use
 
-A borrow does not last until the closing brace. It lasts until the reference is last used. This is called **non-lexical lifetimes** (NLL). This program mixes a shared and a mutable borrow of the same variable, and it compiles:
+You might think: so once I take a shared reference, I cannot change anything until the end of the scope. Fortunately that is not so. A borrow does not last until the closing brace; it lasts until the last time the reference is used. This feature is called **non-lexical lifetimes** (NLL for short). The program below takes a shared borrow and then a mutable borrow of the same variable, and it compiles:
 
 ```rust
 fn main() {
@@ -127,11 +156,11 @@ reader sees salam
 salam donya
 ```
 
-If you added a `println!("{r}")` after the `push_str`, you would get the E0502 error from before. When the compiler complains, look for the "later used here" label: it points at the use that keeps the borrow alive.
+`r` was used for the last time in the first `println!`. After that the borrow is over, so `&mut s` is allowed. If you add a `println!("{r}")` after `push_str`, `r` becomes alive again and you get the same E0502 error as before. The practical result: when the compiler objects, look for the label "later used here". It points at the use that keeps the borrow alive. Often the fix is to make the change before taking the reference. For example, if in the `Vec` program above we move `v.push(4)` before `let first = &v[0]`, the program compiles and prints `first = 1`.
 
-## References cannot dangle
+## A reference must not dangle
 
-A reference must never outlive the value it points to. Here is a function that tries to return a reference to its own local:
+A reference must never outlive the value it points to, otherwise it points to memory that no longer exists. Such a reference is called **dangling**. The function below tries to return a reference to one of its own local variables:
 
 ```rust
 fn dangle() -> &String {
@@ -159,7 +188,9 @@ help: instead, you are more likely to want to return an owned value
   |
 ```
 
-The compiler's second suggestion is the right one: return the `String` itself and let ownership move out. If you add a lifetime name to silence E0106 (`fn dangle<'a>() -> &'a String`), you get the deeper error:
+The title talks about something called a {{< term "lifetime" "lifetime" >}}, which is how long a reference stays valid. You do not need the details yet. The first `help` explains the whole thing: the function returns a reference, but there is no value for this reference to be borrowed from (because `s` is created inside the function itself). The compiler's second suggestion is the right fix: return the `String` itself and let ownership move out.
+
+If you add a lifetime name just to silence E0106 (`fn dangle<'a>() -> &'a String`), you reach a deeper error that states the real cause:
 
 ```text
 error[E0515]: cannot return reference to local variable `s`
@@ -167,14 +198,13 @@ error[E0515]: cannot return reference to local variable `s`
   |
 3 |     &s
   |     ^^ returns a reference to data owned by the current function
-
 ```
 
-`s` is dropped when the function ends, so the reference would point at nothing. Lifetimes get a proper treatment later in the series.
+`s` is dropped when the function ends (the third rule of ownership), so the reference would point to nothing. We will look at lifetimes more seriously later in this series.
 
-## Slices: borrowed views
+## Slices: a borrowed view
 
-A `&str` is a borrowed view into some string data, and `&[T]` is a borrowed view into a run of elements. They are references too, so the same rules apply, and functions that take them accept more inputs:
+There are two special references you will use a lot. `&str` is a borrowed view of the text of a string (all of it or a part of it), and `&[T]` is a borrowed view of a run of elements. These are references too, with the same rules. Their benefit is that a function taking them accepts more inputs:
 
 ```rust
 fn first_word(s: &str) -> &str {
@@ -203,22 +233,22 @@ hello
 9
 ```
 
-`first_word` works for a `String` (via `&text`) and for a literal. `sum` works for a whole `Vec` and for a sub-range. Prefer `&str` and `&[T]` over `&String` and `&Vec<T>` in parameters.
+`first_word` returns the first word of the text (it splits the text on spaces and takes the first piece). It works for a `String` (with `&text`) and for a literal like `"hello rust"`. (According to the Rust docs, a `&String` is converted to `&str` automatically; this conversion is called deref coercion.) `sum` works for a whole `Vec` (1+2+3+4+5 = 15) and for a range of it: `&v[1..4]` means the elements at index 1 to 3, so 2+3+4 = 9. For this reason, prefer `&str` and `&[T]` over `&String` and `&Vec<T>` in function parameters.
 
 ## Reading borrow errors
 
-- References are not pointers you manage by hand. You do not free them, and they are never null.
-- Many readers or one writer applies per value, at the same time. Sequential borrows are fine, thanks to NLL.
-- Read the error labels ("first borrow occurs here", "later used here") instead of just the headline; they tell you which two lines conflict.
-- If a borrow error is hard to untangle, a shorter scope or an owned return value is often the fix. `.clone()` is a last resort.
-- Compared with Go: Go lets you hold many pointers to the same value and mutate through any of them, and the compiler does not stop you. If goroutines do that without synchronisation, it is a data race and your problem to find (the race detector helps). Rust moves that check to compile time, at the cost of arguing with the compiler first.
+- **A reference is not a pointer you manage yourself.** You do not free it, and in safe Rust it is never null.
+- **"Many readers or one writer" applies per value and per moment.** Back-to-back borrows are fine with NLL once the first one is no longer used.
+- **Look at the labels of the error, not only the title.** "first borrow occurs here" and "later used here" show which two lines conflict.
+- **If a borrow error is hard to fix,** shortening the life of the reference (stop using it before the change) or returning an owned value usually helps. `.clone()` is the last resort.
+- **Comparison with Go.** In Go you can hold several pointers to one value and change it through any of them, and the compiler does not stop you. If goroutines do it without coordination, you get a data race, and finding it is up to you (the race detector helps). Rust moves this check to compile time, at the price of wrestling with the compiler at first.
 
 ## Exercise
 
-1. Write `fn append_twice(s: &mut String, word: &str)` that pushes `word` onto `s` two times, and call it from `main`.
-2. Reproduce the E0502 error with a `Vec`, then fix it by moving the `push` before you take the reference.
-3. Write `fn largest(xs: &[i32]) -> i32` and call it with a full `Vec` and with a sub-slice.
+1. Write `fn append_twice(s: &mut String, word: &str)` that appends `word` to `s` twice, and call it from `main`.
+2. Reproduce the E0502 error with a `Vec` and fix it by moving the `push` before taking the reference.
+3. Write `fn largest(xs: &[i32]) -> i32` and call it once with a whole `Vec` and once with a sub-slice.
 
 ## What's next
 
-So far our data has been single values and collections. Structs, enums and pattern matching in Rust is the next step: modeling our own types and branching on them, with references now available to lend them around.
+"Structs, enums and pattern matching in Rust". So far our data has been single values and collections. Now that we know how to lend a value, we build our own types and branch on them.

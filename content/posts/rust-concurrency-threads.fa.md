@@ -10,13 +10,15 @@ tags = ["rust", "concurrency", "threads", "intermediate"]
 cover = { image = "/images/covers/rust-concurrency-threads.fa.png", alt = "Concurrency با Thread در Rust", hiddenInSingle = true }
 +++
 
-شمارنده‌ای که با `Rc` به‌جای `Arc` بین threadها share شود کامپایل نمی‌شود: `Rc<std::sync::Mutex<i32>> cannot be sent between threads safely`. این خطا همان «concurrency بدون ترس» است که Rust به آن افتخار می‌کند؛ موضوعی بعد از تست و مستندسازیِ [مقاله‌ی قبل](/fa/posts/rust-testing-docs/). ادعا این است که همان **ownership** و **borrowing** که می‌شناسید، **data race** را هم در زمان کامپایل غیرممکن می‌کند. فقط از کتاب‌خانه‌ی استاندارد استفاده می‌کنیم و همه‌ی خطاهای زیر از کامپایل واقعی آمده‌اند. اگر Go بلدید، این بخش معادل [goroutine و channel](/fa/posts/go-goroutines-channels/) و [sync، select و context](/fa/posts/go-sync-select-context/) است.
+دو thread را تصور کنید که هر کدام یکی به یک شمارنده‌ی مشترک اضافه می‌کنند. «یکی اضافه کن» یک قدم به نظر می‌رسد ولی ماشین سه کار می‌کند: مقدار فعلی را بخوان، یکی به آن اضافه کن، نتیجه را برگردان و بنویس. اگر هر دو thread مقدار `5` را بخوانند پیش از آنکه یکی‌شان بنویسد، هر دو `6` می‌نویسند و یکی از دو افزایش گم می‌شود. برنامه crash نمی‌کند و خطایی چاپ نمی‌کند؛ عدد فقط غلط است، و در هر اجرا جور دیگری غلط. به این باگ می‌گویند {{< term "data-race" "data race" >}}: دو thread که هم‌زمان به یک حافظه دست می‌زنند، دست‌کم یکی با نوشتن، و هیچ‌چیز هماهنگشان نمی‌کند. از سخت‌ترین باگ‌ها برای پیدا کردن است، چون کد درست به نظر می‌رسد.
 
-> همه‌ی کدها با Rust نسخه‌ی 1.90 اجرا شده‌اند.
+جواب Rust این است که چنین برنامه‌ای را کامپایل نمی‌کند. قاعده‌هایی که از قبل می‌دانید، ownership و borrowing، دقیقاً همان چیزی است که لازم بود، و Rust به نتیجه‌اش می‌گوید «fearless concurrency» (هم‌زمانی بی‌ترس). این مقاله قدم‌به‌قدم می‌سازدش: شروع یک thread، دادن داده به آن، فرستادن پیام، به‌اشتراک‌گذاشتن وضعیت با قفل، و دو trait کوچک (`Send` و `Sync`) که ایراد کامپایلر را ممکن می‌کنند. فقط از کتابخانه‌ی استاندارد استفاده می‌کنیم و هر خطای کامپایلر پایین از یک کامپایل واقعی است. بعد از تست و مستندسازی در [مقاله‌ی قبل](/fa/posts/rust-testing-docs/) می‌آید. اگر Go می‌دانید، این مقاله هم‌ارز [goroutine و channel](/fa/posts/go-goroutines-channels/) و [sync و select و context](/fa/posts/go-sync-select-context/) است.
 
-## spawn، join و panic
+> همه‌چیز را با Rust نسخه‌ی 1.90 اجرا کرده‌ام (همان نسخه‌ی اجرای اول). برنامه‌هایی که از چند thread چاپ می‌کنند ممکن است در هر اجرا به ترتیب دیگری چاپ کنند؛ هر جا مهم بود گفته‌ام. چند برنامه‌ی کوچک (`move` یک عدد، و دو thread که یک شمارنده را تغییر می‌دهند) در demo اصلی نبودند؛ آن‌ها را برای همین مقاله نوشتم و جداگانه اجرا کردم. از پیام‌های خطا خط‌های «For more information…»، بعضی خط‌های `note:` و اشاره‌ها به سورس کتابخانه‌ی استاندارد را حذف کرده‌ام.
 
-تابع `thread::spawn` یک thread سیستم‌عامل می‌سازد و یک **JoinHandle** برمی‌گرداند. فراخوانی `join()` منتظر پایان thread می‌ماند و یک `Result` می‌دهد: `Ok` همراه مقدار برگشتی، یا `Err` اگر thread دچار panic شده باشد.
+## شروع یک thread: spawn و join و panic
+
+{{< term "os-thread" "thread" >}} یک خط اجرای مستقل داخل برنامه‌ی شماست. `thread::spawn` یک thread جدید سیستم‌عامل شروع می‌کند که یک closure را (در [مقاله‌ی closure‌ها](/fa/posts/rust-closures-iterators/) توضیح داده‌ام) هم‌زمان با بقیه‌ی کد شما اجرا می‌کند، و یک **`JoinHandle`** برمی‌گرداند. صدا زدن `join()` روی آن منتظر تمام‌شدن thread می‌ماند و یک `Result` برمی‌گرداند: `Ok` با مقدار برگشتی closure، یا `Err` اگر thread panic کرده باشد. demo یک thread سالم شروع می‌کند و یکی که عمداً panic می‌کند:
 
 ```rust
 let h = thread::spawn(|| (1..=10).sum::<u32>());
@@ -31,31 +33,66 @@ match bad.join() {
 
 ```text
 sum = 55
+
 thread '<unnamed>' panicked at src/bin/spawn_join.rs:9:13:
 worker failed
 worker panicked, main is still alive
 ```
 
-panic در یک worker کل برنامه را نمی‌کشد و شما تصمیم می‌گیرید با `Err` چه کنید.
+thread اول مجموع ۱ تا ۱۰ را برمی‌گرداند و `join` به ما `55` می‌دهد. thread دوم panic می‌کند و Rust پیام panic را چاپ می‌کند (روی stderr، پس در ترمینال ممکن است نسبت به خط‌های دیگر جای دیگری ظاهر شود). بعد `join` یک `Err` برمی‌گرداند و `match` ما خط آخر را چاپ می‌کند: panic در یک worker برنامه را نمی‌کشد. خودتان تصمیم می‌گیرید با `Err` چه کنید. (خط یادداشت `RUST_BACKTRACE` را حذف کرده‌ام.)
 
 ## چرا closure به move نیاز دارد
 
-thread ساخته‌شده ممکن است از تابعِ سازنده‌اش بیشتر عمر کند، پس نمی‌تواند متغیرهای محلی را borrow کند:
+یک thread می‌تواند بعد از برگشتن تابعی که آن را ساخته به کار ادامه بدهد. پس اگر closure‌ی thread یک متغیر محلی را قرض بگیرد چه می‌شود؟
+
+```rust
+let v = vec![1, 2, 3];
+let h = thread::spawn(|| println!("{v:?}"));
+h.join().unwrap();
+```
 
 ```text
 error[E0373]: closure may outlive the current function, but it borrows `v`, which is owned by the current function
+ --> src/bin/no_move.rs:5:27
+  |
 5 |     let h = thread::spawn(|| println!("{v:?}"));
   |                           ^^            - `v` is borrowed here
   |                           |
   |                           may outlive borrowed value `v`
+  |
+note: function requires argument type to outlive `'static`
 help: to force the closure to take ownership of `v` (and any other referenced variables), use the `move` keyword
+  |
+5 |     let h = thread::spawn(move || println!("{v:?}"));
+  |                           ++++
 ```
 
-با نوشتن `move ||` مالکیت `v` به thread داده می‌شود؛ آن‌وقت کد کامپایل می‌شود و `[1, 2, 3]` چاپ می‌کند.
+این همان reference معلق در [مقاله‌ی lifetime](/fa/posts/rust-lifetimes/) است. کامپایلر نمی‌داند که ما بلافاصله `join` می‌کنیم، و `v` وقتی `main` تمام شود drop می‌شود در حالی که thread ممکن است هنوز آن را بخواند. note می‌گوید `spawn` چه می‌خواهد: closure نباید چیزی را قرض بگیرد که ممکن است از بین برود (`'static`). help راه‌حل را می‌دهد: `move` بنویس تا thread صاحب `v` شود. بعد برنامه کامپایل می‌شود و `[1, 2, 3]` چاپ می‌کند.
 
-## Channel: جابه‌جایی مالکیت بین threadها
+یک غافلگیری درباره‌ی `move`: منتقل می‌کند، ولی برای نوع‌های ساده مثل عدد «منتقل‌کردن» یعنی کپی‌کردن. اگر یک شمارنده را به thread ببریم و آنجا زیادش کنیم:
 
-`std::sync::mpsc` یعنی چند تولیدکننده و یک مصرف‌کننده. برای هر تولیدکننده sender را clone کنید. به `drop(tx)` دقت کنید: گیرنده تا وقتی همه‌ی senderها، از جمله اصلی، از بین نروند منتظر می‌ماند.
+```rust
+let mut counter = 0;
+let h = thread::spawn(move || {
+    counter += 1;
+    println!("thread sees {counter}");
+});
+h.join().unwrap();
+println!("main sees {counter}");
+```
+
+```text
+thread sees 1
+main sees 0
+```
+
+thread مقدار خودش را تغییر داد و `main` هنوز `0` می‌بیند. این باگ Rust نیست، ولی نشان می‌دهد `move` به شما شمارنده‌ی مشترک نمی‌دهد. برای آن به ابزارهای بخش‌های بعد نیاز داریم.
+
+## channel: فرستادن مقدار بین thread‌ها
+
+ساده‌ترین راه امن برای همکاری thread‌ها این است که هیچ‌چیز را به اشتراک نگذارند: یک thread مقداری می‌فرستد و thread دیگر دریافت می‌کند. `std::sync::mpsc` («multiple producer, single consumer»، یعنی چند تولیدکننده و یک مصرف‌کننده) یک {{< term "mpsc-channel" "channel" >}} به شما می‌دهد: یک فرستنده (`tx`) و یک گیرنده (`rx`)، و فرستنده را برای هر thread تولیدکننده clone می‌کنید.
+
+در این demo سه thread هر کدام دو پیام می‌فرستند و thread اصلی همه را جمع می‌کند:
 
 ```rust
 let (tx, rx) = mpsc::channel();
@@ -81,21 +118,63 @@ producer 2 item 0
 producer 2 item 1
 ```
 
-پیام‌ها را مرتب کردم چون ترتیب رسیدن بین threadها ثابت نیست. فرستادن یک مقدار آن را move می‌کند، پس فرستنده بعد از آن نمی‌تواند به آن دست بزند:
+به خط `drop(tx)` دقت کنید. حلقه‌ی گیرنده (`rx.iter()`) فقط وقتی تمام می‌شود که همه‌ی فرستنده‌ها drop شده باشند. سه clone وقتی thread‌هایشان تمام شوند از بین می‌روند، ولی `tx` اصلی هنوز در `main` است، پس دستی drop می‌کنیمش. اگر این خط را فراموش کنید حلقه تا ابد منتظر می‌ماند. پیام‌ها را قبل از چاپ مرتب کردم چون ترتیب تحویل از thread‌ها ثابت نیست؛ بدون مرتب‌سازی، خط‌ها ممکن است در هر اجرا به ترتیب دیگری بیایند.
+
+فرستادن یک مقدار آن را منتقل می‌کند، پس فرستنده بعدش نمی‌تواند از آن استفاده کند:
+
+```rust
+let s = String::from("hello");
+tx.send(s).unwrap();
+println!("{s}");
+```
 
 ```text
 error[E0382]: borrow of moved value: `s`
+ --> src/bin/use_after_send.rs:9:20
+  |
+7 |         let s = String::from("hello");
+  |             - move occurs because `s` has type `String`, which does not implement the `Copy` trait
 8 |         tx.send(s).unwrap();
   |                 - value moved here
 9 |         println!("{s}");
   |                    ^ value borrowed here after move
 ```
 
-این همان «حافظه را با ارتباط به اشتراک بگذار» است، اما با اجبار کامپایلر.
+همان قاعده‌ی همیشگی ownership است: بعد از `send(s)` رشته مال گیرنده است. اگر فرستنده می‌توانست به استفاده‌اش ادامه دهد، دو thread ممکن بود به یک رشته دست بزنند، که دقیقاً همان چیزی است که نمی‌خواهیم. پس «حافظه را با ارتباط‌گرفتن به اشتراک بگذار» اینجا را کامپایلر اجرا می‌کند، نه انضباط.
 
-## حالت مشترک: Arc و Mutex
+## وضعیت مشترک: چرا قفل، و Arc و Mutex
 
-وقتی threadها باید داده‌ی مشترک داشته باشند، از `Arc<Mutex<T>>` استفاده کنید. **Arc** یک اشاره‌گر شمارنده‌دار با شمارش اتمی است، یعنی نسخه‌ی thread-safe از `Rc`. **Mutex** با `lock()` دسترسی انحصاری می‌دهد.
+گاهی thread‌ها واقعاً باید یک داده را به اشتراک بگذارند، مثل شمارنده‌ی ما. آیا می‌شود فقط بگذاریم دو thread تغییرش بدهند؟ ببینیم کامپایلر چه می‌گوید (این نسخه از `thread::scope` استفاده می‌کند که پایین‌تر توضیح می‌دهم، تا closure‌ها بتوانند قرض بگیرند):
+
+```rust
+let mut counter = 0;
+thread::scope(|s| {
+    s.spawn(|| counter += 1);
+    s.spawn(|| counter += 1);
+});
+```
+
+```text
+error[E0499]: cannot borrow `counter` as mutable more than once at a time
+ --> src/bin/x_two_mut.rs:7:17
+  |
+5 |     thread::scope(|s| {
+  |                    - has type `&'1 Scope<'1, '_>`
+6 |         s.spawn(|| counter += 1);
+  |         ------------------------
+  |         |       |  |
+  |         |       |  first borrow occurs due to use of `counter` in closure
+  |         |       first mutable borrow occurs here
+  |         argument requires that `counter` is borrowed for `'1`
+7 |         s.spawn(|| counter += 1);
+  |                 ^^ ------- second borrow occurs due to use of `counter` in closure
+  |                 |
+  |                 second mutable borrow occurs here
+```
+
+این همان قاعده‌ی borrowing است که می‌شناسید («در هر لحظه فقط یک reference تغییرپذیر») که حالا روی thread‌ها اعمال شده. هر closure یک قرض تغییرپذیر از `counter` می‌خواهد و کامپایلر به دومی «نه» می‌گوید. data race ابتدای مقاله اصلاً نوشتنی نیست. این مغز ایده است: data race فقط «دو دسترسی تغییرپذیر هم‌زمان» است که borrow checker از قبل ممنوعش کرده.
+
+پس چطور شمارنده را عمداً به اشتراک بگذاریم؟ با نوعی که کارش امن کردن دسترسی است: **`Mutex`** (از «mutual exclusion»، یعنی انحصار متقابل). thread با `lock()` دسترسی انحصاری می‌گیرد و قفل وقتی guard برگشتی از scope بیرون برود خودکار آزاد می‌شود. در Rust داده داخل خود mutex است، پس بدون قفل کردن نمی‌توانید به آن برسید. `Mutex` را باید چند thread هم داشته باشند و هر thread باید یک دسته به آن داشته باشد. برای این از {{< term "arc" "Arc" >}} استفاده می‌کنیم، یک اشاره‌گر «شمارنده‌دارِ atomic»: نسخه‌ی thread-safe از `Rc` در [مقاله‌ی Smart Pointerها](/fa/posts/rust-smart-pointers/). با هم، `Arc<Mutex<T>>` داده‌ی مشترکِ قفل‌دار است:
 
 ```rust
 let counter = Arc::new(Mutex::new(0));
@@ -114,40 +193,65 @@ println!("final = {}", *counter.lock().unwrap());
 final = 8000
 ```
 
-هشت thread، هرکدام هزار افزایش، و نتیجه دقیقاً 8000 است. قفل وقتی guard از scope خارج شود آزاد می‌شود.
+هشت thread هر کدام هزار بار یکی اضافه می‌کنند و نتیجه دقیقاً ۸۰۰۰ است. هر thread یک clone از `Arc` می‌گیرد (دسته‌ی تازه‌ای به همان شمارنده)، `lock()` برای یک افزایش به آن دسترسی انحصاری می‌دهد، و guard در پایان همان دستور drop می‌شود که قفل را باز می‌کند. `lock()` یک `Result` برمی‌گرداند، برای همین `unwrap()` هست؛ بخش «مسمومیت mutex» پایین‌تر می‌گوید کِی ممکن است `Err` باشد.
 
-## Send و Sync: data race چطور به خطای کامپایل تبدیل می‌شود
+## Send و Sync: کامپایلر از کجا می‌داند
 
-اگر به‌جای `Arc` از `Rc` استفاده کنیم چه می‌شود؟
+کامپایلر از کجا می‌داند `Arc<Mutex<i32>>` در thread مشکلی ندارد و چیز دیگری دارد؟ به‌جای `Arc` از `Rc` استفاده کنید:
+
+```rust
+let counter = Rc::new(Mutex::new(0));
+let c = Rc::clone(&counter);
+let h = thread::spawn(move || {
+    *c.lock().unwrap() += 1;
+});
+```
 
 ```text
 error[E0277]: `Rc<std::sync::Mutex<i32>>` cannot be sent between threads safely
-  |
-  = help: within `{closure@src/bin/rc_mutex.rs:8:27: 8:34}`, the trait `Send` is not implemented for `Rc<std::sync::Mutex<i32>>`
+   --> src/bin/rc_mutex.rs:8:27
+    |
+  8 |       let h = thread::spawn(move || {
+    |               ------------- ^------
+    |               |             |
+    |  _____________|_____________within this `{closure@src/bin/rc_mutex.rs:8:27: 8:34}`
+    | |             |
+    | |             required by a bound introduced by this call
+  9 | |         *c.lock().unwrap() += 1;
+ 10 | |     });
+    | |_____^ `Rc<std::sync::Mutex<i32>>` cannot be sent between threads safely
+    |
+    = help: within `{closure@src/bin/rc_mutex.rs:8:27: 8:34}`, the trait `Send` is not implemented for `Rc<std::sync::Mutex<i32>>`
 note: required by a bound in `spawn`
+    |
 726 |     F: Send + 'static,
+    |        ^^^^ required by this bound in `spawn`
 ```
 
-دو trait نشانگر این را توضیح می‌دهند. نوعی **Send** است که انتقالش به thread دیگر امن باشد. نوعی **Sync** است که اشتراکش با reference بین threadها امن باشد (یعنی `&T` از نوع Send باشد). `Rc` شمارنده‌اش را بدون عملیات اتمی تغییر می‌دهد، پس هیچ‌کدام نیست. تابع `spawn` شرط `Send` می‌گذارد و کامپایلر آن را خودکار از فیلدها نتیجه می‌گیرد. کل سازوکار همین است: data race به تغییرِ هم‌زمانِ بدون هماهنگی نیاز دارد و سیستم نوع اجازه‌ی نوشتنش را نمی‌دهد. درباره‌ی `Rc` بیشتر در [اشاره‌گرهای هوشمند](/fa/posts/rust-smart-pointers/) آمده است.
+از پایین بخوانید. امضای `spawn` می‌گوید `F: Send + 'static`: closure‌ای که می‌گیرد باید {{< term "send-and-sync" "Send" >}} باشد. closure ما یک `Rc` دارد، و `Rc` نوع `Send` نیست، پس closure هم نیست. پیام دقیقاً همین را نشان می‌دهد.
 
-## RwLock، atomic و scoped thread
+`Send` و `Sync` دو **marker trait** هستند، یعنی trait‌هایی بدون متد که فقط یک نوع را برچسب می‌زنند. نوعی `Send` است که منتقل‌کردنش به thread دیگر امن باشد. نوعی `Sync` است که نگه‌داشتن یک reference مشترک (`&T`) به آن در چند thread هم‌زمان امن باشد. `Rc` شمارنده‌اش را بدون هیچ محافظتی تغییر می‌دهد، پس اگر دو thread آن را clone کنند، شمارش خراب می‌شود. برای همین نه `Send` است و نه `Sync`. `Arc` برای شمارنده از عملیات atomic استفاده می‌کند، پس هر دو است (به شرط اینکه داده‌ی داخلش هم باشد).
 
-`RwLock` چند خواننده یا یک نویسنده را اجازه می‌دهد. برای شمارنده‌ی ساده، `AtomicUsize` اصلاً قفل لازم ندارد:
+خودتان هیچ‌وقت `Send` یا `Sync` را نمی‌نویسید: کامپایلر آن‌ها را از روی فیلدهای نوع نتیجه می‌گیرد. struct وقتی `Send` است که همه‌ی فیلدهایش باشند. همین کل سازوکار است، و ارزش دارد ساده بگویمش: data race داده‌ی مشترکی می‌خواهد که بدون هماهنگی تغییر کند. ownership جلوی اشتراک را می‌گیرد، قاعده‌های borrow جلوی تغییر بدون هماهنگی را می‌گیرند، و `Send`/`Sync` نمی‌گذارند نوعی را که بین thread‌ها ناامن است قاچاقی وارد کنید. (کدی که داخل بلاک `unsafe` است هنوز می‌تواند قاعده‌ها را بشکند، ولی کد امن نمی‌تواند.)
+
+## RwLock و atomic و thread‌های scope‌دار
+
+سه ابزار دیگر از کتابخانه‌ی استاندارد. `RwLock` قفلی است که چند خواننده‌ی هم‌زمان یا یک نویسنده را قبول می‌کند. نوع atomic، مثل `AtomicUsize`، یک عملیات مثل «یکی اضافه کن» را تقسیم‌ناپذیر انجام می‌دهد و اصلاً قفل نمی‌خواهد، که ابزار درست برای یک شمارنده‌ی ساده است. demo چهار thread شروع می‌کند که هرکدام یک config مشترک را می‌خوانند و یکی به یک شمارنده‌ی مشترک اضافه می‌کنند، و بعد thread اصلی یک config جدید می‌نویسد:
 
 ```rust
 let config = Arc::new(RwLock::new(String::from("v1")));
 let hits = Arc::new(AtomicUsize::new(0));
-// 4 threads: config.read().unwrap(); hits.fetch_add(1, Ordering::Relaxed);
-// afterwards: *config.write().unwrap() = String::from("v2");
+// 4 thread: config.read().unwrap(); hits.fetch_add(1, Ordering::Relaxed);
+// بعدش: *config.write().unwrap() = String::from("v2");
 ```
 
 ```text
 hits = 4, config = v2
 ```
 
-(برنامه‌ی کامل همراه حلقه‌ی ساخت threadها در دمو‌ی محلی من هست.) آرگومان `Ordering` ترتیب حافظه را تعیین می‌کند؛ وقتی مطمئن نیستید `SeqCst` انتخاب امن است.
+(برنامه‌ی کامل با حلقه‌ی ساخت thread‌ها در demo محلی است.) چهار hit شمرده شد و نوشتن config را به `v2` تغییر داد. آرگومان `Ordering` می‌گوید CPU چقدر باید ترتیب عملیات حافظه را دور عملیات atomic رعایت کند؛ `SeqCst` وقتی مطمئن نیستید امن‌ترین انتخاب است، و demo برای افزایش‌ها `Relaxed` را به کار می‌برد که برای یک شمارنده‌ی ساده کافی است.
 
-`thread::scope` تضمین می‌کند threadهایش پیش از بازگشت تمام شوند، پس می‌توانند بدون `move` و `Arc` داده‌ی محلی را borrow کنند:
+ابزار آخر دردسر `move` و `Arc` را برای یک حالت رایج حل می‌کند. `thread::scope` تضمین می‌کند همه‌ی thread‌هایی که داخلش شروع شده‌اند پیش از برگشتنش تمام شده باشند، پس آن thread‌ها می‌توانند داده‌ی محلی را مستقیم قرض بگیرند، بدون `move` یا `Arc`:
 
 ```rust
 let data = vec![1, 2, 3, 4, 5, 6];
@@ -163,33 +267,35 @@ let (a, b) = thread::scope(|s| {
 left = 6, right = 15, data still ours: 6
 ```
 
-همین ایده برای کار تکه‌تکه هم جواب می‌دهد: یک vector با 1,000,000 عدد را به 4 تکه تقسیم کردم، هر تکه را در یک scoped thread جمع زدم و با جمع تک‌threadی مقایسه کردم. هر دو 500000500000 شدند. سرعت را اندازه نگرفتم، پس درباره‌اش ادعایی نمی‌کنم.
+وکتور به دو نیمه تقسیم می‌شود، هر نیمه در thread خودش جمع می‌شود، و بعدش `data` هنوز مال ماست. هر دو thread فقط می‌خوانند، پس اشتراک مشکلی ندارد. (در مثال شکست‌خورده‌ی بالا هر دو می‌خواستند بنویسند، برای همین آن کامپایل نشد.) همین ایده برای کار تکه‌تکه هم جواب می‌دهد: یک وکتور با ۱,۰۰۰,۰۰۰ عدد را به ۴ تکه تقسیم کردم، هر تکه را در یک thread scope‌دار جمع زدم و با جمع تک‌threadی مقایسه کردم. برنامه چاپ کرد `single = 500000500000, parallel = 500000500000, equal = true`. سرعت را اندازه نگرفتم، پس درباره‌اش ادعایی نمی‌کنم.
 
-## Mutex poisoning
+## مسمومیت mutex
 
-اگر threadی در حالی که قفل را دارد دچار panic شود، mutex به حالت **poisoned** درمی‌آید؛ هشداری که می‌گوید ممکن است داده نیمه‌کاره به‌روز شده باشد:
+اگر thread در حالی که قفل را دارد panic کند چه می‌شود؟ ممکن است داده نیمه‌به‌روز مانده باشد. Rust به‌عنوان هشدار mutex را **poisoned** (مسموم) علامت می‌زند. demo یک thread می‌سازد که mutex را قفل می‌کند و panic می‌کند، و بعد وضعیت را می‌پرسد:
 
 ```text
+thread '<unnamed>' panicked at src/bin/poison.rs:9:9:
+died while holding the lock
 thread result is_err = true
 is_poisoned = true
 lock failed, but data is recoverable: 0
 ```
 
-`lock()` یک `Err` برمی‌گرداند و اگر تصمیم بگیرید داده سالم است، `into_inner()` روی همان خطا باز هم guard را می‌دهد.
+دو خط اول پیام panic از thread است. بعد: نتیجه‌ی thread یک `Err` بود (panic کرد)، mutex می‌گوید `is_poisoned = true`، و در نتیجه `lock()` هم `Err` برمی‌گرداند. این خطا بن‌بست نیست: `into_inner()` روی آن باز هم guard را به شما می‌دهد، پس اگر تصمیم بگیرید داده سالم است می‌توانید به استفاده‌اش ادامه دهید. اینجا `0` چاپ می‌شود، مقداری که داخلش بود.
 
-## آنچه Rust جلویش را نمی‌گیرد
+## چیزهایی که Rust جلویشان را نمی‌گیرد
 
-- فراموش کردن `drop(tx)` باعث می‌شود حلقه‌ی گیرنده تا ابد منتظر بماند.
-- نگه داشتن طولانی `MutexGuard` threadها را پشت سر هم می‌اندازد؛ بخش بحرانی را کوتاه نگه دارید.
-- Rust جلوی data race را می‌گیرد، نه deadlock و نه خطای منطقیِ ترتیب را. قفل کردن دو mutex با ترتیب معکوس باز هم گیر می‌کند.
-- `unwrap()` روی `lock()` در مثال‌ها خوب است، اما در کد واقعی عمداً تصمیم بگیرید قفل poisoned یعنی چه.
-- مقایسه با Go: هر دو برای concurrency خوب‌اند. Rust data race را در زمان کامپایل رد می‌کند؛ Go آن را در زمان اجرا با فلگ `-race` پیدا می‌کند و فقط روی مسیرهایی که واقعاً اجرا شوند.
+- **فراموش‌کردن `drop(tx)`** باعث می‌شود حلقه‌ی گیرنده تا ابد منتظر بماند، چون channel هیچ‌وقت بسته نمی‌شود.
+- **نگه‌داشتن طولانی یک `MutexGuard`** باعث می‌شود thread‌هایتان در صف بایستند. بخش قفل‌شده را کوتاه نگه دارید.
+- **deadlock و logic race هنوز ممکن‌اند.** Rust جلوی data race را می‌گیرد، نه deadlock را. قفل‌کردن دو mutex به ترتیب معکوس در دو thread هنوز می‌تواند همه‌چیز را قفل کند. «logic race» (نتیجه‌ی غلط به‌خاطر ترتیب عملیات، در حالی که هر دسترسی تنهایی امن است) هم ممکن است.
+- **`unwrap()` روی `lock()`** در مثال‌ها اشکالی ندارد. در کد واقعی تصمیم بگیرید قفل مسموم برای برنامه‌تان چه معنایی دارد.
+- **مقایسه با Go:** هر دو برای هم‌زمانی خوب‌اند. Rust data race را در زمان کامپایل رد می‌کند. Go آن‌ها را در زمان اجرا با فلگ `-race` پیدا می‌کند، و فقط روی مسیرهای کدی که واقعاً اجرا شوند.
 
 ## تمرین
 
-1. شمارنده را به‌جای `Mutex` با `AtomicUsize` بنویسید.
-2. یک pool با 3 worker بسازید که اعداد را از یک channel بگیرند و مربعشان را روی channel دوم بفرستند.
+۱. شمارنده را با `AtomicUsize` به‌جای `Mutex` بازنویسی کنید.
+۲. یک استخر از ۳ worker بسازید که عددها را از یک channel بگیرند و مربعشان را روی channel دوم پس بفرستند. (راهنما: با `mpsc` فقط یک گیرنده هست، پس باید تصمیم بگیرید چطور آن را بین worker‌ها به اشتراک بگذارید.)
 
 ## قدم بعدی
 
-وقتی هزاران کار هم‌زمان دارید که بیشترشان منتظر I/O هستند، thread سنگین است؛ «async/await و Tokio در Rust» برای همین مشکل است.
+thread یک منبع سیستم‌عامل است و وقتی هزاران کار دارید که بیشتر وقتشان منتظر شبکه یا دیسک می‌گذرد سنگین است. مقاله‌ی بعد، «async/await و Tokio در Rust»، همین مشکل را حل می‌کند.

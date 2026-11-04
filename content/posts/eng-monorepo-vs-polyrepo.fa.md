@@ -10,23 +10,30 @@ tags = ["monorepo", "polyrepo", "go-workspaces", "ci", "git", "software-engineer
 cover = { image = "/images/covers/eng-monorepo-vs-polyrepo.fa.png", alt = "monorepo یا polyrepo؟", hiddenInSingle = true }
 +++
 
-`Format(cents)` را در یک بسته‌ی مشترک به `Format(cents, cur)` تغییر دهید. در {{< term "monorepo" "monorepo" >}} (چند سرویس در یک مخزن) این یک commit است؛ در {{< term "polyrepo" "polyrepo" >}} (هر سرویس یک مخزن) سه pull request، یک tag و بازه‌ای که دو سرویس پول را متفاوت قالب‌بندی می‌کنند. [مبانی DDD](/fa/posts/eng-ddd-basics/) مرزها را درون سیستم کشید؛ پرسش اینجا جای کدِ پشت آن‌هاست. مرتبط: [پکیج‌ها و ماژول‌ها](/fa/posts/go-packages-modules/)، [طراحی pipeline برای CI/CD](/fa/posts/eng-ci-cd-pipeline-design/)، [feature flag و trunk-based development](/fa/posts/eng-feature-flags-trunk-based/)، [شاخه‌ها، HEAD و ref‌ها](/fa/posts/git-branches-head-refs/).
+فرض کنید تابعی در یک بسته‌ی مشترک، `Format(cents)`، باید به `Format(cents, cur)` تبدیل شود تا واحد پول را هم چاپ کند. هرکسی که آن را صدا می‌زند هم باید عوض شود. این کار چقدر دردسر دارد، به یک تصمیم قدیمی بستگی دارد: کد کجا زندگی می‌کند.
 
-یک سیستم اسباب‌بازی (`orders`، `payments` و `shared` با تابع `Format`) را یک بار در یک مخزن و یک بار در سه مخزن ساختم؛ مخزن‌ها محلی و دورریختنی‌اند (Go 1.26، Git 2.39). **عددها شمارش و بایت‌اند، نه زمان.** نظرها برچسب دارند.
+در {{< term "monorepo" "monorepo" >}} (چند سرویس در یک مخزن) این یک commit است: تابع و همه‌ی فراخواننده‌هایش را با هم عوض می‌کنید. در {{< term "polyrepo" "polyrepo" >}} (هر سرویس در مخزن خودش) این سه pull request است، یک tag نسخه‌ی تازه، و بازه‌ای که در آن دو سرویس پول را متفاوت قالب‌بندی می‌کنند. هیچ‌کدام ساده‌ترین جواب «درست» نیست. این مقاله همین تغییر را به هر دو روش اجرا می‌کند تا ببینید دقیقاً چه فرقی دارند، و بعد معیارهایی را می‌گوید که خودم برای انتخاب به کار می‌برم.
+
+مقاله‌ی قبل، [مبانی DDD](/fa/posts/eng-ddd-basics/)، مرزها را درون سیستم کشید. پرسش اینجا جای کدِ پشت آن مرزهاست. مطالب مرتبط: [پکیج‌ها و ماژول‌ها](/fa/posts/go-packages-modules/)، [طراحی pipeline برای CI/CD](/fa/posts/eng-ci-cd-pipeline-design/)، [feature flag و trunk-based development](/fa/posts/eng-feature-flags-trunk-based/) و [branch، HEAD و ref](/fa/posts/git-branches-head-refs/).
+
+یک سیستم اسباب‌بازی ساختم: سه ماژول Go به اسم‌های `orders`، `payments` و `shared` (که تابع `Format` را دارد)، یک بار در یک مخزن و یک بار در سه مخزن. مخزن‌ها محلی و دورریختنی‌اند. همه‌چیز را دوباره با Go 1.27.3 و Git 2.39.2 در یک نسخه‌ی موقت از دمو اجرا کردم (اجرای اول با Go 1.26 بود). **عددهای این مقاله شمارش و بایت‌اند، هیچ‌وقت زمان نیستند.** نظرها برچسب دارند.
 
 ## ۱. یک تغییر، دو روش
 
-`Format(cents)` را به `Format(cents, cur)` تغییر دادم. در monorepo سه ماژول با فایل {{< term "go-workspace" "go.work" >}} به هم وصل‌اند. وقتی فقط `shared` عوض شود، یک دستور همه‌ی فراخوانی‌های خراب را نشان می‌دهد:
+`Format(cents)` را به `Format(cents, cur)` تغییر دادم. اول monorepo. سه ماژول آن با یک فایل {{< term "go-workspace" "go.work" >}} به هم بسته شده‌اند، که به Go می‌گوید همین‌جا و در همان checkout ماژول‌ها را مستقیم به هم وصل کند، بدون نسخه‌ی منتشرشده. وقتی فقط `shared` عوض می‌شود، یک دستور همه‌ی فراخواننده‌های شکسته را نشان می‌دهد:
 
 ```text
-$ go build ./orders/... ./payments/... ./shared/...   # output trimmed
+$ go build ./orders/... ./payments/... ./shared/...   # first five lines
+# example.com/mono/orders
 orders/orders.go:14:23: not enough arguments in call to shared.Format
-payments/payments.go:9:67: not enough arguments in call to shared.Format
+	have (int64)
+	want (int64, string)
+# example.com/mono/payments
 ```
 
-هر دو فراخوانی را درست کردم و یک commit زدم. `go test -race` در هر سه ماژول سبز شد و `git show --stat` شش فایل را در یک commit نشان داد.
+خروجی را به پنج خط بریدم. بعد از سرخط `# example.com/mono/payments` در خط آخر، همان نوع خطا در `payments/payments.go` می‌آید و اجرای `go test` هم خطاها را برای build تست‌ها چاپ می‌کند. پس کامپایلر به `orders.go` و `payments.go` اشاره می‌کند. هر دو فراخواننده را درست کردم و یک بار commit کردم. بعد `go test -race` در هر سه ماژول سبز شد و `git show --stat` شش فایل تغییرکرده در یک commit نشان داد: دو فایل کد و دو فایل تست در فراخواننده‌ها، به‌علاوه‌ی `shared` و تستش.
 
-در polyrepo، `orders` و `payments` با نسخه به `shared` وابسته‌اند. برای شبیه‌سازی release بدون شبکه، zip‌های tag‌دار را از یک module proxy محلی سرو کردم. نتیجه: سه pull request، یک tag، و این وضعیت بعد از دومی:
+حالا polyrepo. اینجا `orders` و `payments` با **نسخه** به `shared` وابسته‌اند: `go.mod` هرکدام می‌گوید از کدام tag از `shared` استفاده می‌کند. برای شبیه‌سازی انتشار بدون شبکه، فایل‌های zip برچسب‌دار را از یک module proxy محلی مبتنی بر فایل سرو کردم. این فقط لوله‌کشی دمو است. نتیجه سه pull request در سه مخزن و یک tag تازه (`v0.2.0`) بود. بعد از pull request دوم وضعیت این بود:
 
 ```text
 orders:   example.com/poly/shared v0.2.0
@@ -35,66 +42,104 @@ payments: example.com/poly/shared v0.1.0
 payments: paid 12.50
 ```
 
-همه‌چیز کامپایل می‌شود، ولی تا PR سوم دو سرویس پول را متفاوت فرمت می‌کنند.
+به دو خط آخر نگاه کنید. `orders` حالا واحد پول را چاپ می‌کند و `payments` نه. همه‌چیز کامپایل می‌شود و همه‌ی تست‌ها سبزند، ولی تا وقتی pull request سوم نیامده دو سرویس پول را متفاوت قالب‌بندی می‌کنند. پیش از pull request اول هر دو سرویس روی `v0.1.0` بودند و بعد از سومی هر دو روی `v0.2.0`. در میان، مدتی سیستم مخلوط است.
 
 | | monorepo | polyrepo |
 |---|---|---|
-| مخزن / commit / PR | ۱ / ۱ / ۱ | ۳ / ۳ / ۳ (+۱ tag) |
-| حالت‌های نسخه‌ی ناهمگون | ۰ | ۱ |
+| مخزن / commit / PR | 1 / 1 / 1 | 3 / 3 / 3 (+1 tag) |
+| وضعیت با نسخه‌های مخلوط | 0 | 1 |
 
-**نظر من:** تغییر اتمی قوی‌ترین دلیل برای monorepo است؛ ولی pin کردن نسخه هم ویژگی است: payments مجبور به حرکت نشد.
+نظر من: تغییر اتمیک، یعنی همه‌ی تغییر یک‌جا، قوی‌ترین دلیل برای monorepo است. ولی pin کردن نسخه در polyrepo هم فقط هزینه نیست، یک ویژگی است: `payments` هیچ‌وقت مجبور نشد حرکت کند. تا وقتی تیمش تصمیم به ارتقا گرفت روی `v0.1.0` ماند.
 
 ## ۲. CI نباید همه‌چیز را اجرا کند
 
-بدون CI انتخابی، monorepo کند می‌شود. اسکریپت من خروجی `git diff --name-only` را می‌خواند، هر `go.mod` را parse می‌کند و یال‌های وابستگی را می‌پیماید:
+monorepo یک خطر روشن دارد: اگر هر commit همه‌ی تست‌های همه‌ی سرویس‌ها را اجرا کند، با بزرگ شدن مخزن CI کند می‌شود. راه‌حل این است که فقط آنچه تغییر می‌تواند روی آن اثر بگذارد اجرا شود.
+
+اسکریپت من این کار را برای سه ماژول می‌کند. `git diff --name-only` را می‌خواند، هر `go.mod` را parse می‌کند و یال‌های وابستگی را دنبال می‌کند: تغییر در یک ماژول، همان ماژول و هرچه به آن وابسته است را متأثر می‌کند. آن را روی چهار تغییر نمونه اجرا کردم:
 
 ```text
-diff 1: orders/orders.go    run tests for: ['orders']
-diff 2: payments/payments.go    run tests for: ['payments']
-diff 3: shared/money.go     run tests for: ['orders', 'payments', 'shared']
-diff 4: docs/README.md      run tests for: (nothing)
+diff 1: orders/orders.go
+changed: ['orders/orders.go']
+run tests for: ['orders']
+
+diff 2: payments/payments.go
+changed: ['payments/payments.go']
+run tests for: ['payments']
+
+diff 3: shared/money.go
+changed: ['shared/money.go']
+run tests for: ['orders', 'payments', 'shared']
+
+diff 4: docs/README.md
+changed: ['docs/README.md']
+run tests for: (nothing)
 ```
 
-ابزارهایی مثل Bazel، Nx، Turborepo، Pants و Buck2 برای این کار هستند؛ استفاده‌شان نکردم و ادعایی ندارم.
+تغییر در `orders` فقط تست‌های `orders` را اجرا می‌کند. تغییر در `shared` همه‌چیز را اجرا می‌کند، چون هر دو سرویس به آن وابسته‌اند. تغییر در یک README چیزی را اجرا نمی‌کند. (اگر خود `go.work` عوض شود، اسکریپت برای اطمینان «همه را اجرا کن» می‌گوید.) ابزارهای واقعی build این کار را خیلی بهتر می‌کنند: Bazel، Nx، Turborepo، Pants و Buck2 برای همین مشکل ساخته شده‌اند. من از آن‌ها استفاده نکردم و درباره‌شان ادعایی ندارم.
 
 ## ۳. مالکیت و دسترسی
 
-فایل {{< term "codeowners" "CODEOWNERS" >}} مسیرها را به تیم‌ها نگاشت می‌کند. خروجی matcher ۱۱ خطی من (آخرین الگوی منطبق برنده است): `payments/payments.go -> @team-payments @team-security` و `orders/README.md -> @team-docs`. تا آنجا که می‌دانم GitHub دسترسی خواندن per-directory ندارد، پس «فقط تیم X بخواند» طبیعتاً per-repo است. آزمایشش نکردم؛ مستندات میزبانتان را ببینید.
+در یک مخزن باید به این پرسش جواب داد: «چه کسی باید تغییرهای این پوشه را review کند؟» یک فایل {{< term "codeowners" "CODEOWNERS" >}} مسیرها را به تیم‌ها نگاشت می‌کند. این همان فایلی است که دمو استفاده کرد؛ آخرین خطِ منطبق برنده می‌شود:
+
+```text
+# last matching pattern wins
+*            @team-platform
+/shared/     @team-platform
+/orders/     @team-orders
+/payments/   @team-payments @team-security
+*.md         @team-docs
+```
+
+تطبیق‌دهنده‌ی ۱۱ خطی من روی پنج مسیر این را چاپ کرد:
+
+```text
+shared/money.go              -> @team-platform
+orders/orders.go             -> @team-orders
+payments/payments.go         -> @team-payments @team-security
+orders/README.md             -> @team-docs
+go.work                      -> @team-platform
+```
+
+به `orders/README.md` دقت کنید: قاعده‌ی بعدیِ `*.md` از `/orders/` جلو می‌زند، پس مالک آن تیم docs است. این همان «آخرین تطابق برنده است» در عمل است.
+
+این درباره‌ی این بود که چه کسی review می‌کند. اینکه چه کسی می‌تواند *بخواند* پرسش دیگری است. تا آنجا که می‌دانم GitHub دسترسی خواندن به‌ازای هر پوشه ندارد، پس «فقط تیم X اجازه‌ی خواندن این کد را دارد» طبیعتاً یک قاعده‌ی به‌ازای مخزن است. مستندات میزبان خودتان را ببینید؛ من آن را تست نکردم.
 
 ## ۴. مقیاس
 
-با `git fast-import` مخزنی ساختم: ۳٬۰۰۰ commit، ۳٬۰۰۰ فایل، هزار تا برای هر سرویس. `git count-objects -vH` حجم pack را 2.11 MiB نشان داد. وقتی مخزن بزرگ شود:
+نگرانی معمول درباره‌ی monorepo اندازه است. برای حس گرفتن، با `git fast-import` یک مخزن ساختم: ۳۰۰۰ commit و ۳۰۰۰ فایل، ۱۰۰۰ تا برای هر سرویس. `git count-objects -vH` گفت مخزن بسته‌بندی‌شده ۲٫۱۱ مگابایت (MiB) است. این کوچک است، چون فایل‌های من کوچک‌اند؛ نکته سه ابزاری است که وقتی مخزن بزرگ می‌شود کمک می‌کنند:
 
-- `git log -- orders` برای هر پوشه ۱٬۰۰۰ commit شمرد: تاریخچه را می‌شود per-path پرسید.
-- {{< term "sparse-checkout" "sparse checkout" >}} (حالت cone، فقط `orders`): ۱٬۰۰۰ فایل روی دیسک، ۳٬۰۰۰ فایل tracked.
-- {{< term "partial-clone" "partial clone" >}} (با `--filter=blob:none` و `--no-checkout`): 1.22 MiB و ۳٬۰۰۰ blob غایب؛ با خواندن یک فایل همان یکی آمد و ۲٬۹۹۹ غایب ماند.
+- **تاریخچه به‌ازای مسیر.** `git log -- orders` برای `orders` ۱۰۰۰ commit شمرد و برای هر دو پوشه‌ی دیگر هم همین. می‌توانید درباره‌ی تاریخچه‌ی یک سرویس بپرسید، با اینکه مخزن همه‌ی سرویس‌ها را دارد.
+- **sparse checkout.** {{< term "sparse-checkout" "Sparse checkout" >}} در حالت cone و فقط روی `orders`، ۱۰۰۰ فایل روی دیسک گذاشت در حالی که Git هنوز ۳۰۰۰ فایل را دنبال می‌کند. توسعه‌دهنده فقط بخشی را می‌بیند که رویش کار می‌کند.
+- **partial clone.** {{< term "partial-clone" "Partial clone" >}} (با `--filter=blob:none` و `--no-checkout`) موقع clone محتوای فایل‌ها را رد می‌کند. clone شده ۱٫۲۲ مگابایت بود و هر ۳۰۰۰ blob فایل کم بود. دستورهای تاریخچه همچنان کار کردند: شمردن commitهایی که به `shared` دست زده‌اند ۱۰۰۰ داد. خواندن یک فایل آن را گرفت و بعد از آن ۲۹۹۹ blob هنوز کم بود.
 
-پیام‌های commit با scope (مثل `fix(shared): ...`، {{< term "conventional-commits" "Conventional Commits" >}}) لاگ را خوانا نگه می‌دارند.
+یک عادت دیگر هم در لاگ مشترک کمک می‌کند: پیام‌های commit با scope مثل `fix(shared): ...`، به سبک {{< term "conventional-commits" "Conventional Commits" >}}، دیدن اینکه commit به کدام بخش مخزن دست زده را آسان می‌کنند.
 
-## ۵. نسخه‌بندی و release
+## ۵. نسخه و انتشار
 
-monorepo می‌تواند یک نسخه برای همه داشته باشد: ساده است، اما ارتقاها با هم حرکت می‌کنند. در polyrepo هر کتابخانه {{< term "semver" "نسخه‌ی معنایی" >}} خودش را دارد. monorepo با چند ماژول Go هم می‌تواند جدا tag بزند: طبق مرجع Go modules، زیرپوشه‌ی ماژول پیشوند tag نسخه هم هست (مثلاً `orders/v1.2.0`). resolve یک ماژول چندگانه‌ی tag‌دار را اجرا نکردم.
+monorepo می‌تواند یک شماره‌ی نسخه برای همه‌چیز بگذارد. ساده است، ولی ارتقاها با هم حرکت می‌کنند. polyrepo به هر کتابخانه {{< term "semver" "نسخه‌ی معنایی" >}} خودش را می‌دهد و مصرف‌کننده‌ها هر وقت خواستند ارتقا می‌دهند. یک monorepo با چند ماژول Go هم می‌تواند ماژول‌ها را جدا tag کند: طبق مرجع ماژول‌های Go، زیرپوشه‌ی ماژول پیشوند tag نسخه هم هست (یعنی چیزی مثل `orders/v1.2.0`). من resolve چندماژوله‌ی tag‌دار را اجرا نکردم، پس این را مستندات بدانید، نه تست‌شده.
 
-## ماتریس تصمیم من (نظر شخصی)
+## ماتریس تصمیم من (نظر)
 
-| عامل | تمایل به monorepo | تمایل به polyrepo |
+یک جواب برای همه‌ی تیم‌ها وجود ندارد. این عامل‌هایی است که من نگاه می‌کنم:
+
+| عامل | به monorepo نزدیک‌تر | به polyrepo نزدیک‌تر |
 |---|---|---|
 | اندازه‌ی تیم | کوچک تا متوسط، on-call مشترک | تیم‌های مستقل زیاد |
-| کد مشترک | زیاد تغییر می‌کند | API پایدار و نسخه‌دار |
-| ریتم release | با هم | مستقل |
+| کد مشترک | زیاد تغییر می‌کند | پایدار، API نسخه‌دار |
+| ریتم انتشار | با هم | مستقل |
 | ابزار build | CI انتخابی دارید یا می‌سازید | هر مخزن ساده است |
-| کنترل دسترسی | داخل شرکت باز | سخت‌گیرانه per-project |
-| onboarding | یک clone، یک جستجو | مخزن‌های کوچک و متمرکز |
+| کنترل دسترسی | داخل سازمان باز | سخت‌گیرانه برای هر پروژه |
+| onboarding | یک clone، یک جستجو | مخزن‌های کوچک‌تر و متمرکز |
 
-راه میانه‌ی من: یک مخزن برای هر حوزه‌ی محصول و کتابخانه‌های واقعاً مشترک در مخزن‌های جدا و نسخه‌دار.
+راه میانه‌ی من: یک مخزن برای هر حوزه‌ی محصول، و کتابخانه‌های واقعاً مشترک به‌صورت مخزن‌های جدا و نسخه‌دار.
 
-## دام‌های هر دو طرف
+## تله‌ها در هر دو طرف
 
-- `go.work` برای کار محلی است؛ release باید همچنان نسخه‌ی واقعی بگیرد.
-- در ریشه‌ی workspace دستور `go test ./...` شکست می‌خورد («directory prefix . does not contain modules»)؛ پوشه‌ی ماژول‌ها را نام ببرید.
-- پوشه‌ی «shared» که همه ویرایشش می‌کنند نقطه‌ی coupling می‌شود؛ مالک بگذارید.
-- pin کردن drift را پنهان می‌کند؛ bump زمان‌بندی کنید.
+- **`go.work` برای کار محلی است.** انتشار باید همچنان نسخه‌ی واقعی داشته باشد: هرکسی که به ماژول منتشرشده‌ی شما وابسته است نسخه‌ها را از `go.mod` می‌گیرد، نه از `go.work` شما.
+- **در ریشه‌ی workspace، `go test ./...` شکست می‌خورد.** Go می‌گوید `pattern ./...: directory prefix . does not contain modules listed in go.work or their selected dependencies`. به‌جایش پوشه‌های ماژول‌ها را نام ببرید، مثل `go test ./orders/... ./payments/... ./shared/...`.
+- **پوشه‌ی «shared» که همه ویرایشش می‌کنند نقطه‌ی گره‌خوردگی می‌شود.** برایش مالک بگذارید، مثل فایل CODEOWNERS بالا.
+- **pin کردن رانش را پنهان می‌کند.** در polyrepo کسی مجبورتان به ارتقا نمی‌کند، پس سرویس‌ها می‌توانند مدت زیادی روی نسخه‌های قدیمی بمانند. ارتقای نسخه‌ها را برنامه‌ریزی کنید.
 
 ## قدم بعدی
 
-«برآورد و برنامه‌ریزی»: تغییر polyrepo بالا سه PR پشت‌سرهم خواست؛ برآوردها سر همین وابستگی‌ها خراب می‌شوند.
+مقاله‌ی بعد «برآورد و برنامه‌ریزی» است. تغییر polyrepo بالا سه pull request پشت‌سر‌هم لازم داشت و وابستگی‌هایی مثل این دقیقاً جایی‌اند که برآوردها خراب می‌شوند.

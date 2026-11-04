@@ -10,15 +10,31 @@ tags = ["algorithms", "sorting", "go", "quicksort", "merge-sort", "heap-sort"]
 cover = { image = "/images/covers/algo-sorting.png", alt = "Sorting: quick, merge and heap", hiddenInSingle = true }
 +++
 
-Give the simplest {{< term "quicksort" "quicksort" >}} 10,000 already sorted items and it does about n^2/2 comparisons, recursing as deep as the input; random input needs 156,275 comparisons and depth 31. In [Binary search and invariants](/posts/algo-binary-search-invariants/) the data was already sorted; here we produce that order. Three classic algorithms give O(n log n) ({{< term "big-o" "Big-O" >}}, as in [Big-O analysis with real measurements](/posts/algo-big-o-measured/)): quicksort, {{< term "merge-sort" "merge sort" >}} and {{< term "heap-sort" "heap sort" >}}. The last one reuses the heap from [Heaps and priority queues](/posts/algo-heaps-priority-queues/). They differ in worst case, memory and one property that surprises people: {{< term "stable-sort" "stability" >}}.
+Sorting is something every programmer does every week, usually with a single line, `slices.Sort`. But if you want to know what happens under that line, or understand why some sorts shuffle the order of equal records, you have to look at three classic algorithms up close. A warning to start: give the simplest {{< term "quicksort" "quicksort" >}} (first element as the pivot) 10,000 items that are already sorted and it does about n²/2 comparisons, recursing as deep as the input itself. The same code on random input needs only 156,275 comparisons and depth 31. What changed? Only the order of the input.
 
-> Go 1.26, local example. When I wanted to time things, the 1-minute load average on this machine was 10.61, far above my limit of 2.0, so I publish no nanoseconds. Everything below is deterministic: counts of calls to `less`, and allocations.
+In [Binary search and invariants](/posts/algo-binary-search-invariants/) the data was already sorted; here we produce that order ourselves. Three algorithms reach O(n log n) ({{< term "big-o" "Big-O" >}}, as in [Big-O analysis with real measurements](/posts/algo-big-o-measured/)): quicksort, {{< term "merge-sort" "merge sort" >}} and {{< term "heap-sort" "heap sort" >}}. The last one reuses the heap from [Heaps and priority queues](/posts/algo-heaps-priority-queues/). They differ in the worst case, in memory, and in one property that surprises many people: {{< term "stable-sort" "stability" >}}.
 
-## The three implementations
+> Go 1.27, local example, re-run for this post. I publish no timings. Everything below is deterministic: counts of calls to the `less` comparison function, and allocations. (When I tried to time things in the first run, the 1-minute load average on this machine was 10.61, far above the limit I use for publishing times.)
 
-All three are generic and take `less func(a, b T) bool`; thin wrappers use `cmp.Less` for `cmp.Ordered` types. Each is tested against `slices.Sort` on random, sorted, reverse-sorted and many-duplicate inputs (fixed seed, sizes 0 to 5000), plus a descending-order `less` and a stability test. They pass with `go test -race`.
+## Why O(n log n)? A picture
 
-Quicksort picks the median of the first, middle and last items as pivot and parks it before the end, then partitions. It recurses into the smaller side and loops on the larger, so the stack depth stays at most log2 n, and ranges of 12 items or fewer go to insertion sort:
+Before the three algorithms, one question: why do they all land on n log n, and not something smaller or larger? The simplest sort, moving each element backwards until it sits in the right place (insertion sort), makes about n²/2 moves in the worst case. The faster algorithms use one trick: **cut the problem in half**. Halve 8 elements once and you have 4 and 4, twice and you have pairs, three times and single elements. So for n elements there are about log₂ n levels; and if each level does linear work over all n elements, the total is n × log₂ n. For a million elements, n log₂ n is about 20 million, while n²/2 would be 500 billion.
+
+Each of the three algorithms implements this idea in its own way. Let us see each on a few small numbers first.
+
+## Quicksort: put one element in its place, split the rest in two
+
+The idea of quicksort: pick one element, the **pivot**. Divide the rest into two groups: smaller than the pivot on the left, larger on the right. Now the pivot sits exactly in its final place. Repeat the same thing on both groups. For example, with pivot 5:
+
+```
+[5 8 2 9 1 7 3]
+        |
+[2 1 3]  5  [8 9 7]      <- 5 is in its final place
+```
+
+(In the real implementation the partitioning happens in place and the order inside each group may change; this is only a picture of the idea.) The left and right groups are sorted the same way until we reach single-element groups. If the pivot lands near the middle every time, each level halves the problem and there are log n levels. If the pivot is bad (say, always the smallest), one group stays empty and the work shrinks by only one element; we will get to that.
+
+My version adds a few things. It takes the median of the first, middle and last elements as the pivot (median-of-three), parks it near the end and then partitions. It recurses into the smaller side and loops on the larger one, so the recursion depth is at most log₂ n (each recursive call covers at most half of the range). And ranges of 12 elements or fewer go to insertion sort, which is cheap on small ranges:
 
 ```go
 func Quick[T any](a []T, less func(x, y T) bool) {
@@ -36,7 +52,24 @@ func Quick[T any](a []T, less func(x, y T) bool) {
 }
 ```
 
-Merge sort splits in half, sorts both halves, and merges them through one buffer of size n allocated up front. The one-character detail that makes it stable is the strict `<`: on a tie the left item goes first:
+`partition` returns one index: the final place of the pivot. Then the code recurses into the smaller of the two sides, and for the larger side it just shrinks `a` and lets the loop continue.
+
+## Merge sort: halve, sort, merge
+
+The idea of merge sort: cut the array in half, sort each half, and **merge** the two sorted halves. Merging is easy because both halves are already sorted: look at the front of each, take the smaller one, repeat:
+
+```
+left:  [2 5 8]      right: [1 3 9]
+compare 2 and 1  -> 1      [2 5 8]  [3 9]
+compare 2 and 3  -> 2      [5 8]    [3 9]
+compare 5 and 3  -> 3      [5 8]    [9]
+compare 5 and 9  -> 5      [8]      [9]
+compare 8 and 9  -> 8      []       [9]
+leftover         -> 9
+result: [1 2 3 5 8 9]
+```
+
+Merging needs a helper buffer of size n; in the code it is allocated once at the start and reused at every level. The detail that makes merge sort stable is the strict `<`: when two elements are equal, the left one goes first:
 
 ```go
 if less(buf[j], buf[i]) { // strict: equal keys take the left one first
@@ -46,11 +79,29 @@ if less(buf[j], buf[i]) { // strict: equal keys take the left one first
 }
 ```
 
-Heap sort builds a max-heap with heapify, then swaps the root to the end and sifts down, n-1 times. No buffer.
+That is, the right side moves ahead only when it is **strictly** smaller. We will see what "stable" means in the stability section.
+
+## Heap sort: build a heap, bring the largest to the end
+
+The idea of heap sort: turn the array into a **max-heap** (heapify, as in the heap post, but this time the parent is larger than its children), so the largest element is in slot 0. Swap it with the last slot; now the largest is in its final place at the end. Shrink the heap by one and sift the new root down. Repeat. The sorted part grows from the end of the array while the heap shrinks from the front. With five numbers `[4 10 3 5 1]`:
+
+```
+heapify:                  [10 5 3 4 1]
+swap root with last:      [1 5 3 4 | 10]   sift down -> [5 4 3 1 | 10]
+swap root with last:      [1 4 3 | 5 10]   sift down -> [4 1 3 | 5 10]
+swap root with last:      [3 1 | 4 5 10]   sift down -> [3 1 | 4 5 10]
+swap root with last:      [1 | 3 4 5 10]
+```
+
+The `|` marks the border between the heap (left) and the sorted part (right). Heap sort needs no helper buffer: everything happens inside the same array.
+
+## How I tested the implementations
+
+All three are generic and take a `less func(a, b T) bool`; thin wrappers for `cmp.Ordered` types use `cmp.Less`. Each is tested against `slices.Sort` on random, sorted, reversed and duplicate-heavy input (fixed seed, sizes 0 to 5000), plus a descending `less` and a stability test. All pass with `go test -race`.
 
 ## Counting comparisons
 
-I sorted the same random integers with each algorithm and counted `less` calls:
+I sorted the same random numbers with each algorithm and counted calls to `less`. The last column is n × log₂ n itself, for comparison:
 
 ```
 n         quick        merge        heap         n*log2(n)
@@ -60,13 +111,16 @@ n         quick        merge        heap         n*log2(n)
 1000000   21623445     18674250     36795744     19931569
 ```
 
-All three grow like n log n. Merge sort stays below n log2 n, quicksort lands 5 to 9% above it, and heap sort needs almost twice as many comparisons as merge sort. That matches the heap sort count in the heaps post. Counts are not time: they ignore memory access patterns, so I make no claim about which is fastest.
+All three grow like n log n: each time n grows tenfold, the counts grow about 12 to 14 times. Merge sort stays below n log₂ n, quicksort is about 6 to 9 percent above it, and heap sort needs almost twice as many comparisons as merge sort. The reason is visible in the code: each level the root sinks costs two comparisons, one to find the larger child and one to compare it with the element itself. This agrees with the result in the heap post. But a comparison count is not time: it cannot see memory access patterns, so I make no claim about which is fastest.
 
-Allocations, measured with `testing.AllocsPerRun` at n = 10000 (each run includes one allocation for cloning the input): quicksort 1 and heap sort 1, so zero extra; merge sort 2, the buffer.
+I also counted allocations with `testing.AllocsPerRun` for n = 10000 (every run includes one allocation for cloning the input):
 
-## The quicksort worst case
+- quicksort: 1 and heap sort: 1, so they need nothing extra.
+- merge sort: 2, which is the helper buffer.
 
-Take the simplest quicksort: first element as pivot, no cutoff. On random input it is fine. On already sorted input every partition removes only one item. With n = 10,000 and a depth counter (I measured it rather than risk a stack overflow):
+## Quicksort's worst case
+
+Take the simplest quicksort: first element as the pivot and no cutoff. It is fine on random input. On sorted input the pivot is always the smallest element, so the left group stays empty and each partition removes only one element from the work. Instead of log n levels we get n levels. With n = 10,000 and a depth counter (I only counted the depth so that it would not overflow the stack):
 
 ```
 sorted  comparisons=49995000  n^2/2=50000000  max recursion depth=10000
@@ -74,11 +128,19 @@ random  comparisons=156275  n^2/2=50000000  max recursion depth=31
 median-of-three quick on the same sorted input: comparisons=107963
 ```
 
-Median-of-three handles the sorted case with 107,963. It is not immune: adversarial inputs exist for any fixed pivot rule, which is one reason libraries add fallbacks.
+Line one: on sorted input, almost exactly n²/2 comparisons (49,995,000) and depth 10,000, as deep as the input. Line two: the same code on random input needs 156,275 comparisons and depth 31. Line three: my quicksort with median-of-three on that same sorted input needs only 107,963 comparisons, because the median of three elements of a sorted array is the middle one. But median-of-three is not immune: for any fixed pivot rule, a bad input can be built. That is why libraries usually have a fallback, or a random pivot.
 
 ## Stability
 
-I sorted 200 records with 3 distinct keys and counted pairs of equal keys that ended up in a different order than they arrived:
+A **stable** sort keeps records with equal keys in their input order. Say you sorted a list of emails by time and now sort by sender; with a stable sort, each sender's emails stay ordered by time. I saw this on 12 small records (each record is a numeric key and a letter showing arrival order):
+
+```
+input:                   2a 1b 3c 2d 1e 3f 1g 2h 3i 1j 2k 3l 
+my merge sort:           1b 1e 1g 1j 2a 2d 2h 2k 3c 3f 3i 3l 
+my quicksort (cutoff 12): 1b 1e 1g 1j 2a 2d 2h 2k 3c 3f 3i 3l 
+```
+
+In both outputs the records with key 1 stayed in the order `b e g j`, their input order. But an important caveat: my quicksort only looks stable here because 12 elements fall under the cutoff and are sorted by insertion sort, which is stable. A small example lies. So I sorted 200 records with 3 distinct keys and counted the equal-key pairs whose order differed from the input order:
 
 ```
 my merge sort                      equal-key pairs out of original order: 0
@@ -90,24 +152,24 @@ sort.Slice                         equal-key pairs out of original order: 102
 slices.SortFunc                    equal-key pairs out of original order: 102
 ```
 
-Only merge sort and the standard stable functions keep order. Note that `sort.Slice` and `slices.SortFunc` are not stable by documentation, so any order you see from them is accidental. (With only 12 records my quicksort looked stable, because ranges under the cutoff use insertion sort, which is stable. Small examples lie.)
+Zero means stable. Only my merge sort and the stable functions of the standard library (`sort.Stable` and `slices.SortStableFunc`) keep the order. According to the docs, `sort.Slice` and `slices.SortFunc` are not stable, so whatever order you see from them is accidental and should not be relied on.
 
 ## What the standard library does
 
-According to the Go docs and source, `sort.Slice` and `slices.Sort` use a pattern-defeating quicksort since Go 1.19. I counted `sort.Slice` on 100,000 random numbers: 1,739,892 calls to `less`, close to my 1,792,110 for quicksort.
+As far as I know, the `sort` package has used a pattern-defeating quicksort since Go 1.19, a quicksort with defences against bad inputs. I only looked at comparison counts: `sort.Slice` on 100,000 random numbers made 1,739,892 calls to `less`, close to the 1,792,110 comparisons of my quicksort. I did not read the library's source for this post.
 
 ## Choosing a sort without surprises
 
-- Use `slices.Sort` or `slices.SortFunc` unless you have a reason; use `slices.SortStableFunc` when equal keys must keep their order, for example sorting by a second key after a first.
-- Your comparison must be a consistent ordering. A `less` that is not, such as one using `<=`, can break the result.
-- A fixed pivot rule has bad inputs; random pivots or fallbacks are the defense.
-- Merge sort costs O(n) extra memory; quicksort and heap sort do not.
-- Fewer comparisons does not mean faster. Measure on your data before choosing.
+- **Unless you have a reason, call `slices.Sort` or `slices.SortFunc`.** When equal keys must keep their order, for instance sorting by a second key after the first, use `slices.SortStableFunc`.
+- **Your comparison function must give a consistent order.** A `less` that is not consistent, for example one written with `<=`, can corrupt the result.
+- **A fixed pivot rule has bad inputs.** A random pivot or a fallback is the defence.
+- **Merge sort needs O(n) extra memory;** quicksort and heap sort do not.
+- **Fewer comparisons does not mean faster.** Measure on your own data before choosing.
 
 ## Exercise
 
-Make the merge sort do one thing less: skip the merge when `!less(a[m], a[m-1])`, so already sorted input costs about n comparisons. Count `less` calls on sorted input before and after, and keep the stability test green.
+Make merge sort do less work: if `!less(a[m], a[m-1])` (the last element of the left half is not greater than the first of the right half, so the two halves are already in order), skip the merge so that sorted input needs about n comparisons. Count the calls to `less` on sorted input before and after, and keep the stability test green.
 
 ## What's next
 
-Search trees and the B-tree: keeping data ordered while it changes, instead of sorting it once.
+"Search trees and the B-tree". Here we sorted data once; there we see how to keep data ordered while items are being added and removed.

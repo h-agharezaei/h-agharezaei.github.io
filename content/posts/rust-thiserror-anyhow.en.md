@@ -10,13 +10,15 @@ tags = ["rust", "errors", "thiserror", "anyhow", "backend"]
 cover = { image = "/images/covers/rust-thiserror-anyhow.png", alt = "Errors in real apps: thiserror and anyhow", hiddenInSingle = true }
 +++
 
-Print an `anyhow` error with `{}` and you see one line; print it with `{:?}` and you get the whole `Caused by:` list. Which one lands in your logs decides whether you can later tell why a request failed. In [Databases with SQLx in Rust](/posts/rust-database-sqlx/) the typical source of errors was the database: connection failures, missing rows, constraint violations. Back in [error handling with Result](/posts/rust-error-handling-result/) we wrote the `Display`, `Error` and `From` impls by hand. That is fine for learning, but it is a lot of boilerplate. Two crates remove it: **thiserror** for error types you define, and **anyhow** for code that only needs to report errors. Go has its own answer, sentinel errors and `%w` wrapping, covered in [config, logging and errors in Go](/posts/go-config-logging-errors/).
+A request to your service fails, and the log says only this: `invalid digit found in string`. Which request? Which file was being read? What was the program trying to do? The error is correct, and it is useless. A good error message answers "what was happening when this went wrong", and it has to keep the original cause too, so that code can still look at it.
 
-> Rust 1.90, thiserror 2.0.21, anyhow 1.0.104. Everything below was compiled and run as a local example; outputs are copied from the runs.
+There are two readers for an error, and they want different things. Some code wants to *decide*: if the order is missing, answer `404`; if the database is down, retry. That code needs errors it can tell apart, so it needs a type it can `match` on. A human, or a log line, wants to *understand*: a chain of messages from the top ("start server") down to the root cause. In [Databases with SQLx in Rust](/posts/rust-database-sqlx/) the errors came from the database: connection failures, missing rows, constraint violations. Back in [error handling with Result](/posts/rust-error-handling-result/) we wrote the `Display`, `Error` and `From` implementations for our error types by hand. That is fine for learning, but it is a lot of boilerplate. Two crates cover the two readers: **thiserror** removes the boilerplate for error types you define, and **anyhow** is a catch-all error with context for code that only needs to report. Go has its own answer, sentinel errors and `%w` wrapping, covered in [Config, structured logging and errors in Go](/posts/go-config-logging-errors/).
+
+> I used Rust 1.90, thiserror 2.0.21 and anyhow 1.0.104. Everything below was compiled and run again for this version of the post as a local example with eight small programs, and the outputs are copied from the runs. The demo writes its sample files in `/tmp`, so you will see those paths in the output.
 
 ## thiserror: the same enum, less code
 
-Here is the `DivideError` from the earlier post. Compared with the manual version, the `Display` impl, the `Error` impl and `source()` are all gone:
+Here is the `DivideError` from the earlier post. Compared with the manual version, the `Display` implementation, the `Error` implementation and `source()` are all gone, and the derive writes them from the attributes:
 
 ```rust
 use std::num::ParseIntError;
@@ -35,7 +37,7 @@ pub enum DivideError {
 }
 ```
 
-`#[error("...")]` generates `Display` and can use the fields. `#[source]` marks the field returned by `source()` (a field named `source` is picked up automatically, I wrote the attribute to be explicit). Running the same four inputs as before gives identical behavior:
+`#[error("...")]` generates `Display`, and the message can use the fields of the variant. `#[source]` marks the field that `source()` returns, which is how the original error stays reachable. (A field named `source` is picked up automatically; I wrote the attribute to be explicit.) The demo divides four pairs of strings: `84/2`, `1/0`, `abc/2` and ` x1/3`, and prints the error, its source and whether it is `DivideByZero`. The behavior is identical to the hand-written version:
 
 ```text
 result: 42
@@ -49,7 +51,9 @@ error: parse " x1": invalid digit found in string
   is DivideByZero: false
 ```
 
-`#[from]` generates the `From` impl, so `?` converts for you. `#[error(transparent)]` forwards both `Display` and `source()` to the inner error:
+The first case is a normal result. In the others, the error's own message is on the `error:` line, `source()` gives the underlying `ParseIntError` (the `caused by:` line), and the program can still ask "is this the divide-by-zero kind?" with a pattern match. That last part is why a typed error is worth having.
+
+Two more attributes cover the rest of the boilerplate. `#[from]` generates the `From` implementation, so `?` converts the error for you. `#[error(transparent)]` says "this variant adds nothing of its own": both the message and `source()` come from the inner error.
 
 ```rust
 #[derive(Debug, Error)]
@@ -69,19 +73,23 @@ pub fn read_port(path: &str) -> Result<u16, AppError> {
 }
 ```
 
+`read_port` reads a file and parses its content as a port number. The demo calls it on three files: one containing `8080`, one containing `80x`, and one that does not exist:
+
 ```text
 port = 8080
 error: config: invalid digit found in string
 error: No such file or directory (os error 2)
 ```
 
-## Libraries vs applications
+The first file works. The second fails in `parse()`, which `?` converted into `BadNumber`, so the message starts with our `config:` prefix. The third fails in `read_to_string`, converted into `Io`; because that variant is `transparent`, the message is the operating system's own text, without any prefix.
 
-My rule: a **library** exposes typed errors, because callers may want to `match` on them. An **application** mostly reports: log it, print it, return 500. For that, `anyhow::Result<T>` is enough. It is one error type that holds anything implementing `std::error::Error`, and `?` converts into it automatically.
+## Libraries and applications
+
+Here is the rule I follow. A **library** exposes typed errors, because its callers may want to `match` on them, as we just did with `DivideByZero`. An **application** (the program at the top, with `main`) mostly *reports* errors: it logs them, prints them or turns them into a `500`. For that, `anyhow::Result<T>` is enough. It is a single error type that can hold any error type that implements `std::error::Error` (and is safe to send between threads, which ordinary error types are), and `?` converts into it automatically. In short: `thiserror` for the types you design, `anyhow` for the glue where you only pass errors along.
 
 ## Context chains
 
-`anyhow::Context` adds a message as the error travels up. `.with_context(|| ...)` builds the message lazily, only on failure:
+The problem from the opening was a message that says *what* failed but not *what we were doing*. `anyhow::Context` fixes that: it adds a message to an error as the error travels up. `.context("...")` takes a ready-made message, and `.with_context(|| ...)` takes a closure that builds the message, so the string is only created when there really is an error:
 
 ```rust
 fn load(path: &str) -> Result<u16> {
@@ -95,7 +103,7 @@ fn run() -> Result<()> {
 }
 ```
 
-The same error printed three ways:
+Here `run` calls `load`, which calls `read_port` on the file that contains `80x`. Each layer adds one sentence. The demo prints the same error in three ways and then walks the chain:
 
 ```text
 --- {}
@@ -109,11 +117,23 @@ Caused by:
     0: load config /tmp/port_bad.txt
     1: config: invalid digit found in string
     2: invalid digit found in string
+--- chain()
+0: start server
+1: load config /tmp/port_bad.txt
+2: config: invalid digit found in string
+3: invalid digit found in string
 ```
 
-`{}` shows only the outermost message, `{:#}` joins the whole chain on one line (good for logs), and `{:?}` gives the multi-line `Caused by:` list (good for a terminal). `err.chain()` iterates the layers. Notice the repeated "invalid digit found in string": my `BadNumber` variant prints its source in its own message and also exposes it as the source. Pick one.
+- `{}` shows only the outermost message. If your log line uses this, you lose the reason.
+- `{:#}` joins the whole chain on one line, separated by colons. This is a good choice for logs.
+- `{:?}` prints the first message, then a numbered `Caused by:` list. This is the nicest for a terminal.
+- `err.chain()` gives you the layers as an iterator, in case you want to format them yourself.
+
+Look at the repeated "invalid digit found in string" at the end of the `{:#}` line, and at layers 1 and 2 in the `{:?}` list. It comes from my own `BadNumber` variant: it prints its source inside its own message (`config: {0}`) *and* exposes the same error as its `source()`. So the text appears twice. Pick one of the two, either the source in the message or `source()`.
 
 ## anyhow!, bail! and ensure!
+
+Sometimes there is no underlying error and you just want to create one. Three macros do it:
 
 ```rust
 fn check(port: i64, host: &str) -> Result<()> {
@@ -128,6 +148,8 @@ fn check(port: i64, host: &str) -> Result<()> {
 }
 ```
 
+The demo calls it with `(80, "example.com")`, `(-1, "a")`, `(80, "")` and `(80, "forbidden")`:
+
 ```text
 ok
 error: port must be positive, got -1
@@ -135,11 +157,11 @@ error: host is empty
 error: host forbidden is not allowed
 ```
 
-`anyhow!` builds an error, `bail!` is `return Err(anyhow!(...))`, and `ensure!` is a check plus `bail!`.
+`anyhow!` builds an error from a message, `bail!` is shorthand for `return Err(anyhow!(...))`, and `ensure!` is a condition check followed by `bail!`. Each of the three failing cases above uses one of the three.
 
-## Downcasting
+## Downcasting: getting the type back
 
-An `anyhow::Error` hides the concrete type, but it can give it back, even through added context:
+An `anyhow::Error` hides the concrete error type. But if some code really needs to know "was this a divide-by-zero?", it can ask, and the answer works even through added context:
 
 ```rust
 let err = work().unwrap_err(); // divide("1","0").context("compute ratio")
@@ -157,9 +179,11 @@ downcast_ref: DivideByZero
 is::<std::io::Error>: false
 ```
 
-It is the Rust counterpart of `errors.As`. `downcast` (owned) and `is` exist too.
+`downcast_ref::<T>()` returns `Some` when the error, somewhere in the chain, is a `T`. It is the Rust counterpart of `errors.As` in Go. The `is::<T>()` method answers yes or no, and there is an owned `downcast` too (the demo prints `downcast (owned): DivideByZero`). Use this sparingly: if you downcast a lot, a typed enum would serve you better.
 
-## main and backtraces
+## main returning a Result
+
+`main` can return `anyhow::Result`, which is the lazy and good way to end an application:
 
 ```rust
 fn main() -> Result<()> {
@@ -178,11 +202,11 @@ Caused by:
     invalid digit found in string
 ```
 
-The exit code is 1 (checked with `echo $?`). Unlike `Box<dyn Error>`, you get the `Caused by:` list for free. Backtraces: without env vars nothing extra is printed. With `RUST_BACKTRACE=1` the output gained a `Stack backtrace:` section; `RUST_LIB_BACKTRACE=1` alone did the same; `RUST_LIB_BACKTRACE=0 RUST_BACKTRACE=1` printed none.
+The program prints the error with `{:?}`, so you get the `Caused by:` list for free (returning a plain `Box<dyn Error>` from `main` does not print such a chain), and the exit code is 1, which I checked. Backtraces are controlled by environment variables. With none set, nothing extra is printed. With `RUST_BACKTRACE=1` the output gains a `Stack backtrace:` section; `RUST_LIB_BACKTRACE=1` alone does the same; and `RUST_LIB_BACKTRACE=0 RUST_BACKTRACE=1` printed none, because the library variable wins. (I did not paste the backtrace itself: it is long and its frames differ between builds.)
 
 ## One place to map errors to status codes
 
-The Rust analogue of `statusOf` in the Go post is a `match` over the typed error. Clients get fixed text, the full chain goes to the log:
+This is the Rust version of the `statusOf` function from the Go post. The typed error is matched in one place: the client gets fixed text, and the full chain goes to the log.
 
 ```rust
 #[derive(Debug, Error)]
@@ -204,7 +228,7 @@ fn status_of(err: &ServiceError) -> (u16, String) {
 }
 ```
 
-`Other(#[from] anyhow::Error)` catches everything unexpected.
+This combines both crates: `ServiceError` is a typed enum for the cases we decide on, and `Other(#[from] anyhow::Error)` is the catch-all for everything unexpected. The demo makes one error of each kind and prints the status, the message for the client, and what would go to the log:
 
 ```text
 404 not found   (log: order 42 not found)
@@ -212,13 +236,15 @@ fn status_of(err: &ServiceError) -> (u16, String) {
 500 internal error   (log: dial tcp 10.0.0.5:5432: connection refused)
 ```
 
+The client of the `500` never learns about the database address; only the log has it. The `422` is the one case where the message for the client and the log are the same, because it was written for the client.
+
 ## Common error-reporting mistakes
 
-- Do not put `anyhow::Error` in the public API of a library. Callers cannot `match` on it, only downcast.
-- `{}` hides the causes. Log with `{:#}` or `{:?}`, or you will lose the reason.
-- Never send `err.to_string()` of an unknown error to the client, as in the status mapping above.
-- A message that includes its source and also exposes it as `source()` prints twice in `{:#}`.
-- `with_context` with a closure avoids building the string on the success path.
+- **Do not put `anyhow::Error` in the public API of a library.** Callers cannot `match` on it; they can only downcast.
+- **`{}` hides the causes.** Log with `{:#}` or `{:?}`, or you will lose the reason.
+- **Never send `err.to_string()` of an unknown error to the client,** as the status mapping above avoids. It may contain addresses, queries or file paths.
+- **A message that includes its source and also exposes it as `source()` prints it twice** in `{:#}`, as we saw.
+- **Prefer `with_context` with a closure** when building the message costs something, so the string is not built on the success path.
 
 ## Exercise
 
@@ -228,4 +254,4 @@ fn status_of(err: &ServiceError) -> (u16, String) {
 
 ## What's next
 
-*An async NATS JetStream client in Rust* puts these errors to work: its worker uses a small `thiserror` enum to decide whether a failed message is redelivered or dropped.
+Errors matter most where messages can fail and be redelivered. The next post, *An async NATS JetStream client in Rust*, puts these errors to work: its worker uses a small `thiserror` enum to decide whether a failed message is redelivered or dropped.

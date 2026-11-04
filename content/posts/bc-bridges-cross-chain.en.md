@@ -10,17 +10,23 @@ tags = ["blockchain", "go", "solidity", "bridge", "foundry", "security"]
 cover = { image = "/images/covers/bc-bridges-cross-chain.png", alt = "Bridges and cross-chain messaging", hiddenInSingle = true }
 +++
 
-Chain B has no idea what happened on chain A unless someone tells it, and a {{< term "bridge" "bridge" >}} is mostly the question of whom B believes. In [Layer 2 and rollups: optimistic and ZK](/posts/bc-layer2-rollups/) the L1 contract could check the rollup itself: the data was on L1. Two independent chains cannot do that.
+Imagine you walk into a casino with cash. The cashier takes your 1,000, puts it in a safe, and hands you a 1,000 chip that is good only inside this casino. When you bring the chip back, the cashier tears it up and returns the real money. As long as the safe holds as much cash as there are chips in circulation, everything is fine.
 
-I built the simplest common design, {{< term "lock-and-mint" "lock-and-mint" >}}, between two local chains. It reuses replay protection from [The account model, nonces and replay protection](/posts/bc-account-model-nonce/), signatures from [Keys, ECDSA signatures and addresses on secp256k1](/posts/bc-keys-ecdsa-addresses/) and confirmations from [Events and building an indexer](/posts/bc-event-indexer-go/).
+A {{< term "bridge" "bridge" >}} does exactly this between two blockchains. But it has a serious problem. Chain B has no idea what happened on chain A unless someone tells it. So the main question of every bridge is: whom does B believe? In [Layer 2 and rollups: optimistic and ZK](/posts/bc-layer2-rollups/) the L1 contract could check the rollup itself, because the data was on L1. Two independent chains cannot do that.
 
-> Go 1.27 with go-ethereum v1.17.10, Foundry 1.8.7, solc 0.8.38, macOS (arm64). Two anvils: A on `127.0.0.1:8550` (chain id 31337) and B on `127.0.0.1:8551` (chain id 31338). The Go module is a copy of last post's, keeping its small go-ethereum helper. Keys are anvil's public test keys, plus toy keys like `0xA1` in the tests. Teaching code, not audited.
+The simplest common design is called {{< term "lock-and-mint" "lock-and-mint" >}}, the casino above. I built it between two local chains. It reuses pieces from earlier posts: replay protection from [The account model, nonces and replay protection](/posts/bc-account-model-nonce/), signatures from [Keys, ECDSA signatures and addresses on secp256k1](/posts/bc-keys-ecdsa-addresses/) and confirmations from [Events and building an indexer](/posts/bc-event-indexer-go/).
+
+> Go 1.27 with go-ethereum v1.17.10, Foundry 1.8.7, solc 0.8.38, macOS (arm64). Two anvils: A on `127.0.0.1:8550` (chain id 31337) and B on `127.0.0.1:8551` (chain id 31338). The Go module is a copy of the last post's, keeping its small go-ethereum helper. Keys are anvil's public test keys, plus toy keys like `0xA1` in the tests. Teaching code, not audited.
 
 ## Lock here, mint there
 
-`BridgeLock` on A takes DemoToken (from the tokens post) and emits `Deposit(nonce, from, recipient, amount)`. `BridgeMint` on B mints `wDEMO` for that deposit, but only with signatures from 2 of 3 {{< term "relayer" "relayers" >}}: a {{< term "multisig" "multisig" >}} enforced by the contract. Burning `wDEMO` on B emits `Withdrawal`, and the same set signs a release on A.
+On chain A there is a contract called `BridgeLock` (the safe). Someone gives it DemoToken (the token from the tokens post), and it emits the event `Deposit(nonce, from, recipient, amount)`, meaning "this much was deposited".
 
-Every relayer signs a digest that names both ends:
+On chain B there is a contract called `BridgeMint` (the chip printer). It creates `wDEMO` for each deposit, but only when someone brings proof that the deposit really happened on A. What is the proof? Signatures from 2 of 3 {{< term "relayer" "relayers" >}}. A relayer is a program that watches deposits on A and signs the message for B. The "2 of 3" rule is a {{< term "multisig" "multisig" >}} that the contract itself enforces.
+
+The way back works the same. If someone burns `wDEMO` on B, a `Withdrawal` event is emitted and the same group of relayers signs a release of the original tokens on A.
+
+Every relayer signs a digest (a 32-byte summary of the message). The digest names both ends of the route, so a signature is valid for one route only:
 
 ```solidity
 struct Message {
@@ -34,7 +40,9 @@ function digest(Message calldata m) public pure returns (bytes32) {
 }
 ```
 
-The contract recovers each signer with {{< term "ecrecover" "ecrecover" >}} (loop body, shortened):
+The message says: from which chain and contract, to which chain and contract, with which unique number (`nonce`), how much, and for whom.
+
+The contract finds the signer of each signature with {{< term "ecrecover" "ecrecover" >}}. Given the digest and a signature, ecrecover gives back the address that signed. This is the loop body (shortened):
 
 ```solidity
 if (uint256(s) > HALF_N) revert BadSignature(); // reject the malleable twin
@@ -46,11 +54,20 @@ if (isRelayer[signer]) valid++;
 if (valid < threshold) revert NotEnoughSignatures(valid, threshold);
 ```
 
-`mint` also checks the source and destination chain ids and contracts against its own, and marks the deposit nonce as used.
+Line by line:
+
+- **Line 1:** every ECDSA signature has a "twin" with a different `s` that verifies the same message. The contract accepts only the one with the small `s`, so a signature cannot take two shapes.
+- **Lines 2 and 3:** the signer is recovered. Signatures must be sorted by address (`signer <= last` is rejected). That stops the same relayer from being counted twice.
+- **Line 4:** only signatures from known relayers are counted.
+- **After the loop:** if fewer than the threshold (2 here) valid signatures are present, the transaction reverts.
+
+`mint` also compares the source and destination chain ids and contracts of the message with its own, and marks the deposit nonce as used.
 
 ## The relayer
 
-The Go relayer polls `Deposit` logs and acts only once they are 2 blocks deep. It computes the digest itself; a relayer that asked the destination contract what to sign would sign whatever that contract said:
+Our relayer is a Go program. It reads `Deposit` events from A's logs, but acts only once the deposit is at least 2 blocks deep. The reason is that recent blocks can be dropped in a reorg ([Forks, reorgs and the heaviest-chain rule](/posts/bc-forks-reorgs/)). If a relayer signs a deposit that later disappears, `wDEMO` exists and nothing is locked.
+
+Another point: the relayer computes the digest itself. A relayer that asked the destination contract what to sign would sign whatever that contract said:
 
 ```go
 safe := head - w.Confirmations
@@ -59,7 +76,9 @@ confirmed, err = w.Chain.FilterLogs(ctx, q)
 w.next = safe + 1
 ```
 
-One process plays all three relayers (anvil accounts 5-7); r7 is "offline" for the deposit. `go run ./cmd/bridge`:
+Each time the code reads only up to block `head - 2`, and remembers where it stopped (`w.next`).
+
+To keep things simple, one process plays all three relayers (anvil accounts 5 to 7, named r5, r6 and r7). For the deposit, r7 is "offline". I run it with `go run ./cmd/bridge`. The program first deploys the contracts on both chains. Then a user locks 250 DEMO on A, the relayers see it, and 250 `wDEMO` is minted on B. Then it submits the same message again to see it rejected. At the end the user burns 100 `wDEMO` and the original tokens are released on A.
 
 ```
 chain A id 31337, chain B id 31338
@@ -79,13 +98,27 @@ relayer poll B (head 5): withdrawal 31338 -> 31337 nonce 1 amount 100e18, r6+r7 
 user DEMO on A: 850, locked on A: 150, wDEMO supply on B: 150, backed: true
 ```
 
-Look at the addresses: DemoToken on A and BridgeMint on B are both `0x5FbDB231...`, because the same deployer used nonce 0 on both chains. A contract address does not identify a chain, which is why the {{< term "chain-id" "chain id" >}} is in the signed message. The replay of the same signed message on B fails on the nonce; sending it to A fails on the route. That is the {{< term "replay-attack" "replay" >}} protection from the nonce post, applied across chains.
+Line by line:
 
-The invariant is the last line: tokens locked on A equal `wDEMO` on B.
+- **First three lines:** the two chain ids and the shortened contract addresses.
+- **`user locks 250 DEMO on A in block 6`:** the user locked 250 tokens. The block number only shows how many transactions A had before.
+- **First `relayer poll A`:** the deposit is in the newest block (`head 6`), so no block sits on top of it yet. `confirmed 0, waiting 1` means there is no confirmed deposit and one is waiting. The relayer waits.
+- **`(two more blocks on A)`:** the program mines two empty blocks on A. The head is now 8 and the deposit is two blocks deep.
+- **Second poll:** `confirmed 1`. The relayer picks up the deposit. `digest matches contract: true` means the digest it computed itself equals what the `digest` function of the contract on B returns.
+- **`r5+r6 signed, mint on B`:** two signed and the mint on B went through (`147740` gas).
+- **`user wDEMO on B: 250`:** the chips reached the user.
+- **`replay on B: AlreadyProcessed()`:** we gave B the same message and the same signatures again. The contract sees the nonce was already used and rejects it.
+- **`same message on A: WrongRoute()`:** we sent the same message to the contract on A. It was built for the route A to B, and A expects a message from B to A, so it is rejected.
+- **The rest:** the user burns 100 `wDEMO` on B. The relayers (this time r6 and r7, so any two will do) see the burn after two blocks and sign the release on A.
+- **Last line:** the user has 850 DEMO on A (1000 minus 250 plus 100), 150 tokens are still locked, and 150 `wDEMO` exist on B. `backed: true` means those two numbers are equal.
+
+Look at the addresses: DemoToken on A and BridgeMint on B are both `0x5FbDB231...`, because the same deployer used nonce 0 on both chains. A contract address does not identify a chain, which is why the {{< term "chain-id" "chain id" >}} is inside the signed message. The replay on B failed on the nonce, and sending it to A failed on the route. That is the {{< term "replay-attack" "replay" >}} protection from the nonce post, applied across chains.
+
+The key rule (the invariant) is the last line: the tokens locked on A must always equal the `wDEMO` on B.
 
 ## When the relayer keys are stolen
 
-The signatures are the bridge. A Foundry test gives an attacker relayer keys 1 and 2 and signs a deposit that never happened:
+Now the bad part. The whole security of this bridge is in the signatures. What if someone steals two of the three keys? A Foundry test plays exactly that: the attacker holds the keys of relayers 1 and 2 and signs a deposit that never happened:
 
 ```
 $ forge test -vv
@@ -102,22 +135,22 @@ Logs:
 (trimmed)
 ```
 
-900 `wDEMO` backed by nothing. Every check passed, because from the contract's view the message is valid. As far as I know, several of the largest thefts in crypto were bridges whose validator or relayer keys were compromised. The [Binance hack write-up](/posts/binance-hack-hot-wallet-2026/) has the same lesson from another angle: no key leaked there, yet the signing system signed what the attacker asked.
+The result is in the `Logs` part: 900 `wDEMO` exist and no DEMO is locked behind them. Every check in the contract passed, because from the contract's view the message is valid: two good signatures from two known relayers. As far as I know, several of the largest thefts in crypto were bridges whose validator or relayer keys were compromised. The [Binance hack write-up](/posts/binance-hack-hot-wallet-2026/) has the same lesson from another angle: no leaked key was found there, yet the signing system signed what the attacker asked.
 
 ## Limiting the damage
 
-The same test continues with the mitigations I built in:
+The same test goes on and shows the mitigations I built into the contract:
 
-- **Cap per period**: `BridgeMint` mints at most 1000 per day ({{< term "rate-limiting" "rate limiting" >}}). The next forged 200 reverts with `RateLimited(1100e18, 1000e18)`.
-- **Pause**: a guardian can stop minting; the forged message then reverts with `Paused()`. The guardian key is itself a target.
-- **Higher threshold**: with 3 of 5, two stolen keys give `NotEnoughSignatures(2, 3)`. That helps only if the keys sit with independent operators and machines.
+- **Cap per period:** `BridgeMint` mints at most 1000 per day ({{< term "rate-limiting" "rate limiting" >}}). The attacker had minted 900; the next forged 200 reverts with `RateLimited(1100e18, 1000e18)`, because the total 1100 is over the cap of 1000.
+- **Pause:** a guardian can stop minting. The next forged message then reverts with `Paused()`. The guardian key is itself a target.
+- **Higher threshold:** with 3 of 5, two stolen keys give `NotEnoughSignatures(2, 3)`. That helps only if the keys sit with independent operators on separate machines.
 
-The stronger model removes the trusted signers: B runs a {{< term "light-client" "light client" >}} of A and verifies A's consensus and a Merkle proof of the deposit, or a ZK proof of the same. I did not build either; as I understand it, the cost is gas and complexity, and it is only as safe as the source chain's finality.
+The stronger model removes the trusted signers. There, B runs a {{< term "light-client" "light client" >}} of A (a program that follows and checks A's block headers) and verifies with a Merkle proof that the deposit really sits in a block of A, or uses a ZK proof of the same fact. I built neither. As I understand it, the cost is gas and complexity, and it is only as safe as the source chain's finality.
 
 ## Common bridge traps
 
-- Sign over source and destination chain ids and contracts, plus a nonce. A contract address alone is not unique across chains.
-- Wait for confirmations before signing; a reorged deposit means minted tokens with nothing locked.
+- Sign over the source and destination chain ids and contracts, plus a nonce. A contract address alone is not unique across chains.
+- Wait for confirmations before signing. A reorged deposit means minted tokens with nothing locked.
 - Require sorted, distinct signers and reject high-`s` signatures.
 - Check that locked equals minted, and alert when it does not.
 

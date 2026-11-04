@@ -10,15 +10,25 @@ tags = ["blockchain", "solidity", "defi", "oracle", "security", "foundry"]
 cover = { image = "/images/covers/bc-oracles.png", alt = "Oracles and price manipulation", hiddenInSingle = true }
 +++
 
-A contract cannot fetch a price from a website. Whatever number it uses must already be on-chain, put there by someone or computed from something. That is the {{< term "oracle" "oracle" >}} problem, and [Lending, collateral and liquidation](/posts/bc-lending-liquidation/) sidestepped it with a price the owner types in.
+Picture a judge in a locked room who has to give a ruling but can only use the papers that are already inside. He cannot phone anyone, read a newspaper or ask a question. A smart contract is in exactly that position. It cannot visit a website and look up the price of a token. Any number it uses must already be on-chain: either someone put it there, or it was computed from something that is.
 
-The tempting answer is already deployed: the pool from [AMMs and the constant-product formula](/posts/bc-amm-constant-product/) has a price, `reserve1 / reserve0`. This post wires the lending market to that spot price, attacks it in one transaction, then fixes it. The attack runs only against my own contracts in a local Foundry test.
+The source that delivers such a number to a contract is called an {{< term "oracle" "oracle" >}}. [Lending, collateral and liquidation](/posts/bc-lending-liquidation/) computed everything from one price: the borrow limit, the health factor and the liquidation. There, the owner typed that price in by hand. That is fine for a test and wrong for real money, because whoever controls the price controls the market.
+
+A tempting replacement is already deployed. The pool from [AMMs and the constant-product formula](/posts/bc-amm-constant-product/) has a price of its own. If it holds 1,000 DEMO and 100,000 USDX, one DEMO is worth 100 USDX: that is `reserve1 / reserve0`. Why not use it? Because that price changes with every trade, and anyone is free to trade.
+
+In this post I wire the lending market to the pool's spot price, attack it in one transaction, and then fix it. The attack runs only against my own contracts, in a local Foundry test.
 
 > Foundry 1.8.7, solc 0.8.38, macOS (arm64). I copied the previous post's project, added a cumulative price to `SimplePool` and `src/Oracles.sol` with two oracles. The attacker contract lives in `test/`. Teaching code, not audited.
 
 ## The attack
 
-The pool holds 1,000 DEMO and 100,000 USDX, so DEMO is 100. The market lends 75% of collateral value, priced by `SpotOracle`, which returns `pool.spotPrice0()`. The attacker owns 100 DEMO (worth 10,000) and, for one transaction, 100,000 USDX. On mainnet that money would come from a {{< term "flash-loan" "flash loan" >}}: a loan that must be repaid before the transaction ends, or the whole transaction reverts. In the test, a mint stands in for it:
+First the idea, without code. Whenever the lending market wants to know what your collateral is worth, it reads the pool's current price. If, right before that reading, I make the pool's price several times higher, the market believes my collateral is worth far more than it is and lends me a lot. Then I bring the price back. My real collateral is cheap, and the big loan stays with me.
+
+The starting state: the pool holds 1,000 DEMO and 100,000 USDX, so the price is 100. The market lends up to 75% of the collateral's value and reads the price from `SpotOracle`, which only returns `pool.spotPrice0()`. The attacker owns 100 DEMO (worth 10,000 USDX at the fair price) and, for the length of one transaction, 100,000 USDX.
+
+Where would those 100,000 USDX come from? On mainnet, from a {{< term "flash-loan" "flash loan" >}}. It is a loan that must be repaid inside the same transaction that took it. If it is not repaid by the end, the whole transaction reverts as if nothing happened. So the lender takes no risk, and the attacker needs no capital of their own. In the test, a mint stands in for it.
+
+The attack has four steps:
 
 ```solidity
 function attack(uint256 loan, uint256 ownDemo) external returns (uint256 borrowed, uint256 priceSeen) {
@@ -36,6 +46,13 @@ function attack(uint256 loan, uint256 ownDemo) external returns (uint256 borrowe
 }
 ```
 
+1. It buys DEMO in the pool with all 100,000 USDX. The pool has less DEMO, so DEMO gets more expensive.
+2. It deposits its own 100 DEMO into the lending market as collateral. The market asks the pool for the price, gets the inflated one, and lends USDX up to its limit.
+3. It sells the DEMO it bought back to the pool. The price returns to roughly 100.
+4. It repays the 100,000 USDX flash loan. Whatever USDX is left belongs to the attacker.
+
+The test run:
+
 ```
 $ forge test --mt test_SpotOracleIsDrained -vv
 [PASS] test_SpotOracleIsDrained() (gas: 1261959)
@@ -48,13 +65,26 @@ Logs:
   market health        267869671168002446
 ```
 
-Buying with 100,000 USDX pushed the spot price to 399.4, as the price impact table in the AMM post predicted. The market valued 100 DEMO at 39,940 and lent 29,955. Selling back cost about 300 in fees. After repaying the loan the attacker keeps 29,654.55 USDX and walks away from collateral worth 10,000: a profit of 19,654.55. The pool is back near 100, and the market holds a loan with health 0.27 that no liquidation can repair. That is {{< term "price-manipulation" "price manipulation" >}}, and nothing in the pool or the market had a bug. The design trusted a number anyone can move for the price of the swap fees.
+Line by line:
+
+- **`price the market saw`:** the market saw 399.4, not 100. The reason is the constant-product formula: when the pool's USDX roughly doubles, its DEMO roughly halves, and the price (the ratio of the two) roughly quadruples. This is what the price impact table in the AMM post showed.
+- **`borrowed`:** the market valued 100 DEMO at 39,940 and lent 75% of that, 29,955 USDX.
+- **`USDX kept`:** after repaying the flash loan the attacker has 29,654.55 USDX left. About 300 of the 29,955 went to swap fees on the round trip.
+- **`profit`:** the attacker abandons collateral worth 10,000, so the net profit is 29,654.55 minus 10,000: 19,654.55.
+- **`pool price after`:** the pool is back at 100.3. The attack left no trace on the price.
+- **`market health`:** the market now holds a 29,955 loan backed by 100 DEMO worth about 10,000. Health is 0.27 and no liquidation can fix it, because the collateral cannot cover the debt.
+
+That is {{< term "price-manipulation" "price manipulation" >}}. Nothing in the pool or the market had a bug. The design trusted a number that anyone can move for the price of the swap fees.
 
 As far as I know from public post-mortems, several real lending protocols lost money in this exact shape. I am not naming any, because I cannot check the details here.
 
 ## The fix: a time-weighted average
 
-A spot price is one instant, and an attacker owns the instant inside their own transaction. An average over time is much harder to move. The pool now keeps a running sum of price times seconds, similar to Uniswap v2's cumulative price as I understand it:
+Why did the attack work? A spot price is a single instant, and inside their own transaction the attacker owns that instant. A price averaged over a period of time is different. To move it, you must hold the price high for a long time, and that costs money.
+
+Think of a car's speedometer versus the average speed of a trip. You can push the speedometer to 200 for a moment. You cannot do that to the trip average. A made-up example: the price was 100 for 20 minutes and 150 for 10 minutes. The time-weighted average is (100 × 20 + 150 × 10) / 30 ≈ 116.7.
+
+To build such an average, the pool keeps a running sum: the price multiplied by the seconds that price was in effect. It is similar to Uniswap v2's cumulative price, as I understand it:
 
 ```solidity
 function _accumulate() internal {
@@ -64,7 +94,9 @@ function _accumulate() internal {
 }
 ```
 
-It runs at the start of every swap and liquidity change, with the reserves from before. A price set inside a block only starts counting once time passes. The {{< term "twap" "TWAP" >}} is the difference of two readings divided by the seconds between them:
+This runs at the start of every swap and liquidity change and works with the reserves from before it. So a price created inside a block only counts in the sum once time passes. If the attacker raises the price and restores it in one transaction, the pumped price was in effect for zero seconds, and zero seconds add nothing.
+
+The {{< term "twap" "TWAP" >}} (time-weighted average price) is the difference of two readings of this sum, divided by the seconds between them:
 
 ```solidity
 function update() external {
@@ -83,7 +115,9 @@ function price() external view returns (uint256) {
 }
 ```
 
-Same attacker, same numbers, a market priced by a 30-minute TWAP:
+Anyone (a keeper, say) can call `update()`, but only after a full `window`, here 30 minutes, has passed since the previous reading. `price()` returns the average of the last window. If the last `update()` is more than two windows old, `price()` reverts instead of answering with an old price. That is the staleness check.
+
+Same attacker, same numbers, but the market now reads a 30-minute TWAP:
 
 ```
 $ forge test --mt test_TwapOracleResists -vv
@@ -95,7 +129,14 @@ $ forge test --mt test_TwapOracleResists -vv
 (trimmed)
 ```
 
-The attacker got an honest loan, 7,500 against 10,000, and lost 300 in fees on the round trip. Walking away now costs 2,800. Even calling `update()` right after the pump changes nothing, because the pumped price had been in effect for zero seconds:
+- **`price the market saw`:** 100 this time, because the TWAP still shows the average of the quiet half hour before.
+- **`borrowed`:** the attacker gets an ordinary loan, 7,500 against collateral worth 10,000.
+- **`profit`:** negative. They paid about 300 in round-trip fees and must abandon the 10,000 collateral, so they lose about 2,800.
+- **`market health`:** 1.067, a healthy loan.
+
+(I left out the `pool price after` line to keep it short.)
+
+Even calling `update()` right after the pump changes nothing, because the pumped price had been in effect for zero seconds:
 
 ```
 $ forge test --mt test_TwapIgnoresSameBlockPump -vv
@@ -105,7 +146,7 @@ $ forge test --mt test_TwapIgnoresSameBlockPump -vv
 
 ## What a TWAP costs
 
-It lags. A real buy that moves spot to 146.33, ten minutes before the end of a 30-minute window:
+A TWAP is not free: it lags. Suppose a real buy moves the spot price to 146.33, ten minutes before the end of a 30-minute window:
 
 ```
 $ forge test --mt test_TwapFollowsALastingMove -vv
@@ -113,16 +154,20 @@ $ forge test --mt test_TwapFollowsALastingMove -vv
   twap over 30 minutes  115444589999999999999
 ```
 
-During a crash, liquidations arrive late. And holding a price over several blocks is a different attack: harder and costly against arbitrage, but not impossible on a thin pool. Window length trades safety against freshness. If nobody calls `update()`, `price()` reverts (`test_StalePriceRefused`): borrowing stops instead of using an old price.
+The price was 100 for twenty minutes and 146.33 for ten, so the average is 115.4, and the market still sees a price below the real one. In a sudden crash the same lag works the other way and liquidations arrive late.
+
+There is another attack too: holding a manipulated price for several blocks in a row. Against a TWAP this is harder and costlier because of arbitrage (traders who push the price back to normal), but on a thin pool it is not impossible. So the window length trades safety against freshness.
+
+If nobody calls `update()`, `price()` reverts (`test_StalePriceRefused`). Borrowing stops instead of continuing on an old price.
 
 The other common design is a push oracle: independent reporters publish a price on-chain. Chainlink-style feeds, according to their docs, expose the answer together with an `updatedAt` timestamp. A consumer should reject old answers and sudden jumps beyond a set deviation. I did not build one here; the staleness rule above is the same idea.
 
 ## Where an oracle gets fooled
 
-- Never price collateral with a spot price from a pool that can be traded in the same transaction.
-- Flash loans give anyone large capital for one transaction. "It would need a lot of money" is not a defence.
-- Check freshness: an oracle that is not updated should stop borrowing, not answer quietly.
-- Pick TWAP windows for the pool's depth; thin pools need longer windows or another source.
+- **Do not price collateral with the spot price of a pool that can be traded in the same transaction.** That is exactly what the attack above used.
+- **Flash loans give anyone large capital for one transaction.** "The attack would need a lot of money" is not a defence.
+- **Check freshness.** An oracle that has not been updated should stop borrowing, not answer quietly.
+- **Pick the TWAP window to match the pool's depth.** A thin pool needs a longer window or another source.
 
 ## Exercise
 

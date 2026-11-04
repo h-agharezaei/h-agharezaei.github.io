@@ -10,32 +10,47 @@ tags = ["security", "authorization", "rbac", "idor", "go"]
 cover = { image = "/images/covers/sec-authorization-rbac-idor.png", alt = "Authorization: RBAC and IDOR", hiddenInSingle = true }
 +++
 
-In this post's vulnerable build, Alice, a viewer, sends `"role":"admin"` to `PATCH /users/me` and comes back an admin; she can also read and delete Bob's document. Her token, the kind [OAuth2 and OIDC](/posts/sec-oauth2-oidc/) ended with, says who she is and what scopes she has. That is {{< term "authorization" "authorization" >}}'s input, not its answer: the server still decides, per function and per object, what this caller may do. I showed {{< term "idor" "IDOR" >}} briefly in [The OWASP Top 10 in real code](/posts/sec-owasp-top10-in-code/); here I go deeper, with roles, a mass-assignment bug and a test that guards every route. The API style is [net/http from earlier](/posts/go-http-api-stdlib/).
+Alice has an account on a document app. She opens one of her own documents and the address bar shows `/documents/1`. Out of curiosity she types `/documents/2`. If the app shows her somebody else's document, it has a very common bug: it checked that she is logged in, and never checked that the document is hers.
 
-> Defensive only. One small Go 1.26 program on `127.0.0.1`, in-memory data, my own code. Authentication is simplified to fixed tokens (`tok-alice`, `tok-bob`, `tok-carol`) so the focus stays on authorization. A `-mode vuln|fixed` flag builds each version. Users: alice (viewer), bob (editor, another tenant), carol (admin). Documents: 1 is alice's, 2 is bob's.
+That is the difference between knowing who the caller is and deciding what the caller may do. The token that [OAuth2 and OIDC](/posts/sec-oauth2-oidc/) ended with answers the first question: who she is and what scopes she holds. The second question is {{< term "authorization" "authorization" >}}, and the server has to answer it again for every function and every object. The bug above is called {{< term "idor" "IDOR" >}} (insecure direct object reference): an object is fetched by its ID, and nobody checks that this caller may see it. I showed it briefly in [The OWASP Top 10 in real code](/posts/sec-owasp-top10-in-code/). Here I go deeper: roles, a second bug where a user promotes herself, and a test that guards every route. The API style is the [net/http one from earlier](/posts/go-http-api-stdlib/).
+
+> Defensive only. One small Go program on `127.0.0.1` with in-memory data and my own code (Go 1.27.3 on macOS arm64; the demo's `go.mod` says 1.26). Authentication is simplified to fixed tokens (`tok-alice`, `tok-bob`, `tok-carol`) so that the focus stays on authorization. A `-mode vuln|fixed` flag builds each version. The users are alice (role `viewer`, tenant `acme`), bob (`editor`, tenant `globex`) and carol (`admin`, tenant `acme`). There are two documents: 1 is alice's, 2 is bob's. I sent the requests with `curl` against each build.
 
 ## 401, 403 or 404
 
-- **401**: I do not know who you are. No or bad token.
-- **403**: I know you, and you may not do this. It also tells you the thing exists.
-- **404**: used for objects of other users, so a stranger cannot tell "not yours" from "not there".
+Three status codes carry most of the story, so here is how I use them:
+
+- **401**: I do not know who you are. No token, or a bad one.
+- **403**: I know who you are, and you may not do this. Note that it also tells you the thing exists.
+- **404**: what I answer for other people's objects, so a stranger cannot tell "not yours" from "not there".
 
 ## The vulnerable version
 
-Alice (a viewer) calls the vulnerable build:
+First the vulnerable build. Alice is only a viewer. She sends six requests, in this order (the `PATCH` body was `{"name":"alice","role":"admin"}`):
 
 ```
-GET /documents/2 (bob's) -> {"id":2,"owner":"bob","title":"bob secret"} [200]
-DELETE /documents/2      -> [204]
-GET /admin/users         -> [{"name":"alice",...,"role":"viewer"},{"name":"bob",...},{"name":"carol",...}] [200]
-PATCH /users/me  {"name":"alice","role":"admin"} -> {"name":"alice","tenant":"acme","role":"admin"} [200]
+200 GET /documents/2 => {"id":2,"owner":"bob","title":"bob secret"}
+404 GET /documents/99 => not found
+200 GET /documents/1 => {"id":1,"owner":"alice","title":"alice plan"}
+200 GET /admin/users => [{"name":"alice","tenant":"acme","role":"viewer"},{"name":"bob","tenant":"globex","role":"editor"},{"name":"carol","tenant":"acme","role":"admin"}]
+200 PATCH /users/me => {"name":"alice","tenant":"acme","role":"admin"}
+204 DELETE /documents/2 => 
 ```
 
-Four different holes. The first is object-level (alice reads bob's document); the second and third are function-level (a viewer deletes, a viewer lists admin data); the fourth is {{< term "mass-assignment" "mass assignment" >}}: the handler decodes the JSON straight into the `User` struct, so the client chose its own role. As far as I remember, the OWASP API Security list names the first two "Broken Object Level Authorization" and "Broken Function Level Authorization", but I did not re-check the current edition.
+The order of users in the list can differ between runs, because the demo keeps users in a map. The lines for documents 99 and 1 are the normal behaviour: a missing document is a 404, and her own document is readable. The other four are the problems:
+
+1. **Object level.** She reads Bob's document just by asking for its ID. This is the IDOR.
+2. **Function level.** She deletes a document, although a viewer should not be able to delete at all.
+3. **Function level again.** She lists all users, which is an admin function.
+4. {{< term "mass-assignment" "Mass assignment" >}}. The handler decodes the JSON she sends straight into the `User` struct, so she picked her own `role`. Her response says `"role":"admin"`.
+
+According to the OWASP API Security Top 10 (2023 edition), the first is "API1: Broken Object Level Authorization", the second and third are "API5: Broken Function Level Authorization", and mass assignment is part of "API3: Broken Object Property Level Authorization".
+
+Notice that none of these needed a clever attack. Each is just a request the server forgot to refuse.
 
 ## The fixes
 
-**Object level.** Ownership is part of the lookup, and the answer for someone else's object is 404:
+**Object level.** Ownership becomes part of the lookup, and the answer for someone else's object is 404:
 
 ```go
 if d == nil || d.Owner != u.Name {
@@ -44,9 +59,9 @@ if d == nil || d.Owner != u.Name {
 }
 ```
 
-With a database, the same idea is `WHERE id = $1 AND owner_id = $2`: one query, no separate "fetch then check" step to forget. I used a map here and did not run it against Postgres.
+With a database, the same idea is `WHERE id = $1 AND owner_id = $2`: one query, so there is no separate "fetch, then check" step that somebody can forget. The demo uses a map; I did not run this against Postgres.
 
-**Function level.** Roles map to permissions, and a route declares what it needs:
+**Function level.** Roles map to permissions, and each route declares the permission it needs:
 
 ```go
 var perms = map[string][]string{
@@ -57,9 +72,9 @@ var perms = map[string][]string{
 a.protect("DELETE /documents/{id}", "doc:delete", a.deleteDoc)
 ```
 
-The code checks the permission, never the role name, which is the point of {{< term "rbac" "RBAC" >}}. The wrapper does the 401 check, then the permission check.
+The code checks the permission and never the role name. That is the point of {{< term "rbac" "RBAC" >}} (role-based access control): the roles are a table you can edit, and the handlers do not change when you add one. The wrapper `protect` first checks the token (401), then the permission (403).
 
-**Mass assignment.** Decode into an explicit allow-list type:
+**Mass assignment.** Decode into a type that lists exactly the fields a client may change:
 
 ```go
 var in struct {
@@ -68,63 +83,78 @@ var in struct {
 json.NewDecoder(r.Body).Decode(&in)
 ```
 
-Same alice, fixed build:
+Now the same Alice, against the fixed build:
 
 ```
-GET /documents/2         -> not found [404]
-GET /documents/99        -> not found [404]
-DELETE /documents/2      -> forbidden [403]
-GET /admin/users         -> forbidden [403]
-PATCH /users/me {"name":"alice","role":"admin"} -> {"name":"alice","tenant":"acme","role":"viewer"} [200]
-GET /documents/1 (hers)  -> {"id":1,"owner":"alice","title":"alice plan"} [200]
+404 GET /documents/2 => not found
+404 GET /documents/99 => not found
+200 GET /documents/1 => {"id":1,"owner":"alice","title":"alice plan"}
+403 GET /admin/users => forbidden
+200 PATCH /users/me => {"name":"alice","tenant":"acme","role":"viewer"}
+403 DELETE /documents/2 => forbidden
 ```
 
-The document that exists (2) and the one that does not (99) now look identical. The extra `role` field is ignored. Server log lines for the denials:
+Read it from the top. Bob's document (2) and a document that does not exist (99) now look identical: Alice cannot even confirm that 2 exists. Her own document still works. The admin list and the delete are refused with 403, because a viewer has neither permission. And the `PATCH` that tried to set `role` returns `"role":"viewer"`: the extra field was simply ignored. Without any token the server answers `401` (and `/healthz` stays public, answering `ok`).
+
+The server also logged each denial:
 
 ```
 level=WARN msg="authz denied" user=alice doc=2 owner=bob
-level=WARN msg="authz denied" user=alice role=viewer need=doc:delete route="DELETE /documents/{id}"
 level=WARN msg="authz denied" user=alice role=viewer need=users:read route="GET /admin/users"
+level=WARN msg="authz denied" user=alice role=viewer need=doc:delete route="DELETE /documents/{id}"
 ```
 
-Log every denial with who, what and which rule ([structured logging](/posts/go-config-logging-errors/) makes this searchable). A burst of 404s and 403s from one user is how enumeration looks. Do not log tokens.
+Log every denial with who, what and which rule ([structured logging](/posts/go-config-logging-errors/) makes this searchable). A burst of 404s and 403s from one user is what somebody trying IDs one after another looks like. Do not log tokens.
+
+## What "fixed" still does not cover
+
+The fixes above close the four holes, but I should be honest about a fifth one in this same fixed build. Carol is an admin of tenant `acme`, and Bob's document belongs to tenant `globex`. I made two extra requests with her token (these are not in the original demo script; I ran them against the same fixed build in a scratch copy):
+
+```
+404 GET /documents/2 => not found
+204 DELETE /documents/2 => 
+```
+
+Reading Bob's document is refused, because the lookup includes the owner. But the delete went through. `deleteDoc` only needs the `doc:delete` permission and never checks whose document it is. The function-level check passed, and nobody added the object-level check there. This is the usual shape of the bug: the two kinds of check are separate, and each route needs both. The exercise below is to close this one.
 
 ## Deny by default, and a test that enforces it
 
-The design rule is {{< term "deny-by-default" "deny by default" >}}: every route needs a token unless it is explicitly listed as public. A test makes the rule survive future edits. Routes are registered through two helpers that record the pattern, and the test calls each one without a token:
+A design rule helps with the "forgot a check" problem: {{< term "deny-by-default" "deny by default" >}}. Every route needs a valid token unless it is explicitly listed as public. A test then makes sure the rule survives future edits. Routes are registered through two helpers that record each pattern, and the test calls every route without a token:
 
 ```go
 var publicRoutes = map[string]bool{"GET /healthz": true}
 // for every registered route not in publicRoutes: expect 401
 ```
 
-To see it work I temporarily added an unprotected `GET /debug/vars` via `public(...)`:
+To see it catch something, I temporarily added an unprotected `GET /debug/vars` through the `public(...)` helper in a scratch copy. This is what `go test` printed:
 
 ```
-routes_test.go:26: GET /debug/vars answered 200 without a token, want 401
 --- FAIL: TestEveryRouteRequiresAuth (0.00s)
     --- FAIL: TestEveryRouteRequiresAuth/GET_/debug/vars (0.00s)
+        routes_test.go:26: GET /debug/vars answered 200 without a token, want 401
+FAIL
+FAIL	authzdemo	0.321s
 FAIL
 ```
 
-I removed the route and the suite passes again (`TestViewerCannotDelete` checks a 403 too). A limit: this catches routes registered through my helpers, not a handler wired onto the mux by hand.
+The failing subtest names the route and the status it answered. After I removed the route the suite passed again (`TestViewerCannotDelete` also checks that a viewer gets 403). The limit of this test: it only knows about routes registered through my helpers. A handler wired onto the mux by hand is invisible to it.
 
 ## Beyond roles
 
-RBAC gets awkward when rules depend on attributes (owner, tenant, time) or on relationships (a member of a folder's team). Attribute-based (ABAC) and relationship-based (ReBAC) models cover those. I only mention them; I did not run either.
+RBAC gets awkward when a rule depends on attributes (owner, tenant, time of day) or on relationships ("a member of the team that owns this folder"). Attribute-based (ABAC) and relationship-based (ReBAC) models exist for those cases. I only mention them here; I did not run either.
 
 ## A checklist for every route
 
-- Check authorization on the server, for every function and every object. Hiding a button is not a check.
-- Take the identity from the verified token, never from an ID in the body or URL.
-- Decode into allow-list types; never into your database or domain struct.
-- Be consistent: 404 for other people's objects, 403 for functions your role lacks.
-- Log denials, and test that new routes cannot be public by accident.
+- Check authorization on the server, for every function and every object. Hiding a button in the UI is not a check, because the request can be sent without the button.
+- Take the identity from the verified token, never from a user ID in the body or the URL. Otherwise the caller can claim to be somebody else.
+- Decode requests into types that list the allowed fields, never straight into your database or domain struct. Otherwise the client decides fields such as `role`.
+- Be consistent in what you answer: 404 for other people's objects, 403 for functions your role lacks.
+- Log denials, and test that a new route cannot become public by accident.
 
 ## Exercise
 
-Add an `editor` rule: editors may update documents of their own tenant. Add a second tenant-aware test where carol (admin, acme) must get 404 for bob's globex document.
+Close the delete hole above: `deleteDoc` must refuse a document that is not the caller's (answer 404, like `getDoc`), and a test must show that carol, an admin of `acme`, gets 404 when she deletes bob's `globex` document. Then decide what an admin should be allowed to do inside her own tenant, and make the rule tenant-aware.
 
 ## What's next
 
-“CSRF, CORS and security headers” asks the next question: whether a request really came from the caller's own page.
+"CSRF, CORS and security headers" asks the next question: whether a request that arrives with valid credentials really came from the user's own page.

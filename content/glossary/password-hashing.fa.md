@@ -4,7 +4,7 @@ summary = "تابع یک‌طرفه‌ی عمداً کند و دارای salt ب
 category = "Security"
 fa_title = "هش کردن پسورد"
 related = ["salt", "bcrypt", "argon2"]
-posts = ["sec-password-hashing"]
+posts = ["sec-password-hashing", "openssh-musl-password-bypass-cve-2026-123158"]
 +++
 
 برخلاف هش سریعی مثل SHA-256، هش پسورد طوری تنظیم می‌شود که هر حدس زمان (و حافظه) واقعی هزینه داشته باشد. از bcrypt یا argon2id استفاده کنید، نه هش سریع ساده.

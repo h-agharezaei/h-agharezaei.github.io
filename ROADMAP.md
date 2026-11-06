@@ -39,7 +39,7 @@
 | 9 | 2026-11-10 | 1405/08/19 | G5 | `go-structs-methods-interfaces` | Go | مقدماتی | ✍️ |
 | 10 | 2026-11-12 | 1405/08/21 | G6 | `go-pointers-memory` | Go | مقدماتی | ✍️ |
 | 11 | 2026-11-14 | 1405/08/23 | R4 | `rust-borrowing-references` | Rust | مقدماتی | ✍️ |
-| 12 | 2026-11-16 | 1405/08/25 | X5 | `openssh-musl-password-bypass-cve-2026-123158` | آزاد | - | ✍️ |
+| 12 | 2026-11-06 | 1405/08/15 | X5 | `openssh-musl-password-bypass-cve-2026-123158` | آزاد | - | ✍️ |
 | 13 | 2026-11-18 | 1405/08/27 | G7 | `go-packages-modules` | Go | مقدماتی | ✍️ |
 | 14 | 2026-11-20 | 1405/08/29 | R5 | `rust-structs-enums-pattern-matching` | Rust | مقدماتی | ✍️ |
 | 15 | 2026-11-22 | 1405/09/01 | G8 | `go-goroutines-channels` | Go | مقدماتی | ✍️ |

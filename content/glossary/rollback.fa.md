@@ -4,7 +4,7 @@ summary = "برگرداندن production به نسخه‌ی سالم قبلی، 
 category = "Engineering"
 fa_title = "rollback"
 related = ["blue-green-deployment", "expand-contract", "feature-flag"]
-posts = ["eng-ci-cd-pipeline-design"]
+posts = ["eng-ci-cd-pipeline-design", "microsoft-365-outage-exchange-online-2026"]
 +++
 
 برای کد آسان است و برای داده سخت: migration مخرب با deploy دوباره‌ی کد قدیمی برگردانده نمی‌شود.

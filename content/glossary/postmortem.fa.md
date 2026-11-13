@@ -4,7 +4,7 @@ summary = "یک بررسی نوشته‌شده‌ی پس از حادثه: چه �
 category = "Engineering"
 fa_title = "postmortem (بررسی پس از حادثه)"
 related = ["contributing-factor", "five-whys", "error-budget"]
-posts = ["eng-postmortems-blameless"]
+posts = ["eng-postmortems-blameless", "microsoft-365-outage-exchange-online-2026"]
 +++
 
 postmortem بعد از یک حادثه از روی شواهد (لاگ، metric، گفت‌وگو) نوشته می‌شود: چه شد، چه اثری داشت، چرا، و چه چیزی باید عوض شود. هدفش یادگرفتن و کارهای مشخص است، نه سرزنش.

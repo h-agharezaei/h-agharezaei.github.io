@@ -37,7 +37,7 @@ PLANNED={"Git":10, "Node.js":16, "Databases":16, "Algorithms":18, "Networking":1
 def parse(path):
     t=open(path).read(); g=lambda k:(lambda m:(m.group(1) if m.group(1) is not None else m.group(2)) if m else None)(re.search(r"^%s = (?:'([^']*)'|\"([^\"]*)\")"%k,t,re.M))
     se=re.search(r'^series = \["([^"]+)"\]',t,re.M); ca=re.search(r'^categories = \[(.*?)\]',t,re.M); tg=re.search(r'^tags = \[(.*?)\]',t,re.M)
-    return dict(title=g("title"),date=g("date")[:10],series=se.group(1) if se else None,cat=[c.strip().strip('"') for c in ca.group(1).split(",")] if ca else [],tags=[x.strip().strip('"') for x in tg.group(1).split(",")] if tg else [],has_cover="cover" in t)
+    return dict(title=g("title"),date=g("date")[:10],series=se.group(1) if se else None,cat=[c.strip().strip('"') for c in ca.group(1).split(",")] if ca else [],tags=[x.strip().strip('"') for x in tg.group(1).split(",")] if tg else [],has_cover="cover" in t,custom_cover=bool(re.search(r'^cover = \{ image = "/images/(?!covers/)',t,re.M)))
 posts={}
 for f in sorted(glob.glob(R+"/content/posts/*.en.md")):
     slug=os.path.basename(f)[:-6]; fa=f.replace(".en.md",".fa.md")
@@ -124,7 +124,7 @@ if __name__=="__main__":
         sys.exit(0)
     for slug,p in posts.items():
         if only and slug not in only: continue
-        if p["en"]["has_cover"] and slug in ("php-critical-rce-cve-2026-109618","gitlab-critical-rce-cve-2026-110264"): continue
+        if p["en"]["custom_cover"]: continue  # hand-made covers (security advisories/incidents) live outside covers/
         for lang in ("en","fa"):
             out=f"{OUT}/{slug}{'.fa' if lang=='fa' else ''}.png"
             if os.path.exists(out) and os.path.getsize(out)>8000: continue

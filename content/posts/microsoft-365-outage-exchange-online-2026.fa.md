@@ -8,7 +8,7 @@ contentType = 'analysis'
 categories = ["Security"]
 tags = ["microsoft-365", "exchange-online", "outlook", "outage", "incident", "cve"]
 keywords = ["قطعی Microsoft 365", "قطعی Outlook", "قطعی Exchange Online", "EX1550543", "MO1550821", "CVE-2026-124194", "آسیب‌پذیری Outlook", "health check", "cascading failure"]
-cover = { image = "/images/covers/microsoft-365-outage-exchange-online-2026.fa.png", alt = "قطعی بزرگ Microsoft 365 در ۱۲ نوامبر: Exchange Online چرا افتاد و چرا بازیابی جا نیفتاد", hiddenInSingle = true }
+cover = { image = "/images/m365-outage-cover.fa.png", alt = "قطعی سراسری Microsoft 365 و Exchange Online، EX1550543 و MO1550821، و CVE-2026-124194 در Outlook", hiddenInSingle = true }
 +++
 
 پنجشنبه ۱۲ نوامبر ۲۰۲۶ (۲۱ آبان ۱۴۰۵) از عصر به وقت تهران، Outlook برای خیلی‌ها دیگر صندوق نامه را باز نکرد. اول فقط کاربران قاره‌ی آمریکا گزارش دادند، ولی چند ساعت بعد مایکروسافت گفت مشکل ممکن است کاربران «هر منطقه‌ای» را درگیر کند. بعد معلوم شد Teams، SharePoint، Copilot و حتی بخش‌هایی از Defender هم آسیب دیده‌اند. وقتی این را می‌نویسم (صبح ۱۳ نوامبر، حدود ساعت ۰۷:۰۰ UTC)، هنوز اعلام نشده که مشکل حل شده است.

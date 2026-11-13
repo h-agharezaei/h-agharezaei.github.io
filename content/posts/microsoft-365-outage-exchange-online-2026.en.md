@@ -8,7 +8,7 @@ contentType = 'analysis'
 categories = ["Security"]
 tags = ["microsoft-365", "exchange-online", "outlook", "outage", "incident", "cve"]
 keywords = ["Microsoft 365 outage", "Outlook down", "Exchange Online outage", "EX1550543", "MO1550821", "CVE-2026-124194", "Outlook vulnerability", "health check", "cascading failure"]
-cover = { image = "/images/covers/microsoft-365-outage-exchange-online-2026.png", alt = "The November 12 Microsoft 365 Outage: Why Exchange Online Fell Over and Recovery Would Not Hold", hiddenInSingle = true }
+cover = { image = "/images/m365-outage-cover.png", alt = "Microsoft 365 major outage, Exchange Online, EX1550543 and MO1550821, plus Outlook CVE-2026-124194", hiddenInSingle = true }
 +++
 
 On Thursday, November 12, 2026, Outlook stopped opening mailboxes for a lot of people. At first only users in the Americas reported it, but a couple of hours later Microsoft said the problem could affect users "in any region". Then it turned out Teams, SharePoint, Copilot and even parts of Defender were affected too. As I write this (the morning of November 13, around 07:00 UTC), nobody has declared it fixed.

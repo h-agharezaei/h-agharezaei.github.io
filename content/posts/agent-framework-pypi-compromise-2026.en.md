@@ -11,31 +11,31 @@ keywords = ["agent-framework", "Microsoft Agent Framework", "PyPI compromise", "
 cover = { image = "/images/agent-framework-cover.png", alt = "agent-framework PyPI package compromised, malicious versions 1.26.1 and 1.26.2, supply chain attack of November 17, 2026", hiddenInSingle = true }
 +++
 
-Imagine you never import a package, never call it, never even run the script that uses it. You only run `pip` to install something else. And a credential stealer runs anyway.
+Imagine you never import a package. You only run `pip` to install something else. And at that moment, without you knowing, a program starts collecting your passwords and tokens.
 
-That is what the compromised `agent-framework` release on {{< term "pypi" "PyPI" >}} did on 17 November 2026. It is the meta-package of Microsoft Agent Framework, an open-source Python framework for building AI agents. According to [The Hacker News](https://thehackernews.com/2026/11/attackers-compromise-microsofts-agent.html), two malicious versions, 1.26.1 and 1.26.2, were published 33 minutes apart and were later quarantined. The article gives the package about 190,000 downloads a month.
+On 17 November 2026 that was possible with the bad releases of `agent-framework` on {{< term "pypi" "PyPI" >}}. It is the main package of Microsoft Agent Framework, an open-source Python framework for building AI agents. According to [The Hacker News](https://thehackernews.com/2026/11/attackers-compromise-microsofts-agent.html), two versions, 1.26.1 and 1.26.2, were published 33 minutes apart and were later quarantined. The article says the package is downloaded about 190,000 times a month.
 
-This is a {{< term "software-supply-chain" "software supply chain" >}} attack: nobody broke into your code, they changed a package you trust. If you want the general picture of why this class of attack works, read [the supply chain post](/posts/sec-supply-chain-vulns/) first. Here I look at this one incident.
+This is a {{< term "software-supply-chain" "software supply chain" >}} attack. Nobody touched your code. Someone changed a package you trusted. If you want to know why this kind of attack works so well, read [the supply chain post](/posts/sec-supply-chain-vulns/) first. Here I only talk about this one incident.
 
-Everything below comes from that single article and the vendor reports it links. I did not download the malicious packages and I did not run the malware. The one thing I ran myself is a harmless demo of the Python feature the attack relies on, described below.
+Everything below comes from that article. I did not download the bad package and I did not run the malware. The only thing I tried myself is a harmless demo of the Python feature the attack used. I show it in the middle of the post.
 
 ## What happened
 
-The facts, as the article reports them:
+The article says:
 
-- **Affected versions:** 1.26.1 and 1.26.2 of `agent-framework`. The article calls 1.26.0 "the most recent safe version". It names no fixed release, only the advice to pin to 1.26.0.
-- **Exposure window:** between 8:35 and roughly 9:20 p.m. UTC on 17 November 2026.
-- **Identifiers:** there is no CVE and no CVSS score. This is a malicious package, not a bug in the framework's code.
-- **Attacker:** not named. The article mentions the group TeamPCP only as the group behind a May 2026 compromise of another Microsoft package, `durabletask`. It does not attribute this incident to them.
-- **Root cause:** unknown. The article says it is unclear how the attacker got publishing access. OX Security's view, quoted there, is that the attackers appear to have hijacked the wheel creation flow to add malicious logic, instead of publishing an obviously separate package.
+- Versions 1.26.1 and 1.26.2 were bad. It calls 1.26.0 "the most recent safe version". It names no fixed release and only says to go back to 1.26.0.
+- The risk was for anyone who installed those versions between 8:35 and about 9:20 p.m. UTC on 17 November.
+- There is no CVE and no CVSS score. There was no bug in the framework's code. The package itself was compromised.
+- The attacker is unknown. The article mentions the group TeamPCP only because of an earlier compromise of another Microsoft package, `durabletask`, in May 2026. It does not blame them for this one.
+- It is still unclear how the attacker got permission to publish. OX Security guesses that they tampered with the step that builds the wheel instead of creating a new package.
 
 ## Why it ran without being imported
 
-The two malicious {{< term "wheel" "wheels" >}} each add one extra file to `site-packages`: a {{< term "pth-file" ".pth file" >}}. Version 1.26.1 adds `agent_framework_meta.pth`, version 1.26.2 adds `af_runtime_diag.pth` plus a new module `af_runtime_diag.py`.
+Both bad versions put one extra file next to the others in `site-packages`: a {{< term "pth-file" ".pth file" >}}. In 1.26.1 it was called `agent_framework_meta.pth`. In 1.26.2 it was `af_runtime_diag.pth`, together with a new module, `af_runtime_diag.py`. These files were inside the {{< term "wheel" "wheel" >}}, the file that `pip` downloads and installs.
 
-A `.pth` file was designed to add directories to Python's import path. The [Python documentation](https://docs.python.org/3/library/site.html) says that a line in it that starts with `import` is executed. That is the whole trick: one line, `import agent_framework_meta`, and the payload module runs every time Python starts. Endor Labs, quoted in the article, says it runs on any Python launch, "including pip itself, whether or not anything imports Agent Framework."
+A `.pth` file is made for something harmless: it tells Python which extra folders to search for imports. But it has one rule. The [Python documentation](https://docs.python.org/3/library/site.html) says that any line in it that starts with `import` is executed. That was the whole attack: one line, like `import agent_framework_meta`, and the bad code ran every time Python started. Endor Labs, quoted in the article, says it ran on every Python launch, "including pip itself, whether or not anything imports Agent Framework."
 
-To check that this really works the way I describe, I made a throwaway virtual environment, dropped a harmless `.pth` file in it that only prints one line, and started Python in several ways. The paths are replaced with `<tmp>`.
+To see this for myself, I made a throwaway virtual environment and put a harmless `.pth` file in it that only prints one line. Then I started Python in a few ways. I replaced the paths with `<tmp>`.
 
 ```text
 $ cat <tmp>/venv/lib/python3.14/site-packages/demo_hook.pth
@@ -60,53 +60,52 @@ $ venv/bin/pip --version
 pip 25.2 from <tmp>/venv/lib/python3.14/site-packages/pip (python 3.14)
 ```
 
-Read it line by line. The hook prints before the program's own code, so it runs at interpreter start. It also runs for `pip --version`, which never imports anything of mine, and `pip` is itself a Python script, so installing a package starts the hook. `python -I` (isolated mode) does not stop it. Only `python -S`, which skips the `site` module entirely, does.
+Read the output like this. The `[demo.pth]` line prints before the `2`, so the hook runs before the program's own code. It also runs for `pip --version`, which imports nothing of mine. `pip` is itself a Python program, so once a bad package is installed, the next `pip` run triggers the hook. Isolated mode (`python -I`) does not stop it. Only `python -S`, which skips the `site` module completely, does.
 
-The hook printed twice in my run. I did not investigate why. It does not change the point, but I will not pretend I can explain it. I ran this with Python 3.14.0 on macOS. The malware's own code was never in this test.
+In my run the hook printed twice each time. I did not find out why and did not look into it. It does not change the point, but I do not want to pretend I know the reason. The test used Python 3.14.0 on macOS and did not include any of the real malware.
 
-## What the stealer collects
+## What the malware collected
 
-The article describes a stealer that does two different things. It reads what is already on the machine, and it asks the platform for more.
+According to the article, the malware did two things. First, it read what was already on the machine. Second, it asked the cloud platform for new things.
 
-**Reading what is on disk and in the environment:**
+What it read:
 
-- environment variables whose names match credential-like patterns (version 1.26.2 widened the patterns)
-- Azure CLI files, `.npmrc`, `pip.conf`, `.netrc`, `.git-credentials` and `.docker/config.json`
+- environment variables whose names look like credentials (version 1.26.2 widened the search pattern)
+- Azure CLI files and the config files `.npmrc`, `pip.conf`, `.netrc`, `.git-credentials` and `.docker/config.json`
 - Hugging Face and Azure DevOps agent credentials, plus `.env` and JSON files
 
-**Asking for new tokens:**
+What it asked for:
 
-- In Azure DevOps, it uses `SYSTEM_ACCESSTOKEN` and `SYSTEM_OIDCREQUESTURI` to request a federated token for `api://AzureADTokenExchange`. Version 1.26.2 also collects GitHub Actions {{< term "oidc" "OIDC" >}} tokens.
-- On Azure compute, it calls the {{< term "managed-identity" "managed identity" >}} endpoint for each resource, using `IDENTITY_ENDPOINT` or `MSI_ENDPOINT` on App Service and Functions, and `169.254.169.254` elsewhere. It also reads the {{< term "imds" "instance metadata" >}} and keeps up to 8,000 characters of the answer.
+- In Azure DevOps it used `SYSTEM_ACCESSTOKEN` and `SYSTEM_OIDCREQUESTURI` to get an identity token for `api://AzureADTokenExchange`. Version 1.26.2 also collected GitHub Actions {{< term "oidc" "OIDC" >}} tokens.
+- On Azure machines it asked the {{< term "managed-identity" "managed identity" >}} for tokens. On App Service and Functions it used `IDENTITY_ENDPOINT` or `MSI_ENDPOINT`, and elsewhere the address `169.254.169.254`. It also read the {{< term "imds" "machine metadata" >}} and kept the first 8,000 characters of the answer.
 
-Everything is collected into JSON, compressed with zlib, encoded in Base64 and sent by HTTPS POST to a hard-coded `webhook.site` URL.
+All of it was put in one JSON, compressed, and sent over HTTPS to a fixed address on `webhook.site`.
 
-The second group is the dangerous one. SafeDep says it in one sentence: besides reading credentials already on disk, the code asks the platform to issue new ones. That has a practical consequence. Rotating the secrets you stored does not cover tokens that were created during the attack.
+The second group is the more dangerous one. SafeDep sums it up well: the malware does not only read existing credentials, it asks the platform to issue new ones. The result is that if you only change the secrets you had stored, the tokens created during the attack are still in the attacker's hands.
 
 ## Am I affected, and what to do
 
-You were exposed if a machine or CI runner installed `agent-framework` 1.26.1 or 1.26.2 in the window above. The article's advice, in the order I would do it:
+If your machine or CI runner installed `agent-framework` 1.26.1 or 1.26.2 in that time window, you were exposed. Here is the article's advice, in the order I would follow it:
 
-1. **Find out.** Check lock files, `pip freeze` output and build logs for those two versions, around 8:35 to 9:20 p.m. UTC on 17 November. If a runner or developer machine resolved an unpinned `agent-framework` in that period, treat it as affected.
-2. **Isolate and rebuild.** Isolate the affected hosts and runners. Pin to 1.26.0 and restore from a clean environment instead of cleaning the old one.
-3. **Look for the exfiltration.** Search proxy and DNS logs for requests to the `webhook.site` address from the article: `webhook[.]site/d381fd80-ec62-42ad-8f5c-d1b15103c9bb` (written defanged here, remove the brackets only in a log search).
-4. **Rotate from a clean system.** Rotate every credential that machine could reach, and do it from a machine that is not affected.
-5. **Audit Azure.** Review the identities, sign-in logs and activity logs. Remember that stolen tokens may have been issued, not just copied.
-6. **Audit your pipelines.** Check GitHub Actions workflows that deploy to Azure, because an OIDC token from a job can be as powerful as a stored secret.
+1. **Find out first.** Look for those two versions in your lock files, `pip freeze` output and build logs, around 8:35 to 9:20 p.m. UTC on 17 November. If a machine installed `agent-framework` without a fixed version in that window, assume it is affected.
+2. **Isolate and rebuild.** Cut the affected machines and runners off the network. Do not clean the old environment. Rebuild from a clean one and keep the version at 1.26.0.
+3. **Check whether anything left.** In your proxy and DNS logs, look for requests to this address: `webhook[.]site/d381fd80-ec62-42ad-8f5c-d1b15103c9bb`. I put brackets around the dot on purpose so nobody clicks it. Remove the brackets when you search the logs.
+4. **Change the credentials.** Rotate every credential that machine could see, and do it from a clean machine.
+5. **Check Azure.** Look at the identities, sign-in logs and activity logs. Remember that new tokens may have been issued, not only copied.
+6. **Check your deploy pipelines.** Look at GitHub Actions workflows that deploy to Azure. A job's OIDC token can be as powerful as a stored secret.
 
-## What this tells us
+## What this teaches
 
-- **Pin and review dependencies in CI.** Here the bad versions were live for under an hour, per the article. A build that resolves "latest" at the wrong minute gets them. A {{< term "lockfile" "lock file" >}} with hashes turns "whatever is newest" into "exactly what I reviewed". The [packaging post](/posts/py-packaging-publishing/) and the [uv post](/posts/py-environment-uv-venv/) show the tools.
-- **Install is code execution.** The danger was not the framework's API. It was the file installed next to it. Wheels can place files that run on every interpreter start, so "I never imported it" is not a defence.
-- **Short-lived tokens are not safe if the job can request them.** Managed identity and OIDC remove stored passwords, which is good. But whatever runs inside the job can ask for the same tokens, so CI jobs should hold only the permissions they need. This is the same lesson as in the [secrets management post](/posts/sec-secrets-management/).
-- **Do not run unknown installs on machines with cloud access.** Where possible, build in an environment that has no cloud credentials, and give the deploy step only the access it needs.
+- **Pin your versions.** According to the article the bad versions were live for under an hour. If your build picks "the latest version" in that exact minute, it gets them. A {{< term "lockfile" "lock file" >}} with hashes means "exactly what I checked", not "whatever is newest". The [packaging post](/posts/py-packaging-publishing/) and the [uv post](/posts/py-environment-uv-venv/) show how.
+- **Installing is running code.** The danger was not the framework itself. It was a file installed next to it. A wheel can place a file that runs every time Python starts, so "but I never imported it" is not a defence.
+- **Short-lived tokens are not enough if the job can ask for them.** Managed identity and OIDC remove fixed passwords, which is good. But any code running inside the job can ask for the same tokens. So CI jobs should only have the permissions they really need. The [secrets management post](/posts/sec-secrets-management/) is about exactly this.
+- **Do not install unknown things where cloud access exists.** If you can, build in an environment that has no cloud credentials, and give only the deploy step the access it needs.
 
-## What is known and what is not
+## What we do not know
 
-- **From the article:** the affected versions, the time window, the `.pth` mechanism, the list of collected data, the token requests, the exfiltration method and the mitigation advice. I read the article, not the individual vendor reports it links (Aikido, Chainguard, Endor Labs, OX Security, SafeDep, Socket, StepSecurity and Wiz).
-- **From me:** only the harmless `.pth` demo, run with Python 3.14.0 on macOS. It shows that `.pth` import lines run at start and for `pip`. It says nothing about the real payload.
-- **Not verified here:** the malicious package contents, the exact file names beyond what the article states, and whether a given PyPI mirror or cache served those versions.
-- **Open:** how the attacker got publishing access, who they are, and whether 1.26.0 stays the right pin. The article was published on 18 November, so details may change.
+All of the information above comes from The Hacker News article. I have not read the separate reports from the companies it links to, such as Wiz, OX Security, Endor Labs and Socket. I have not seen the malware or run it. What I tried myself is only the harmless `.pth` demo, which shows that these files run when Python starts. It proves nothing about what the real malware did.
+
+A few things are also still unknown: who the attacker is, how they got permission to publish, and whether 1.26.0 will stay the right version to pin. The article was published on 18 November, so details may change.
 
 ## References
 

@@ -1,67 +1,81 @@
 +++
 date = '2026-10-30T10:00:00+03:30'
 draft = false
-title = 'The $6.3B Binance Hack, Technically: No Sign of a Leaked Key, Withdrawals Signed Anyway'
-seoTitle = 'The $6.3B Binance Hack: A Technical Look'
-description = 'The Binance hack of October 2026, technically: what Binance said, what TRM Labs and Chainalysis found on chain, and the rules a hot wallet signer should enforce.'
+title = 'The $6.3B Binance Hack: From a Fake Job Interview to Signed Withdrawals'
+seoTitle = 'Binance Hack: Fake Interview to Signed Withdrawals'
+description = 'The Binance hack, from its own report: malware from a fake job interview, access to wallet infrastructure, 50 EIP-7702 signings, and lessons for signers.'
 contentType = 'analysis'
 categories = ["Security"]
 tags = ["security", "binance", "crypto", "hot-wallet", "incident"]
-keywords = ["Binance hack", "Binance hacked", "largest crypto hack", "hot wallet security", "EIP-7702", "TraderTraitor", "Lazarus", "crypto exchange security", "withdrawal signing"]
-cover = { image = "/images/covers/binance-hack-hot-wallet-2026.png", alt = "The $6.3B Binance Hack, Technically: No Sign of a Leaked Key, Withdrawals Signed Anyway", hiddenInSingle = true }
+keywords = ["Binance hack", "Binance hacked", "fake job interview", "hot wallet security", "EIP-7702", "TraderTraitor", "Lazarus", "crypto exchange security", "withdrawal signing"]
+cover = { image = "/images/binance-hack-cover.png", alt = "Binance security breach, 29 October 2026", hiddenInSingle = true }
 +++
 
-On the evening of 29 October 2026 about $6.3 billion left the Binance exchange. According to the reports, it is the largest crypto theft on record. In this post I want to say plainly what happened, why this kind of attack is so dangerous, and which rules a signing service should enforce to limit it.
+On the evening of 29 October 2026 about $6.3 billion left Binance's hot wallets. Five days later Binance published its [initial findings](https://www.binance.com/en/blog/community/3229153443759566763). According to them, this did not start with a flaw in a blockchain. It started on engineers' computers, and one way in was a fake job interview.
 
-The core point first. Binance says it found no evidence that any wallet private key leaked. Yet unauthorized withdrawals were signed anyway. So the attacker did not need to steal a key; it was enough to reach something that is allowed to *ask* the signer for signatures. I explain that difference below.
+> **Update:** this post first went up on 30 October, based on that day's news. It is now rewritten around Binance's report of 3 November and [The Register's coverage](https://www.theregister.com/security/2026/11/03/north-korean-fake-job-interview-led-to-63b-binance-heist/5307398). Binance calls the findings initial and says some technical details will stay confidential. The Go code is my own local example, not Binance's design.
 
-I keep three things apart in this post: what Binance said, what blockchain analytics firms saw on chain, and my own reading, which is analysis and not a reported fact.
+## Three concepts first
 
-> Based on public reporting up to 30 October 2026; Binance's promised post-mortem is not out yet. The Go code is my own local example, not Binance's design.
+A **{{< term "hot-wallet" "hot wallet" >}}** is a wallet whose ability to sign is connected to the network, so an exchange can sign customer withdrawals without a human. That makes it fast, and for the same reason it is the main target.
 
-## Two concepts first
+With **{{< term "mpc" "multi-party computation" >}}** (MPC) the private key never exists in one place. Several parties each hold a share and produce a signature together, so stealing one file or one server does not give you the key.
 
-A **{< term "hot-wallet" "hot wallet" >}** is a wallet whose signing key is connected to the network, so an exchange can sign customer withdrawals without a human. That makes it fast, and for the same reason it is the main target. Exchanges usually keep only a small share of funds hot and the rest offline.
+**{{< term "eip-7702" "EIP-7702" >}}** is an Ethereum feature. An ordinary wallet can sign an "authorization" that delegates some execution rights to a smart contract, without exposing the private key. Each authorization is valid only at the wallet's current nonce, a counter that goes up as the wallet sends transactions.
 
-For a hot wallet, whoever can ask it to sign is almost as dangerous as whoever holds the key.
+## The attack chain
 
-**{< term "eip-7702" "EIP-7702" >}** is an Ethereum feature. With it an ordinary wallet can sign an "authorization" that hands its behavior over to a smart contract. From then on the contract's code runs on the wallet. If a hot wallet signs such an authorization for an attacker's contract, the attacker effectively controls it. Each authorization is valid only at the wallet's current nonce, a counter that goes up by one with every transaction the wallet sends.
+Binance describes it as a multi-stage campaign, not a single breach or a simple phishing incident.
 
-## What Binance has said
+### June: a tampered Homebrew
 
-- **Loss and response.** Binance estimates about $6.3 billion. According to [BleepingComputer](https://www.bleepingcomputer.com/news/security/binance-links-63-billion-crypto-theft-to-compromised-devops-laptop/) it suspended deposits and withdrawals and said it "will cover all losses from the SAFU fund and the company's funds".
-- **First explanation, 29 October.** Quoted by [CoinDesk](https://www.coindesk.com/business/2026/10/29/potential-multi-billion-binance-hack-hitting-crypto-markets): "initial investigation suggests that the security incident may involve a compromised DevOps engineer's laptop, which allowed an attacker to gain access to a service container and submit unauthorized withdrawal transactions. We have found no evidence of any wallet private key leak."
+Engineer A from wallet DevOps wanted to install an AI coding tool and downloaded a tampered Homebrew installation found through a search engine. Binance's security team spotted the anomaly, replaced the device and rotated the related credentials. But, the report says, the role of Engineer A and colleagues on the wallet infrastructure team had been exposed to the attacker.
 
-In plain words: the early finding was that an engineer's laptop was compromised, the attacker used it to reach a service container and submit withdrawals, and Binance found no sign of a leaked private key.
+The incident was contained, but the attacker had learned whom to go after.
 
-- **Update, 30 October.** Binance said it had "uncovered additional points of breach"; co-CEO Richard Teng wrote that "the attacker did not simply use one engineer's permissions" ([The Next Web](https://thenextweb.com/news/binance-hack-6-3bn-north-korea-tradertraitor)).
+### September: the fake job interview
 
-So the laptop is a preliminary, partial explanation, not a confirmed root cause. Binance has not named an attacker.
+This is the {{< term "social-engineering" "social engineering" >}} part:
 
-## What analytics firms saw on chain
+- Someone posing as a project director contacted Engineer B through a job-hunting platform.
+- Round one was a live video interview with a purported HR representative, who shared a social media account with personal photos and videos to build trust.
+- Round two was with someone claiming to be the CEO of a fictitious company.
+- At the end Engineer B was asked to download an "assignment", a code repository, and ran it on his **work computer**.
 
-Next, the third-party findings, mostly from [TRM Labs' report](https://www.trmlabs.com/resources/blog/north-korea-steals-usd-6-36-billion-from-binance-in-the-largest-hack-in-history) of 30 October. (When I tried to open the TRM page again to re-check, the server answered 403, so this part is as the earlier version of this post had it and I did not re-verify it.)
+Malicious code ran during project setup. According to Binance, it replaced a legitimate development tool component with a malicious one. The published file operations concern `pyenv`, the Python version manager: the real file was deleted, the malicious copy took its name, and the symlink in `/opt/homebrew/bin` was recreated. From then on, running `pyenv` could run the attacker's code. Binance's endpoint tools did not immediately detect it.
 
-- From 20:05 UTC about $6.36B left across ten blockchains, mostly within 20 minutes. Per CoinDesk, Chainalysis put its own estimate at about $5.9B.
-- On Ethereum, one transaction carried **50 EIP-7702 authorizations** signed by Binance's hot wallet, delegating it to the attacker's "sweeper" contract. It moved 167,464 ETH and 1.615 billion USDT. Follow-up sweeps ran until 23:56.
-- Other chains saw ordinary signed transfers. TRM reads this as a compromise of the signing infrastructure.
-- TRM attributes the attack to North Korea's TraderTraitor group "with high confidence"; Chainalysis agrees. Binance itself has not named an attacker.
-- TRM counts about $2.7B frozen by token issuers and the Arbitrum Security Council; Binance said about $3B ([Al Jazeera](https://www.aljazeera.com/economy/2026/10/30/binance-says-2-54bn-in-crypto-funds-frozen-amid-potential-security-issue)). Tether's first freeze, 971 million USDT, came 37 minutes after the main sweep.
-- About 325 million USDT was sold through UniswapX at over 10% discount. The attacker still holds about $2.4B in ETH and BTC that cannot be frozen.
+### 20 to 29 October: from a laptop to wallet infrastructure
 
-On attribution: [Nextgov](https://www.nextgov.com/cybersecurity/2026/10/fbi-involved-response-63-billion-binance-hack-linked-north-korea/416946/) wrote on 30 October that the FBI was only engaged with partners and had not attributed the theft. When I re-read that page for this rewrite, an editor's note said the story had been updated to reflect the FBI's attribution of the hack to North Korea. So that part of my first version is out of date.
+- **20 October:** using Engineer B's compromised computer and an **internal AI tool**, the attacker took control of the computers of Engineer A and Engineer C, a wallet software developer. On A's computer they found a container deployment permission token. The report does not explain how the AI tool was abused.
+- **29 October, between 17:15 and 19:56** (no time zone given): the attacker logged onto Engineer C's computer, used credentials stolen from A to deploy a {{< term "container" "container" >}}, and triggered a malicious script.
 
-## My reading: the signer signed what it was asked
+Binance's first statement on the day, [as quoted by CoinDesk](https://www.coindesk.com/business/2026/10/29/potential-multi-billion-binance-hack-hitting-crypto-markets), spoke only of "a compromised DevOps engineer's laptop" and said it had found no evidence of a private key leak. The fuller picture has three engineers and months of preparation.
 
-This is my analysis, not a reported finding. If "no evidence of a key leak" holds, the attacker reached something that was allowed to ask for signatures.
+## The night itself
 
-The number 50 also seems logical to me. Each authorization is valid only at the wallet's current nonce, and a busy hot wallet's nonce keeps moving. So if the attacker gets signatures for a whole range of nonces, one of them lands exactly on the nonce at execution time.
+Times in UTC:
 
-If a signer produced those authorizations, and signed transfers on ten chains too, I think the policy checks next to the key were missing or bypassed. I found no source saying whether {< term "multisig" "multisig" >} or MPC was involved, so I say nothing about that.
+- **20:05 to 20:09:** five hot wallets sent 233.46 million XRP to an attacker address.
+- Solana and Optimism hot wallets sent about 970,500 SOL and 44.2 million OP.
+- Binance received an internal alert about large transfers and began investigating. The alert time is not given.
+- A hot wallet sent 18,270 BTC to an attacker address.
+- On Ethereum, the attacker used the **signing service** to exploit EIP-7702: 50 signing transactions to manipulate the account nonce and establish malicious delegation. The attacker's contract gained partial execution rights over a Binance hot wallet.
+- **23:56:** the last unauthorized transfer, 2,961.9 ETH, finalized. It had been broadcast earlier and was pending.
+- **00:10 on 30 October:** Binance cleared the delegation with a new authorization to the zero address.
+
+[TRM Labs' report of 30 October](https://www.trmlabs.com/resources/blog/north-korea-steals-usd-6-36-billion-from-binance-in-the-largest-hack-in-history), built from on-chain data, had seen the same pattern: ten blockchains, 50 authorizations on Ethereum, and 167,464 ETH plus 1.615 billion USDT leaving the delegated wallet.
+
+## Two technical points I find most important
+
+This section is my reading of the report.
+
+**First: MPC protects the key, not the decision to sign.** The affected wallet used MPC. There was no single key to steal, yet the signing service did what it was asked. If an attacker can get a request to the system that looks legitimate, splitting the key does not stop them. What stops them is a policy that checks *what* is being signed.
+
+**Second: pausing withdrawals does not revoke a delegation.** Binance suspended withdrawals, but the authorization stayed on chain and worked independently of the withdrawal infrastructure. Revoking it was not simple either: per the report, because the wallet used MPC there was no single private key to revoke it with immediately, and a special procedure was needed. "How do we take access back" has to be designed and rehearsed before the incident.
 
 ## What a signer should enforce
 
-One principle follows from this: a signer of money movements must not trust its caller. The policy sits next to the key, is checked independently of the requesting service, and fails closed, meaning that when unsure it refuses to sign.
+The principle is simple: a signer of money movements **must not trust its caller.** Policy sits next to the signature, is checked independently of the requesting service, and fails closed, meaning that when unsure it refuses to sign.
 
 Here is the core of a small local Go example. Approvals are plain strings; a real signer verifies the approvers' signatures:
 
@@ -95,9 +109,9 @@ func (s *Signer) Sign(w Withdrawal, now time.Time) error {
 }
 ```
 
-It has four rules: accept only plain transfers, require two approvals from people other than the requester, send only to allowlisted addresses, and keep a cap on the amount per time window. When the cap is crossed, stop everything.
+It has four rules: accept only plain transfers, require two approvals from people other than the requester, send only to allowlisted addresses, and cap the amount per time window. When the cap is crossed, stop everything.
 
-To see the effect I simulated an attacker who controls the withdrawal-submitting service, with a $50M hourly cap. I re-ran it for this rewrite with Go 1.27 and got the same output:
+To see the effect I simulated an attacker who controls the withdrawal-submitting service, with a $50M hourly cap. The real run with Go 1.27:
 
 ```
 20:05 w0 $0           REJECTED: EIP-7702 authorization not expected, refusing to sign
@@ -114,30 +128,50 @@ Line by line:
 - `w0` is an authorization request and is refused even with two approvals, because its kind is not "transfer".
 - In `w1` and `w2` the service cannot approve itself.
 - `w3` targets an unknown address.
-- In `w4` I assumed the attacker also controls approvers and an allowlisted address, so a $30M withdrawal passes. This matters: these rules do not stop every attack, they limit the damage.
-- `w5` hits the cap and the signer stops everything, like a {< term "kill-switch" "kill switch" >}.
+- In `w4` I assumed the attacker also controls approvers and an allowlisted address, so a $30M withdrawal passes. These rules do not stop every attack; they limit the damage.
+- `w5` hits the cap and the signer stops everything, like a {{< term "kill-switch" "kill switch" >}}.
 - `w6`, a small legitimate transfer, waits for a human.
 
-## Hot wallet controls this incident argues for
+One important limit: in this attack the intruder could deploy a new container into wallet infrastructure. Whoever can change the signer, or the environment around it, can get around a rule written in code. *Who can deploy the signer* matters as much as the rules.
 
-From the reports and this example, this is my list:
+## The Hacker News discussion
 
-- {< term "least-privilege" "Least privilege" >}: an engineer's everyday laptop should have no standing path to a service that can obtain signatures.
-- TRM's advice: reject unexpected EIP-7702 authorizations, treat many across a nonce range as an indicator of compromise, and alert on any treasury wallet delegation.
-- My suggestion: separate signing by chain and wallet tier, so the {< term "blast-radius" "blast radius" >} of one compromise is not ten chains.
-- Prepare {< term "incident-response" "incident response" >} with {< term "stablecoin" "stablecoin" >} issuers in advance. Tether's first freeze came 37 minutes after the sweep, and every minute counts.
+The [Hacker News thread](https://news.ycombinator.com/item?id=50365755) was long. These are readers' opinions, not findings, but there are good questions in it:
+
+- Why was a deploy token on a laptop? Several argue deploys should go only through CI with secrets kept off laptops. Others answer that CI does not stop someone triggering the wrong pipeline.
+- Dual approval and separation of duties for any access that reaches funds.
+- Interview "assignment" code should only ever run in an isolated environment.
+
+## Controls this incident argues for
+
+- Never run unknown code, interview assignments included, on a work machine. A developer's tools are a {{< term "software-supply-chain" "supply chain" >}} too: don't get installers from search results or ads.
+- {{< term "least-privilege" "Least privilege" >}}: a wallet deploy token should not be long-lived and sitting on a laptop.
+- Manage internal AI tools like any other high-privilege service. Here one was part of the attacker's path.
+- Reject unexpected EIP-7702 authorizations and alert on any delegation on a treasury wallet.
+- Prepare and rehearse the procedure for revoking a delegation.
+- Separate signing by chain and wallet tier, so the {{< term "blast-radius" "blast radius" >}} of one compromise is not every chain.
+- Prepare {{< term "incident-response" "incident response" >}} with {{< term "stablecoin" "stablecoin" >}} issuers in advance. Per TRM, Tether's first freeze came 37 minutes after the main outflow.
+
+## Losses and aftermath
+
+- About $6.34 billion in digital assets were affected.
+- About $2.85 billion has been frozen or intercepted, subject to reconciliation and market prices.
+- Binance says it absorbs the loss and had replenished 98% of the affected assets as of 31 October.
+- The FBI [attributed the theft](https://www.theregister.com/security/2026/11/02/fbi-pins-63b-binance-crypto-heist-on-north-korean-hackers/5306889) to TraderTraitor, a North Korean operation linked to Lazarus. TRM had reached the same conclusion earlier.
+- Binance says it rebuilt the wallet system and the AI tool, replaced devices and decommissioned the affected engineers' credentials.
 
 ## What is still not known
 
-- The root cause: Binance itself said the breach points were more than one laptop, and the post-mortem is not out.
-- Whether multisig or MPC was in use.
-- The exact figures: the estimates ($5.9B, $6.3B, $6.36B, and $2.7B or about $3B frozen) differ between sources.
+- How exactly the internal AI tool opened the way to other computers.
+- How the container and script got the signing service to sign.
+- What limits and policies the signing service had, and why they did not stop this volume. Binance only says it is reviewing signing policy coverage and hot wallet controls.
 
 ## Sources
 
-- [TRM Labs report](https://www.trmlabs.com/resources/blog/north-korea-steals-usd-6-36-billion-from-binance-in-the-largest-hack-in-history), 30 Oct
+- [Binance: Initial Findings and Response Update](https://www.binance.com/en/blog/community/3229153443759566763), 3 Nov
+- [The Register: North Korean fake job interview led to $6.3B Binance heist](https://www.theregister.com/security/2026/11/03/north-korean-fake-job-interview-led-to-63b-binance-heist/5307398), 3 Nov
+- [The Register: FBI pins $6.3B Binance crypto heist on North Korean hackers](https://www.theregister.com/security/2026/11/02/fbi-pins-63b-binance-crypto-heist-on-north-korean-hackers/5306889), 2 Nov
+- [SANS ISC: Malicious Ad for Homebrew](https://isc.sans.edu/diary/32942); Binance cites it for the tampered Homebrew, though the diary itself does not mention Binance
+- [TRM Labs](https://www.trmlabs.com/resources/blog/north-korea-steals-usd-6-36-billion-from-binance-in-the-largest-hack-in-history), 30 Oct
 - [CoinDesk](https://www.coindesk.com/business/2026/10/29/potential-multi-billion-binance-hack-hitting-crypto-markets), 29-30 Oct
-- [The Next Web](https://thenextweb.com/news/binance-hack-6-3bn-north-korea-tradertraitor), 30 Oct
-- [BleepingComputer](https://www.bleepingcomputer.com/news/security/binance-links-63-billion-crypto-theft-to-compromised-devops-laptop/), 30 Oct
-- [Nextgov](https://www.nextgov.com/cybersecurity/2026/10/fbi-involved-response-63-billion-binance-hack-linked-north-korea/416946/), 30 Oct
-- [Al Jazeera](https://www.aljazeera.com/economy/2026/10/30/binance-says-2-54bn-in-crypto-funds-frozen-amid-potential-security-issue), 30 Oct
+- [Hacker News](https://news.ycombinator.com/item?id=50365755)

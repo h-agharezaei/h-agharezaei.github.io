@@ -24,7 +24,7 @@ Two files carry this. On your machine is the private key (and the public one bes
 
 ## Key pairs
 
-An {< term "ssh-key-pair" "SSH key pair" >} is a private file you keep and a public line you share. I generated three with `ssh-keygen -t ... -N '' -C demo@example` (no passphrase, because they are throwaway):
+An {{< term "ssh-key-pair" "SSH key pair" >}} is a private file you keep and a public line you share. I generated three with `ssh-keygen -t ... -N '' -C demo@example` (no passphrase, because they are throwaway):
 
 ```
 $ ls -l id_*    (mode, bytes, name)
@@ -73,7 +73,7 @@ Two more things I tried. `ssh-keygen -p -f key` changes the passphrase of a key.
 
 ## authorized_keys
 
-On the server, the {< term "authorized-keys" "authorized_keys" >} file lists the public keys that may log in. Each line can start with options that restrict what that key may do: `restrict` turns off forwarding, the pseudo-terminal and more; `from="..."` limits where the key may be used from; `command="..."` forces one command. A key with no options can run anything and forward anything.
+On the server, the {{< term "authorized-keys" "authorized_keys" >}} file lists the public keys that may log in. Each line can start with options that restrict what that key may do: `restrict` turns off forwarding, the pseudo-terminal and more; `from="..."` limits where the key may be used from; `command="..."` forces one command. A key with no options can run anything and forward anything.
 
 To make this concrete I wrote a tiny Python checker. It is a line-based check, not sshd's parser. I ran it on an invented file in which the keys are shortened placeholders:
 
@@ -98,7 +98,7 @@ Line 2 has no options, so the checker warns that this key can run anything and f
 
 ## known_hosts and TOFU
 
-Now the other direction. The client keeps the servers' *host* keys in {< term "known-hosts" "known_hosts" >}. These identify servers and are different from your *user* key. The first connection to a server is trust on first use (TOFU): ssh shows the server's fingerprint and you accept it. After that, ssh compares, and a change is suspicious. `ssh-keygen -H` hashes the host names in the file, so the file does not reveal which servers you use, and `-F` looks one up. Here I used a throwaway key as a fake host key for `127.0.0.1`:
+Now the other direction. The client keeps the servers' *host* keys in {{< term "known-hosts" "known_hosts" >}}. These identify servers and are different from your *user* key. The first connection to a server is trust on first use (TOFU): ssh shows the server's fingerprint and you accept it. After that, ssh compares, and a change is suspicious. `ssh-keygen -H` hashes the host names in the file, so the file does not reveal which servers you use, and `-F` looks one up. Here I used a throwaway key as a fake host key for `127.0.0.1`:
 
 ```
 $ ssh-keygen -F 127.0.0.1 -f known_hosts
@@ -160,11 +160,11 @@ proxyjump jump
 
 `web` inherited `User deploy`, the address `192.0.2.10`, the multiplexing options and the jump host, and got the default port 22. `ProxyJump jump` means "reach `web` through `jump`".
 
-An {< term "ssh-agent" "ssh-agent" >} holds decrypted keys in memory so you type the passphrase once. In the original run I started a private one (`ssh-agent -a <tmp>/agent.sock`), added the demo key, saw it in `ssh-add -l` and killed it. For this rewrite I did not touch any agent. Agent forwarding (`-A`) lets the remote host use your agent while you are connected; per the man page, root on that host can abuse it, so prefer `ProxyJump`.
+An {{< term "ssh-agent" "ssh-agent" >}} holds decrypted keys in memory so you type the passphrase once. In the original run I started a private one (`ssh-agent -a <tmp>/agent.sock`), added the demo key, saw it in `ssh-add -l` and killed it. For this rewrite I did not touch any agent. Agent forwarding (`-A`) lets the remote host use your agent while you are connected; per the man page, root on that host can abuse it, so prefer `ProxyJump`.
 
 ## Certificates
 
-An {< term "ssh-certificate" "SSH certificate" >} is a public key signed by a CA key. Instead of copying a user's key to every server, you sign it once with a CA, and servers that trust the CA accept it. I made a throwaway CA key and signed my throwaway key for the user `deploy`, valid for one day, then inspected it (trimmed to the main lines):
+An {{< term "ssh-certificate" "SSH certificate" >}} is a public key signed by a CA key. Instead of copying a user's key to every server, you sign it once with a CA, and servers that trust the CA accept it. I made a throwaway CA key and signed my throwaway key for the user `deploy`, valid for one day, then inspected it (trimmed to the main lines):
 
 ```
 $ ssh-keygen -s ca -I demo-cert -n deploy -V +1d id_ed25519.pub

@@ -4,7 +4,7 @@ summary = "هر چیزی که نرم‌افزار شما از آن ساخته و
 category = "Security"
 fa_title = "زنجیره‌ی تأمین نرم‌افزار"
 related = ["transitive-dependency", "lockfile", "sbom"]
-posts = ["sec-supply-chain-vulns", "agent-framework-pypi-compromise-2026"]
+posts = ["sec-supply-chain-vulns", "agent-framework-pypi-compromise-2026", "binance-hack-hot-wallet-2026"]
 +++
 
 ضعف در هر نقطه‌ی این زنجیره به کاربران شما می‌رسد، حتی اگر کد خودتان بی‌نقص باشد. دفاع یعنی بدانید به چه وابسته‌اید، آن را pin کنید، راستی‌آزمایی کنید و آگاهانه به‌روز کنید.
